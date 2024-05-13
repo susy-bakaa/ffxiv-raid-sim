@@ -9,6 +9,8 @@ public class StatusEffectData : ScriptableObject
     public string statusName = "Unnamed Status Effect";
     public bool negative = true;
     public bool unique = false;
+    public bool infinite = false;
+    public bool toggle = false;
     public float length = 10f;
     public float maxLength = 10f;
     public int appliedStacks = 1;

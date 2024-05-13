@@ -145,19 +145,24 @@ public class PlayerController : MonoBehaviour
             transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, release);
         }
 
-        if (BindedKey(KeyBind.Keys["SurecastKey"])) // Add check for cooldown bruh
+        if (BindedKey(KeyBind.Keys["SurecastKey"]))
         {
             controller.PerformAction("Surecast");
             //state.AddEffect("Surecast");
         }
-        if (BindedKey(KeyBind.Keys["SprintKey"])) // Add check for cooldown bruh
+        if (BindedKey(KeyBind.Keys["SprintKey"]))
         {
             controller.PerformAction("Sprint");
             //state.AddEffect("Sprint");
         }
-        if (BindedKey(KeyBind.Keys["DiamondbackKey"])) // Add check for cooldown bruh
+        if (BindedKey(KeyBind.Keys["DiamondbackKey"]))
         {
             controller.PerformAction("Diamondback");
+            //state.AddEffect("Diamondback");
+        }
+        if (BindedKey(KeyBind.Keys["MightyguardKey"]))
+        {
+            controller.PerformAction("Mightyguard");
             //state.AddEffect("Diamondback");
         }
     }

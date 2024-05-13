@@ -54,15 +54,26 @@ public class StatusEffect : MonoBehaviour
             stacks = data.maxStacks;
 
         if (hasHudElement)
-            hudTimer.text = duration.ToString("F0");
-        if (hasPartyHudElement)
-            partyHudTimer.text = duration.ToString("F0");
+        {
+            if (!data.infinite && duration >= 1)
+                hudTimer.text = duration.ToString("F0");
+            else
+                hudTimer.text = "";
+        }
+        if (hasPartyHudElement && duration >= 1)
+        {
+            if (!data.infinite)
+                partyHudTimer.text = duration.ToString("F0");
+            else
+                partyHudTimer.text = "";
+        }
     }
 
-    public void Refresh()
+    public void Refresh(bool ignoreStacks = false)
     {
         duration += data.length;
-        stacks += data.appliedStacks;
+        if (!ignoreStacks)
+            stacks += data.appliedStacks;
 
         if (duration > data.maxLength)
             duration = data.maxLength;
@@ -86,15 +97,26 @@ public class StatusEffect : MonoBehaviour
 
     public virtual void OnTick(CharacterState state)
     {
-
+        if (data.infinite)
+            Refresh(true);
     }
 
     public virtual void OnUpdate(CharacterState state)
     {
         if (hasHudElement)
-            hudTimer.text = duration.ToString("F0");
+        {
+            if (!data.infinite && duration >= 1)
+                hudTimer.text = duration.ToString("F0");
+            else
+                hudTimer.text = "";
+        }
         if (hasPartyHudElement)
-            partyHudTimer.text = duration.ToString("F0");
+        {
+            if (!data.infinite && duration >= 1)
+                partyHudTimer.text = duration.ToString("F0");
+            else
+                partyHudTimer.text = "";
+        }
     }
 
     public virtual void OnExpire(CharacterState state)

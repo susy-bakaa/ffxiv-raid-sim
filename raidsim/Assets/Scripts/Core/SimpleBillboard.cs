@@ -10,7 +10,7 @@ public class SimpleBillboard : MonoBehaviour
             target = Camera.main.transform;
     }
 
-    void Update()
+    void LateUpdate()
     {
         if (target != null)
         {

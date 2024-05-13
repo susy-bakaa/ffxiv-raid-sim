@@ -13,13 +13,12 @@ MonoBehaviour:
   m_Name: HelloWorld1
   m_EditorClassIdentifier: 
   timelineName: Hello World 1
-  totalDuration: 6.7
+  totalDuration: 9.7
   events:
-  - name: Begin
-    time: 1
-    actions:
-    - {fileID: 11400000, guid: d83ff4441f5aa8146a3811565e7314e2, type: 2}
-  - name: Assign Debuffs
+  - name: Wait for 4s
+    time: 4
+    actions: []
+  - name: '[Omega] Cast - Hello World 1 for 5,7s'
     time: 5.7
     actions:
-    - {fileID: 11400000, guid: b81a2a3b8a99ad044aafee52785c0f16, type: 2}
+    - {fileID: 11400000, guid: d83ff4441f5aa8146a3811565e7314e2, type: 2}

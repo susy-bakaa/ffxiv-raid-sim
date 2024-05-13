@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class ActionController : MonoBehaviour
@@ -33,6 +34,7 @@ public class ActionController : MonoBehaviour
     public bool usePartyCastBar;
     public Slider castBarParty;
     public TextMeshProUGUI castNameTextParty;
+    public bool hideNameWhenCasting = false;
 
     private CanvasGroup castBarGroupParty;
     private CanvasGroup castBarGroup;
@@ -41,6 +43,9 @@ public class ActionController : MonoBehaviour
     private float castTime;
     private float lastCastTime;
     private bool interrupted;
+
+    [Header("Events")]
+    public UnityEvent<CastInfo> onCast;
 
     void Awake()
     {
@@ -143,7 +148,8 @@ public class ActionController : MonoBehaviour
                 }
                 if (castBarParty != null && castBarGroupParty.alpha == 1f)
                 {
-                    Utilities.FunctionTimer.Create(() => castBarGroupParty.alpha = 0f, 2f, $"{this}_castBarParty_fade_out_if_interrupted", true);
+                    castBarGroupParty.alpha = 0f;
+                    //Utilities.FunctionTimer.Create(() => castBarGroupParty.alpha = 0f, 2f, $"{this}_castBarParty_fade_out_if_interrupted", true);
                 }
                 Utilities.FunctionTimer.Create(() => ResetCastBar(), 2.5f, $"{this}_interrupted_status", true);
             }
@@ -158,6 +164,18 @@ public class ActionController : MonoBehaviour
                     castBarGroupParty.alpha = 0f;
                 }
             }
+        }
+
+        if (hideNameWhenCasting)
+        {
+            if (characterState.characterNameTextParty != null)
+            {
+                characterState.hidePartyName = isCasting;
+            }
+        }
+        else
+        {
+            characterState.hidePartyName = false;
         }
     }
 
@@ -188,10 +206,12 @@ public class ActionController : MonoBehaviour
 
         if (action.isAvailable && !action.isDisabled)
         {
-            if (action.data.cast <= 0f)
+            if (action.data.cast <= 0f || instantCast || (action.instantUnderEffect != null && characterState.HasEffect(action.instantUnderEffect.statusName)))
             {
-                action.ExecuteAction(new ActionInfo(characterState, currentTarget));
+                ActionInfo newActionInfo = new ActionInfo(action, characterState, currentTarget);
+                action.ExecuteAction(newActionInfo);
                 action.ActivateCooldown();
+                onCast.Invoke(new CastInfo(newActionInfo, instantCast, characterState.GetEffects()));
                 if (animator != null)
                 {
                     animator.SetBool("Casting", false);
@@ -200,7 +220,7 @@ public class ActionController : MonoBehaviour
             else
             {
                 Utilities.FunctionTimer.StopTimer($"{this}_castBar_fade_out_if_interrupted");
-                Utilities.FunctionTimer.StopTimer($"{this}_castBarParty_fade_out_if_interrupted");
+                //Utilities.FunctionTimer.StopTimer($"{this}_castBarParty_fade_out_if_interrupted");
                 Utilities.FunctionTimer.StopTimer($"{this}_interrupted_status");
                 ResetCastBar();
                 if (castBarGroup != null)
@@ -213,7 +233,10 @@ public class ActionController : MonoBehaviour
                 castTime = action.data.cast;
                 lastCastTime = castTime;
                 action.ActivateCooldown();
-                StartCoroutine(Cast(castTime, () => { action.ExecuteAction(new ActionInfo(characterState, currentTarget)); }));
+                ActionInfo newActionInfo = new ActionInfo(action, characterState, currentTarget);
+                StartCoroutine(Cast(castTime, () => { action.ExecuteAction(newActionInfo); }));
+                onCast.Invoke(new CastInfo(newActionInfo, instantCast, characterState.GetEffects()));
+                characterState.UpdateCharacterName();
                 if (castBar != null)
                 {
                     castBar.maxValue = action.data.cast;
@@ -285,6 +308,7 @@ public class ActionController : MonoBehaviour
         if (castBarElement != null)
             castBarElement.ChangeColors(true);
         StopAllCoroutines();
+        characterState.UpdateCharacterName();
         //Utilities.FunctionTimer.Create(() => { ResetCastBar(); }, 4f, $"{this}_interrupt", true);
     }
 
@@ -294,6 +318,7 @@ public class ActionController : MonoBehaviour
         action.Invoke();
         isCasting = false;
         lastAction = null;
+        characterState.UpdateCharacterName();
         if (animator != null)
         {
             animator.SetBool("Casting", false);
@@ -320,13 +345,29 @@ public class ActionController : MonoBehaviour
 
     public struct ActionInfo
     {
+        public CharacterAction action;
         public CharacterState source;
         public CharacterState target;
 
-        public ActionInfo(CharacterState source, CharacterState target)
+        public ActionInfo(CharacterAction action, CharacterState source, CharacterState target)
         {
+            this.action = action;
             this.source = source;
             this.target = target;
+        }
+    }
+
+    public struct CastInfo
+    {
+        public ActionInfo action;
+        public bool wasInstant;
+        public StatusEffect[] effects;
+
+        public CastInfo(ActionInfo action, bool wasInstant, StatusEffect[] effects)
+        {
+            this.action = action;
+            this.wasInstant = wasInstant;
+            this.effects = effects;
         }
     }
 }

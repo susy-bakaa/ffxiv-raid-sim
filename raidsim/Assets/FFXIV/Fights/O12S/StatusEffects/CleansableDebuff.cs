@@ -26,7 +26,7 @@ public class CleansableDebuff : StatusEffect
     {
         if (killsOnExpire)
         {
-            state.ModifyHealth(-999999);
+            state.ModifyHealth(0, true);
         }
         base.OnExpire(state);
     }

@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class AIController : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    Animator animator;
+    CharacterState state;
+
+    void Awake()
     {
-        
+        animator = GetComponent<Animator>();    
+        state = GetComponent<CharacterState>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+        animator.SetBool("Dead", state.dead);
     }
 }

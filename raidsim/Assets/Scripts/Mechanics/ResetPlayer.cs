@@ -10,16 +10,21 @@ public class ResetPlayer : MonoBehaviour
     public void StartReset(CharacterState state)
     {
         screenFade.alpha = 0f;
-        StartCoroutine(PerformReset(state.transform));
+        if (state.characterName == "Player")
+            StartCoroutine(PerformReset(state.transform, true));
+        else
+            StartCoroutine(PerformReset(state.transform, false));
     }
 
-    private IEnumerator PerformReset(Transform player)
+    private IEnumerator PerformReset(Transform player, bool fade)
     {
         yield return new WaitForSeconds(0.5f);
-        screenFade.LeanAlpha(1f, 1f);
+        if (fade)
+            screenFade.LeanAlpha(1f, 1f);
         yield return new WaitForSeconds(1f);
         player.transform.position = location;
         yield return new WaitForSeconds(0.5f);
-        screenFade.LeanAlpha(0f, 2f);
+        if (fade)
+            screenFade.LeanAlpha(0f, 2f);
     }
 }

@@ -22,7 +22,7 @@ public class TimelineData : ScriptableObject
             {
                 TimelineEvent e = events[i];
                 if (events[i].actions.Count > 0 && events[i].actions[0] != null)
-                    e.name = events[i].actions[0].actionName;
+                    e.name = $"{events[i].actions[0].actionName} for {events[i].time}s";
                 events[i] = e;
                 totalDuration += events[i].time;
             }

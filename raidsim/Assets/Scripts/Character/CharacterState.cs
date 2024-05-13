@@ -11,7 +11,8 @@ public class CharacterState : MonoBehaviour
 {
     public enum Role { healer, tank, dps, unassigned }
 
-    [Header("Vitals")]
+    [Header("Status")]
+    public string characterName = "Unknown";
     public int health = 16000;
     private int maxHealth;
     public float damageReduction = 1f;
@@ -25,6 +26,7 @@ public class CharacterState : MonoBehaviour
     public bool uncontrollable = false;
     public bool untargetable = false;
     public bool bound = false;
+    public bool stunned = false;
     public bool knockbackResistant = false;
     public bool still = false;
     public bool silenced = false;
@@ -40,13 +42,17 @@ public class CharacterState : MonoBehaviour
     public UnityEvent onDeath;
 
     [Header("Config")]
-    public int index = 0;
     public Transform statusEffectParent;
     public float statusEffectUpdateInterval = 3f;
     private float statusEffectUpdateTimer = 0f;
     public Role role = Role.dps;
+    public bool hideNameplate = false;
+    public bool hidePartyName = false;
 
     [Header("Personal")]
+    public bool showCharacterName = true;
+    public TextMeshProUGUI characterNameText;
+    private CanvasGroup characterNameTextGroup;
     public bool showStatusEffects = true;
     public Transform statusEffectPositiveIconParent;
     public Transform statusEffectNegativeIconParent;
@@ -59,6 +65,9 @@ public class CharacterState : MonoBehaviour
     public TextMeshProUGUI healthBarText;
 
     [Header("Party")]
+    public bool showPartyCharacterName = true;
+    public TextMeshProUGUI characterNameTextParty;
+    private CanvasGroup characterNameTextGroupParty;
     public bool showPartyListStatusEffects = true;
     public Transform statusEffectIconParentParty;
 
@@ -116,6 +125,38 @@ public class CharacterState : MonoBehaviour
         {
             healthBarTextParty.text = health.ToString();
         }
+        if (characterNameText != null)
+        {
+            characterNameText.text = characterName;
+            characterNameTextGroup = characterNameText.GetComponentInParent<CanvasGroup>();
+        }
+        if (characterNameTextGroup != null)
+        {
+            if (!hideNameplate)
+            {
+                characterNameTextGroup.alpha = 1f;
+            }
+            else
+            {
+                characterNameTextGroup.LeanAlpha(0f, 0.5f);
+            }
+        }
+        if (characterNameTextParty != null)
+        {
+            characterNameTextParty.text = characterName;
+            characterNameTextGroupParty = characterNameTextParty.GetComponentInParent<CanvasGroup>();
+        }
+        if (characterNameTextGroupParty != null)
+        {
+            if (!hidePartyName)
+            {
+                characterNameTextGroupParty.alpha = 1f;
+            }
+            else
+            {
+                characterNameTextGroupParty.LeanAlpha(0f, 0.5f);
+            }
+        }
     }
 
     void Update()
@@ -146,8 +187,16 @@ public class CharacterState : MonoBehaviour
         }
     }
 
-    public void ModifyHealth(int value)
+    public void ModifyHealth(int value, bool kill = false)
     {
+        if (health <= 0)
+            return;
+
+        if (kill)
+        {
+            value = health;
+        }
+
         health += Mathf.RoundToInt(value * damageReduction);
 
         if (health <= 0)
@@ -303,6 +352,11 @@ public class CharacterState : MonoBehaviour
         return effects.ContainsKey(name);
     }
 
+    public StatusEffect[] GetEffects()
+    {
+        return effectsArray;
+    }
+
     public void ShowDamagePopupText(int value)
     {
         if (damagePopup == null)
@@ -317,6 +371,32 @@ public class CharacterState : MonoBehaviour
         {
             damagePopup.text = $"-{value}";
             damagePopup.color = Color.red;
+        }
+    }
+
+    public void UpdateCharacterName()
+    {
+        if (characterNameTextGroup != null)
+        {
+            if (!hideNameplate)
+            {
+                characterNameTextGroup.alpha = 0f;
+            }
+            else
+            {
+                characterNameTextGroup.alpha = 1f;
+            }
+        }
+        if (characterNameTextGroupParty != null)
+        {
+            if (!hidePartyName)
+            {
+                characterNameTextGroupParty.alpha = 0f;
+            }
+            else
+            {
+                characterNameTextGroupParty.alpha = 1f;
+            }
         }
     }
 

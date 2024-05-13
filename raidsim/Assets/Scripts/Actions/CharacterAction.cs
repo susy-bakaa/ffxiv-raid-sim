@@ -14,6 +14,7 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     [Header("Info")]
     public CharacterActionData data;
+    public StatusEffectData instantUnderEffect;
     private float timer;
     public bool isAvailable { private set; get; }
     public bool isDisabled;
@@ -34,9 +35,18 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         button = GetComponent<Button>();
 
-        recastFillGroup.alpha = 0f;
-        selectionBorder.alpha = 0f;
-        clickHighlight.alpha = 0f;
+        if (recastFill != null)
+        {
+            recastFillGroup.alpha = 0f;
+        }
+        if (selectionBorder != null)
+        {
+            selectionBorder.alpha = 0f;
+        }
+        if (clickHighlight != null)
+        {
+            clickHighlight.alpha = 0f;
+        }
     }
 
     void Update()
@@ -45,7 +55,10 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         {
             timer -= Time.deltaTime;
             isAvailable = false;
-            recastFillGroup.alpha = 1f;
+            if (recastFillGroup != null)
+            {
+                recastFillGroup.alpha = 1f;
+            }
             if (recastTimeText != null && data.recast > 2.5f)
             {
                 recastTimeText.text = timer.ToString("F0");
@@ -55,22 +68,31 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         {
             timer = 0f;
             isAvailable = true;
-            recastFillGroup.alpha = 0f;
+            if (recastFillGroup != null)
+            {
+                recastFillGroup.alpha = 0f;
+            }
             if (recastTimeText != null)
             {
                 recastTimeText.text = "";
             }
         }
 
-        recastFill.fillAmount = Utilities.Map(data.recast - timer, 0f, data.recast, 0f, 1f);
-
-        if (!isDisabled)
+        if (recastFill != null)
         {
-            button.interactable = isAvailable;
+            recastFill.fillAmount = Utilities.Map(data.recast - timer, 0f, data.recast, 0f, 1f);
         }
-        else
+
+        if (button != null)
         {
-            button.interactable = false;
+            if (!isDisabled)
+            {
+                button.interactable = isAvailable;
+            }
+            else
+            {
+                button.interactable = false;
+            }
         }
     }
 
@@ -85,7 +107,30 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public void ExecuteAction(ActionInfo action)
     {
         if (data.buff != null)
-            action.source.AddEffect(data.buff);
+        {
+            if (data.buff.toggle)
+            {
+                if (action.source.HasEffect(data.buff.statusName))
+                {
+                    action.source.RemoveEffect(data.buff, false);
+                }
+                else
+                {
+                    action.source.AddEffect(data.buff);
+                }
+            }
+            else
+            {
+                action.source.AddEffect(data.buff);
+            }
+        }
+        if (data.debuff != null)
+        {
+            if (action.target != null)
+            {
+                action.target.AddEffect(data.debuff);
+            }
+        }
 
         onExecute.Invoke(action);
     }
@@ -105,18 +150,20 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public void OnPointerEnter(PointerEventData eventData)
     {
         pointer = true;
-        selectionBorder.LeanAlpha(1f, 0.25f);
+        if (selectionBorder != null)
+            selectionBorder.LeanAlpha(1f, 0.25f);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         pointer = false;
-        selectionBorder.LeanAlpha(0f, 0.25f);
+        if (selectionBorder != null)
+            selectionBorder.LeanAlpha(0f, 0.25f);
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (eventData == null && pointer)
+        if ((eventData == null && pointer) || clickHighlight == null)
         {
             return;
         }
