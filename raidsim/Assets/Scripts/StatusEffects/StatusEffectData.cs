@@ -19,4 +19,19 @@ public class StatusEffectData : ScriptableObject
     public GameObject hudElement;
     public List<StatusEffectData> incompatableStatusEffects = new List<StatusEffectData>();
     public List<CharacterState.Role> assignedRoles = new List<CharacterState.Role>();
+
+    [System.Serializable]
+    public struct StatusEffectInfo
+    {
+        public string name;
+        public StatusEffectData data;
+        public int tag;
+
+        public StatusEffectInfo(StatusEffectData effect, int tag)
+        {
+            name = effect.statusName + "_" + tag;
+            this.data = effect;
+            this.tag = tag;
+        }
+    }
 }

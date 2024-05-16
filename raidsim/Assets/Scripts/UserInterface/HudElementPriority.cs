@@ -9,13 +9,20 @@ public class HudElementPriority : MonoBehaviour
 
     void Update()
     {
-        // Sort hudElements based on priority
-        var sortedElements = hudElements.OrderBy(element => element.priority).ToList();
-
-        // Update sibling indices
-        for (int i = 0; i < sortedElements.Count; i++)
+        // Only once per second instead of every frame
+        if (Utilities.RateLimiter(60))
         {
-            sortedElements[i].transform.SetSiblingIndex(i);
+            hudElements.Clear();
+            hudElements.AddRange(GetComponentsInChildren<HudElement>());
+
+            // Sort hudElements based on priority
+            var sortedElements = hudElements.OrderBy(element => element.priority).ToList();
+
+            // Update sibling indices
+            for (int i = 0; i < sortedElements.Count; i++)
+            {
+                sortedElements[i].transform.SetSiblingIndex(i);
+            }
         }
     }
 }

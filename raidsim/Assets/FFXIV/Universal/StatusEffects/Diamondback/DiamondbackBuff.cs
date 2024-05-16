@@ -9,7 +9,10 @@ public class DiamondbackBuff : StatusEffect
 
     public override void OnApplication(CharacterState state)
     {
-        state.damageReduction = damageReduction;
+        if (uniqueTag > 0)
+            state.AddDamageReduction(damageReduction, $"{data.statusName}_{uniqueTag}");
+        else
+            state.AddDamageReduction(damageReduction, data.statusName);
         state.bound = true;
         state.knockbackResistant = true;
         state.canDoActions = false;
@@ -18,7 +21,10 @@ public class DiamondbackBuff : StatusEffect
 
     public override void OnExpire(CharacterState state)
     {
-        state.damageReduction = 1f;
+        if (uniqueTag > 0)
+            state.RemoveDamageReduction($"{data.statusName}_{uniqueTag}");
+        else
+            state.RemoveDamageReduction(data.statusName);
         state.bound = false;
         state.knockbackResistant = false;
         state.canDoActions = true;

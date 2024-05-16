@@ -6,6 +6,7 @@ public class CleansableDebuff : StatusEffect
 {
     [Header("Function")]
     public StatusEffectData[] cleanedBy;
+    public int tags = 0;
     public bool esunable = true;
     public bool killsOnExpire = false;
 
@@ -15,7 +16,7 @@ public class CleansableDebuff : StatusEffect
         {
             if (state.HasEffect(cleanedBy[i].statusName))
             {
-                state.RemoveEffect(data, false);
+                state.RemoveEffect(data, false, tags);
                 return;
             }
         }

@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static TimelineData;
 
 public class FightTimeline : MonoBehaviour
 {
@@ -11,8 +10,10 @@ public class FightTimeline : MonoBehaviour
     public PartyList party;
 
     [Header("Current")]
-    public List<TimelineAction> timelineActions = new List<TimelineAction>();
-    public TimelineData timeline;
+    public string timelineName = "Unnamed fight timeline";
+    public bool playing = false;
+    public List<BotTimeline> botTimelines = new List<BotTimeline>();
+    public List<TimelineEvent> events = new List<TimelineEvent>();
 
     void Awake()
     {
@@ -22,48 +23,86 @@ public class FightTimeline : MonoBehaviour
         }
         Instance = this;
 
-        timelineActions.AddRange(transform.GetComponentsInChildren<TimelineAction>());
+        if (party == null)
+            party = FindObjectOfType<PartyList>();
     }
 
-    public void PlayTimeline()
+    public void StartTimeline()
     {
-        StartCoroutine(SimulateTimeline());
+        playing = true;
+        StartCoroutine(PlayTimeline());
+        for (int i = 0; i < botTimelines.Count; i++)
+        {
+            if (botTimelines[i].bot != null)
+            {
+                botTimelines[i].StartTimeline();
+            }
+        }
     }
 
-    private IEnumerator SimulateTimeline()
+    private IEnumerator PlayTimeline()
     {
-        TimelineEvent[] events = timeline.events.ToArray();
-        //float lastWaitTime = 0f;
-
-        for (int i = 0; i < events.Length; i++)
+        for (int i = 0; i < events.Count; i++)
         {
             Debug.Log(events[i].name);
-            if (events[i].actions.Count > 0)
+            if (events[i].characterEvents.Count > 0)
             {
-                for (int k = 0; k < events[i].actions.Count; k++)
+                TimelineCharacterEvent[] cEvents = events[i].characterEvents.ToArray();
+                for (int e = 0; e < cEvents.Length; e++)
                 {
-                    for (int j = 0; j < timelineActions.Count; j++)
+                    // Check for CharacterEvent actions to be performed on this events character
+                    if (cEvents[e].actions != null)
                     {
-                        if (timelineActions[j].data == events[i].actions[k])
+                        if (cEvents[e].performCharacterActions != null && cEvents[e].performCharacterActions.Length > 0)
                         {
-                            timelineActions[j].ExecuteAction();
+                            for(int a = 0; a < cEvents[e].performCharacterActions.Length; a++)
+                            {
+                                cEvents[e].actions.PerformAction(cEvents[e].performCharacterActions[a]);
+                            }
                         }
                     }
-                    Debug.Log(events[i].actions[k].actionName);
+                    // Check for CharacterEvent buffs and debuffs to be given to this events character
+                    if (cEvents[e].character != null)
+                    {
+                        if (cEvents[e].giveBuffs != null && cEvents[e].giveBuffs.Length > 0)
+                        {
+                            for (int b = 0; b < cEvents[e].giveBuffs.Length; b++)
+                            {
+                                cEvents[e].character.AddEffect(cEvents[e].giveBuffs[b]);
+                            }
+                        }
+                        if (cEvents[e].giveDebuffs != null && cEvents[e].giveDebuffs.Length > 0)
+                        {
+                            for (int d = 0; d < cEvents[e].giveDebuffs.Length; d++)
+                            {
+                                cEvents[e].character.AddEffect(cEvents[e].giveDebuffs[d]);
+                            }
+                        }
+                    }
+                    // Check for CharacterEvent movement to be performed for this events character
+                    if (cEvents[e].controller != null)
+                    {
+
+                    }
+                    // Check for CharacterEvent fight mechanics performed for this event
+                    if (cEvents[e].triggerMechanics != null && cEvents[e].triggerMechanics.Length > 0)
+                    {
+                        for (int m = 0; m < cEvents[e].triggerMechanics.Length; m++)
+                        {
+                            cEvents[e].triggerMechanics[m].TriggerMechanic(new ActionController.ActionInfo());
+                        }
+                    }
                 }
             }
             else
             {
-                Debug.Log($"No actions found for this event! ({events[i].name})");
+                Debug.Log($"No TimelineCharacterEvents found for this timeline event! ({events[i].name})");
             }
             yield return new WaitForSeconds(events[i].time);
-            //if (i == events.Length - 1)
-            //    lastWaitTime = events[i].time;
         }
 
-        //yield return new WaitForSeconds(lastWaitTime);
-
-        Debug.Log("Timeline finished");
+        playing = false;
+        Debug.Log($"Fight timeline {timelineName} finished!");
     }
 
     public void WipeParty()
@@ -71,6 +110,46 @@ public class FightTimeline : MonoBehaviour
         for (int i = 0; i < party.members.Count; i++)
         {
             party.members[i].ModifyHealth(0, true);
+        }
+    }
+
+    [System.Serializable]
+    public struct TimelineEvent
+    {
+        public string name;
+        public float time;
+        public List<TimelineCharacterEvent> characterEvents;
+
+        public TimelineEvent(string name, float time, List<TimelineCharacterEvent> characterEvents)
+        {
+            this.name = name;
+            this.time = time;
+            this.characterEvents = characterEvents;
+        }
+    }
+
+    [System.Serializable]
+    public struct TimelineCharacterEvent
+    {
+        public string name;
+        public CharacterState character;
+        public ActionController actions;
+        public AIController controller;
+        public StatusEffectData[] giveBuffs;
+        public StatusEffectData[] giveDebuffs;
+        public CharacterAction[] performCharacterActions;
+        public FightMechanic[] triggerMechanics;
+
+        public TimelineCharacterEvent(string name, CharacterState character, ActionController actions, AIController controller, StatusEffectData[] giveBuffs, StatusEffectData[] giveDebuffs, CharacterAction[] performCharacterActions, FightMechanic[] triggerMechanics)
+        {
+            this.name = name;
+            this.character = character;
+            this.actions = actions;
+            this.controller = controller;
+            this.giveBuffs = giveBuffs;
+            this.giveDebuffs = giveDebuffs;
+            this.performCharacterActions = performCharacterActions;
+            this.triggerMechanics = triggerMechanics;
         }
     }
 }

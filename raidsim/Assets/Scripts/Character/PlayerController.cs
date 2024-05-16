@@ -7,38 +7,21 @@ public class PlayerController : MonoBehaviour
 {
     CharacterState state;
     ActionController controller;
+    SimpleFreecam freecam;
 
-    //public float walkSpeed = 6.3f;
-    //public float runSpeed = 9.45f;
-    //private bool controllable;
     public float turnSmoothTime;
     private float turnSmoothVelocity;
     private float tm;
     private float release;
-    //public bool sp_on;
-    //public bool kb_on;
-    //private bool sprint;
-    //private bool knockback;
-    //public float sp_timer;
-    //public float kb_timer;
-    //public GameObject kb_image;
-    //public GameObject sp_image;
     private Animator animator;
     public Transform cameraT;
-    //public int stack;
     public Vector3 targetPosition;
     public Vector3 velocity;
     private float currentSpeed;
     private float speedSmoothVelocity;
-    //public GameObject text;
-    //public float magicResis_timer;
-    //public float phyResis_timer;
-    //public float resis_timer;
-    //public GameObject vulImage;
-    //public GameObject phyVulImage;
-    //public GameObject magicVulImage;
 
     public GameObject bubbleShield;
+    public BotNode clockSpot;
 
     void Awake()
     {
@@ -74,10 +57,11 @@ public class PlayerController : MonoBehaviour
                 { "SurecastKey", new KeyBind(KeyCode.Alpha3, false, false, false) },
                 { "DiamondbackKey", new KeyBind(KeyCode.Alpha4, false, false, false) },
                 { "MightyguardKey", new KeyBind(KeyCode.Alpha5, false, false, false) },
-                { "WhitewindKey", new KeyBind(KeyCode.Alpha6, false, false, false) }
+                { "WhiteWindKey", new KeyBind(KeyCode.Alpha6, false, false, false) }
             };
         }
 
+        freecam = Camera.main.GetComponent<SimpleFreecam>();
         animator = GetComponent<Animator>();
     }
 
@@ -117,7 +101,7 @@ public class PlayerController : MonoBehaviour
         {
             state.uncontrollable = false;
         }
-        if (!state.uncontrollable && !state.dead && !state.bound)
+        if (!state.uncontrollable && !state.dead && !state.bound && !freecam.active)
         {
             Vector2 vector = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
             Vector2 normalized = vector.normalized;
@@ -140,7 +124,7 @@ public class PlayerController : MonoBehaviour
             float value = (state.HasEffect("Sprint") ? 1f : 0.5f) * normalized.magnitude;
             animator.SetFloat("Speed", value);
         }
-        else if (!state.dead && !state.bound)
+        else if (!state.dead && !state.bound && !freecam.active)
         {
             transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, release);
         }
@@ -155,6 +139,11 @@ public class PlayerController : MonoBehaviour
             controller.PerformAction("Sprint");
             //state.AddEffect("Sprint");
         }
+        if (BindedKey(KeyBind.Keys["SwiftcastKey"]))
+        {
+            controller.PerformAction("Swiftcast");
+            //state.AddEffect("Sprint");
+        }
         if (BindedKey(KeyBind.Keys["DiamondbackKey"]))
         {
             controller.PerformAction("Diamondback");
@@ -163,6 +152,11 @@ public class PlayerController : MonoBehaviour
         if (BindedKey(KeyBind.Keys["MightyguardKey"]))
         {
             controller.PerformAction("Mightyguard");
+            //state.AddEffect("Diamondback");
+        }
+        if (BindedKey(KeyBind.Keys["WhiteWindKey"]))
+        {
+            controller.PerformAction("WhiteWind");
             //state.AddEffect("Diamondback");
         }
     }
@@ -228,15 +222,6 @@ public class PlayerController : MonoBehaviour
     {
         transform.position = new Vector3(0f, 0f, 0f);
         transform.eulerAngles = new Vector3(0f, Random.Range(0, 360), 0f);
-        //sp_timer = 0f;
-        //kb_timer = 0f;
-        //sp_on = true;
-        //kb_on = true;
-        //stack = 0;
-        //text.SetActive(false);
-        //magicResis_timer = 0f;
-        //phyResis_timer = 0f;
-        //resis_timer = 0f;
         cameraT.gameObject.GetComponent<ThirdPersonCamera>().RandomRotate();
     }
 }

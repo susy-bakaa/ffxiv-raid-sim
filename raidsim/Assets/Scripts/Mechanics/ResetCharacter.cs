@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ResetPlayer : MonoBehaviour
+public class ResetCharacter : MonoBehaviour
 {
     public CanvasGroup screenFade;
     public Vector3 location = new Vector3(0f, 1f, 0f);

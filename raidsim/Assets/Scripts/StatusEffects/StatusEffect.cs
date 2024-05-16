@@ -11,6 +11,7 @@ public class StatusEffect : MonoBehaviour
     public StatusEffectData data;
     public float duration;
     public int stacks;
+    public int uniqueTag;
 
     [Header("Events")]
     public UnityEvent<CharacterState> onApplication;
@@ -26,7 +27,7 @@ public class StatusEffect : MonoBehaviour
     private GameObject partyHudElement;
     private TextMeshProUGUI partyHudTimer;
 
-    public void Initialize(Transform hudElementParent, Transform partyHudElementParent)
+    public void Initialize(Transform hudElementParent, Transform partyHudElementParent, int tag = 0)
     {
         onApplication.AddListener(OnApplication);
         onTick.AddListener(OnTick);
@@ -49,6 +50,7 @@ public class StatusEffect : MonoBehaviour
 
         duration = data.length;
         stacks += data.appliedStacks;
+        uniqueTag = tag;
 
         if (stacks > data.maxStacks)
             stacks = data.maxStacks;
@@ -69,8 +71,9 @@ public class StatusEffect : MonoBehaviour
         }
     }
 
-    public void Refresh(bool ignoreStacks = false)
+    public void Refresh(bool ignoreStacks = false, int tag = 0)
     {
+        uniqueTag = tag;
         duration += data.length;
         if (!ignoreStacks)
             stacks += data.appliedStacks;

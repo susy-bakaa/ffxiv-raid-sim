@@ -15,8 +15,8 @@ public class CharacterState : MonoBehaviour
     public string characterName = "Unknown";
     public int health = 16000;
     private int maxHealth;
-    public float damageReduction = 1f;
-    //private float maxDamageReduction = 100f;
+    public float currentDamageReduction = 1f;
+    public Dictionary<string,float> damageReduction = new Dictionary<string, float>();
     public float speed = 6.3f;
     public float defaultSpeed { private set; get; }
     //private float maxSpeed = 15f;
@@ -161,6 +161,9 @@ public class CharacterState : MonoBehaviour
 
     void Update()
     {
+        if (!gameObject.activeSelf)
+            return;
+
         statusEffectUpdateTimer += Time.deltaTime;
 
         if (effects.Count > 0 && effectsArray != null)
@@ -185,10 +188,18 @@ public class CharacterState : MonoBehaviour
                 }
             }
         }
+
+        if (characterNameText != null)
+            characterNameText.text = characterName;
+        if (characterNameTextParty)
+            characterNameTextParty.text = characterName;
     }
 
     public void ModifyHealth(int value, bool kill = false)
     {
+        if (!gameObject.activeSelf)
+            return;
+
         if (health <= 0)
             return;
 
@@ -197,7 +208,7 @@ public class CharacterState : MonoBehaviour
             value = health;
         }
 
-        health += Mathf.RoundToInt(value * damageReduction);
+        health += Mathf.RoundToInt(value * currentDamageReduction);
 
         if (health <= 0)
         {
@@ -239,14 +250,71 @@ public class CharacterState : MonoBehaviour
         }
     }
 
-    public void AddEffect(StatusEffectData data)
+    public void AddDamageReduction(float value, string identifier)
     {
+        if (!damageReduction.ContainsKey(identifier))
+        {
+            damageReduction.Add(identifier, value);
+        }
+        else
+        {
+            return;
+        }
+
+        RecalculateCurrentDamageReduction();
+    }
+
+    public void RemoveDamageReduction(string identifier)
+    {
+        if (damageReduction.ContainsKey(identifier))
+        {
+            damageReduction.Remove(identifier);
+        }
+        else
+        {
+            return;
+        }
+
+        RecalculateCurrentDamageReduction();
+    }
+
+    private void RecalculateCurrentDamageReduction()
+    {
+        float result = 1f;
+
+        List<float> a = new List<float>(damageReduction.Values.ToArray());
+
+        if (damageReduction.Count > 0)
+        {
+            a.Sort();
+            for (int i = 0; i < damageReduction.Count; i++)
+            {
+                result *= a[i];
+            }
+        }
+
+        currentDamageReduction = result;
+    }
+
+    public void AddEffect(StatusEffectData data, int tag = 0)
+    {
+        if (!gameObject.activeSelf)
+            return;
+
         if (dead)
             return;
-        if (effects.ContainsKey(data.statusName))
+
+        string name = data.statusName;
+
+        if (tag > 0)
+        {
+            name = $"{data.statusName}_{tag}";
+        }
+
+        if (effects.ContainsKey(name))
         {
             if (!data.unique)
-                effects[data.statusName].Refresh();
+                effects[name].Refresh();
             return;
         }
         if (effectsArray != null)
@@ -260,13 +328,22 @@ public class CharacterState : MonoBehaviour
             }
         }
         GameObject newStatusEffect = Instantiate(data.statusEffect, statusEffectParent);
-        AddEffect(newStatusEffect.GetComponent<StatusEffect>());
+        AddEffect(newStatusEffect.GetComponent<StatusEffect>(), tag);
     }
 
-    public void AddEffect(string name)
+    public void AddEffect(string name, int tag = 0)
     {
+        if (!gameObject.activeSelf)
+            return;
+
         if (dead)
             return;
+
+        if (tag > 0)
+        {
+            name = $"{name}_{tag}";
+        }
+
         if (effects.ContainsKey(name))
         {
             if (!effects[name].data.unique)
@@ -288,19 +365,30 @@ public class CharacterState : MonoBehaviour
                     }
                 }
                 GameObject newStatusEffect = Instantiate(FightTimeline.Instance.allAvailableStatusEffects[i].statusEffect, statusEffectParent);
-                AddEffect(newStatusEffect.GetComponent<StatusEffect>());
+                AddEffect(newStatusEffect.GetComponent<StatusEffect>(), tag);
             }
         }
     }
 
-    public void AddEffect(StatusEffect effect)
+    public void AddEffect(StatusEffect effect, int tag = 0)
     {
+        if (!gameObject.activeSelf)
+            return;
+
         if (dead)
             return;
-        if (effects.ContainsKey(effect.data.statusName))
+
+        string name = effect.data.statusName;
+
+        if (tag > 0)
+        {
+            name = $"{effect.data.statusName}_{tag}";
+        }
+
+        if (effects.ContainsKey(name))
         {
             if (!effect.data.unique)
-                effects[effect.data.statusName].Refresh();
+                effects[name].Refresh();
             return;
         }
         if (effectsArray != null)
@@ -313,7 +401,8 @@ public class CharacterState : MonoBehaviour
                 }
             }
         }
-        effects.Add(effect.data.statusName, effect);
+        effect.uniqueTag = tag;
+        effects.Add(name, effect);
         effectsArray = effects.Values.ToArray();
         if (effect.data.negative)
             effect.Initialize(statusEffectNegativeIconParent, statusEffectIconParentParty);
@@ -322,18 +411,37 @@ public class CharacterState : MonoBehaviour
         effect.onApplication.Invoke(this);
     }
 
-    public void RemoveEffect(StatusEffectData data, bool expired)
+    public void RemoveEffect(StatusEffectData data, bool expired, int tag = 0)
     {
-        RemoveEffect(data.statusName, expired);
+        RemoveEffect(data.statusName, expired, tag);
     }
 
-    public void RemoveEffect(StatusEffect effect, bool expired)
+    public void RemoveEffect(StatusEffect effect, bool expired, int tag = 0)
     {
-        RemoveEffect(effect.data.statusName, expired);
+        RemoveEffect(effect.data.statusName, expired, tag);
     }
 
-    public void RemoveEffect(string name, bool expired)
+    public void RemoveEffect(string name, bool expired, int tag = 0)
     {
+        if (!gameObject.activeSelf)
+            return;
+
+        if (tag > 0)
+        {
+            name = $"{name}_{tag}";
+        }
+        if (tag < 0)
+        {
+            for (int i = 0; i < (tag * -1); i++)
+            {
+                RemoveEffect(name, expired, i + 1);
+            }
+            return;
+        }
+
+        if (!effects.ContainsKey(name))
+            return;
+
         StatusEffect temp = effects[name];
 
         if (expired)
@@ -347,8 +455,13 @@ public class CharacterState : MonoBehaviour
         temp.Remove();
     }
 
-    public bool HasEffect(string name)
+    public bool HasEffect(string name, int tag = 0)
     {
+        if (tag > 0)
+        {
+            name = $"{name}_{tag}";
+        }
+
         return effects.ContainsKey(name);
     }
 
@@ -359,6 +472,9 @@ public class CharacterState : MonoBehaviour
 
     public void ShowDamagePopupText(int value)
     {
+        if (!gameObject.activeSelf)
+            return;
+
         if (damagePopup == null)
             return;
 
@@ -376,17 +492,21 @@ public class CharacterState : MonoBehaviour
 
     public void UpdateCharacterName()
     {
+        if (!gameObject.activeSelf)
+            return;
+
         if (characterNameTextGroup != null)
         {
             if (!hideNameplate)
             {
-                characterNameTextGroup.alpha = 0f;
+                characterNameTextGroup.alpha = 1f;
             }
             else
             {
-                characterNameTextGroup.alpha = 1f;
+                characterNameTextGroup.alpha = 0f;
             }
         }
+        // No idea why these gotta be reversed lmao
         if (characterNameTextGroupParty != null)
         {
             if (!hidePartyName)

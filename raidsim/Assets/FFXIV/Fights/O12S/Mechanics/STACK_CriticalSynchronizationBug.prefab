@@ -98,13 +98,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 510ab2ae02fd4284c869e6f2013bd0fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  owner: {fileID: 0}
   damage: -40000
+  delay: 0.25
+  failWipes: 0
   cleaves: 1
   shared: 1
   enumeration: 0
+  playersRequired: 0
   players: []
   effects: []
   onHit:
+    m_PersistentCalls:
+      m_Calls: []
+  onFail:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &2655986394669519451
@@ -191,14 +198,22 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 85a5fb47b6fa1534481c4496342adca9, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 3ef1b0413a3617343843b272bf23599b, type: 2}
+      objectReference: {fileID: 2100000, guid: 1745080e81bd9fc428de3cab5c37065c, type: 2}
+    - target: {fileID: -5754084199372789682, guid: 85a5fb47b6fa1534481c4496342adca9, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -1462263290169863825, guid: d14962111b86dc940ac928c5ed23a037, type: 3}
     - target: {fileID: 919132149155446097, guid: 85a5fb47b6fa1534481c4496342adca9, type: 3}
       propertyPath: m_Name
-      value: arena_collision
+      value: aoe_circle_thick
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 85a5fb47b6fa1534481c4496342adca9, type: 3}
       propertyPath: m_Layer
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 85a5fb47b6fa1534481c4496342adca9, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 85a5fb47b6fa1534481c4496342adca9, type: 3}
       propertyPath: m_TagString

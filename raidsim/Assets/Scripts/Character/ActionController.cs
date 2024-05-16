@@ -74,6 +74,9 @@ public class ActionController : MonoBehaviour
 
     void Update()
     {
+        if (!gameObject.activeSelf)
+            return;
+
         if (previousCanDoActions != characterState.canDoActions || previousIsCasting != isCasting)
         {
             previousCanDoActions = characterState.canDoActions;
@@ -97,7 +100,7 @@ public class ActionController : MonoBehaviour
         if (castTime > 0f && !interrupted)
         {
             // Simulate FFXIV slidecasting to an extent (Not perfect)
-            if (!characterState.still && castTime > (lastCastTime / 5f))
+            if ((!characterState.still || characterState.dead) && castTime > (lastCastTime / 5f))
             {
                 Interrupt();
             }
@@ -181,6 +184,12 @@ public class ActionController : MonoBehaviour
 
     public void PerformAction(string name)
     {
+        if (!gameObject.activeSelf)
+            return;
+
+        if (characterState.dead)
+            return;
+
         for (int i = 0; i < actions.Count; i++)
         {
             if (actions[i].data.actionName == name)
@@ -192,6 +201,12 @@ public class ActionController : MonoBehaviour
 
     public void PerformAction(CharacterAction action)
     {
+        if (!gameObject.activeSelf)
+            return;
+
+        if (characterState.dead)
+            return;
+
         if (action == null)
             return;
 
@@ -285,11 +300,20 @@ public class ActionController : MonoBehaviour
 
     public void FailAction(CharacterAction action, string reason)
     {
+        if (!gameObject.activeSelf)
+            return;
+
+        if (characterState.dead)
+            return;
+
         // IDK
     }
 
     private void Interrupt()
     {
+        if (!gameObject.activeSelf)
+            return;
+
         interrupted = true;
         isCasting = false;
         if (interruptText != null)
@@ -327,6 +351,9 @@ public class ActionController : MonoBehaviour
 
     private void ResetCastBar()
     {
+        if (!gameObject.activeSelf)
+            return;
+
         interrupted = false;
         castTime = 0f;
         if (castBar != null)

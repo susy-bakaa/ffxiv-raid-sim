@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using static ActionController;
+using static StatusEffectData;
 
-public class RaidwideDebuffsMechanic : MonoBehaviour
+public class RaidwideDebuffsMechanic : FightMechanic
 {
     public PartyList party;
-    public List<StatusEffectData> effects = new List<StatusEffectData>();
+    public List<StatusEffectInfo> effects = new List<StatusEffectInfo>();
 
-    List<StatusEffectData> statusEffects;
+    List<StatusEffectInfo> statusEffects;
     List<CharacterState> partyMembers;
 
-    public void SpreadDebuffs(ActionInfo action)
+    public override void TriggerMechanic(ActionInfo action)
     {
-        statusEffects = new List<StatusEffectData>(effects); // Copy the effects list
-        partyMembers = new List<CharacterState>(party.members); // Copy the party members list
+        statusEffects = new List<StatusEffectInfo>(effects); // Copy the effects list
+        partyMembers = new List<CharacterState>(party.GetActiveMembers()); // Copy the party members list
         partyMembers.Shuffle();
         statusEffects.Shuffle();
 
@@ -30,7 +31,7 @@ public class RaidwideDebuffsMechanic : MonoBehaviour
                 target = partyMembers[Random.Range(0, partyMembers.Count)];
 
             // Apply the effect to the target
-            target.AddEffect(statusEffects[i]);
+            target.AddEffect(statusEffects[i].data, statusEffects[i].tag);
 
             // Remove the effect and player from the possible options
             partyMembers.Remove(target);
@@ -39,9 +40,9 @@ public class RaidwideDebuffsMechanic : MonoBehaviour
         }
     }
 
-    private CharacterState FindSuitableTarget(StatusEffectData effect, List<CharacterState> candidates)
+    private CharacterState FindSuitableTarget(StatusEffectInfo effect, List<CharacterState> candidates)
     {
-        foreach (CharacterState.Role role in effect.assignedRoles)
+        foreach (CharacterState.Role role in effect.data.assignedRoles)
         {
             // Create a copy of the candidates list
             List<CharacterState> candidatesCopy = new List<CharacterState>(candidates);

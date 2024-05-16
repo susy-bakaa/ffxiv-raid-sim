@@ -9,13 +9,19 @@ public class DefenceStanceBuff : StatusEffect
 
     public override void OnApplication(CharacterState state)
     {
-        state.damageReduction = damageReduction;
+        if (uniqueTag > 0)
+            state.AddDamageReduction(damageReduction, $"{data.statusName}_{uniqueTag}");
+        else
+            state.AddDamageReduction(damageReduction, data.statusName);
         base.OnApplication(state);
     }
 
     public override void OnExpire(CharacterState state)
     {
-        state.damageReduction = 1f;
+        if (uniqueTag > 0)
+            state.RemoveDamageReduction($"{data.statusName}_{uniqueTag}");
+        else
+            state.RemoveDamageReduction(data.statusName);
         base.OnExpire(state);
     }
 }
