@@ -53,7 +53,7 @@ public static class Utilities
             }
         }
 
-        public static FunctionTimer Create(Action action, float timer, string name = null, bool onlyAllowOneInstance = false)
+        public static FunctionTimer Create(Action action, float timer, string name = null, bool useUnscaledTime = false, bool onlyAllowOneInstance = false)
         {
             InitIfNeeded();
 
@@ -70,7 +70,7 @@ public static class Utilities
 
             GameObject gameObject = new GameObject("FunctionTimer", typeof(MonoBehaviourHook));
 
-            FunctionTimer functionTimer = new FunctionTimer(action, timer, gameObject, name);
+            FunctionTimer functionTimer = new FunctionTimer(action, timer, gameObject, name, useUnscaledTime);
 
             gameObject.GetComponent<MonoBehaviourHook>().onUpdate = functionTimer.Update;
 
@@ -104,8 +104,9 @@ public static class Utilities
         private GameObject gameObject;
         private string name;
         private bool isDestroyed;
+        private bool useUnscaledTime;
 
-        private FunctionTimer(Action action, float timer, GameObject gameObject, string name)
+        private FunctionTimer(Action action, float timer, GameObject gameObject, string name, bool useUnscaledTime)
         {
             this.action = action;
             this.timer = timer;
@@ -117,13 +118,17 @@ public static class Utilities
             }
             else
                 isDestroyed = false;
+            this.useUnscaledTime = useUnscaledTime;
         }
 
         public void Update()
         {
             if (!isDestroyed)
             {
-                timer -= Time.unscaledDeltaTime;
+                if (useUnscaledTime)
+                    timer -= Time.unscaledDeltaTime;
+                else
+                    timer -= Time.deltaTime;
                 if (timer <= 0)
                 {
                     action();

@@ -63,6 +63,7 @@ public class CharacterState : MonoBehaviour
     public bool showHealthBar = true;
     public Slider healthBar;
     public TextMeshProUGUI healthBarText;
+    public bool healthBarTextInPercentage = false;
 
     [Header("Party")]
     public bool showPartyCharacterName = true;
@@ -114,7 +115,23 @@ public class CharacterState : MonoBehaviour
         }
         if (healthBarText != null)
         {
-            healthBarText.text = health.ToString();
+            if (healthBarTextInPercentage)
+            {
+                float healthPercentage = ((float)health / (float)maxHealth) * 100f;
+                // Set the health bar text with proper formatting
+                if (Mathf.Approximately(healthPercentage, 100f))  // Use Mathf.Approximately for floating point comparison
+                {
+                    healthBarText.text = "100%";
+                }
+                else
+                {
+                    healthBarText.text = healthPercentage.ToString("F1") + "%";
+                }
+            }
+            else
+            {
+                healthBarText.text = health.ToString();
+            }
         }
         if (healthBarParty != null)
         {
@@ -184,7 +201,7 @@ public class CharacterState : MonoBehaviour
                 effectsArray[i].onUpdate.Invoke(this);
                 if (effectsArray[i].duration <= 0f)
                 {
-                    RemoveEffect(effectsArray[i], true);
+                    RemoveEffect(effectsArray[i], true, effectsArray[i].uniqueTag);
                 }
             }
         }
@@ -205,7 +222,8 @@ public class CharacterState : MonoBehaviour
 
         if (kill)
         {
-            value = health;
+            value = Mathf.RoundToInt(-1 * (float)health);
+            Debug.Log($"hp: {value}");
         }
 
         health += Mathf.RoundToInt(value * currentDamageReduction);
@@ -238,7 +256,24 @@ public class CharacterState : MonoBehaviour
         }
         if (healthBarText != null)
         {
-            healthBarText.text = health.ToString();
+            if (healthBarTextInPercentage)
+            {
+                float healthPercentage = ((float)health / (float)maxHealth) * 100f;
+                //Debug.Log("hp: " + healthPercentage);
+                // Set the health bar text with proper formatting
+                if (Mathf.Approximately(healthPercentage, 100f))  // Use Mathf.Approximately for floating point comparison
+                {
+                    healthBarText.text = "100%";
+                }
+                else
+                {
+                    healthBarText.text = healthPercentage.ToString("F1") + "%";
+                }
+            }
+            else
+            {
+                healthBarText.text = health.ToString();
+            }
         }
         if (healthBarParty != null)
         {
@@ -298,6 +333,9 @@ public class CharacterState : MonoBehaviour
 
     public void AddEffect(StatusEffectData data, int tag = 0)
     {
+        if (data.statusEffect == null)
+            return;
+
         if (!gameObject.activeSelf)
             return;
 

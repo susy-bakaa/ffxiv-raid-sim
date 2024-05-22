@@ -4,14 +4,29 @@ using System.Linq;
 using UnityEngine;
 using static ActionController;
 using static StatusEffectData;
+using static UnityEngine.GraphicsBuffer;
 
 public class RaidwideDebuffsMechanic : FightMechanic
 {
     public PartyList party;
     public List<StatusEffectInfo> effects = new List<StatusEffectInfo>();
+    public StatusEffectInfo playerEffect;
 
     List<StatusEffectInfo> statusEffects;
     List<CharacterState> partyMembers;
+
+    CharacterState player;
+
+    void Awake()
+    {
+        for (int i = 0; i < party.members.Count; i++)
+        {
+            if (party.members[i].characterName.ToLower().Contains("player"))
+            {
+                player = party.members[i];
+            }
+        }
+    }
 
     public override void TriggerMechanic(ActionInfo action)
     {
@@ -19,6 +34,16 @@ public class RaidwideDebuffsMechanic : FightMechanic
         partyMembers = new List<CharacterState>(party.GetActiveMembers()); // Copy the party members list
         partyMembers.Shuffle();
         statusEffects.Shuffle();
+
+        if (playerEffect.data != null && player != null)
+        {
+            if (statusEffects.Contains(playerEffect))
+            {
+                statusEffects.Remove(playerEffect);
+                partyMembers.Remove(player);
+                player.AddEffect(playerEffect.data, playerEffect.tag);
+            }
+        }
 
         // Iterate through each status effect
         for (int i = 0; i < statusEffects.Count; i++)

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class FightTimeline : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class FightTimeline : MonoBehaviour
     [Header("Current")]
     public string timelineName = "Unnamed fight timeline";
     public bool playing = false;
+    public bool paused = false;
+    public UnityEvent<bool> onPausedChanged;
     public List<BotTimeline> botTimelines = new List<BotTimeline>();
     public List<TimelineEvent> events = new List<TimelineEvent>();
 
@@ -25,6 +28,18 @@ public class FightTimeline : MonoBehaviour
 
         if (party == null)
             party = FindObjectOfType<PartyList>();
+    }
+
+    void Update()
+    {
+        if (paused)
+        {
+            Time.timeScale = 0f;
+        }
+        else
+        {
+            Time.timeScale = 1f;
+        }
     }
 
     public void StartTimeline()
@@ -111,6 +126,17 @@ public class FightTimeline : MonoBehaviour
         {
             party.members[i].ModifyHealth(0, true);
         }
+    }
+
+    public void TogglePause()
+    {
+        TogglePause(!paused);
+    }
+
+    public void TogglePause(bool state)
+    {
+        onPausedChanged.Invoke(state);
+        paused = state;
     }
 
     [System.Serializable]

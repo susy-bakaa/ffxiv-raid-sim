@@ -19,6 +19,14 @@ public class ThirdPersonCamera : MonoBehaviour
 
     private float yaw;
     private float pitch;
+    private float scrollInput;
+
+    public bool enableZooming = true;
+    public bool enableRotation = true;
+    public bool enableMovement = true;
+
+    private Vector2 cursorPosition;
+    private bool cursorPositionSet;
 
     void Awake()
     {
@@ -30,38 +38,68 @@ public class ThirdPersonCamera : MonoBehaviour
     {
         if (!freecam.active)
         {
-            HandleCameraRotation();
-            HandleCameraZoom();
-            UpdateCameraPosition();
+            if (enableRotation)
+                HandleCameraRotation();
+            if (enableZooming)
+                HandleCameraZoom();
+            if (enableMovement)
+                UpdateCameraPosition();
         }
     }
 
     void HandleCameraRotation()
     {
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(0))
         {
+#if PLATFORM_STANDALONE_WIN
+            if (!cursorPositionSet)
+            {
+                cursorPosition = CursorControl.GetPosition();
+                cursorPositionSet = true;
+            }
+#endif
+#if UNITY_EDITOR_WIN
+            if (!cursorPositionSet)
+            {
+                cursorPosition = CursorControl.GetPosition();
+                cursorPositionSet = true;
+            }
+#endif
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
-        if (Input.GetMouseButtonUp(1))
+        if ((Input.GetMouseButtonUp(1) && !Input.GetMouseButton(0)) || (Input.GetMouseButtonUp(0) && !Input.GetMouseButton(1)))
         {
             Cursor.lockState = CursorLockMode.None;
+#if PLATFORM_STANDALONE_WIN
+            if (cursorPositionSet)
+            {
+                CursorControl.SetPosition(cursorPosition);
+                cursorPositionSet = false;
+            }
+#endif
+#if UNITY_EDITOR_WIN
+            if (cursorPositionSet)
+            {
+                CursorControl.SetPosition(cursorPosition);
+                cursorPositionSet = false;
+            }
+#endif
             Cursor.visible = true;
         }
-
-        if (Input.GetMouseButton(1))
+        if (Input.GetMouseButton(1) || Input.GetMouseButton(0))
         {
             yaw += Input.GetAxis("Mouse X") * mouseSensitivity;
             pitch -= Input.GetAxis("Mouse Y") * mouseSensitivity;
             pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
-            currentRotation = Vector3.SmoothDamp(currentRotation, new Vector3(pitch, yaw), ref rotationSmoothVelocity, rotationSmoothTime);
+            currentRotation = Vector3.SmoothDamp(currentRotation, new Vector3(pitch, yaw), ref rotationSmoothVelocity, rotationSmoothTime, float.PositiveInfinity, Time.unscaledDeltaTime);
             transform.eulerAngles = currentRotation;
         }
     }
 
     void HandleCameraZoom()
     {
-        float scrollInput = Input.GetAxis("Mouse ScrollWheel");
+        scrollInput = Input.GetAxis("Mouse ScrollWheel");
         dstFromTarget -= scrollInput * mouseSensitivity * 5f; // Adjust the zoom sensitivity as needed
         dstFromTarget = Mathf.Clamp(dstFromTarget, dstMinMax.x, dstMinMax.y);
     }
@@ -73,6 +111,7 @@ public class ThirdPersonCamera : MonoBehaviour
 
     public void RandomRotate()
     {
-        yaw = UnityEngine.Random.Range(0, 360);
+        // Fix some slight bugginess
+        //yaw = UnityEngine.Random.Range(0, 360);
     }
 }

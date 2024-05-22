@@ -5,11 +5,18 @@ using NaughtyAttributes;
 #endif
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class HudElement : MonoBehaviour
+public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
+    public UserInput input;
+
     public int priority = 1;
+    public bool blocksAllInput = false;
+    public bool blocksPosInput = false;
+    public bool blocksRotInput = false;
+    public bool blocksScrInput = false;
 
     public List<Image> images = new List<Image>();
     public List<TextMeshProUGUI> texts = new List<TextMeshProUGUI>();
@@ -67,5 +74,35 @@ public class HudElement : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (input == null)
+            return;
+
+        if (blocksAllInput)
+            input.inputEnabled = false;
+        if (blocksPosInput)
+            input.movementInputEnabled = false;
+        if (blocksRotInput)
+            input.rotationInputEnabled = false;
+        if (blocksScrInput)
+            input.zoomInputEnabled = false;
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (input == null)
+            return;
+
+        if (blocksAllInput)
+            input.inputEnabled = true;
+        if (blocksPosInput)
+            input.movementInputEnabled = true;
+        if (blocksRotInput)
+            input.rotationInputEnabled = true;
+        if (blocksScrInput)
+            input.zoomInputEnabled = true;
     }
 }

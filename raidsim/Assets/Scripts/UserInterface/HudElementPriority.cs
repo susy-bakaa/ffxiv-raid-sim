@@ -13,7 +13,7 @@ public class HudElementPriority : MonoBehaviour
         if (Utilities.RateLimiter(60))
         {
             hudElements.Clear();
-            hudElements.AddRange(GetComponentsInChildren<HudElement>());
+            hudElements.AddRange(GetComponentsInChildren<HudElement>(true));
 
             // Sort hudElements based on priority
             var sortedElements = hudElements.OrderBy(element => element.priority).ToList();

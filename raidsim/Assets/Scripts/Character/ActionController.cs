@@ -77,6 +77,9 @@ public class ActionController : MonoBehaviour
         if (!gameObject.activeSelf)
             return;
 
+        if (Time.timeScale <= 0f)
+            return;
+
         if (previousCanDoActions != characterState.canDoActions || previousIsCasting != isCasting)
         {
             previousCanDoActions = characterState.canDoActions;
@@ -190,6 +193,9 @@ public class ActionController : MonoBehaviour
         if (characterState.dead)
             return;
 
+        if (Time.timeScale <= 0f)
+            return;
+
         for (int i = 0; i < actions.Count; i++)
         {
             if (actions[i].data.actionName == name)
@@ -205,6 +211,9 @@ public class ActionController : MonoBehaviour
             return;
 
         if (characterState.dead)
+            return;
+
+        if (Time.timeScale <= 0f)
             return;
 
         if (action == null)
@@ -303,6 +312,9 @@ public class ActionController : MonoBehaviour
         if (!gameObject.activeSelf)
             return;
 
+        if (Time.timeScale <= 0f)
+            return;
+
         if (characterState.dead)
             return;
 
@@ -312,6 +324,9 @@ public class ActionController : MonoBehaviour
     private void Interrupt()
     {
         if (!gameObject.activeSelf)
+            return;
+
+        if (Time.timeScale <= 0f)
             return;
 
         interrupted = true;
@@ -352,6 +367,9 @@ public class ActionController : MonoBehaviour
     private void ResetCastBar()
     {
         if (!gameObject.activeSelf)
+            return;
+
+        if (Time.timeScale <= 0f)
             return;
 
         interrupted = false;

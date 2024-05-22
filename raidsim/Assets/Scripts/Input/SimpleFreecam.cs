@@ -13,36 +13,74 @@ public class SimpleFreecam : MonoBehaviour
     private float currentMovementSpeed;
     private float defaultMovementSpeed;
 
+    public bool enableSpeed = true;
+    public bool enableRotation = true;
+    public bool enableMovement = true;
+
+    private Vector2 cursorPosition;
+    private bool cursorPositionSet;
+
     void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked; // Lock the cursor at start
-        Cursor.visible = false; // Hide the cursor at start
         currentMovementSpeed = normalMovementSpeed; // Initialize the current movement speed
         defaultMovementSpeed = normalMovementSpeed; // Set the default movement speed
     }
 
     void Update()
     {
+        // Toggle active state
         if (Input.GetKeyDown(KeyCode.Tilde) || Input.GetKeyDown(KeyCode.BackQuote) || Input.GetKeyDown(KeyCode.ScrollLock))
         {
             active = !active;
         }
 
+        // If the camera is not active, do nothing
         if (!active)
         {
             return;
         }
 
         // Handle cursor visibility and locking with mouse buttons
-        if (Input.GetMouseButtonDown(1))
+        if (enableRotation)
         {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-        }
-        if (Input.GetMouseButtonUp(1))
-        {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            if (Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(0))
+            {
+#if PLATFORM_STANDALONE_WIN
+                if (!cursorPositionSet)
+                {
+                    cursorPosition = CursorControl.GetPosition();
+                    cursorPositionSet = true;
+                }
+#endif
+#if UNITY_EDITOR_WIN
+                if (!cursorPositionSet)
+                {
+                    cursorPosition = CursorControl.GetPosition();
+                    cursorPositionSet = true;
+                }
+#endif
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
+            if ((Input.GetMouseButtonUp(1) && !Input.GetMouseButton(0)) || (Input.GetMouseButtonUp(0) && !Input.GetMouseButton(1)))
+            {
+                Cursor.lockState = CursorLockMode.None;
+#if PLATFORM_STANDALONE_WIN
+                if (cursorPositionSet)
+                {
+                    CursorControl.SetPosition(cursorPosition);
+                    cursorPositionSet = false;
+                }
+#endif
+#if UNITY_EDITOR_WIN
+                if (cursorPositionSet)
+                {
+                    CursorControl.SetPosition(cursorPosition);
+                    cursorPositionSet = false;
+                }
+#endif
+                Cursor.visible = true;
+            }
         }
 
         // Reset movement speed to default when Control key is pressed
@@ -52,26 +90,40 @@ public class SimpleFreecam : MonoBehaviour
         }
 
         // Adjust movement speed with mouse wheel
-        float scrollInput = Input.GetAxis("Mouse ScrollWheel");
-        currentMovementSpeed += scrollInput * speedAdjustmentStep;
-        currentMovementSpeed = Mathf.Clamp(currentMovementSpeed, minMovementSpeed, maxMovementSpeed);
+        if (enableSpeed)
+        {
+            float scrollInput = Input.GetAxis("Mouse ScrollWheel");
+            currentMovementSpeed += scrollInput * speedAdjustmentStep;
+            currentMovementSpeed = Mathf.Clamp(currentMovementSpeed, minMovementSpeed, maxMovementSpeed);
+        }
 
         // Camera movement
-        float horizontalMovement = Input.GetAxis("Horizontal");
-        float verticalMovement = Input.GetAxis("Vertical");
-        float flyMovement = Input.GetAxis("Fly");
+        if (enableMovement)
+        {
+            float horizontalMovement = Input.GetAxisRaw("Horizontal");
+            float verticalMovement = Input.GetAxisRaw("Vertical");
+            float flyMovement = Input.GetAxisRaw("Fly"); // Ensure "Fly" axis is defined in Input Manager
 
-        Vector3 movement = new Vector3(horizontalMovement, flyMovement, verticalMovement) * currentMovementSpeed * Time.deltaTime;
-        transform.Translate(movement);
+            //Debug.Log($"Movement Input: Horizontal {horizontalMovement}, Vertical {verticalMovement}, Fly {flyMovement}");
+
+            Vector3 movement = new Vector3(horizontalMovement, flyMovement, verticalMovement) * currentMovementSpeed * Time.unscaledDeltaTime;
+
+            //Debug.Log($"Vector3 movement: {movement}");
+
+            transform.Translate(movement);
+        }
 
         // Camera rotation
-        if (Input.GetMouseButton(1)) // Rotate camera only when either mouse button is held down
+        if (enableRotation)
         {
-            float mouseX = Input.GetAxis("Mouse X");
-            float mouseY = Input.GetAxis("Mouse Y");
+            if (Input.GetMouseButton(1) || Input.GetMouseButton(0)) // Rotate camera only when either mouse button is held down
+            {
+                float mouseX = Input.GetAxis("Mouse X");
+                float mouseY = Input.GetAxis("Mouse Y");
 
-            Vector3 rotation = new Vector3(-mouseY, mouseX, 0f) * rotationSpeed;
-            transform.eulerAngles += rotation;
+                Vector3 rotation = new Vector3(-mouseY, mouseX, 0f) * rotationSpeed;
+                transform.eulerAngles += rotation;
+            }
         }
     }
 }

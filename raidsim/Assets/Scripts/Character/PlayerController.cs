@@ -2,12 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
     CharacterState state;
-    ActionController controller;
-    SimpleFreecam freecam;
 
     public float turnSmoothTime;
     private float turnSmoothVelocity;
@@ -22,6 +21,7 @@ public class PlayerController : MonoBehaviour
 
     public GameObject bubbleShield;
     public BotNode clockSpot;
+    public bool enableInput = true;
 
     void Awake()
     {
@@ -36,33 +36,13 @@ public class PlayerController : MonoBehaviour
                 Debug.LogError($"CharacterState script not found for PlayerController ({this})!");
             }
         }
-        if (controller == null)
-        {
-            if (TryGetComponent(out ActionController controller))
-            {
-                this.controller = controller;
-            }
-            else
-            {
-                Debug.LogError($"ActionController script not found for PlayerController ({this})!");
-            }
-        }
 
-        if (KeyBind.Keys == null)
-        {
-            KeyBind.Keys = new Dictionary<string, KeyBind>
-            {
-                { "SprintKey", new KeyBind(KeyCode.Alpha1, false, false, false) },
-                { "SwiftcastKey", new KeyBind(KeyCode.Alpha2, false, false, false) },
-                { "SurecastKey", new KeyBind(KeyCode.Alpha3, false, false, false) },
-                { "DiamondbackKey", new KeyBind(KeyCode.Alpha4, false, false, false) },
-                { "MightyguardKey", new KeyBind(KeyCode.Alpha5, false, false, false) },
-                { "WhiteWindKey", new KeyBind(KeyCode.Alpha6, false, false, false) }
-            };
-        }
-
-        freecam = Camera.main.GetComponent<SimpleFreecam>();
         animator = GetComponent<Animator>();
+    }
+
+    void OnEnable()
+    {
+        Init();
     }
 
     /*void Start()
@@ -79,21 +59,19 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F1))
+        if (Time.timeScale > 0f)
         {
-            state.ModifyHealth(-1000);
-        }
+            animator.SetBool("Dead", state.dead);
+            animator.SetBool("Diamondback", state.HasEffect("Diamondback"));
 
-        animator.SetBool("Dead", state.dead);
-        animator.SetBool("Diamondback", state.HasEffect("Diamondback"));
-
-        if (currentSpeed > 0)
-        {
-            state.still = false;
-        }
-        else
-        {
-            state.still = true;
+            if (currentSpeed > 0)
+            {
+                state.still = false;
+            }
+            else
+            {
+                state.still = true;
+            }
         }
 
         tm += Time.deltaTime;
@@ -101,10 +79,16 @@ public class PlayerController : MonoBehaviour
         {
             state.uncontrollable = false;
         }
-        if (!state.uncontrollable && !state.dead && !state.bound && !freecam.active)
+        if (!state.uncontrollable && !state.dead && !state.bound && enableInput)
         {
             Vector2 vector = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
             Vector2 normalized = vector.normalized;
+
+            if (Time.timeScale <= 0f)
+            {
+                normalized = Vector2.zero;
+            }
+
             if (normalized != Vector2.zero)
             {
                 float d = Mathf.Atan2(normalized.x, normalized.y) * 57.29578f + cameraT.eulerAngles.y;
@@ -122,42 +106,17 @@ public class PlayerController : MonoBehaviour
                 transform.Translate(transform.forward * currentSpeed * Time.deltaTime, Space.World);
             }
             float value = (state.HasEffect("Sprint") ? 1f : 0.5f) * normalized.magnitude;
+
+            if (Time.timeScale <= 0f)
+            {
+                value = 0f;
+            }
+
             animator.SetFloat("Speed", value);
         }
-        else if (!state.dead && !state.bound && !freecam.active)
+        else if (!state.dead && !state.bound && enableInput)
         {
             transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, release);
-        }
-
-        if (BindedKey(KeyBind.Keys["SurecastKey"]))
-        {
-            controller.PerformAction("Surecast");
-            //state.AddEffect("Surecast");
-        }
-        if (BindedKey(KeyBind.Keys["SprintKey"]))
-        {
-            controller.PerformAction("Sprint");
-            //state.AddEffect("Sprint");
-        }
-        if (BindedKey(KeyBind.Keys["SwiftcastKey"]))
-        {
-            controller.PerformAction("Swiftcast");
-            //state.AddEffect("Sprint");
-        }
-        if (BindedKey(KeyBind.Keys["DiamondbackKey"]))
-        {
-            controller.PerformAction("Diamondback");
-            //state.AddEffect("Diamondback");
-        }
-        if (BindedKey(KeyBind.Keys["MightyguardKey"]))
-        {
-            controller.PerformAction("Mightyguard");
-            //state.AddEffect("Diamondback");
-        }
-        if (BindedKey(KeyBind.Keys["WhiteWindKey"]))
-        {
-            controller.PerformAction("WhiteWind");
-            //state.AddEffect("Diamondback");
         }
     }
 
@@ -200,11 +159,6 @@ public class PlayerController : MonoBehaviour
             text.SetActive(true);
         }
     }*/
-
-    public bool BindedKey(KeyBind keyBind)
-    {
-        return (keyBind.keyCode != KeyCode.None && (Input.GetKeyDown(keyBind.keyCode) & Input.GetKey(KeyCode.LeftShift) == keyBind.shift & Input.GetKey(KeyCode.LeftAlt) == keyBind.alt & Input.GetKey(KeyCode.LeftControl) == keyBind.control)) || (keyBind.mouseButton != -1 && (Input.GetMouseButton(keyBind.mouseButton) & Input.GetKey(KeyCode.LeftShift) == keyBind.shift & Input.GetKey(KeyCode.LeftAlt) == keyBind.alt & Input.GetKey(KeyCode.LeftControl) == keyBind.control));
-    }
 
     public void Knockback(Vector3 tp, float duration)
     {

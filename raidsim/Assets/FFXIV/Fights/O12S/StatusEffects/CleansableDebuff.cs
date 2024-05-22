@@ -12,6 +12,7 @@ public class CleansableDebuff : StatusEffect
 
     public override void OnUpdate(CharacterState state)
     {
+        uniqueTag = tags;
         for (int i = 0; i < cleanedBy.Length; i++)
         {
             if (state.HasEffect(cleanedBy[i].statusName))

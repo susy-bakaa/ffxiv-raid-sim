@@ -23,7 +23,12 @@ public class AIController : MonoBehaviour
         botTimeline.bot = this;
     }
 
-    private void Update()
+    void OnEnable()
+    {
+        Init();
+    }
+
+    void Update()
     {
         animator.SetBool("Dead", state.dead);
         animator.SetBool("Diamondback", state.HasEffect("Diamondback"));
@@ -89,7 +94,8 @@ public class AIController : MonoBehaviour
 
     public void Init()
     {
-        transform.position = new Vector3(Random.value * 3f - 1.5f, 0f, Random.value * 3f - 1.5f);
-        transform.eulerAngles = new Vector3(0f, 0f, 0f);
+        //transform.position = new Vector3(Random.value * 3f - 1.5f, 0f, Random.value * 3f - 1.5f);
+        transform.position = new Vector3(Random.Range(-1.5f, 1.5f), 1.1f, Random.Range(-1.5f, 1.5f));
+        transform.eulerAngles = new Vector3(0f, Random.Range(-360f, 360f), 0f);
     }
 }

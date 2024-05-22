@@ -17,6 +17,25 @@ public class FadeOnStart : MonoBehaviour
 
     void Start()
     {
-        Utilities.FunctionTimer.Create(() => group.LeanAlpha(0f, duration), delay);
+        if (delay > 0f)
+        {
+            Utilities.FunctionTimer.Create(() => group.LeanAlpha(0f, duration), delay);
+        }
+        else
+        {
+            group.LeanAlpha(0f, duration);
+        }
+    }
+
+    public void FadeToBlack(float delay)
+    {
+        if (delay > 0f)
+        {
+            Utilities.FunctionTimer.Create(() => group.LeanAlpha(1f, duration), delay);
+        }
+        else
+        {
+            group.LeanAlpha(1f, duration);
+        }
     }
 }
