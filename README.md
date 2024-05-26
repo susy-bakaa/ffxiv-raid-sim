@@ -19,6 +19,9 @@ A singleplayer raid and fight mechanic simulator with bots, made in the Unity ga
 - Alexander: Midas
 	- Alexander - The Burden of the Son (Savage)
 		- Gavel (BLU)
+- Alexander: The Creator
+	- Alexander - The Soul of the Creator (Savage)
+		- Temporal Stasis (BLU)
 - The Epic of Alexander (Ultimate)
 	- Phase 4
 		- The Final Word

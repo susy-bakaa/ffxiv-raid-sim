@@ -16,7 +16,9 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public CharacterActionData data;
     public StatusEffectData instantUnderEffect;
     private float timer;
+    private float aTimer;
     public bool isAvailable { private set; get; }
+    public bool isAnimationLocked { private set; get; }
     public bool isDisabled;
 
     [Header("Events")]
@@ -51,6 +53,16 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     void Update()
     {
+        if (aTimer > 0f)
+        {
+            aTimer -= Time.unscaledDeltaTime;
+            isAnimationLocked = true;
+        }
+        else
+        {
+            aTimer = 0f;
+            isAnimationLocked = false;
+        }
         if (timer > 0f)
         {
             timer -= Time.deltaTime;
@@ -141,10 +153,22 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         timer = data.recast;
     }
 
+    public void ActivateAnimationLock()
+    {
+        isAnimationLocked = true;
+        aTimer = data.animationLock;
+    }
+
     public void ResetCooldown()
     {
         isAvailable = true;
         timer = 0f;
+    }
+
+    public void ResetAnimationLock()
+    {
+        isAnimationLocked = false;
+        aTimer = 0f;
     }
 
     public void OnPointerEnter(PointerEventData eventData)

@@ -13,8 +13,13 @@ MonoBehaviour:
   m_Name: LatentDefect
   m_EditorClassIdentifier: 
   statusName: LatentDefect
+  statusDesc: Affected by a hidden error that will cause damage when the effect ends.
+    Effect canceled upon being hit by a certain action.
   negative: 1
   unique: 1
+  infinite: 0
+  toggle: 0
+  rollsCooldown: 1
   length: 10
   maxLength: 10
   appliedStacks: 1
@@ -22,3 +27,4 @@ MonoBehaviour:
   statusEffect: {fileID: 2193113438782787470, guid: 2f3b34b274855aa47864e513957c1fc5, type: 3}
   hudElement: {fileID: 1873266025266142675, guid: 916d546590747504496399d881214e98, type: 3}
   incompatableStatusEffects: []
+  assignedRoles: 

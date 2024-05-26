@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public static class Utilities
@@ -253,6 +254,22 @@ public static class Utilities
         {
             arr[i] = value;
         }
+    }
+
+    public static string InsertSpaceBeforeCapitals(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+        {
+            return input;
+        }
+
+        // Regular expression pattern to match capital letters not at the start of the string
+        string pattern = "(?<!^)([A-Z])";
+
+        // Insert a space before each match
+        string result = Regex.Replace(input, pattern, " $1");
+
+        return result;
     }
 
     public static bool IsReversePitch(this AudioSource source)

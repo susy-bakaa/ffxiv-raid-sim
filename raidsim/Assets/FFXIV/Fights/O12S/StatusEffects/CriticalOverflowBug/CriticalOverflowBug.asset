@@ -13,8 +13,13 @@ MonoBehaviour:
   m_Name: CriticalOverflowBug
   m_EditorClassIdentifier: 
   statusName: CriticalOverflowBug
+  statusDesc: Affected by a critical error. Data corruption will cause damage and
+    spread when effect ends.
   negative: 1
   unique: 1
+  infinite: 0
+  toggle: 0
+  rollsCooldown: 1
   length: 8
   maxLength: 8
   appliedStacks: 1
@@ -23,3 +28,4 @@ MonoBehaviour:
   hudElement: {fileID: 2782830212546906010, guid: ea61c5a0e3b4637499bf28e95adc6b86, type: 3}
   incompatableStatusEffects:
   - {fileID: 11400000, guid: 906cc8cd96aede04a9bd943056b052be, type: 2}
+  assignedRoles: 

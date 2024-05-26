@@ -150,6 +150,7 @@ public class ActionController : MonoBehaviour
             {
                 if (castBar != null && castBarGroup.alpha == 1f)
                 {
+                    castBarGroup.alpha = 0.99f;
                     Utilities.FunctionTimer.Create(() => castBarGroup.LeanAlpha(0f, 0.5f), 2f, $"{this}_castBar_fade_out_if_interrupted", true);
                 }
                 if (castBarParty != null && castBarGroupParty.alpha == 1f)
@@ -163,6 +164,7 @@ public class ActionController : MonoBehaviour
             {
                 if (castBar != null && castBarGroup.alpha == 1f)
                 {
+                    castBarGroup.alpha = 0.99f;
                     castBarGroup.LeanAlpha(0f, 0.5f);
                 }
                 if (castBarParty != null && castBarGroupParty.alpha == 1f)
@@ -228,13 +230,19 @@ public class ActionController : MonoBehaviour
         if (castBarElement != null)
             castBarElement.ChangeColors(false);
 
-        if (action.isAvailable && !action.isDisabled)
+        if (action.isAvailable && !action.isDisabled && !action.isAnimationLocked)
         {
             if (action.data.cast <= 0f || instantCast || (action.instantUnderEffect != null && characterState.HasEffect(action.instantUnderEffect.statusName)))
             {
                 ActionInfo newActionInfo = new ActionInfo(action, characterState, currentTarget);
                 action.ExecuteAction(newActionInfo);
-                action.ActivateCooldown();
+
+                action.ActivateAnimationLock();
+                if (action.instantUnderEffect == null)
+                    action.ActivateCooldown();
+                else if (action.instantUnderEffect.rollsCooldown)
+                    action.ActivateCooldown();
+
                 onCast.Invoke(new CastInfo(newActionInfo, instantCast, characterState.GetEffects()));
                 if (animator != null)
                 {
@@ -256,7 +264,13 @@ public class ActionController : MonoBehaviour
                 lastAction = action;
                 castTime = action.data.cast;
                 lastCastTime = castTime;
-                action.ActivateCooldown();
+
+                action.ActivateAnimationLock();
+                if (action.instantUnderEffect == null)
+                    action.ActivateCooldown();
+                else if (action.instantUnderEffect.rollsCooldown)
+                    action.ActivateCooldown();
+
                 ActionInfo newActionInfo = new ActionInfo(action, characterState, currentTarget);
                 StartCoroutine(Cast(castTime, () => { action.ExecuteAction(newActionInfo); }));
                 onCast.Invoke(new CastInfo(newActionInfo, instantCast, characterState.GetEffects()));
@@ -272,7 +286,7 @@ public class ActionController : MonoBehaviour
                 }
                 if (castNameText != null)
                 {
-                    castNameText.text = action.data.actionName;
+                    castNameText.text = Utilities.InsertSpaceBeforeCapitals(action.data.actionName);
                 }
                 if (castBarParty != null)
                 {
@@ -281,7 +295,7 @@ public class ActionController : MonoBehaviour
                 }
                 if (castNameTextParty != null)
                 {
-                    castNameTextParty.text = action.data.actionName;
+                    castNameTextParty.text = Utilities.InsertSpaceBeforeCapitals(action.data.actionName);
                 }
                 if (interruptText != null)
                 {
@@ -293,13 +307,17 @@ public class ActionController : MonoBehaviour
                 }
             }
         }
-        else if (characterState.canDoActions && !action.isDisabled)
+        else if (characterState.canDoActions && !action.isDisabled && !action.isAnimationLocked)
         {
             FailAction(action, "Action not ready yet.");
         }
-        else if (characterState.canDoActions && action.isDisabled)
+        else if (characterState.canDoActions && action.isDisabled && !action.isAnimationLocked)
         {
             FailAction(action, "Action not available right now.");
+        }
+        else if (characterState.canDoActions && action.isAnimationLocked)
+        {
+            FailAction(action, "Action not finished and available yet.");
         }
         else
         {
@@ -337,6 +355,7 @@ public class ActionController : MonoBehaviour
         }
         if (lastAction != null)
         {
+            lastAction.ResetAnimationLock();
             lastAction.ResetCooldown();
             lastAction = null;
         }

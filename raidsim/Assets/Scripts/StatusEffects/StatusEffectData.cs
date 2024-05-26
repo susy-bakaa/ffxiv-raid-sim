@@ -7,10 +7,12 @@ public class StatusEffectData : ScriptableObject
 {
     [Header("Info")]
     public string statusName = "Unnamed Status Effect";
+    public string statusDesc = "Who knows what this effect might do?";
     public bool negative = true;
     public bool unique = false;
     public bool infinite = false;
     public bool toggle = false;
+    public bool rollsCooldown = true;
     public float length = 10f;
     public float maxLength = 10f;
     public int appliedStacks = 1;
