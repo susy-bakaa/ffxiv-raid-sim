@@ -91,6 +91,11 @@ public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             input.zoomInputEnabled = false;
     }
 
+    public void OnPointerExit()
+    {
+        OnPointerExit(null);
+    }
+
     public void OnPointerExit(PointerEventData eventData)
     {
         if (input == null)

@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour
     public GameObject bubbleShield;
     public BotNode clockSpot;
     public bool enableInput = true;
+    public bool legacyMovement = true;
 
     void Awake()
     {

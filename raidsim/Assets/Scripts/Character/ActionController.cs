@@ -102,8 +102,8 @@ public class ActionController : MonoBehaviour
 
         if (castTime > 0f && !interrupted)
         {
-            // Simulate FFXIV slidecasting to an extent (Not perfect)
-            if ((!characterState.still || characterState.dead) && castTime > (lastCastTime / 5f))
+            // Simulate FFXIV slidecasting, which is 500ms
+            if ((!characterState.still || characterState.dead) && castTime > 0.5f)
             {
                 Interrupt();
             }

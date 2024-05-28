@@ -11,6 +11,8 @@ public class RaidwideDebuffsMechanic : FightMechanic
     public PartyList party;
     public List<StatusEffectInfo> effects = new List<StatusEffectInfo>();
     public StatusEffectInfo playerEffect;
+    public bool ignoreRoles = true;
+    public bool cleansEffects = false;
 
     List<StatusEffectInfo> statusEffects;
     List<CharacterState> partyMembers;
@@ -48,18 +50,33 @@ public class RaidwideDebuffsMechanic : FightMechanic
         // Iterate through each status effect
         for (int i = 0; i < statusEffects.Count; i++)
         {
-            // Find a suitable party member for the effect
-            CharacterState target = FindSuitableTarget(statusEffects[i], partyMembers);
+            // Does this clean the specified status effects or inflict them?
+            if (!cleansEffects)
+            {
+                // Find a suitable party member for the effect
+                CharacterState target = FindSuitableTarget(statusEffects[i], partyMembers);
 
-            // If no suitable target found, apply to a random member
-            if (target == null)
-                target = partyMembers[Random.Range(0, partyMembers.Count)];
+                // If no suitable target found, apply to a random member
+                if (target == null)
+                    target = partyMembers[Random.Range(0, partyMembers.Count)];
 
-            // Apply the effect to the target
-            target.AddEffect(statusEffects[i].data, statusEffects[i].tag);
+                // Apply the effect to the target
+                target.AddEffect(statusEffects[i].data, statusEffects[i].tag);
 
-            // Remove the effect and player from the possible options
-            partyMembers.Remove(target);
+                // Remove the effect and player from the possible options
+                partyMembers.Remove(target);
+            }
+            else
+            {
+                // Loop through each member and remove this status effect from them if they have it.
+                for (int m = 0; m < partyMembers.Count; m++)
+                {
+                    if (partyMembers[m].HasEffect(statusEffects[i].data.statusName, statusEffects[i].tag))
+                    {
+                        partyMembers[m].RemoveEffect(statusEffects[i].data, false, statusEffects[i].tag);
+                    }
+                }
+            }
             statusEffects.Remove(statusEffects[i]);
             i--;
         }
