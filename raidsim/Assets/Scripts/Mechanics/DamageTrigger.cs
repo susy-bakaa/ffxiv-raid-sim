@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Playables;
+using static GlobalStructs;
 
 public class DamageTrigger : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class DamageTrigger : MonoBehaviour
     public string damageName = "Unnamed Damage";
     public CharacterState owner;
     public int damage = -1000;
+    public Damage m_damage;
     public DamageApplicationType applicationType = DamageApplicationType.normal;
     public float delay = 0.25f;
     public bool failWipes = false;
