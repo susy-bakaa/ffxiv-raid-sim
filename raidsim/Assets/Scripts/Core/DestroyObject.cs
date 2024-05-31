@@ -8,6 +8,14 @@ public class DestroyObject : MonoBehaviour
 
     void Update()
     {
-        Destroy(gameObject, lifetime);
+        if (lifetime > 0f)
+        {
+            Destroy(gameObject, lifetime);
+        }
+    }
+
+    public void TriggerDestruction()
+    {
+        Destroy(gameObject, 0.1f);
     }
 }

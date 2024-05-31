@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using static UnityEngine.Rendering.DebugUI;
 
 public class CharacterState : MonoBehaviour
 {
@@ -210,6 +211,31 @@ public class CharacterState : MonoBehaviour
             characterNameText.text = characterName;
         if (characterNameTextParty)
             characterNameTextParty.text = characterName;
+    }
+
+    public void SetHealth(int value, bool kill = false)
+    {
+        if (kill)
+        {
+            ModifyHealth(0, kill);
+        }
+        else
+        {
+            ModifyHealth(-1 * (health - value), kill);
+        }
+    }
+
+    public void RemoveHealth(float percentage, bool fromMax, bool kill = false)
+    {
+        if (kill)
+        {
+            ModifyHealth(0, kill);
+        }
+        else
+        {
+            int damage = fromMax ? Mathf.RoundToInt((maxHealth * percentage / 100.0f)) : Mathf.RoundToInt((int)(health * percentage / 100.0f));
+            ModifyHealth(damage, kill);
+        }
     }
 
     public void ModifyHealth(int value, bool kill = false)

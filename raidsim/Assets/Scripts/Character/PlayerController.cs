@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
 {
     CharacterState state;
 
+    public Vector3 maxDistance;
     public float turnSmoothTime;
     private float turnSmoothVelocity;
     private float tm;
@@ -100,11 +101,13 @@ public class PlayerController : MonoBehaviour
             {
                 currentSpeed = Mathf.SmoothDamp(currentSpeed, target, ref speedSmoothVelocity, 0.05f);
                 transform.Translate(transform.forward * currentSpeed * Time.deltaTime, Space.World);
+                ClampMovement();
             }
             else
             {
                 currentSpeed = 0f;
                 transform.Translate(transform.forward * currentSpeed * Time.deltaTime, Space.World);
+                ClampMovement();
             }
             float value = (state.HasEffect("Sprint") ? 1f : 0.5f) * normalized.magnitude;
 
@@ -118,6 +121,43 @@ public class PlayerController : MonoBehaviour
         else if (!state.dead && !state.bound && enableInput)
         {
             transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, release);
+        }
+    }
+
+    public void ClampMovement()
+    {
+        if (maxDistance.x != 0)
+        {
+            if (transform.position.x > Mathf.Abs(maxDistance.x))
+            {
+                transform.position = new Vector3(Mathf.Abs(maxDistance.x), transform.position.y, transform.position.z);
+            }
+            else if (transform.position.x < (-1 * maxDistance.x))
+            {
+                transform.position = new Vector3((-1 * maxDistance.x), transform.position.y, transform.position.z);
+            }
+        }
+        if (maxDistance.y != 0)
+        {
+            if (transform.position.y > Mathf.Abs(maxDistance.y))
+            {
+                transform.position = new Vector3(transform.position.x, Mathf.Abs(maxDistance.y), transform.position.z);
+            }
+            else if (transform.position.y < (-1 * maxDistance.y))
+            {
+                transform.position = new Vector3(transform.position.x, (-1 * maxDistance.y), transform.position.z);
+            }
+        }
+        if (maxDistance.z != 0)
+        {
+            if (transform.position.z > Mathf.Abs(maxDistance.z))
+            {
+                transform.position = new Vector3(transform.position.x, transform.position.y, Mathf.Abs(maxDistance.z));
+            }
+            else if (transform.position.z < (-1 * maxDistance.z))
+            {
+                transform.position = new Vector3(transform.position.x, transform.position.y, (-1 * maxDistance.z));
+            }
         }
     }
 
@@ -175,7 +215,7 @@ public class PlayerController : MonoBehaviour
 
     public void Init()
     {
-        transform.position = new Vector3(0f, 0f, 0f);
+        transform.position = new Vector3(0f, 1.25f, 0f);
         transform.eulerAngles = new Vector3(0f, Random.Range(0, 360), 0f);
         cameraT.gameObject.GetComponent<ThirdPersonCamera>().RandomRotate();
     }

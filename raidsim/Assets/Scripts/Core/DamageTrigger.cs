@@ -6,8 +6,12 @@ using UnityEngine.Playables;
 
 public class DamageTrigger : MonoBehaviour
 {
+    public enum DamageApplicationType { normal, percentage, percentageFromMax, set }
+
+    public string damageName = "Unnamed Damage";
     public CharacterState owner;
     public int damage = -1000;
+    public DamageApplicationType applicationType = DamageApplicationType.normal;
     public float delay = 0.25f;
     public bool failWipes = false;
     public bool cleaves = true;
@@ -18,6 +22,7 @@ public class DamageTrigger : MonoBehaviour
     public List<StatusEffectData> effects = new List<StatusEffectData>();
     public UnityEvent<CharacterState> onHit;
     public UnityEvent<CharacterState> onFail;
+    public UnityEvent<CharacterState> onFinish;
 
     private bool inProgress = false;
 
@@ -73,6 +78,7 @@ public class DamageTrigger : MonoBehaviour
     {
         int damagePerPlayer = shared ? Mathf.RoundToInt(damage / players.Count) : damage;
         bool failed = false;
+        bool kill = false;
 
         if (enumeration && playersRequired > 0)
         {
@@ -80,12 +86,62 @@ public class DamageTrigger : MonoBehaviour
             {
                 damagePerPlayer = -999999;
                 failed = true;
+                kill = true;
             }
+        }
+
+        if (damage <= -999999)
+        {
+            damagePerPlayer = -999999;
+            kill = true;
         }
 
         for (int i = 0; i < players.Count; i++)
         {
-            players[i].ModifyHealth(damagePerPlayer);
+            float percentage = 0f;
+
+            switch (applicationType)
+            {
+                default:
+                {
+                    if (damagePerPlayer > 0)
+                        players[i].ModifyHealth(damagePerPlayer, kill);
+                    break;
+                }
+                case DamageApplicationType.percentage:
+                {
+                    percentage = Mathf.Abs(damagePerPlayer) / 100f;
+
+                    if (percentage > 1f)
+                        percentage = 1f;
+                    else if (percentage < 0f)
+                        percentage = 0f;
+
+                    if (percentage > 0f)
+                        players[i].RemoveHealth(damagePerPlayer / 100.0f, false, kill);
+                    break;
+                }
+                case DamageApplicationType.percentageFromMax:
+                {
+                    percentage = Mathf.Abs(damagePerPlayer) / 100f;
+
+                    if (percentage > 1f)
+                        percentage = 1f;
+                    else if (percentage < 0f)
+                        percentage = 0f;
+
+                    if (percentage > 0f)
+                        players[i].RemoveHealth(damagePerPlayer / 100.0f, true, kill);
+                    break;
+                }
+                case DamageApplicationType.set:
+                {
+                    int damageAbs = Mathf.Abs(damage);
+                    if (damageAbs > 0)
+                        players[i].SetHealth(damageAbs, kill);
+                    break;
+                }
+            }
             if (effects.Count > 0)
             {
                 for (int k = 0; k < effects.Count; k++)
@@ -97,6 +153,8 @@ public class DamageTrigger : MonoBehaviour
             if (failed)
                 onFail.Invoke(players[i]);
         }
+
+        onFinish.Invoke(owner);
     }
 
     public void OnDestroy()
