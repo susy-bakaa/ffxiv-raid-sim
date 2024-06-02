@@ -6,6 +6,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using static GlobalStructs;
+using static GlobalStructs.Damage;
 using static UnityEngine.Rendering.DebugUI;
 
 public class CharacterState : MonoBehaviour
@@ -14,13 +16,51 @@ public class CharacterState : MonoBehaviour
 
     [Header("Status")]
     public string characterName = "Unknown";
+
+    private int defaultMaxHealth;
+    [HideInInspector] public int currentMaxHealth;
     public int health = 16000;
-    private int maxHealth;
+    public Dictionary<string, float> maxHealthModifiers = new Dictionary<string, float>();
+
+    public float defaultSpeed { private set; get; }
+    public float currentSpeed = 6.3f;
+    public Dictionary<string, float> speedModifiers = new Dictionary<string, float>();
+    public Dictionary<string, float> speed = new Dictionary<string, float>();
+    //private float maxSpeed = 15f;
+
     public float currentDamageReduction = 1f;
     public Dictionary<string,float> damageReduction = new Dictionary<string, float>();
-    public float speed = 6.3f;
-    public float defaultSpeed { private set; get; }
-    //private float maxSpeed = 15f;
+
+    public Dictionary<string, float> magicalTypeDamageModifiers = new Dictionary<string, float>();
+    public float magicalTypeDamageModifier = 1f;
+    public Dictionary<string, float> physicalTypeDamageModifiers = new Dictionary<string, float>();
+    public float physicalTypeDamageModifier = 1f;
+    public Dictionary<string, float> uniqueTypeDamageModifiers = new Dictionary<string, float>();
+    public float uniqueTypeDamageModifier = 1f;
+    public Dictionary<string, float> unaspectedElementDamageModifiers = new Dictionary<string, float>();
+    public float unaspectedElementDamageModifier = 1f;
+    public Dictionary<string, float> fireElementDamageModifiers = new Dictionary<string, float>();
+    public float fireElementDamageModifier = 1f;
+    public Dictionary<string, float> iceElementDamageModifiers = new Dictionary<string, float>();
+    public float iceElementDamageModifier = 1f;
+    public Dictionary<string, float> lightningElementDamageModifiers = new Dictionary<string, float>();
+    public float lightningElementDamageModifier = 1f;
+    public Dictionary<string, float> waterElementDamageModifiers = new Dictionary<string, float>();
+    public float waterElementDamageModifier = 1f;
+    public Dictionary<string, float> windElementDamageModifiers = new Dictionary<string, float>();
+    public float windElementDamageModifier = 1f;
+    public Dictionary<string, float> earthElementDamageModifiers = new Dictionary<string, float>();
+    public float earthElementDamageModifier = 1f;
+    public Dictionary<string, float> darkElementDamageModifiers = new Dictionary<string, float>();
+    public float darkElementDamageModifier = 1f;
+    public Dictionary<string, float> lightElementDamageModifiers = new Dictionary<string, float>();
+    public float lightElementDamageModifier = 1f;
+    public Dictionary<string, float> slashingElementDamageModifiers = new Dictionary<string, float>();
+    public float slashingElementDamageModifier = 1f;
+    public Dictionary<string, float> piercingElementDamageModifiers = new Dictionary<string, float>();
+    public float piercingElementDamageModifier = 1f;
+    public Dictionary<string, float> bluntElementDamageModifiers = new Dictionary<string, float>();
+    public float bluntElementDamageModifier = 1f;
 
     [Header("States")]
     public bool dead = false;
@@ -101,8 +141,9 @@ public class CharacterState : MonoBehaviour
             }
         }
 
-        maxHealth = health;
-        defaultSpeed = speed;
+        currentMaxHealth = health;
+        defaultMaxHealth = health;
+        defaultSpeed = currentSpeed;
         dead = false;
         uncontrollable = false;
         untargetable = false;
@@ -111,14 +152,14 @@ public class CharacterState : MonoBehaviour
 
         if (healthBar != null)
         {
-            healthBar.maxValue = maxHealth;
+            healthBar.maxValue = currentMaxHealth;
             healthBar.value = health;
         }
         if (healthBarText != null)
         {
             if (healthBarTextInPercentage)
             {
-                float healthPercentage = ((float)health / (float)maxHealth) * 100f;
+                float healthPercentage = ((float)health / (float)currentMaxHealth) * 100f;
                 // Set the health bar text with proper formatting
                 if (Mathf.Approximately(healthPercentage, 100f))  // Use Mathf.Approximately for floating point comparison
                 {
@@ -136,7 +177,7 @@ public class CharacterState : MonoBehaviour
         }
         if (healthBarParty != null)
         {
-            healthBarParty.maxValue = maxHealth;
+            healthBarParty.maxValue = currentMaxHealth;
             healthBarParty.value = health;
         }
         if (healthBarTextParty != null)
@@ -233,9 +274,215 @@ public class CharacterState : MonoBehaviour
         }
         else
         {
-            int damage = fromMax ? Mathf.RoundToInt((maxHealth * percentage / 100.0f)) : Mathf.RoundToInt((int)(health * percentage / 100.0f));
+            int damage = fromMax ? Mathf.RoundToInt((currentMaxHealth * percentage / 100.0f)) : Mathf.RoundToInt((int)(health * percentage / 100.0f));
             ModifyHealth(damage, kill);
         }
+    }
+
+    public void ModifyHealth(Damage damage, bool kill = false)
+    {
+        Damage m_damage = new Damage(damage);
+
+        if (m_damage.negative)
+        {
+            switch (damage.type)
+            {
+                case DamageType.magical:
+                {
+                    m_damage.value = Mathf.RoundToInt(m_damage.value * magicalTypeDamageModifier);
+                    if (magicalTypeDamageModifier >= 999999)
+                    {
+                        kill = true;
+                    }
+                    break;
+                }
+                case DamageType.physical:
+                {
+                    m_damage.value = Mathf.RoundToInt(m_damage.value * physicalTypeDamageModifier);
+                    if (physicalTypeDamageModifier >= 999999)
+                    {
+                        kill = true;
+                    }
+                    break;
+                }
+                case DamageType.unique:
+                {
+                    m_damage.value = Mathf.RoundToInt(m_damage.value * uniqueTypeDamageModifier);
+                    if (uniqueTypeDamageModifier >= 999999)
+                    {
+                        kill = true;
+                    }
+                    break;
+                }
+            }
+            switch (damage.elementalAspect)
+            {
+                case ElementalAspect.unaspected:
+                {
+                    m_damage.value = Mathf.RoundToInt(m_damage.value * unaspectedElementDamageModifier);
+                    if (unaspectedElementDamageModifier >= 999999)
+                    {
+                        kill = true;
+                    }
+                    break;
+                }
+                case ElementalAspect.fire:
+                {
+                    m_damage.value = Mathf.RoundToInt(m_damage.value * fireElementDamageModifier);
+                    if (fireElementDamageModifier >= 999999)
+                    {
+                        kill = true;
+                    }
+                    break;
+                }
+                case ElementalAspect.ice:
+                {
+                    m_damage.value = Mathf.RoundToInt(m_damage.value * iceElementDamageModifier);
+                    if (iceElementDamageModifier >= 999999)
+                    {
+                        kill = true;
+                    }
+                    break;
+                }
+                case ElementalAspect.lightning:
+                {
+                    m_damage.value = Mathf.RoundToInt(m_damage.value * lightningElementDamageModifier);
+                    if (lightningElementDamageModifier >= 999999)
+                    {
+                        kill = true;
+                    }
+                    break;
+                }
+                case ElementalAspect.water:
+                {
+                    m_damage.value = Mathf.RoundToInt(m_damage.value * waterElementDamageModifier);
+                    if (waterElementDamageModifier >= 999999)
+                    {
+                        kill = true;
+                    }
+                    break;
+                }
+                case ElementalAspect.wind:
+                {
+                    m_damage.value = Mathf.RoundToInt(m_damage.value * windElementDamageModifier);
+                    if (windElementDamageModifier >= 999999)
+                    {
+                        kill = true;
+                    }
+                    break;
+                }
+                case ElementalAspect.earth:
+                {
+                    m_damage.value = Mathf.RoundToInt(m_damage.value * earthElementDamageModifier);
+                    if (earthElementDamageModifier >= 999999)
+                    {
+                        kill = true;
+                    }
+                    break;
+                }
+                case ElementalAspect.dark:
+                {
+                    m_damage.value = Mathf.RoundToInt(m_damage.value * darkElementDamageModifier);
+                    if (darkElementDamageModifier >= 999999)
+                    {
+                        kill = true;
+                    }
+                    break;
+                }
+                case ElementalAspect.light:
+                {
+                    m_damage.value = Mathf.RoundToInt(m_damage.value * lightElementDamageModifier);
+                    if (lightElementDamageModifier >= 999999)
+                    {
+                        kill = true;
+                    }
+                    break;
+                }
+            }
+            switch (damage.physicalAspect)
+            {
+                case PhysicalAspect.slashing:
+                {
+                    m_damage.value = Mathf.RoundToInt(m_damage.value * slashingElementDamageModifier);
+                    if (slashingElementDamageModifier >= 999999)
+                    {
+                        kill = true;
+                    }
+                    break;
+                }
+                case PhysicalAspect.piercing:
+                {
+                    m_damage.value = Mathf.RoundToInt(m_damage.value * piercingElementDamageModifier);
+                    if (piercingElementDamageModifier >= 999999)
+                    {
+                        kill = true;
+                    }
+                    break;
+                }
+                case PhysicalAspect.blunt:
+                {
+                    m_damage.value = Mathf.RoundToInt(m_damage.value * bluntElementDamageModifier);
+                    if (bluntElementDamageModifier >= 999999)
+                    {
+                        kill = true;
+                    }
+                    break;
+                }
+            }
+        }
+
+        float percentage;
+
+        switch (damage.applicationType)
+        {
+            default:
+            {
+                if (m_damage.value > 0)
+                    ModifyHealth(m_damage.value, kill);
+                Debug.Log($"modify {damage.value} kill {kill}");
+                break;
+            }
+            case DamageApplicationType.percentage:
+            {
+                percentage = Mathf.Abs(damage.value) / 100f;
+
+                if (percentage > 1f)
+                    percentage = 1f;
+                else if (percentage < 0f)
+                    percentage = 0f;
+
+                if (percentage > 0f)
+                    RemoveHealth(damage.value / 100.0f, false, kill);
+
+                Debug.Log($"remove {damage.value} kill {kill}");
+                break;
+            }
+            case DamageApplicationType.percentageFromMax:
+            {
+                percentage = Mathf.Abs(damage.value) / 100f;
+
+                if (percentage > 1f)
+                    percentage = 1f;
+                else if (percentage < 0f)
+                    percentage = 0f;
+
+                if (percentage > 0f)
+                    RemoveHealth(damage.value / 100.0f, true, kill);
+
+                Debug.Log($"remove {damage.value} kill {kill}");
+                break;
+            }
+            case DamageApplicationType.set:
+            {
+                int damageAbs = Mathf.Abs(damage.value);
+                if (damageAbs > 0)
+                    SetHealth(damageAbs, kill);
+
+                Debug.Log($"set {damage.value} kill {kill}");
+                break;
+            }
+        }
+        //ModifyHealth(damage.value, kill);
     }
 
     public void ModifyHealth(int value, bool kill = false)
@@ -252,7 +499,14 @@ public class CharacterState : MonoBehaviour
             Debug.Log($"hp: {value}");
         }
 
-        health += Mathf.RoundToInt(value * currentDamageReduction);
+        if (!kill)
+        {
+            health += Mathf.RoundToInt(value * currentDamageReduction);
+        }
+        else
+        {
+            health += value;
+        }
 
         if (health <= 0)
         {
@@ -270,21 +524,22 @@ public class CharacterState : MonoBehaviour
                 effectsArray = null;
             }
         }
-        if (health > maxHealth)
+        if (health > currentMaxHealth)
         {
-            health = maxHealth;
+            health = currentMaxHealth;
         }
 
         // USER INTERFACE
         if (healthBar != null)
         {
             healthBar.value = health;
+            healthBar.maxValue = currentMaxHealth;
         }
         if (healthBarText != null)
         {
             if (healthBarTextInPercentage)
             {
-                float healthPercentage = ((float)health / (float)maxHealth) * 100f;
+                float healthPercentage = ((float)health / (float)currentMaxHealth) * 100f;
                 //Debug.Log("hp: " + healthPercentage);
                 // Set the health bar text with proper formatting
                 if (Mathf.Approximately(healthPercentage, 100f))  // Use Mathf.Approximately for floating point comparison
@@ -304,6 +559,7 @@ public class CharacterState : MonoBehaviour
         if (healthBarParty != null)
         {
             healthBarParty.value = health;
+            healthBarParty.maxValue = currentMaxHealth;
         }
         if (healthBarTextParty != null)
         {
@@ -355,6 +611,742 @@ public class CharacterState : MonoBehaviour
         }
 
         currentDamageReduction = result;
+    }
+
+    public void AddMovementSpeedModifier(float value, string identifier)
+    {
+        if (!speedModifiers.ContainsKey(identifier))
+        {
+            speedModifiers.Add(identifier, value);
+        }
+        else
+        {
+            return;
+        }
+
+        RecalculateCurrentMovementSpeed();
+    }
+
+    public void RemoveMovementSpeedModifier(string identifier)
+    {
+        if (speedModifiers.ContainsKey(identifier))
+        {
+            speedModifiers.Remove(identifier);
+        }
+        else
+        {
+            return;
+        }
+
+        RecalculateCurrentMovementSpeed();
+    }
+
+    public void AddMovementSpeed(float value, string identifier)
+    {
+        if (!speed.ContainsKey(identifier))
+        {
+            speed.Add(identifier, value);
+        }
+        else
+        {
+            return;
+        }
+
+        RecalculateCurrentMovementSpeed();
+    }
+
+    public void RemoveMovementSpeed(string identifier)
+    {
+        if (speed.ContainsKey(identifier))
+        {
+            speed.Remove(identifier);
+        }
+        else
+        {
+            return;
+        }
+
+        RecalculateCurrentMovementSpeed();
+    }
+
+    private void RecalculateCurrentMovementSpeed()
+    {
+        float result = defaultSpeed;
+
+        List<float> sList = new List<float>(speed.Values.ToArray());
+
+        if (speed.Count > 0)
+        {
+            sList.Sort();
+            result = sList.Max();
+        }
+
+        List<float> mList = new List<float>(speedModifiers.Values.ToArray());
+
+        if (speedModifiers.Count > 0)
+        {
+            mList.Sort();
+            for (int i = 0; i < speedModifiers.Count; i++)
+            {
+                result *= mList[i];
+            }
+        }
+
+        currentSpeed = result;
+    }
+
+    public void AddDamageModifier(float value, string identifier, DamageType damageType, ElementalAspect elementalAspect = ElementalAspect.none, PhysicalAspect physicalAspect = PhysicalAspect.none)
+    {
+        bool update = false;
+
+        switch (damageType)
+        {
+            case DamageType.magical:
+            {
+                if (!magicalTypeDamageModifiers.ContainsKey(identifier))
+                {
+                    magicalTypeDamageModifiers.Add(identifier, value);
+                    update = true;
+                }
+                break;
+            }
+            case DamageType.physical:
+            {
+                if (!physicalTypeDamageModifiers.ContainsKey(identifier))
+                {
+                    physicalTypeDamageModifiers.Add(identifier, value);
+                    update = true;
+                }
+                break;
+            }
+            case DamageType.unique:
+            {
+                if (!uniqueTypeDamageModifiers.ContainsKey(identifier))
+                {
+                    uniqueTypeDamageModifiers.Add(identifier, value);
+                    update = true;
+                }
+                break;
+            }
+        }
+        switch (elementalAspect)
+        {
+            case ElementalAspect.unaspected:
+            {
+                if (!unaspectedElementDamageModifiers.ContainsKey(identifier))
+                {
+                    unaspectedElementDamageModifiers.Add(identifier, value);
+                    update = true;
+                }
+                break;
+            }
+            case ElementalAspect.fire:
+            {
+                if (!fireElementDamageModifiers.ContainsKey(identifier))
+                {
+                    fireElementDamageModifiers.Add(identifier, value);
+                    update = true;
+                }
+                break;
+            }
+            case ElementalAspect.ice:
+            {
+                if (!iceElementDamageModifiers.ContainsKey(identifier))
+                {
+                    iceElementDamageModifiers.Add(identifier, value);
+                    update = true;
+                }
+                break;
+            }
+            case ElementalAspect.lightning:
+            {
+                if (!lightningElementDamageModifiers.ContainsKey(identifier))
+                {
+                    lightningElementDamageModifiers.Add(identifier, value);
+                    update = true;
+                }
+                break;
+            }
+            case ElementalAspect.water:
+            {
+                if (!waterElementDamageModifiers.ContainsKey(identifier))
+                {
+                    waterElementDamageModifiers.Add(identifier, value);
+                    update = true;
+                }
+                break;
+            }
+            case ElementalAspect.wind:
+            {
+                if (!windElementDamageModifiers.ContainsKey(identifier))
+                {
+                    windElementDamageModifiers.Add(identifier, value);
+                    update = true;
+                }
+                break;
+            }
+            case ElementalAspect.earth:
+            {
+                if (!earthElementDamageModifiers.ContainsKey(identifier))
+                {
+                    earthElementDamageModifiers.Add(identifier, value);
+                    update = true;
+                }
+                break;
+            }
+            case ElementalAspect.dark:
+            {
+                if (!darkElementDamageModifiers.ContainsKey(identifier))
+                {
+                    darkElementDamageModifiers.Add(identifier, value);
+                    update = true;
+                }
+                break;
+            }
+            case ElementalAspect.light:
+            {
+                if (!lightElementDamageModifiers.ContainsKey(identifier))
+                {
+                    lightElementDamageModifiers.Add(identifier, value);
+                    update = true;
+                }
+                break;
+            }
+        }
+        switch (physicalAspect)
+        {
+            case PhysicalAspect.slashing:
+            {
+                if (!slashingElementDamageModifiers.ContainsKey(identifier))
+                {
+                    slashingElementDamageModifiers.Add(identifier, value);
+                    update = true;
+                }
+                break;
+            }
+            case PhysicalAspect.piercing:
+            {
+                if (!piercingElementDamageModifiers.ContainsKey(identifier))
+                {
+                    piercingElementDamageModifiers.Add(identifier, value);
+                    update = true;
+                }
+                break;
+            }
+            case PhysicalAspect.blunt:
+            {
+                if (!bluntElementDamageModifiers.ContainsKey(identifier))
+                {
+                    bluntElementDamageModifiers.Add(identifier, value);
+                    update = true;
+                }
+                break;
+            }
+        }
+
+        if (!update)
+        {
+            return;
+        }
+
+        RecalculateCurrentDamageModifiers(damageType, elementalAspect, physicalAspect);
+    }
+
+    public void RemoveDamageModifier(string identifier, DamageType damageType, ElementalAspect elementalAspect = ElementalAspect.none, PhysicalAspect physicalAspect = PhysicalAspect.none)
+    {
+        bool update = false;
+
+        switch (damageType)
+        {
+            case DamageType.magical:
+            {
+                if (magicalTypeDamageModifiers.ContainsKey(identifier))
+                {
+                    magicalTypeDamageModifiers.Remove(identifier);
+                    update = true;
+                }
+                break;
+            }
+            case DamageType.physical:
+            {
+                if (physicalTypeDamageModifiers.ContainsKey(identifier))
+                {
+                    physicalTypeDamageModifiers.Remove(identifier);
+                    update = true;
+                }
+                break;
+            }
+            case DamageType.unique:
+            {
+                if (uniqueTypeDamageModifiers.ContainsKey(identifier))
+                {
+                    uniqueTypeDamageModifiers.Remove(identifier);
+                    update = true;
+                }
+                break;
+            }
+        }
+        switch (elementalAspect)
+        {
+            case ElementalAspect.unaspected:
+            {
+                if (unaspectedElementDamageModifiers.ContainsKey(identifier))
+                {
+                    unaspectedElementDamageModifiers.Remove(identifier);
+                    update = true;
+                }
+                break;
+            }
+            case ElementalAspect.fire:
+            {
+                if (fireElementDamageModifiers.ContainsKey(identifier))
+                {
+                    fireElementDamageModifiers.Remove(identifier);
+                    update = true;
+                }
+                break;
+            }
+            case ElementalAspect.ice:
+            {
+                if (iceElementDamageModifiers.ContainsKey(identifier))
+                {
+                    iceElementDamageModifiers.Remove(identifier);
+                    update = true;
+                }
+                break;
+            }
+            case ElementalAspect.lightning:
+            {
+                if (lightningElementDamageModifiers.ContainsKey(identifier))
+                {
+                    lightningElementDamageModifiers.Remove(identifier);
+                    update = true;
+                }
+                break;
+            }
+            case ElementalAspect.water:
+            {
+                if (waterElementDamageModifiers.ContainsKey(identifier))
+                {
+                    waterElementDamageModifiers.Remove(identifier);
+                    update = true;
+                }
+                break;
+            }
+            case ElementalAspect.wind:
+            {
+                if (windElementDamageModifiers.ContainsKey(identifier))
+                {
+                    windElementDamageModifiers.Remove(identifier);
+                    update = true;
+                }
+                break;
+            }
+            case ElementalAspect.earth:
+            {
+                if (earthElementDamageModifiers.ContainsKey(identifier))
+                {
+                    earthElementDamageModifiers.Remove(identifier);
+                    update = true;
+                }
+                break;
+            }
+            case ElementalAspect.dark:
+            {
+                if (darkElementDamageModifiers.ContainsKey(identifier))
+                {
+                    darkElementDamageModifiers.Remove(identifier);
+                    update = true;
+                }
+                break;
+            }
+            case ElementalAspect.light:
+            {
+                if (lightElementDamageModifiers.ContainsKey(identifier))
+                {
+                    lightElementDamageModifiers.Remove(identifier);
+                    update = true;
+                }
+                break;
+            }
+        }
+        switch (physicalAspect)
+        {
+            case PhysicalAspect.slashing:
+            {
+                if (slashingElementDamageModifiers.ContainsKey(identifier))
+                {
+                    slashingElementDamageModifiers.Remove(identifier);
+                    update = true;
+                }
+                break;
+            }
+            case PhysicalAspect.piercing:
+            {
+                if (piercingElementDamageModifiers.ContainsKey(identifier))
+                {
+                    piercingElementDamageModifiers.Remove(identifier);
+                    update = true;
+                }
+                break;
+            }
+            case PhysicalAspect.blunt:
+            {
+                if (bluntElementDamageModifiers.ContainsKey(identifier))
+                {
+                    bluntElementDamageModifiers.Remove(identifier);
+                    update = true;
+                }
+                break;
+            }
+        }
+
+        if (!update)
+        {
+            return;
+        }
+
+        RecalculateCurrentDamageModifiers(damageType, elementalAspect, physicalAspect);
+    }
+
+    private void RecalculateCurrentDamageModifiers(DamageType damageType, ElementalAspect elementalAspect, PhysicalAspect physicalAspect)
+    {
+        switch (damageType)
+        {
+            case DamageType.magical:
+            {
+                float result = 1f;
+
+                List<float> a = new List<float>(magicalTypeDamageModifiers.Values.ToArray());
+
+                if (magicalTypeDamageModifiers.Count > 0)
+                {
+                    a.Sort();
+                    for (int i = 0; i < magicalTypeDamageModifiers.Count; i++)
+                    {
+                        result *= a[i];
+                    }
+                }
+
+                magicalTypeDamageModifier = result;
+                break;
+            }
+            case DamageType.physical:
+            {
+                float result = 1f;
+
+                List<float> a = new List<float>(physicalTypeDamageModifiers.Values.ToArray());
+
+                if (physicalTypeDamageModifiers.Count > 0)
+                {
+                    a.Sort();
+                    for (int i = 0; i < physicalTypeDamageModifiers.Count; i++)
+                    {
+                        result *= a[i];
+                    }
+                }
+
+                physicalTypeDamageModifier = result;
+                break;
+            }
+            case DamageType.unique:
+            {
+                float result = 1f;
+
+                List<float> a = new List<float>(uniqueTypeDamageModifiers.Values.ToArray());
+
+                if (uniqueTypeDamageModifiers.Count > 0)
+                {
+                    a.Sort();
+                    for (int i = 0; i < uniqueTypeDamageModifiers.Count; i++)
+                    {
+                        result *= a[i];
+                    }
+                }
+
+                uniqueTypeDamageModifier = result;
+                break;
+            }
+        }
+        switch (elementalAspect)
+        {
+            case ElementalAspect.unaspected:
+            {
+                float result = 1f;
+
+                List<float> a = new List<float>(unaspectedElementDamageModifiers.Values.ToArray());
+
+                if (unaspectedElementDamageModifiers.Count > 0)
+                {
+                    a.Sort();
+                    for (int i = 0; i < unaspectedElementDamageModifiers.Count; i++)
+                    {
+                        result *= a[i];
+                    }
+                }
+
+                unaspectedElementDamageModifier = result;
+                break;
+            }
+            case ElementalAspect.fire:
+            {
+                float result = 1f;
+
+                List<float> a = new List<float>(fireElementDamageModifiers.Values.ToArray());
+
+                if (fireElementDamageModifiers.Count > 0)
+                {
+                    a.Sort();
+                    for (int i = 0; i < fireElementDamageModifiers.Count; i++)
+                    {
+                        result *= a[i];
+                    }
+                }
+
+                fireElementDamageModifier = result;
+                break;
+            }
+            case ElementalAspect.ice:
+            {
+                float result = 1f;
+
+                List<float> a = new List<float>(iceElementDamageModifiers.Values.ToArray());
+
+                if (iceElementDamageModifiers.Count > 0)
+                {
+                    a.Sort();
+                    for (int i = 0; i < iceElementDamageModifiers.Count; i++)
+                    {
+                        result *= a[i];
+                    }
+                }
+
+                iceElementDamageModifier = result;
+                break;
+            }
+            case ElementalAspect.lightning:
+            {
+                float result = 1f;
+
+                List<float> a = new List<float>(lightningElementDamageModifiers.Values.ToArray());
+
+                if (lightningElementDamageModifiers.Count > 0)
+                {
+                    a.Sort();
+                    for (int i = 0; i < lightningElementDamageModifiers.Count; i++)
+                    {
+                        result *= a[i];
+                    }
+                }
+
+                lightningElementDamageModifier = result;
+                break;
+            }
+            case ElementalAspect.water:
+            {
+                float result = 1f;
+
+                List<float> a = new List<float>(waterElementDamageModifiers.Values.ToArray());
+
+                if (waterElementDamageModifiers.Count > 0)
+                {
+                    a.Sort();
+                    for (int i = 0; i < waterElementDamageModifiers.Count; i++)
+                    {
+                        result *= a[i];
+                    }
+                }
+
+                waterElementDamageModifier = result;
+                break;
+            }
+            case ElementalAspect.wind:
+            {
+                float result = 1f;
+
+                List<float> a = new List<float>(windElementDamageModifiers.Values.ToArray());
+
+                if (windElementDamageModifiers.Count > 0)
+                {
+                    a.Sort();
+                    for (int i = 0; i < windElementDamageModifiers.Count; i++)
+                    {
+                        result *= a[i];
+                    }
+                }
+
+                windElementDamageModifier = result;
+                break;
+            }
+            case ElementalAspect.earth:
+            {
+                float result = 1f;
+
+                List<float> a = new List<float>(earthElementDamageModifiers.Values.ToArray());
+
+                if (earthElementDamageModifiers.Count > 0)
+                {
+                    a.Sort();
+                    for (int i = 0; i < earthElementDamageModifiers.Count; i++)
+                    {
+                        result *= a[i];
+                    }
+                }
+
+                earthElementDamageModifier = result;
+                break;
+            }
+            case ElementalAspect.dark:
+            {
+                float result = 1f;
+
+                List<float> a = new List<float>(darkElementDamageModifiers.Values.ToArray());
+
+                if (darkElementDamageModifiers.Count > 0)
+                {
+                    a.Sort();
+                    for (int i = 0; i < darkElementDamageModifiers.Count; i++)
+                    {
+                        result *= a[i];
+                    }
+                }
+
+                darkElementDamageModifier = result;
+                break;
+            }
+            case ElementalAspect.light:
+            {
+                float result = 1f;
+
+                List<float> a = new List<float>(lightElementDamageModifiers.Values.ToArray());
+
+                if (lightElementDamageModifiers.Count > 0)
+                {
+                    a.Sort();
+                    for (int i = 0; i < lightElementDamageModifiers.Count; i++)
+                    {
+                        result *= a[i];
+                    }
+                }
+
+                lightElementDamageModifier = result;
+                break;
+            }
+        }
+        switch (physicalAspect)
+        {
+            case PhysicalAspect.slashing:
+            {
+                float result = 1f;
+
+                List<float> a = new List<float>(slashingElementDamageModifiers.Values.ToArray());
+
+                if (slashingElementDamageModifiers.Count > 0)
+                {
+                    a.Sort();
+                    for (int i = 0; i < slashingElementDamageModifiers.Count; i++)
+                    {
+                        result *= a[i];
+                    }
+                }
+
+                slashingElementDamageModifier = result;
+                break;
+            }
+            case PhysicalAspect.piercing:
+            {
+                float result = 1f;
+
+                List<float> a = new List<float>(piercingElementDamageModifiers.Values.ToArray());
+
+                if (piercingElementDamageModifiers.Count > 0)
+                {
+                    a.Sort();
+                    for (int i = 0; i < piercingElementDamageModifiers.Count; i++)
+                    {
+                        result *= a[i];
+                    }
+                }
+
+                piercingElementDamageModifier = result;
+                break;
+            }
+            case PhysicalAspect.blunt:
+            {
+                float result = 1f;
+
+                List<float> a = new List<float>(bluntElementDamageModifiers.Values.ToArray());
+
+                if (bluntElementDamageModifiers.Count > 0)
+                {
+                    a.Sort();
+                    for (int i = 0; i < bluntElementDamageModifiers.Count; i++)
+                    {
+                        result *= a[i];
+                    }
+                }
+
+                bluntElementDamageModifier = result;
+                break;
+            }
+        }
+    }
+
+    public void AddMaxHealth(float value, string identifier)
+    {
+        if (!maxHealthModifiers.ContainsKey(identifier))
+        {
+            maxHealthModifiers.Add(identifier, value);
+        }
+        else
+        {
+            return;
+        }
+
+        RecalculateCurrentMaxHealth();
+    }
+
+    public void RemoveMaxHealth(string identifier)
+    {
+        if (maxHealthModifiers.ContainsKey(identifier))
+        {
+            maxHealthModifiers.Remove(identifier);
+        }
+        else
+        {
+            return;
+        }
+
+        RecalculateCurrentMaxHealth();
+    }
+
+    private void RecalculateCurrentMaxHealth()
+    {
+        float result = 1f;
+
+        List<float> a = new List<float>(maxHealthModifiers.Values.ToArray());
+
+        if (maxHealthModifiers.Count > 0)
+        {
+            a.Sort();
+            for (int i = 0; i < maxHealthModifiers.Count; i++)
+            {
+                result *= a[i];
+            }
+        }
+
+        currentMaxHealth = Mathf.RoundToInt(result);
+
+        if (healthBar != null)
+        {
+            healthBar.value = health;
+            healthBar.maxValue = currentMaxHealth;
+        }
+        if (healthBarParty != null)
+        {
+            healthBarParty.value = health;
+            healthBarParty.maxValue = currentMaxHealth;
+        }
     }
 
     public void AddEffect(StatusEffectData data, int tag = 0)

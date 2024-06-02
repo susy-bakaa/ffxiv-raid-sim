@@ -13,7 +13,7 @@ public class RaidwideDamageMechanic : FightMechanic
 
         foreach (CharacterState character in members)
         {
-            character.ModifyHealth(Mathf.RoundToInt(action.action.data.damage));
+            character.ModifyHealth(action.action.data.damage);
         }
     }
 }

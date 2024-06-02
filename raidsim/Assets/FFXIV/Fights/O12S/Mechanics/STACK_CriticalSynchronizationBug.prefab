@@ -98,9 +98,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 510ab2ae02fd4284c869e6f2013bd0fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  damageName: Unnamed Damage
   owner: {fileID: 0}
-  damage: -40000
-  delay: 0.25
+  damage:
+    value: -40000
+    negative: 1
+    type: 1
+    elementalAspect: 1
+    physicalAspect: 0
+    applicationType: 0
+  visualDelay: 0
+  damageApplicationDelay: 0.25
   failWipes: 0
   cleaves: 1
   shared: 1
@@ -112,6 +120,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   onFail:
+    m_PersistentCalls:
+      m_Calls: []
+  onFinish:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &2655986394669519451

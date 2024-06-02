@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static ActionController;
+using static GlobalStructs;
+using static GlobalStructs.Damage;
 
 public class SpawnObjectMechanic : FightMechanic
 {
@@ -22,7 +24,7 @@ public class SpawnObjectMechanic : FightMechanic
                 {
                     if (spawned.TryGetComponent(out DamageTrigger damageTrigger))
                     {
-                        damageTrigger.damage = Mathf.RoundToInt(multiplier * action.source.health);
+                        damageTrigger.damage = new Damage(Mathf.RoundToInt(multiplier * action.source.health), false, DamageType.magical, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal);
                     }
                 }
             }
@@ -34,7 +36,7 @@ public class SpawnObjectMechanic : FightMechanic
                 {
                     if (spawned.TryGetComponent(out DamageTrigger damageTrigger))
                     {
-                        damageTrigger.damage = Mathf.RoundToInt(multiplier * action.source.health);
+                        damageTrigger.damage = new Damage(Mathf.RoundToInt(multiplier * action.source.health), false, DamageType.magical, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal);
                     }
                 }
             }

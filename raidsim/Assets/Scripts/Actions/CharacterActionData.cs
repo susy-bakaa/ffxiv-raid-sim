@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GlobalStructs;
 
 [CreateAssetMenu(fileName = "New Character Action", menuName = "FFXIV/New Character Action")]
 public class CharacterActionData : ScriptableObject
@@ -10,7 +11,7 @@ public class CharacterActionData : ScriptableObject
     [Header("Info")]
     public string actionName = "Unnamed Action";
     public ActionType actionType = ActionType.Spell;
-    public float damage = 0f;
+    public Damage damage = new Damage(0, true);
     public int maxTargets = 1;
     public float range = 25f;
     public float radius = 30f;

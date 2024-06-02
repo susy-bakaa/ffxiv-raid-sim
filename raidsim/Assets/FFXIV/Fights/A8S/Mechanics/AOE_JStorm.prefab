@@ -207,13 +207,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damageName: Gale Force
   owner: {fileID: 0}
-  damage: 1
-  m_damage:
+  damage:
     value: 1
-    type: 1
-    aspect: 3
-  applicationType: 3
-  delay: 0.25
+    negative: 1
+    type: 3
+    elementalAspect: 6
+    physicalAspect: 0
+    applicationType: 3
+  visualDelay: 0
+  damageApplicationDelay: 0.25
   failWipes: 0
   cleaves: 1
   shared: 0

@@ -70,7 +70,7 @@ public class AIController : MonoBehaviour
             float stoppingDistance = 0.1f; // Adjust as needed
             if (distanceToTarget > stoppingDistance)
             {
-                float d = state.speed * normalized.magnitude;
+                float d = state.currentSpeed * normalized.magnitude;
                 transform.Translate(transform.forward * d * Time.deltaTime, Space.World);
                 currentSpeed = 0.5f * normalized.magnitude;
             }

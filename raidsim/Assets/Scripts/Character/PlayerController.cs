@@ -96,7 +96,7 @@ public class PlayerController : MonoBehaviour
                 float d = Mathf.Atan2(normalized.x, normalized.y) * 57.29578f + cameraT.eulerAngles.y;
                 transform.eulerAngles = Vector3.up * d;
             }
-            float target = state.speed * normalized.magnitude;
+            float target = state.currentSpeed * normalized.magnitude;
             if (normalized != Vector2.zero)
             {
                 currentSpeed = Mathf.SmoothDamp(currentSpeed, target, ref speedSmoothVelocity, 0.05f);

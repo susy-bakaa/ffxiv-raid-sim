@@ -98,8 +98,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 510ab2ae02fd4284c869e6f2013bd0fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  damageName: White Wind
   owner: {fileID: 0}
-  damage: 8000
+  damage:
+    value: 0
+    type: 1
+    elementalAspect: 1
+    physicalAspect: 0
+    applicationType: 0
   delay: 0.25
   failWipes: 0
   cleaves: 1
@@ -112,6 +118,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   onFail:
+    m_PersistentCalls:
+      m_Calls: []
+  onFinish:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &3428216030808181527

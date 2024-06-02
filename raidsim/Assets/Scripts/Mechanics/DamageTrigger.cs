@@ -7,14 +7,13 @@ using static GlobalStructs;
 
 public class DamageTrigger : MonoBehaviour
 {
-    public enum DamageApplicationType { normal, percentage, percentageFromMax, set }
+    Collider m_collider;
 
-    public string damageName = "Unnamed Damage";
+    public string damageName = string.Empty;
     public CharacterState owner;
-    public int damage = -1000;
-    public Damage m_damage;
-    public DamageApplicationType applicationType = DamageApplicationType.normal;
-    public float delay = 0.25f;
+    public Damage damage;
+    public float visualDelay = 0f;
+    public float damageApplicationDelay = 0.25f;
     public bool failWipes = false;
     public bool cleaves = true;
     public bool shared = false;
@@ -30,8 +29,19 @@ public class DamageTrigger : MonoBehaviour
 
     void Awake()
     {
+        m_collider = GetComponent<Collider>();
+
         if (failWipes)
             onFail.AddListener((CharacterState characterState) => { FightTimeline.Instance.WipeParty(); });
+    }
+
+    void OnEnable()
+    {
+        if (m_collider != null && visualDelay > 0f)
+        {
+            m_collider.enabled = false;
+            Utilities.FunctionTimer.Create(() => m_collider.enabled = true, visualDelay, $"{damageName}_{gameObject}_visual_delay", false, true);
+        }
     }
 
     void OnTriggerEnter(Collider other)
@@ -71,14 +81,14 @@ public class DamageTrigger : MonoBehaviour
     private IEnumerator StartDamageTrigger()
     {
         inProgress = true;
-        yield return new WaitForSeconds(delay);
+        yield return new WaitForSeconds(damageApplicationDelay);
         TriggerDamage();
         inProgress = false;
     }
 
     public void TriggerDamage()
     {
-        int damagePerPlayer = shared ? Mathf.RoundToInt(damage / players.Count) : damage;
+        Damage damagePerPlayer = shared ? new Damage(damage, Mathf.RoundToInt(damage.value / players.Count)) : damage;
         bool failed = false;
         bool kill = false;
 
@@ -86,64 +96,21 @@ public class DamageTrigger : MonoBehaviour
         {
             if (players.Count != playersRequired)
             {
-                damagePerPlayer = -999999;
+                damagePerPlayer = new Damage(damagePerPlayer, -999999);
                 failed = true;
                 kill = true;
             }
         }
 
-        if (damage <= -999999)
+        if (damage.value <= -999999)
         {
-            damagePerPlayer = -999999;
+            damagePerPlayer = new Damage(damagePerPlayer, -999999);
             kill = true;
         }
 
         for (int i = 0; i < players.Count; i++)
         {
-            float percentage = 0f;
-
-            switch (applicationType)
-            {
-                default:
-                {
-                    if (damagePerPlayer > 0)
-                        players[i].ModifyHealth(damagePerPlayer, kill);
-                    break;
-                }
-                case DamageApplicationType.percentage:
-                {
-                    percentage = Mathf.Abs(damagePerPlayer) / 100f;
-
-                    if (percentage > 1f)
-                        percentage = 1f;
-                    else if (percentage < 0f)
-                        percentage = 0f;
-
-                    if (percentage > 0f)
-                        players[i].RemoveHealth(damagePerPlayer / 100.0f, false, kill);
-                    break;
-                }
-                case DamageApplicationType.percentageFromMax:
-                {
-                    percentage = Mathf.Abs(damagePerPlayer) / 100f;
-
-                    if (percentage > 1f)
-                        percentage = 1f;
-                    else if (percentage < 0f)
-                        percentage = 0f;
-
-                    if (percentage > 0f)
-                        players[i].RemoveHealth(damagePerPlayer / 100.0f, true, kill);
-                    break;
-                }
-                case DamageApplicationType.set:
-                {
-                    int damageAbs = Mathf.Abs(damage);
-                    if (damageAbs > 0)
-                        players[i].SetHealth(damageAbs, kill);
-                    break;
-                }
-            }
+            players[i].ModifyHealth(damagePerPlayer, kill);
             if (effects.Count > 0)
             {
                 for (int k = 0; k < effects.Count; k++)
