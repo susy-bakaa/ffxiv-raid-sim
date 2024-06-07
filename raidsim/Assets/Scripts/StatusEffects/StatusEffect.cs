@@ -27,7 +27,7 @@ public class StatusEffect : MonoBehaviour
     private GameObject partyHudElement;
     private TextMeshProUGUI partyHudTimer;
 
-    public void Initialize(Transform hudElementParent, Transform partyHudElementParent, int tag = 0)
+    public void Initialize(Transform hudElementParent, Transform partyHudElementParent, Color labelColor, int tag = 0)
     {
         onApplication.AddListener(OnApplication);
         onTick.AddListener(OnTick);
@@ -40,12 +40,14 @@ public class StatusEffect : MonoBehaviour
             hasHudElement = true;
             hudElement = Instantiate(data.hudElement, hudElementParent);
             hudTimer = hudElement.transform.GetChild(1).GetComponentInChildren<TextMeshProUGUI>();
+            hudTimer.color = labelColor;
         }
         if (partyHudElementParent != null)
         {
             hasPartyHudElement = true;
             partyHudElement = Instantiate(data.hudElement, partyHudElementParent);
             partyHudTimer = partyHudElement.transform.GetChild(1).GetComponentInChildren<TextMeshProUGUI>();
+            partyHudTimer.color = labelColor;
         }
 
         duration = data.length;

@@ -43,7 +43,7 @@ public class RaidwideDebuffsMechanic : FightMechanic
             {
                 statusEffects.Remove(playerEffect);
                 partyMembers.Remove(player);
-                player.AddEffect(playerEffect.data, playerEffect.tag);
+                player.AddEffect(playerEffect.data, false, playerEffect.tag);
             }
         }
 
@@ -61,7 +61,7 @@ public class RaidwideDebuffsMechanic : FightMechanic
                     target = partyMembers[Random.Range(0, partyMembers.Count)];
 
                 // Apply the effect to the target
-                target.AddEffect(statusEffects[i].data, statusEffects[i].tag);
+                target.AddEffect(statusEffects[i].data, false, statusEffects[i].tag);
 
                 // Remove the effect and player from the possible options
                 partyMembers.Remove(target);

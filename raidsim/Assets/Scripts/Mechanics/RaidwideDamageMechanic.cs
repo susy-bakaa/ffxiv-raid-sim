@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static ActionController;
+using static GlobalStructs;
 
 public class RaidwideDamageMechanic : FightMechanic
 {
@@ -13,7 +14,14 @@ public class RaidwideDamageMechanic : FightMechanic
 
         foreach (CharacterState character in members)
         {
-            character.ModifyHealth(action.action.data.damage);
+            if (!string.IsNullOrEmpty(mechanicName))
+            {
+                character.ModifyHealth(new Damage(action.action.data.damage, mechanicName));
+            }
+            else
+            {
+                character.ModifyHealth(action.action.data.damage);
+            }
         }
     }
 }

@@ -251,9 +251,9 @@ public class ActionController : MonoBehaviour
             }
             else
             {
-                Utilities.FunctionTimer.StopTimer($"{this}_castBar_fade_out_if_interrupted");
+                Utilities.FunctionTimer.StopTimer($"{gameObject}_{GetHashCode()}_castBar_fade_out_if_interrupted");
                 //Utilities.FunctionTimer.StopTimer($"{this}_castBarParty_fade_out_if_interrupted");
-                Utilities.FunctionTimer.StopTimer($"{this}_interrupted_status");
+                Utilities.FunctionTimer.StopTimer($"{gameObject}_{GetHashCode()}_interrupted_status");
                 ResetCastBar();
                 if (castBarGroup != null)
                     castBarGroup.alpha = 0f;

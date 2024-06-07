@@ -88,7 +88,14 @@ public class DamageTrigger : MonoBehaviour
 
     public void TriggerDamage()
     {
-        Damage damagePerPlayer = shared ? new Damage(damage, Mathf.RoundToInt(damage.value / players.Count)) : damage;
+        string newName = damage.name;
+
+        if (!string.IsNullOrEmpty(damageName))
+        {
+            newName = damageName;
+        }
+
+        Damage damagePerPlayer = shared ? new Damage(damage, Mathf.RoundToInt(damage.value / players.Count), newName) : damage;
         bool failed = false;
         bool kill = false;
 

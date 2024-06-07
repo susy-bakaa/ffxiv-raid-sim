@@ -8,6 +8,7 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using static GlobalStructs;
 using static GlobalStructs.Damage;
+using static Unity.VisualScripting.Member;
 using static UnityEngine.Rendering.DebugUI;
 
 public class CharacterState : MonoBehaviour
@@ -90,29 +91,39 @@ public class CharacterState : MonoBehaviour
     public bool hideNameplate = false;
     public bool hidePartyName = false;
 
-    [Header("Personal")]
+    [Header("Personal - Name")]
     public bool showCharacterName = true;
     public TextMeshProUGUI characterNameText;
     private CanvasGroup characterNameTextGroup;
+    [Header("Personal - Status Effects")]
     public bool showStatusEffects = true;
     public Transform statusEffectPositiveIconParent;
     public Transform statusEffectNegativeIconParent;
-
-    public bool showDamagePopup = true;
-    public TextMeshProUGUI damagePopup;
-
+    public Color ownStatusEffectColor = Color.green;
+    public Color otherStatusEffectColor = Color.white;
+    [Header("Personal - Damage Popups")]
+    public bool showDamagePopups = true;
+    public GameObject damagePopupPrefab;
+    public Transform damagePopupParent;
+    public Color negativePopupColor = Color.red;
+    public Color positivePopupColor = Color.green;
+    public float popupTextDelay = 0.5f;
+    private Queue<FlyText> popupTexts = new Queue<FlyText>();
+    private Coroutine popupCoroutine;
+    [Header("Personal - Health Bar")]
     public bool showHealthBar = true;
     public Slider healthBar;
     public TextMeshProUGUI healthBarText;
     public bool healthBarTextInPercentage = false;
 
-    [Header("Party")]
+    [Header("Party - Name")]
     public bool showPartyCharacterName = true;
     public TextMeshProUGUI characterNameTextParty;
     private CanvasGroup characterNameTextGroupParty;
+    [Header("Party - Status Effects")]
     public bool showPartyListStatusEffects = true;
     public Transform statusEffectIconParentParty;
-
+    [Header("Party - Health Bar")]
     public bool showPartyHealthBar = true;
     public Slider healthBarParty;
     public TextMeshProUGUI healthBarTextParty;
@@ -227,7 +238,7 @@ public class CharacterState : MonoBehaviour
 
         if (effects.Count > 0 && effectsArray != null)
         {
-            // Simulate FFXIV server ticks by updating status effects every 3 seconds.
+            // Simulate FFXIV server ticks by updating status effects every 3 seconds (By default).
             if (statusEffectUpdateTimer >= statusEffectUpdateInterval)
             {
                 statusEffectUpdateTimer = 0f;
@@ -274,7 +285,8 @@ public class CharacterState : MonoBehaviour
         }
         else
         {
-            int damage = fromMax ? Mathf.RoundToInt((currentMaxHealth * percentage / 100.0f)) : Mathf.RoundToInt((int)(health * percentage / 100.0f));
+            int damage = fromMax ? Mathf.RoundToInt((currentMaxHealth * percentage)) : Mathf.RoundToInt((health * percentage)); // / 100.0f
+            //Debug.Log($"damage {damage}");
             ModifyHealth(damage, kill);
         }
     }
@@ -282,6 +294,8 @@ public class CharacterState : MonoBehaviour
     public void ModifyHealth(Damage damage, bool kill = false)
     {
         Damage m_damage = new Damage(damage);
+
+        //Debug.Log($"m_damage {m_damage} | m_damage.value {m_damage.value} | m_damage.negative {m_damage.negative}");
 
         if (m_damage.negative)
         {
@@ -437,9 +451,9 @@ public class CharacterState : MonoBehaviour
         {
             default:
             {
-                if (m_damage.value > 0)
+                if (m_damage.value != 0)
                     ModifyHealth(m_damage.value, kill);
-                Debug.Log($"modify {damage.value} kill {kill}");
+                //Debug.Log($"modify {damage.value} kill {kill}");
                 break;
             }
             case DamageApplicationType.percentage:
@@ -454,7 +468,7 @@ public class CharacterState : MonoBehaviour
                 if (percentage > 0f)
                     RemoveHealth(damage.value / 100.0f, false, kill);
 
-                Debug.Log($"remove {damage.value} kill {kill}");
+                //Debug.Log($"remove damage.value {damage.value} damage.value / 100.0f {damage.value / 100.0f} kill {kill}");
                 break;
             }
             case DamageApplicationType.percentageFromMax:
@@ -469,7 +483,7 @@ public class CharacterState : MonoBehaviour
                 if (percentage > 0f)
                     RemoveHealth(damage.value / 100.0f, true, kill);
 
-                Debug.Log($"remove {damage.value} kill {kill}");
+                //Debug.Log($"remove damage.value {damage.value} damage.value / 100.0f {damage.value / 100.0f} kill {kill}");
                 break;
             }
             case DamageApplicationType.set:
@@ -478,10 +492,13 @@ public class CharacterState : MonoBehaviour
                 if (damageAbs > 0)
                     SetHealth(damageAbs, kill);
 
-                Debug.Log($"set {damage.value} kill {kill}");
+                //Debug.Log($"set {damage.value} kill {kill}");
                 break;
             }
         }
+
+        ShowDamageFlyText(damage);
+
         //ModifyHealth(damage.value, kill);
     }
 
@@ -495,8 +512,8 @@ public class CharacterState : MonoBehaviour
 
         if (kill)
         {
-            value = Mathf.RoundToInt(-1 * (float)health);
-            Debug.Log($"hp: {value}");
+            value = Mathf.RoundToInt(-1 * (float)currentMaxHealth);
+            //Debug.Log($"hp: {value}");
         }
 
         if (!kill)
@@ -1349,7 +1366,7 @@ public class CharacterState : MonoBehaviour
         }
     }
 
-    public void AddEffect(StatusEffectData data, int tag = 0)
+    public void AddEffect(StatusEffectData data, bool self = false, int tag = 0)
     {
         if (data.statusEffect == null)
             return;
@@ -1384,10 +1401,10 @@ public class CharacterState : MonoBehaviour
             }
         }
         GameObject newStatusEffect = Instantiate(data.statusEffect, statusEffectParent);
-        AddEffect(newStatusEffect.GetComponent<StatusEffect>(), tag);
+        AddEffect(newStatusEffect.GetComponent<StatusEffect>(), self, tag);
     }
 
-    public void AddEffect(string name, int tag = 0)
+    public void AddEffect(string name, bool self = false, int tag = 0)
     {
         if (!gameObject.activeSelf)
             return;
@@ -1421,12 +1438,12 @@ public class CharacterState : MonoBehaviour
                     }
                 }
                 GameObject newStatusEffect = Instantiate(FightTimeline.Instance.allAvailableStatusEffects[i].statusEffect, statusEffectParent);
-                AddEffect(newStatusEffect.GetComponent<StatusEffect>(), tag);
+                AddEffect(newStatusEffect.GetComponent<StatusEffect>(), self, tag);
             }
         }
     }
 
-    public void AddEffect(StatusEffect effect, int tag = 0)
+    public void AddEffect(StatusEffect effect, bool self = false, int tag = 0)
     {
         if (!gameObject.activeSelf)
             return;
@@ -1461,10 +1478,33 @@ public class CharacterState : MonoBehaviour
         effects.Add(name, effect);
         effectsArray = effects.Values.ToArray();
         if (effect.data.negative)
-            effect.Initialize(statusEffectNegativeIconParent, statusEffectIconParentParty);
+        {
+            if (self)
+            {
+                effect.Initialize(statusEffectNegativeIconParent, statusEffectIconParentParty, ownStatusEffectColor);
+            }
+            else
+            {
+                effect.Initialize(statusEffectNegativeIconParent, statusEffectIconParentParty, otherStatusEffectColor);
+            }
+        }
         else
-            effect.Initialize(statusEffectPositiveIconParent, statusEffectIconParentParty);
+        {
+            if (self)
+            {
+                effect.Initialize(statusEffectPositiveIconParent, statusEffectIconParentParty, ownStatusEffectColor);
+            }
+            else
+            {
+                effect.Initialize(statusEffectPositiveIconParent, statusEffectIconParentParty, otherStatusEffectColor);
+            }
+        }
         effect.onApplication.Invoke(this);
+
+        if (showDamagePopups)
+        {
+            ShowStatusEffectFlyText(effect, " + ");
+        }
     }
 
     public void RemoveEffect(StatusEffectData data, bool expired, int tag = 0)
@@ -1508,6 +1548,11 @@ public class CharacterState : MonoBehaviour
         effects.Remove(name);
         effectsArray = effects.Values.ToArray();
 
+        if (showDamagePopups)
+        {
+            ShowStatusEffectFlyText(temp, " - ");
+        }
+
         temp.Remove();
     }
 
@@ -1526,24 +1571,119 @@ public class CharacterState : MonoBehaviour
         return effectsArray;
     }
 
-    public void ShowDamagePopupText(int value)
+    public void ShowStatusEffectFlyText(StatusEffect statusEffect, string prefix)
+    {
+        ShowStatusEffectFlyText(statusEffect.data, prefix);
+    }
+
+    public void ShowStatusEffectFlyText(StatusEffectData data, string prefix)
+    {
+        if (data.hidden) 
+            return;
+
+        // Hard coded the Short (@S) and Long (@L) that are used to distinguish between few of the same debuffs, needs a better implementation
+        string result = $"{prefix}{Utilities.InsertSpaceBeforeCapitals(data.statusName).Replace("@S","").Replace("@L","")}";
+
+        Color color = positivePopupColor;
+
+        if (data.negative)
+        {
+            color = negativePopupColor;
+        }
+
+        Sprite icon = data.hudElement.transform.GetChild(0).GetComponent<Image>().sprite;
+
+        ShowFlyText(new FlyText(result, color, icon, string.Empty));
+    }
+
+    public void ShowDamageFlyText(Damage damage)
+    {
+        string result = $"<sprite=\"damage_types\" name=\"{(int)damage.type}\">{Mathf.Abs(damage.value)}";
+
+        string source = damage.name;
+
+        Color color = positivePopupColor;
+
+        if (damage.negative || damage.value < 0)
+        {
+            color = negativePopupColor;
+        }
+
+        ShowFlyText(new FlyText(result, color, null, source));
+    }
+
+    public void ShowDamageFlyText(int value, string source)
+    {
+        string result = Mathf.Abs(value).ToString();
+
+        Color color = positivePopupColor;
+
+        if (value < 0)
+        {
+            color = negativePopupColor;
+        }
+
+        ShowFlyText(new FlyText(result, color, null, source));
+    }
+
+    public void ShowFlyText(FlyText text)
     {
         if (!gameObject.activeSelf)
             return;
 
-        if (damagePopup == null)
+        if (damagePopupPrefab == null || damagePopupParent == null)
             return;
 
-        if (value >= 0)
+        if (string.IsNullOrEmpty(text.content))
+            return;
+
+        popupTexts.Enqueue(text);
+
+        if (popupCoroutine == null)
         {
-            damagePopup.text = $"+{value}";
-            damagePopup.color = Color.green;
+            popupCoroutine = StartCoroutine(ProcessFlyTextQueue());
         }
-        else
+    }
+
+    private IEnumerator ProcessFlyTextQueue()
+    {
+        while (popupTexts.Count > 0)
         {
-            damagePopup.text = $"-{value}";
-            damagePopup.color = Color.red;
+            FlyText text = popupTexts.Dequeue();
+
+            GameObject go = Instantiate(damagePopupPrefab, damagePopupParent);
+            TextMeshProUGUI tm = go.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
+            tm.text = text.content;
+            tm.color = text.color;
+
+            TextMeshProUGUI sTm = go.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
+
+            if (!string.IsNullOrEmpty(text.source))
+            {
+                sTm.gameObject.SetActive(true);
+                sTm.text = text.source;
+                sTm.color = text.color;
+            }
+            else
+            {
+                sTm.gameObject.SetActive(false);
+            }
+
+            Image image = go.transform.GetComponentInChildren<Image>();
+            if (text.icon != null)
+            {
+                image.sprite = text.icon;
+                image.gameObject.SetActive(true);
+            }
+            else
+            {
+                image.gameObject.SetActive(false);
+            }
+
+            yield return new WaitForSeconds(popupTextDelay);
         }
+
+        popupCoroutine = null;
     }
 
     public void UpdateCharacterName()
@@ -1567,19 +1707,28 @@ public class CharacterState : MonoBehaviour
         {
             if (!hidePartyName)
             {
-                characterNameTextGroupParty.alpha = 0f;
+                characterNameTextGroupParty.alpha = 1f;
             }
             else
             {
-                characterNameTextGroupParty.alpha = 1f;
+                characterNameTextGroupParty.alpha = 0f;
             }
         }
     }
 
-    private IEnumerator HideDamagePopupText(float delay)
+    public struct FlyText
     {
-        yield return new WaitForSeconds(delay);
-        damagePopup.text = string.Empty;
-        damagePopup.color = Color.white;
+        public string content;
+        public Color color;
+        public Sprite icon;
+        public string source;
+
+        public FlyText(string content, Color color, Sprite icon, string source)
+        {
+            this.content = content;
+            this.color = color;
+            this.icon = icon;
+            this.source = source;
+        }
     }
 }

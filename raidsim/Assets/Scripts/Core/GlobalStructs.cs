@@ -8,6 +8,7 @@ public static class GlobalStructs
         public enum ElementalAspect { none, unaspected, fire, ice, lightning, water, wind, earth, dark, light }
         public enum PhysicalAspect { none, slashing, piercing, blunt }
 
+        public string name;
         public int value;
         public bool negative;
         public DamageType type;
@@ -15,8 +16,12 @@ public static class GlobalStructs
         public PhysicalAspect physicalAspect;
         public DamageApplicationType applicationType;
 
-        public Damage(Damage copy)
+        public Damage(Damage copy, string name = "")
         {
+            if (string.IsNullOrEmpty(name))
+                this.name = copy.name;
+            else
+                this.name = name;
             value = copy.value;
             type = copy.type;
             negative = copy.negative;
@@ -25,8 +30,12 @@ public static class GlobalStructs
             applicationType = copy.applicationType;
         }
 
-        public Damage(Damage copy, int value)
+        public Damage(Damage copy, int value, string name = "")
         {
+            if (string.IsNullOrEmpty(name))
+                this.name = copy.name;
+            else
+                this.name = name;
             this.value = value;
             negative = copy.negative;
             type = copy.type;
@@ -35,8 +44,9 @@ public static class GlobalStructs
             applicationType = copy.applicationType;
         }
 
-        public Damage(int value, bool negative)
+        public Damage(int value, bool negative, string name = "")
         {
+            this.name = name;
             this.value = value;
             this.negative = negative;
             type = DamageType.magical;
@@ -45,8 +55,9 @@ public static class GlobalStructs
             applicationType = DamageApplicationType.normal;
         }
 
-        public Damage(int value, bool negative, DamageApplicationType applicationType)
+        public Damage(int value, bool negative, DamageApplicationType applicationType, string name = "")
         {
+            this.name = name;
             this.value = value;
             this.negative = negative;
             type = DamageType.magical;
@@ -55,8 +66,9 @@ public static class GlobalStructs
             this.applicationType = applicationType;
         }
 
-        public Damage(int value, bool negative, DamageType type, PhysicalAspect physicalAspect)
+        public Damage(int value, bool negative, DamageType type, PhysicalAspect physicalAspect, string name = "")
         {
+            this.name = name;
             this.value = value;
             this.negative = negative;
             this.type = type;
@@ -65,8 +77,9 @@ public static class GlobalStructs
             applicationType = DamageApplicationType.normal;
         }
 
-        public Damage(int value, bool negative, DamageType type, PhysicalAspect physicalAspect, DamageApplicationType applicationType)
+        public Damage(int value, bool negative, DamageType type, PhysicalAspect physicalAspect, DamageApplicationType applicationType, string name = "")
         {
+            this.name = name;
             this.value = value;
             this.negative = negative;
             this.type = type;
@@ -75,8 +88,9 @@ public static class GlobalStructs
             this.applicationType = applicationType;
         }
 
-        public Damage(int value, bool negative, ElementalAspect elementalAspect)
+        public Damage(int value, bool negative, ElementalAspect elementalAspect, string name = "")
         {
+            this.name = name;
             this.value = value;
             this.negative = negative;
             type = DamageType.magical;
@@ -85,8 +99,9 @@ public static class GlobalStructs
             applicationType = DamageApplicationType.normal;
         }
 
-        public Damage(int value, bool negative, ElementalAspect elementalAspect, DamageApplicationType applicationType)
+        public Damage(int value, bool negative, ElementalAspect elementalAspect, DamageApplicationType applicationType, string name = "")
         {
+            this.name = name;
             this.value = value;
             this.negative = negative;
             type = DamageType.magical;
@@ -95,8 +110,9 @@ public static class GlobalStructs
             this.applicationType = applicationType;
         }
 
-        public Damage(int value, bool negative, DamageType type, ElementalAspect elementalAspect, PhysicalAspect physicalAspect)
+        public Damage(int value, bool negative, DamageType type, ElementalAspect elementalAspect, PhysicalAspect physicalAspect, string name = "")
         {
+            this.name = name;
             this.value = value;
             this.negative = negative;
             this.type = type;
@@ -105,8 +121,9 @@ public static class GlobalStructs
             applicationType = DamageApplicationType.normal;
         }
 
-        public Damage(int value, bool negative, DamageType type, ElementalAspect elementalAspect, PhysicalAspect physicalAspect, DamageApplicationType applicationType)
+        public Damage(int value, bool negative, DamageType type, ElementalAspect elementalAspect, PhysicalAspect physicalAspect, DamageApplicationType applicationType, string name = "")
         {
+            this.name = name;
             this.value = value;
             this.negative = negative;
             this.type = type;

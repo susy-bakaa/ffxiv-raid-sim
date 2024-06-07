@@ -36,7 +36,7 @@ public class RaidwideDebuffMechanic : FightMechanic
             if (!cleansEffect)
             {
                 // Apply the effect to the target
-                target.AddEffect(effect.data, effect.tag);
+                target.AddEffect(effect.data, false, effect.tag);
             }
             else
             {

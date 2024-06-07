@@ -128,12 +128,12 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
                 }
                 else
                 {
-                    action.source.AddEffect(data.buff);
+                    action.source.AddEffect(data.buff, true);
                 }
             }
             else
             {
-                action.source.AddEffect(data.buff);
+                action.source.AddEffect(data.buff, true);
             }
         }
         if (data.debuff != null)

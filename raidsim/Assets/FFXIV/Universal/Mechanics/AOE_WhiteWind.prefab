@@ -82,8 +82,8 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 15.5
-  m_Height: 33
+  m_Radius: 13.85
+  m_Height: 29.8
   m_Direction: 1
   m_Center: {x: 0, y: -0.5, z: 0}
 --- !u!114 &5439426702944404093
@@ -101,12 +101,15 @@ MonoBehaviour:
   damageName: White Wind
   owner: {fileID: 0}
   damage:
+    name: White Wind
     value: 0
-    type: 1
+    negative: 0
+    type: 3
     elementalAspect: 1
     physicalAspect: 0
     applicationType: 0
-  delay: 0.25
+  visualDelay: 0
+  damageApplicationDelay: 0.25
   failWipes: 0
   cleaves: 1
   shared: 0
@@ -146,11 +149,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 85a5fb47b6fa1534481c4496342adca9, type: 3}
       propertyPath: m_LocalScale.x
-      value: 75
+      value: 88.875
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 85a5fb47b6fa1534481c4496342adca9, type: 3}
       propertyPath: m_LocalScale.y
-      value: 75
+      value: 88.875
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 85a5fb47b6fa1534481c4496342adca9, type: 3}
       propertyPath: m_LocalPosition.x

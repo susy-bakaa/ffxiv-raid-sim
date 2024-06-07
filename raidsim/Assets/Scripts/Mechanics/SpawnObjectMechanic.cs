@@ -24,7 +24,7 @@ public class SpawnObjectMechanic : FightMechanic
                 {
                     if (spawned.TryGetComponent(out DamageTrigger damageTrigger))
                     {
-                        damageTrigger.damage = new Damage(Mathf.RoundToInt(multiplier * action.source.health), false, DamageType.magical, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal);
+                        damageTrigger.damage = new Damage(Mathf.RoundToInt(multiplier * action.source.health), false, DamageType.unique, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal, "White Wind");
                     }
                 }
             }
@@ -36,7 +36,7 @@ public class SpawnObjectMechanic : FightMechanic
                 {
                     if (spawned.TryGetComponent(out DamageTrigger damageTrigger))
                     {
-                        damageTrigger.damage = new Damage(Mathf.RoundToInt(multiplier * action.source.health), false, DamageType.magical, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal);
+                        damageTrigger.damage = new Damage(Mathf.RoundToInt(multiplier * action.source.health), false, DamageType.unique, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal, "White Wind");
                     }
                 }
             }
