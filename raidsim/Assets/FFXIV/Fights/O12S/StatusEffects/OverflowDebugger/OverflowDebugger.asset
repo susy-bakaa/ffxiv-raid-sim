@@ -13,8 +13,14 @@ MonoBehaviour:
   m_Name: OverflowDebugger
   m_EditorClassIdentifier: 
   statusName: OverflowDebugger
+  statusDesc: Invulnerable to overflow bugs.
   negative: 1
   unique: 1
+  infinite: 0
+  toggle: 0
+  rollsCooldown: 1
+  hidden: 0
+  lostOnDeath: 1
   length: 30
   maxLength: 30
   appliedStacks: 1
@@ -22,3 +28,4 @@ MonoBehaviour:
   statusEffect: {fileID: 5437255876514266662, guid: 97db4f91dafc9b5488c85b0296c2a861, type: 3}
   hudElement: {fileID: 8800081637445717024, guid: ab7cc18d87097a14980fe0d04558a834, type: 3}
   incompatableStatusEffects: []
+  assignedRoles: 

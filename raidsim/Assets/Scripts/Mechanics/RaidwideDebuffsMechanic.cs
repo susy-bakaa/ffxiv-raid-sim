@@ -30,7 +30,7 @@ public class RaidwideDebuffsMechanic : FightMechanic
         }
     }
 
-    public override void TriggerMechanic(ActionInfo action)
+    public override void TriggerMechanic(ActionInfo actionInfo)
     {
         statusEffects = new List<StatusEffectInfo>(effects); // Copy the effects list
         partyMembers = new List<CharacterState>(party.GetActiveMembers()); // Copy the party members list

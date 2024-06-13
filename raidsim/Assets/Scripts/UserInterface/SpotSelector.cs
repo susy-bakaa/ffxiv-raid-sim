@@ -12,10 +12,14 @@ public class SpotSelector : MonoBehaviour
     public AIController[] bots;
     public BotNode[] spots;
 
+    void Awake()
+    {
+        Select(0);
+    }
+
     void Start()
     {
         dropdown = GetComponentInChildren<TMP_Dropdown>();
-        Select(0);
     }
 
     void Update()
@@ -24,7 +28,7 @@ public class SpotSelector : MonoBehaviour
     }
 
     public void Select(int value)
-    {   
+    {
         player.clockSpot = spots[value];
 
         int botNameIndex = 0; 

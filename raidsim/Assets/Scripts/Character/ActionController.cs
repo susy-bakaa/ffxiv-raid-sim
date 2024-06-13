@@ -116,7 +116,7 @@ public class ActionController : MonoBehaviour
                 }
             }
 
-            castTime -= Time.deltaTime;
+            castTime -= FightTimeline.deltaTime;
             if (castBar != null)
             {
                 castBar.value = lastCastTime - castTime;
@@ -412,12 +412,25 @@ public class ActionController : MonoBehaviour
         public CharacterAction action;
         public CharacterState source;
         public CharacterState target;
+        public bool sourceIsPlayer;
+        public bool targetIsPlayer;
 
         public ActionInfo(CharacterAction action, CharacterState source, CharacterState target)
         {
             this.action = action;
             this.source = source;
             this.target = target;
+            sourceIsPlayer = false;
+            targetIsPlayer = false;
+
+            if (source != null && source == FightTimeline.Instance.player)
+            {
+                sourceIsPlayer = true;
+            }
+            if (target != null && target == FightTimeline.Instance.player)
+            {
+                targetIsPlayer = true;
+            }
         }
     }
 

@@ -48,6 +48,15 @@ MonoBehaviour:
   duration: 0
   stacks: 0
   uniqueTag: 0
+  damage:
+    name: Latent Defect
+    value: 100
+    negative: 1
+    ignoreDamageReductions: 1
+    type: 3
+    elementalAspect: 1
+    physicalAspect: 0
+    applicationType: 2
   onApplication:
     m_PersistentCalls:
       m_Calls: []
@@ -67,4 +76,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 22f0ce800856a1f4e8be8f08ef44eb85, type: 2}
   tags: -3
   esunable: 0
+  damageOnExpire:
+    name: Latent Defect
+    value: 100
+    negative: 1
+    ignoreDamageReductions: 1
+    type: 3
+    elementalAspect: 1
+    physicalAspect: 0
+    applicationType: 2
   killsOnExpire: 1

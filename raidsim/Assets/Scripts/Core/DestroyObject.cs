@@ -14,8 +14,8 @@ public class DestroyObject : MonoBehaviour
         }
     }
 
-    public void TriggerDestruction()
+    public void TriggerDestruction(float delay)
     {
-        Destroy(gameObject, 0.1f);
+        Destroy(gameObject, delay);
     }
 }

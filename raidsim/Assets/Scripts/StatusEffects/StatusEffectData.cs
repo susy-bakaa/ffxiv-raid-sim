@@ -14,6 +14,8 @@ public class StatusEffectData : ScriptableObject
     public bool toggle = false;
     public bool rollsCooldown = true;
     public bool hidden = false;
+    public bool lostOnDeath = true;
+    public bool unaffectedByTimeScale = false;
     public float length = 10f;
     public float maxLength = 10f;
     public int appliedStacks = 1;

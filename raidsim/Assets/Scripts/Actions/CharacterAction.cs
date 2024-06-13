@@ -65,7 +65,7 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         }
         if (timer > 0f)
         {
-            timer -= Time.deltaTime;
+            timer -= FightTimeline.deltaTime;
             isAvailable = false;
             if (recastFillGroup != null)
             {
@@ -116,35 +116,35 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         }
     }
 
-    public void ExecuteAction(ActionInfo action)
+    public void ExecuteAction(ActionInfo actionInfo)
     {
         if (data.buff != null)
         {
             if (data.buff.toggle)
             {
-                if (action.source.HasEffect(data.buff.statusName))
+                if (actionInfo.source.HasEffect(data.buff.statusName))
                 {
-                    action.source.RemoveEffect(data.buff, false);
+                    actionInfo.source.RemoveEffect(data.buff, false);
                 }
                 else
                 {
-                    action.source.AddEffect(data.buff, true);
+                    actionInfo.source.AddEffect(data.buff, actionInfo.sourceIsPlayer);
                 }
             }
             else
             {
-                action.source.AddEffect(data.buff, true);
+                actionInfo.source.AddEffect(data.buff, actionInfo.sourceIsPlayer);
             }
         }
         if (data.debuff != null)
         {
-            if (action.target != null)
+            if (actionInfo.target != null)
             {
-                action.target.AddEffect(data.debuff);
+                actionInfo.target.AddEffect(data.debuff, actionInfo.sourceIsPlayer);
             }
         }
 
-        onExecute.Invoke(action);
+        onExecute.Invoke(actionInfo);
     }
 
     public void ActivateCooldown()

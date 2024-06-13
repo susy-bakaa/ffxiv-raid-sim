@@ -13,7 +13,7 @@ public class RaidwideDebuffMechanic : FightMechanic
 
     List<CharacterState> partyMembers;
 
-    public override void TriggerMechanic(ActionInfo action)
+    public override void TriggerMechanic(ActionInfo actionInfo)
     {
         partyMembers = new List<CharacterState>(party.members); // Copy the party members list
         partyMembers.Shuffle();

@@ -5,8 +5,10 @@ using static GlobalStructs;
 
 public class DamageOvertimeDebuff : StatusEffect
 {
-    [Header("Function")]
-    public Damage damage = new Damage(-1000, true);
+    public void Reset()
+    {
+        damage = new Damage(-1000, true, string.Empty);
+    }
 
     public override void OnTick(CharacterState state)
     {

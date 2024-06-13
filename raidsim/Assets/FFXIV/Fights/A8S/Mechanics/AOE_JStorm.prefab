@@ -207,22 +207,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damageName: Gale Force
   owner: {fileID: 0}
+  autoAssignOwner: 0
   damage:
+    name: 
     value: 1
     negative: 1
+    ignoreDamageReductions: 0
     type: 3
     elementalAspect: 6
     physicalAspect: 0
     applicationType: 3
-  visualDelay: 0
-  damageApplicationDelay: 0.25
-  failWipes: 0
+  initializeOnStart: 1
+  self: 0
+  dealsDamage: 1
+  passDamage: 0
+  isAShield: 0
   cleaves: 1
+  ignoresOwner: 0
+  playerActivated: 1
   shared: 0
   enumeration: 0
+  visualDelay: 0
+  triggerDelay: 0
+  damageApplicationDelay: 0.25
+  cooldown: 10
   playersRequired: 0
-  players: []
-  effects:
+  currentPlayers: []
+  appliedEffects:
   - {fileID: 11400000, guid: 8b991297547dcf84fbd25bc81a4d6fc9, type: 2}
   onHit:
     m_PersistentCalls:
@@ -236,12 +247,12 @@ MonoBehaviour:
       - m_Target: {fileID: 3719421399136398919}
         m_TargetAssemblyTypeName: DestroyObject, Assembly-CSharp
         m_MethodName: TriggerDestruction
-        m_Mode: 1
+        m_Mode: 4
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 0
+          m_FloatArgument: 0.1
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2

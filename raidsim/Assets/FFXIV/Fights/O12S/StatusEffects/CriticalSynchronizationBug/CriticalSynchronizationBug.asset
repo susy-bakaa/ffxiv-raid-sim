@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99b696446f1f2e246b4a8ecc8cc05a7a, type: 3}
+  m_Name: CriticalSynchronizationBug
+  m_EditorClassIdentifier: 
+  statusName: CriticalSynchronizationBug
+  statusDesc: Affected by a critical error. Data corruption will cause damage and
+    spread when the effect ends.
+  negative: 1
+  unique: 0
+  infinite: 0
+  toggle: 0
+  rollsCooldown: 1
+  hidden: 0
+  lostOnDeath: 1
+  length: 8
+  maxLength: 8
+  appliedStacks: 1
+  maxStacks: 1
+  statusEffect: {fileID: 1002298511311311567, guid: 0af364bdbb2a5344d957df0baf72acc3, type: 3}
+  hudElement: {fileID: 3030080346406085505, guid: a0969ebf7d4a0fe46ae11f03abb708c5, type: 3}
+  incompatableStatusEffects:
+  - {fileID: 11400000, guid: cdbf5cf658beb754cbce04850d15a774, type: 2}
+  assignedRoles: 

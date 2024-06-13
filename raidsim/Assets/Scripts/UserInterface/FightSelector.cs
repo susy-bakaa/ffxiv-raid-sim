@@ -16,7 +16,7 @@ public class FightSelector : MonoBehaviour
     void Start()
     {
         dropdown = GetComponentInChildren<TMP_Dropdown>();
-        Select(0);
+        //Select(0);
     }
 
     void Update()

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using static CharacterState;
 
 public static class Utilities
 {
@@ -253,6 +254,25 @@ public static class Utilities
         for (int i = 0; i < arr.Length; i++)
         {
             arr[i] = value;
+        }
+    }
+
+    public static bool ContainsKey(this List<Shield> list, string key)
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            if (list[i].key == key)
+                return true;
+        }
+        return false;
+    }
+
+    public static void RemoveKey(this List<Shield> list, string key)
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            if (list[i].key == key)
+                list.RemoveAt(i);
         }
     }
 

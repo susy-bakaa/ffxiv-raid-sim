@@ -12,6 +12,7 @@ public class CharacterActionData : ScriptableObject
     public string actionName = "Unnamed Action";
     public ActionType actionType = ActionType.Spell;
     public Damage damage = new Damage(0, true);
+    public bool isAShield = false;
     public int maxTargets = 1;
     public float range = 25f;
     public float radius = 30f;

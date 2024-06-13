@@ -6,10 +6,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using static CharacterState;
 using static GlobalStructs;
 using static GlobalStructs.Damage;
 using static Unity.VisualScripting.Member;
-using static UnityEngine.Rendering.DebugUI;
 
 public class CharacterState : MonoBehaviour
 {
@@ -22,6 +22,8 @@ public class CharacterState : MonoBehaviour
     [HideInInspector] public int currentMaxHealth;
     public int health = 16000;
     public Dictionary<string, float> maxHealthModifiers = new Dictionary<string, float>();
+    public int shield = 0;
+    public List<Shield> currentShields = new List<Shield>();
 
     public float defaultSpeed { private set; get; }
     public float currentSpeed = 6.3f;
@@ -64,6 +66,7 @@ public class CharacterState : MonoBehaviour
     public float bluntElementDamageModifier = 1f;
 
     [Header("States")]
+    public bool invulnerable = false;
     public bool dead = false;
     public bool uncontrollable = false;
     public bool untargetable = false;
@@ -107,6 +110,7 @@ public class CharacterState : MonoBehaviour
     public Transform damagePopupParent;
     public Color negativePopupColor = Color.red;
     public Color positivePopupColor = Color.green;
+    public Color neutralPopupColor = Color.white;
     public float popupTextDelay = 0.5f;
     private Queue<FlyText> popupTexts = new Queue<FlyText>();
     private Coroutine popupCoroutine;
@@ -127,6 +131,8 @@ public class CharacterState : MonoBehaviour
     public bool showPartyHealthBar = true;
     public Slider healthBarParty;
     public TextMeshProUGUI healthBarTextParty;
+    public Slider shieldBarParty;
+    public Slider overShieldBarParty;
 
     void Awake()
     {
@@ -190,6 +196,17 @@ public class CharacterState : MonoBehaviour
         {
             healthBarParty.maxValue = currentMaxHealth;
             healthBarParty.value = health;
+            if (shieldBarParty != null)
+            {
+                shieldBarParty.maxValue = currentMaxHealth;
+                shieldBarParty.value = health + shield;
+            }
+            if (overShieldBarParty != null)
+            {
+                overShieldBarParty.minValue = currentMaxHealth;
+                overShieldBarParty.maxValue = currentMaxHealth + currentMaxHealth;
+                overShieldBarParty.value = health + shield;
+            }
         }
         if (healthBarTextParty != null)
         {
@@ -202,7 +219,7 @@ public class CharacterState : MonoBehaviour
         }
         if (characterNameTextGroup != null)
         {
-            if (!hideNameplate)
+            if (!hideNameplate && showCharacterName)
             {
                 characterNameTextGroup.alpha = 1f;
             }
@@ -218,7 +235,7 @@ public class CharacterState : MonoBehaviour
         }
         if (characterNameTextGroupParty != null)
         {
-            if (!hidePartyName)
+            if (!hidePartyName && showPartyCharacterName)
             {
                 characterNameTextGroupParty.alpha = 1f;
             }
@@ -250,7 +267,14 @@ public class CharacterState : MonoBehaviour
             // Update the status effect durations every frame.
             for (int i = 0; i < effectsArray.Length; i++)
             {
-                effectsArray[i].duration -= Time.deltaTime;
+                if (effectsArray[i].data.unaffectedByTimeScale)
+                {
+                    effectsArray[i].duration -= Time.deltaTime;
+                }
+                else
+                {
+                    effectsArray[i].duration -= FightTimeline.deltaTime;
+                }
                 effectsArray[i].onUpdate.Invoke(this);
                 if (effectsArray[i].duration <= 0f)
                 {
@@ -265,41 +289,19 @@ public class CharacterState : MonoBehaviour
             characterNameTextParty.text = characterName;
     }
 
-    public void SetHealth(int value, bool kill = false)
-    {
-        if (kill)
-        {
-            ModifyHealth(0, kill);
-        }
-        else
-        {
-            ModifyHealth(-1 * (health - value), kill);
-        }
-    }
-
-    public void RemoveHealth(float percentage, bool fromMax, bool kill = false)
-    {
-        if (kill)
-        {
-            ModifyHealth(0, kill);
-        }
-        else
-        {
-            int damage = fromMax ? Mathf.RoundToInt((currentMaxHealth * percentage)) : Mathf.RoundToInt((health * percentage)); // / 100.0f
-            //Debug.Log($"damage {damage}");
-            ModifyHealth(damage, kill);
-        }
-    }
-
     public void ModifyHealth(Damage damage, bool kill = false)
     {
-        Damage m_damage = new Damage(damage);
+        if (!gameObject.activeSelf)
+            return;
 
-        //Debug.Log($"m_damage {m_damage} | m_damage.value {m_damage.value} | m_damage.negative {m_damage.negative}");
+        if (health <= 0 || dead)
+            return;
+
+        Damage m_damage = new Damage(damage);
 
         if (m_damage.negative)
         {
-            switch (damage.type)
+            switch (m_damage.type)
             {
                 case DamageType.magical:
                 {
@@ -329,7 +331,7 @@ public class CharacterState : MonoBehaviour
                     break;
                 }
             }
-            switch (damage.elementalAspect)
+            switch (m_damage.elementalAspect)
             {
                 case ElementalAspect.unaspected:
                 {
@@ -413,7 +415,7 @@ public class CharacterState : MonoBehaviour
                     break;
                 }
             }
-            switch (damage.physicalAspect)
+            switch (m_damage.physicalAspect)
             {
                 case PhysicalAspect.slashing:
                 {
@@ -446,19 +448,21 @@ public class CharacterState : MonoBehaviour
         }
 
         float percentage;
+        bool ignoreDamageReduction = m_damage.ignoreDamageReductions;
+        Damage flyTextDamage = new Damage(m_damage);
 
-        switch (damage.applicationType)
+        switch (m_damage.applicationType)
         {
             default:
             {
                 if (m_damage.value != 0)
-                    ModifyHealth(m_damage.value, kill);
-                //Debug.Log($"modify {damage.value} kill {kill}");
+                    ModifyHealth(m_damage.value, kill, ignoreDamageReduction);
+                // Fly text damage is already accurate to the actual damage dealt
                 break;
             }
             case DamageApplicationType.percentage:
             {
-                percentage = Mathf.Abs(damage.value) / 100f;
+                percentage = Mathf.Abs(m_damage.value) / 100f;
 
                 if (percentage > 1f)
                     percentage = 1f;
@@ -466,14 +470,14 @@ public class CharacterState : MonoBehaviour
                     percentage = 0f;
 
                 if (percentage > 0f)
-                    RemoveHealth(damage.value / 100.0f, false, kill);
-
-                //Debug.Log($"remove damage.value {damage.value} damage.value / 100.0f {damage.value / 100.0f} kill {kill}");
+                    RemoveHealth(m_damage.value / 100.0f, false, kill, ignoreDamageReduction);
+                // Set the fly text damage to be accurate to the actual damage dealt
+                flyTextDamage.value = Mathf.RoundToInt(health * percentage);
                 break;
             }
             case DamageApplicationType.percentageFromMax:
             {
-                percentage = Mathf.Abs(damage.value) / 100f;
+                percentage = Mathf.Abs(m_damage.value) / 100f;
 
                 if (percentage > 1f)
                     percentage = 1f;
@@ -481,64 +485,151 @@ public class CharacterState : MonoBehaviour
                     percentage = 0f;
 
                 if (percentage > 0f)
-                    RemoveHealth(damage.value / 100.0f, true, kill);
-
-                //Debug.Log($"remove damage.value {damage.value} damage.value / 100.0f {damage.value / 100.0f} kill {kill}");
+                    RemoveHealth(m_damage.value / 100.0f, true, kill, ignoreDamageReduction);
+                // Set the fly text damage to be accurate to the actual damage dealt
+                flyTextDamage.value = Mathf.RoundToInt(currentMaxHealth * percentage);
                 break;
             }
             case DamageApplicationType.set:
             {
-                int damageAbs = Mathf.Abs(damage.value);
+                int damageAbs = Mathf.Abs(m_damage.value);
                 if (damageAbs > 0)
-                    SetHealth(damageAbs, kill);
-
-                //Debug.Log($"set {damage.value} kill {kill}");
+                    SetHealth(damageAbs, kill, ignoreDamageReduction);
+                // Set the fly text damage to be accurate to the actual damage dealt
+                flyTextDamage.value = -1 * (health - m_damage.value);
                 break;
             }
         }
 
-        ShowDamageFlyText(damage);
+        ShowDamageFlyText(flyTextDamage);
 
         //ModifyHealth(damage.value, kill);
     }
 
-    public void ModifyHealth(int value, bool kill = false)
+    private void SetHealth(int value, bool kill = false, bool ignoreDamageReduction = false)
     {
-        if (!gameObject.activeSelf)
-            return;
-
-        if (health <= 0)
-            return;
-
         if (kill)
         {
-            value = Mathf.RoundToInt(-1 * (float)currentMaxHealth);
-            //Debug.Log($"hp: {value}");
-        }
-
-        if (!kill)
-        {
-            health += Mathf.RoundToInt(value * currentDamageReduction);
+            ModifyHealth(0, kill, ignoreDamageReduction);
         }
         else
         {
-            health += value;
+            ModifyHealth(-1 * (health - value), kill, ignoreDamageReduction);
+        }
+    }
+
+    private void RemoveHealth(float percentage, bool fromMax, bool kill = false, bool ignoreDamageReduction = false)
+    {
+        if (kill)
+        {
+            ModifyHealth(0, kill, ignoreDamageReduction);
+        }
+        else
+        {
+            int damage = fromMax ? Mathf.RoundToInt(currentMaxHealth * percentage) : Mathf.RoundToInt(health * percentage);
+            ModifyHealth(-1 * damage, kill, ignoreDamageReduction);
+        }
+    }
+
+    private void ModifyHealth(int value, bool kill = false, bool ignoreDamageReduction = false)
+    {
+        if (kill)
+        {
+            value = Mathf.RoundToInt(-1 * (float)currentMaxHealth);
         }
 
-        if (health <= 0)
+        if (!kill && !ignoreDamageReduction)
+        {
+            // Apply damage reduction
+            value = Mathf.RoundToInt(value * currentDamageReduction);
+        }
+
+        /*if (shield > 0)
+        {
+            if (shield >= Mathf.Abs(value))
+            {
+                // If shield can absorb all the damage
+                shield += value;
+            }
+            else
+            {
+                // If shield can't absorb all the damage
+                int remainingDamage = Mathf.Abs(value) - shield;
+                shield = 0;
+                health += -1 * remainingDamage;
+            }
+        }
+        else
+        {
+            // If no shield, apply damage directly to health
+            health += value;
+            if (kill)
+                shield -= shield;
+        }*/
+
+        //
+        int remainingDamage = value;
+
+        if (!invulnerable)
+        {
+            if (currentShields.Count > 0 && !kill && remainingDamage < 0)
+            {
+                for (int i = currentShields.Count - 1; i >= 0; i--)
+                {
+                    if (remainingDamage >= 0)
+                    {
+                        break;
+                    }
+
+                    if (currentShields[i].value > Mathf.Abs(remainingDamage))
+                    {
+                        currentShields[i] = new Shield(currentShields[i].key, currentShields[i].value + remainingDamage);
+                        remainingDamage = 0;
+                    }
+                    else
+                    {
+                        remainingDamage += currentShields[i].value;
+                        RemoveEffect(currentShields[i].key, false);
+                        if (i < (currentShields.Count - 1))
+                            currentShields.RemoveAt(i);
+                    }
+                }
+            }
+
+            if (remainingDamage != 0)
+            {
+                health += remainingDamage;
+                if (kill)
+                    shield -= shield;
+            }
+        }
+        //
+
+        if (health <= 0 && !invulnerable)
         {
             health = 0;
             dead = true;
             onDeath.Invoke();
             if (effectsArray != null)
             {
+                Dictionary<string, StatusEffect> temp = new Dictionary<string, StatusEffect>();
+
                 for (int i = 0; i < effectsArray.Length; i++)
                 {
-                    effectsArray[i].onExpire.Invoke(this);
-                    effectsArray[i].Remove();
+                    if (effectsArray[i].data.lostOnDeath)
+                    {
+                        effectsArray[i].onExpire.Invoke(this);
+                        effectsArray[i].Remove();
+                        if (showDamagePopups)
+                            ShowStatusEffectFlyText(effectsArray[i], " - ");
+                    }
+                    else
+                    {
+                        temp.Add(effectsArray[i].data.statusName, effectsArray[i]);
+                    }
                 }
-                effects = new Dictionary<string, StatusEffect>();
-                effectsArray = null;
+                effects = new Dictionary<string, StatusEffect>(temp);
+                effectsArray = effects.Values.ToArray();
             }
         }
         if (health > currentMaxHealth)
@@ -546,6 +637,62 @@ public class CharacterState : MonoBehaviour
             health = currentMaxHealth;
         }
 
+        RecalculateCurrentShield();
+        //HealthBarUserInterface();
+    }
+
+    public void AddShield(int value, string identifier)
+    {
+        if (!currentShields.ContainsKey(identifier))
+        {
+            currentShields.Add(new Shield(identifier, value));
+
+            if (showDamagePopups)
+                ShowDamageFlyText(new Damage(value, false, true, DamageType.magical, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal, identifier));
+        }
+        else
+        {
+            currentShields.RemoveKey(identifier);
+            currentShields.Add(new Shield(identifier, value));
+        }
+
+        RecalculateCurrentShield();
+    }
+
+    public void RemoveShield(string identifier)
+    {
+        if (currentShields.ContainsKey(identifier))
+        {
+            currentShields.RemoveKey(identifier);
+        }
+        else
+        {
+            return;
+        }
+
+        RecalculateCurrentShield();
+    }
+
+    private void RecalculateCurrentShield()
+    {
+        int result = 0;
+
+        if (currentShields.Count > 0)
+        {
+            currentShields.Sort();
+            for (int i = 0; i < currentShields.Count; i++)
+            {
+                result += currentShields[i].value;
+            }
+        }
+
+        shield = result;
+
+        HealthBarUserInterface();
+    }
+
+    private void HealthBarUserInterface()
+    {
         // USER INTERFACE
         if (healthBar != null)
         {
@@ -577,6 +724,17 @@ public class CharacterState : MonoBehaviour
         {
             healthBarParty.value = health;
             healthBarParty.maxValue = currentMaxHealth;
+            if (shieldBarParty != null)
+            {
+                shieldBarParty.value = health + shield;
+                shieldBarParty.maxValue = currentMaxHealth;
+            }
+            if (overShieldBarParty != null)
+            {
+                overShieldBarParty.value = health + shield;
+                overShieldBarParty.minValue = currentMaxHealth;
+                overShieldBarParty.maxValue = currentMaxHealth + currentMaxHealth;
+            }
         }
         if (healthBarTextParty != null)
         {
@@ -1363,10 +1521,26 @@ public class CharacterState : MonoBehaviour
         {
             healthBarParty.value = health;
             healthBarParty.maxValue = currentMaxHealth;
+            if (shieldBarParty != null)
+            {
+                shieldBarParty.value = health + shield;
+                shieldBarParty.maxValue = currentMaxHealth;
+            }
+            if (overShieldBarParty != null)
+            {
+                overShieldBarParty.value = health + shield;
+                overShieldBarParty.minValue = currentMaxHealth;
+                overShieldBarParty.maxValue = currentMaxHealth + currentMaxHealth;
+            }
         }
     }
 
     public void AddEffect(StatusEffectData data, bool self = false, int tag = 0)
+    {
+        AddEffect(data, null, self, tag);
+    }
+
+    public void AddEffect(StatusEffectData data, Damage? damage, bool self = false, int tag = 0)
     {
         if (data.statusEffect == null)
             return;
@@ -1374,7 +1548,7 @@ public class CharacterState : MonoBehaviour
         if (!gameObject.activeSelf)
             return;
 
-        if (dead)
+        if (health <= 0 || dead)
             return;
 
         string name = data.statusName;
@@ -1401,15 +1575,27 @@ public class CharacterState : MonoBehaviour
             }
         }
         GameObject newStatusEffect = Instantiate(data.statusEffect, statusEffectParent);
-        AddEffect(newStatusEffect.GetComponent<StatusEffect>(), self, tag);
+        StatusEffect effect = newStatusEffect.GetComponent<StatusEffect>();
+
+        if (damage != null)
+        {
+            effect.damage = new Damage((Damage)damage);
+        }
+
+        AddEffect(effect, damage, self, tag);
     }
 
     public void AddEffect(string name, bool self = false, int tag = 0)
     {
+        AddEffect(name, null, self, tag);
+    }
+
+    public void AddEffect(string name, Damage? damage, bool self = false, int tag = 0)
+    {
         if (!gameObject.activeSelf)
             return;
 
-        if (dead)
+        if (health <= 0 || dead)
             return;
 
         if (tag > 0)
@@ -1438,18 +1624,35 @@ public class CharacterState : MonoBehaviour
                     }
                 }
                 GameObject newStatusEffect = Instantiate(FightTimeline.Instance.allAvailableStatusEffects[i].statusEffect, statusEffectParent);
-                AddEffect(newStatusEffect.GetComponent<StatusEffect>(), self, tag);
+                StatusEffect effect = newStatusEffect.GetComponent<StatusEffect>();
+
+                if (damage != null)
+                {
+                    effect.damage = new Damage((Damage)damage);
+                }
+
+                AddEffect(effect, damage, self, tag);
             }
         }
     }
 
     public void AddEffect(StatusEffect effect, bool self = false, int tag = 0)
     {
+        AddEffect(effect, null, self, tag);
+    }
+
+    public void AddEffect(StatusEffect effect, Damage? damage, bool self = false, int tag = 0)
+    {
         if (!gameObject.activeSelf)
             return;
 
-        if (dead)
+        if (health <= 0 || dead)
             return;
+
+        if (damage != null)
+        {
+            effect.damage = new Damage((Damage)damage);
+        }
 
         string name = effect.data.statusName;
 
@@ -1474,6 +1677,15 @@ public class CharacterState : MonoBehaviour
                 }
             }
         }
+
+        if (showDamagePopups)
+        {
+            ShowStatusEffectFlyText(effect, " + ");
+        }
+
+        if (invulnerable)
+            return;
+
         effect.uniqueTag = tag;
         effects.Add(name, effect);
         effectsArray = effects.Values.ToArray();
@@ -1500,11 +1712,6 @@ public class CharacterState : MonoBehaviour
             }
         }
         effect.onApplication.Invoke(this);
-
-        if (showDamagePopups)
-        {
-            ShowStatusEffectFlyText(effect, " + ");
-        }
     }
 
     public void RemoveEffect(StatusEffectData data, bool expired, int tag = 0)
@@ -1540,6 +1747,14 @@ public class CharacterState : MonoBehaviour
 
         StatusEffect temp = effects[name];
 
+        if (showDamagePopups)
+        {
+            ShowStatusEffectFlyText(temp, " - ");
+        }
+
+        if (invulnerable)
+            return;
+
         if (expired)
             effects[name].onExpire.Invoke(this);
         else
@@ -1547,11 +1762,6 @@ public class CharacterState : MonoBehaviour
 
         effects.Remove(name);
         effectsArray = effects.Values.ToArray();
-
-        if (showDamagePopups)
-        {
-            ShowStatusEffectFlyText(temp, " - ");
-        }
 
         temp.Remove();
     }
@@ -1582,13 +1792,26 @@ public class CharacterState : MonoBehaviour
             return;
 
         // Hard coded the Short (@S) and Long (@L) that are used to distinguish between few of the same debuffs, needs a better implementation
-        string result = $"{prefix}{Utilities.InsertSpaceBeforeCapitals(data.statusName).Replace("@S","").Replace("@L","")}";
+        string result = $"{prefix}{Utilities.InsertSpaceBeforeCapitals(data.statusName).Replace("@s","").Replace("@l","")}";
 
-        Color color = positivePopupColor;
+        Color color = neutralPopupColor;
 
-        if (data.negative)
+        if (prefix.Contains('+'))
         {
-            color = negativePopupColor;
+            if (data.negative)
+            {
+                color = negativePopupColor;
+            }
+            else
+            {
+                color = positivePopupColor;
+            }
+        }
+
+        if (invulnerable)
+        {
+            result = $"{result} Has No Effect";
+            color = neutralPopupColor;
         }
 
         Sprite icon = data.hudElement.transform.GetChild(0).GetComponent<Image>().sprite;
@@ -1607,6 +1830,16 @@ public class CharacterState : MonoBehaviour
         if (damage.negative || damage.value < 0)
         {
             color = negativePopupColor;
+        }
+        else if (!damage.negative)
+        {
+            result = $"<sprite=\"damage_types\" name=\"0\">{Mathf.Abs(damage.value)}";
+        }
+
+        if (invulnerable)
+        {
+            result = "Invulnerable";
+            color = neutralPopupColor;
         }
 
         ShowFlyText(new FlyText(result, color, null, source));
@@ -1693,7 +1926,7 @@ public class CharacterState : MonoBehaviour
 
         if (characterNameTextGroup != null)
         {
-            if (!hideNameplate)
+            if (!hideNameplate && showCharacterName)
             {
                 characterNameTextGroup.alpha = 1f;
             }
@@ -1705,17 +1938,18 @@ public class CharacterState : MonoBehaviour
         // No idea why these gotta be reversed lmao
         if (characterNameTextGroupParty != null)
         {
-            if (!hidePartyName)
+            if (!hidePartyName && showPartyCharacterName)
             {
-                characterNameTextGroupParty.alpha = 1f;
+                characterNameTextGroupParty.alpha = 0f;
             }
             else
             {
-                characterNameTextGroupParty.alpha = 0f;
+                characterNameTextGroupParty.alpha = 1f;
             }
         }
     }
 
+    [System.Serializable]
     public struct FlyText
     {
         public string content;
@@ -1729,6 +1963,19 @@ public class CharacterState : MonoBehaviour
             this.color = color;
             this.icon = icon;
             this.source = source;
+        }
+    }
+
+    [System.Serializable]
+    public struct Shield
+    {
+        public string key;
+        public int value;
+
+        public Shield(string key, int value)
+        {
+            this.key = key;
+            this.value = value;
         }
     }
 }

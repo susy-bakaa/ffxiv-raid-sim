@@ -71,7 +71,7 @@ public class AIController : MonoBehaviour
             if (distanceToTarget > stoppingDistance)
             {
                 float d = state.currentSpeed * normalized.magnitude;
-                transform.Translate(transform.forward * d * Time.deltaTime, Space.World);
+                transform.Translate(transform.forward * d * FightTimeline.deltaTime, Space.World);
                 currentSpeed = 0.5f * normalized.magnitude;
             }
             else

@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using static GlobalStructs;
 
 public class StatusEffect : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class StatusEffect : MonoBehaviour
     public float duration;
     public int stacks;
     public int uniqueTag;
+    public Damage damage;
 
     [Header("Events")]
     public UnityEvent<CharacterState> onApplication;

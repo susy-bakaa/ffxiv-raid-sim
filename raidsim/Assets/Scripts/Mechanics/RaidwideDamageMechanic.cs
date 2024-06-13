@@ -8,7 +8,7 @@ public class RaidwideDamageMechanic : FightMechanic
 {
     public PartyList party;
 
-    public override void TriggerMechanic(ActionInfo action)
+    public override void TriggerMechanic(ActionInfo actionInfo)
     {
         List<CharacterState> members = new List<CharacterState>(party.GetActiveMembers());
 
@@ -16,11 +16,11 @@ public class RaidwideDamageMechanic : FightMechanic
         {
             if (!string.IsNullOrEmpty(mechanicName))
             {
-                character.ModifyHealth(new Damage(action.action.data.damage, mechanicName));
+                character.ModifyHealth(new Damage(actionInfo.action.data.damage, mechanicName));
             }
             else
             {
-                character.ModifyHealth(action.action.data.damage);
+                character.ModifyHealth(actionInfo.action.data.damage);
             }
         }
     }

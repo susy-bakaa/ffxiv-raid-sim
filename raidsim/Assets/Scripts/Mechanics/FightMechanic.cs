@@ -7,7 +7,12 @@ public class FightMechanic : MonoBehaviour
 {
     public string mechanicName = string.Empty;
 
-    public virtual void TriggerMechanic(ActionInfo action)
+    public void TriggerMechanic(CharacterState state)
+    {
+        TriggerMechanic(new ActionInfo(null, state, null));
+    }
+
+    public virtual void TriggerMechanic(ActionInfo actionInfo)
     {
         Debug.Log("Base FightMechanic.TriggerMechanic(ActionInfo action) called.");
     }

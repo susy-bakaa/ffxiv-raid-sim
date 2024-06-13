@@ -12,11 +12,11 @@ public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 {
     RectTransform rectTransform;
     CanvasGroup canvasGroup;
+    UserInput input;
 
     [Header("Sorting")]
     public int priority = 1;
     [Header("Input")]
-    public UserInput input;
     public bool blocksAllInput = false;
     public bool blocksPosInput = false;
     public bool blocksRotInput = false;
@@ -56,7 +56,7 @@ public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         {
             if (blocksAllInput || blocksPosInput || blocksRotInput || blocksScrInput)
             {
-                input = FindObjectOfType<UserInput>();
+                input = FightTimeline.Instance.input;
             }
         }
     }

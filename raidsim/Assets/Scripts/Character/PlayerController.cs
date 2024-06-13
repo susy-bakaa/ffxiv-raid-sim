@@ -76,7 +76,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        tm += Time.deltaTime;
+        tm += FightTimeline.deltaTime;
         if (tm > release)
         {
             state.uncontrollable = false;
@@ -100,18 +100,18 @@ public class PlayerController : MonoBehaviour
             if (normalized != Vector2.zero)
             {
                 currentSpeed = Mathf.SmoothDamp(currentSpeed, target, ref speedSmoothVelocity, 0.05f);
-                transform.Translate(transform.forward * currentSpeed * Time.deltaTime, Space.World);
+                transform.Translate(transform.forward * currentSpeed * FightTimeline.deltaTime, Space.World);
                 ClampMovement();
             }
             else
             {
                 currentSpeed = 0f;
-                transform.Translate(transform.forward * currentSpeed * Time.deltaTime, Space.World);
+                transform.Translate(transform.forward * currentSpeed * FightTimeline.deltaTime, Space.World);
                 ClampMovement();
             }
             float value = (state.HasEffect("Sprint") ? 1f : 0.5f) * normalized.magnitude;
 
-            if (Time.timeScale <= 0f)
+            if (FightTimeline.deltaTime <= 0f)
             {
                 value = 0f;
             }
