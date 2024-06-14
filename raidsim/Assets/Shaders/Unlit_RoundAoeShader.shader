@@ -2,26 +2,48 @@ Shader "Custom/Unlit/RoundAoe"
 {
     Properties
     {
-        _MainTex ("Base (RGB)", 2D) = "white" {}
-        _OuterRadius ("Outer Radius", Float) = 0.5
+        [HideInInspector]
+        [MainTexture]
+        _MainTex ("Main Texture", 2D) = "white" {}
+        [HideInInspector]
+        _OuterRadius ("Outer Radius", Float) = 0.45
+        [HideInInspector]
         _InnerRadius ("Inner Radius", Float) = 0.0
-        _InnerRatio ("Inner Ratio", Float) = 1.0
-        _MaxFill ("Max Fill", Float) = 0.4
-        _MinFill ("Min Fill", Float) = 0.3
+        [HideInInspector]
+        _InnerRatio ("Inner Ratio", Range(0.0, 1.0)) = 1.0
+        [HideInInspector]
+        _MaxFill ("Max Fill", Range(0.0, 1.0)) = 0.6
+        [HideInInspector]
+        _MinFill ("Min Fill", Range(0.0, 1.0)) = 0.2
+        [HideInInspector]
         _Glow ("Glow", Float) = 0.05
-        _GlowOpacity ("Glow Opacity", Float) = 0.5
-        _Outline ("Outline", Float) = 0.02
-        _OutlineOpacity ("Outline Opacity", Float) = 1.0
+        [HideInInspector]
+        _GlowOpacity ("Glow Opacity", Range(0.0, 1.0)) = 0.5
+        [HideInInspector]
+        _Outline ("Outline", Float) = 0.005
+        [HideInInspector]
+        _OutlineOpacity ("Outline Opacity", Range(0.0, 1.0)) = 1.0
+        [HideInInspector]
         _PulseSpeed ("Pulse Speed", Float) = 1.0
+        [HideInInspector]
         _FadeDuration ("Fade Duration", Float) = 0.2
-        _Angle ("Angle", Float) = 360.0
+        [HideInInspector]
+        _Angle ("Angle", Range(0.0, 360.0)) = 360.0
+        [HideInInspector]
         _AngularOutline ("Angular Outline Thickness", Float) = 0.0075
+        [HideInInspector]
+        [MainColor]
         _TintColor ("Tint Color", Color) = (1,1,1,1)
+        [HideInInspector]
         _InnerTintColor ("Inner Tint Color", Color) = (1,1,1,1)
+        [HideInInspector]
         _GlowTintColor ("Glow Tint Color", Color) = (1,1,1,1)
+        [HideInInspector]
         _OutlineTintColor ("Outline Tint Color", Color) = (1,1,1,1)
-        _InnerOpacity ("Inner Opacity", Float) = 1.0
+        [HideInInspector]
+        _InnerOpacity ("Inner Opacity", Range(0.0, 1.0)) = 1.0
     }
+    CustomEditor "no00ob.Raidsim.Editor.RoundAoeShaderInspector"
     SubShader
     {
         Tags { "Queue" = "Transparent" }
@@ -121,9 +143,13 @@ Shader "Custom/Unlit/RoundAoe"
                     glowOpacity += _GlowOpacity * pow((1.0 - innerDiff / _Glow), 4.0);
                 }
                 // Apply glow to angular edges within circle bounds if angle is less than 360
-                if (_Angle < 360.0 && (abs(angle - angleToRad(_Angle)) < angleToRad(_Glow) || abs(angle) < angleToRad(_Glow)) && dist <= _OuterRadius && dist >= innerRadius)
+                if (_Angle < 360.0)
                 {
-                    glowOpacity = max(glowOpacity, _GlowOpacity * pow((1.0 - min(abs(angle - angleToRad(_Angle)), abs(angle)) / angleToRad(_Glow)), 4.0));
+                    float angularDiff = min(abs(angle - angleToRad(_Angle)), abs(angle));
+                    if (angularDiff < angleToRad(_Glow) && dist <= _OuterRadius && dist >= innerRadius)
+                    {
+                        glowOpacity = max(glowOpacity, _GlowOpacity * pow((1.0 - (angularDiff) / angleToRad(_Glow)), 4.0));
+                    }
                 }
             }
 
@@ -143,8 +169,8 @@ Shader "Custom/Unlit/RoundAoe"
             }
 
             // Apply outline to angular edges within circle bounds if angle is less than 360
-            float leftAngularOutlineThickness = ((_AngularOutline * 300) / 2); // Adjust the thickness of the left angular outline
-            float rightAngularOutlineThickness = _AngularOutline * 300; // Adjust the thickness of the right angular outline
+            float leftAngularOutlineThickness = ((_AngularOutline * 300.0) / 2); // Adjust the thickness of the left angular outline
+            float rightAngularOutlineThickness = _AngularOutline * 300.0; // Adjust the thickness of the right angular outline
             if (_Angle < 360.0)
             {
                 if (abs((angle + (angleToRad(leftAngularOutlineThickness))) - angleToRad(_Angle)) < angleToRad(leftAngularOutlineThickness) && dist <= _OuterRadius && dist >= innerRadius)
