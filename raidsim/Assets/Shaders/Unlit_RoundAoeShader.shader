@@ -1,4 +1,4 @@
-Shader "Custom/Unlit/RoundAoeShader"
+Shader "Custom/Unlit/RoundAoe"
 {
     Properties
     {
@@ -15,6 +15,7 @@ Shader "Custom/Unlit/RoundAoeShader"
         _PulseSpeed ("Pulse Speed", Float) = 1.0
         _FadeDuration ("Fade Duration", Float) = 0.2
         _Angle ("Angle", Float) = 360.0
+        _AngularOutline ("Angular Outline Thickness", Float) = 0.0075
         _TintColor ("Tint Color", Color) = (1,1,1,1)
         _InnerTintColor ("Inner Tint Color", Color) = (1,1,1,1)
         _GlowTintColor ("Glow Tint Color", Color) = (1,1,1,1)
@@ -42,6 +43,7 @@ Shader "Custom/Unlit/RoundAoeShader"
         float _PulseSpeed;
         float _FadeDuration;
         float _Angle;
+        float _AngularOutline;
         float _InnerOpacity;
         fixed4 _TintColor;
         fixed4 _InnerTintColor;
@@ -118,8 +120,8 @@ Shader "Custom/Unlit/RoundAoeShader"
                     // Sharpen the glow by using a power function
                     glowOpacity += _GlowOpacity * pow((1.0 - innerDiff / _Glow), 4.0);
                 }
-                // Apply glow to angular edges within circle bounds
-                if ((abs(angle - angleToRad(_Angle)) < angleToRad(_Glow) || abs(angle) < angleToRad(_Glow)) && dist <= _OuterRadius && dist >= innerRadius)
+                // Apply glow to angular edges within circle bounds if angle is less than 360
+                if (_Angle < 360.0 && (abs(angle - angleToRad(_Angle)) < angleToRad(_Glow) || abs(angle) < angleToRad(_Glow)) && dist <= _OuterRadius && dist >= innerRadius)
                 {
                     glowOpacity = max(glowOpacity, _GlowOpacity * pow((1.0 - min(abs(angle - angleToRad(_Angle)), abs(angle)) / angleToRad(_Glow)), 4.0));
                 }
@@ -140,11 +142,32 @@ Shader "Custom/Unlit/RoundAoeShader"
                 }
             }
 
-            // Apply outline to angular edges within circle bounds
-            float angularOutlineThickness = _Outline * 300; // Adjust the thickness of the angular outline, we multiply it by 300 or else it looks too thin compared to the other outlines
-            if ((abs(angle - angleToRad(_Angle)) < angleToRad(angularOutlineThickness) || abs(angle) < angleToRad(angularOutlineThickness)) && dist <= _OuterRadius && dist >= innerRadius)
+            // Apply outline to angular edges within circle bounds if angle is less than 360
+            float leftAngularOutlineThickness = ((_AngularOutline * 300) / 2); // Adjust the thickness of the left angular outline
+            float rightAngularOutlineThickness = _AngularOutline * 300; // Adjust the thickness of the right angular outline
+            if (_Angle < 360.0)
             {
-                outlineOpacity = max(outlineOpacity, _OutlineOpacity);
+                if (abs((angle + (angleToRad(leftAngularOutlineThickness))) - angleToRad(_Angle)) < angleToRad(leftAngularOutlineThickness) && dist <= _OuterRadius && dist >= innerRadius)
+                {
+                    outlineOpacity = max(outlineOpacity, _OutlineOpacity);
+                }
+                if (abs(angle) < angleToRad(rightAngularOutlineThickness) && dist <= _OuterRadius && dist >= innerRadius)
+                {
+                    outlineOpacity = max(outlineOpacity, _OutlineOpacity);
+                }
+            }
+
+            // Ensure angular outlines do not extend beyond defined circle bounds
+            if (_Angle < 360.0)
+            {
+                if (abs(angle - angleToRad(_Angle)) < angleToRad(leftAngularOutlineThickness) && (dist > (_OuterRadius + _Outline) || dist < (innerRadius - _Outline)))
+                {
+                    outlineOpacity = 0.0;
+                }
+                if (abs(angle) < angleToRad(rightAngularOutlineThickness) && (dist > (_OuterRadius + _Outline) || dist < (innerRadius - _Outline)))
+                {
+                    outlineOpacity = 0.0;
+                }
             }
 
             // Calculate the final color and opacity
