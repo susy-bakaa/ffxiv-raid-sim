@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 public static class GlobalStructs
 {
     [System.Serializable]
@@ -153,6 +155,22 @@ public static class GlobalStructs
             this.elementalAspect = elementalAspect;
             this.physicalAspect = physicalAspect;
             this.applicationType = applicationType;
+        }
+    }
+
+    public struct CharacterCollection
+    {
+        public List<CharacterState> values;
+
+        public CharacterCollection(List<CharacterState> values)
+        {
+            this.values = values;
+        }
+
+        public CharacterCollection(CharacterState[] values)
+        {
+            this.values = new List<CharacterState>();
+            this.values.AddRange(values);
         }
     }
 }

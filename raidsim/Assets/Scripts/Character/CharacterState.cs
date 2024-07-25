@@ -2,24 +2,30 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using NaughtyAttributes;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using static CharacterState;
 using static GlobalStructs;
 using static GlobalStructs.Damage;
-using static Unity.VisualScripting.Member;
 
 public class CharacterState : MonoBehaviour
 {
     public enum Role { healer, tank, dps, unassigned }
 
+    [HideInInspector]
+    public PlayerController playerController;
+    [HideInInspector]
+    public AIController aiController;
+    [HideInInspector]
+    public BossController bossController;
+
     [Header("Status")]
     public string characterName = "Unknown";
 
     private int defaultMaxHealth;
-    [HideInInspector] public int currentMaxHealth;
+    public int currentMaxHealth;
     public int health = 16000;
     public Dictionary<string, float> maxHealthModifiers = new Dictionary<string, float>();
     public int shield = 0;
@@ -78,6 +84,7 @@ public class CharacterState : MonoBehaviour
     public bool pacificied = false;
     public bool amnesia = false;
     public bool canDoActions = true;
+    public bool canDie = true;
 
     [Header("Effects")]
     private Dictionary<string, StatusEffect> effects = new Dictionary<string, StatusEffect>();
@@ -90,14 +97,18 @@ public class CharacterState : MonoBehaviour
     public Transform statusEffectParent;
     public float statusEffectUpdateInterval = 3f;
     private float statusEffectUpdateTimer = 0f;
+    public int characterLevel = 0;
     public Role role = Role.dps;
     public bool hideNameplate = false;
     public bool hidePartyName = false;
 
     [Header("Personal - Name")]
     public bool showCharacterName = true;
+    public bool showCharacterLevel = true;
     public TextMeshProUGUI characterNameText;
+    public TextMeshProUGUI nameplateCharacterNameText;
     private CanvasGroup characterNameTextGroup;
+    private CanvasGroup nameplateCharacterNameTextGroup;
     [Header("Personal - Status Effects")]
     public bool showStatusEffects = true;
     public Transform statusEffectPositiveIconParent;
@@ -119,6 +130,10 @@ public class CharacterState : MonoBehaviour
     public Slider healthBar;
     public TextMeshProUGUI healthBarText;
     public bool healthBarTextInPercentage = false;
+    public bool showNameplateHealthBar = true;
+    public bool showOnlyBelowMaxHealth = false;
+    public Slider nameplateHealthBar;
+    private CanvasGroup nameplateHealthBarGroup;
 
     [Header("Party - Name")]
     public bool showPartyCharacterName = true;
@@ -136,6 +151,10 @@ public class CharacterState : MonoBehaviour
 
     void Awake()
     {
+        playerController = GetComponent<PlayerController>();
+        aiController = GetComponent<AIController>();
+        bossController = GetComponent<BossController>();
+
         if (statusEffectNegativeIconParent != null)
         {
             foreach (Transform child in statusEffectNegativeIconParent)
@@ -172,6 +191,32 @@ public class CharacterState : MonoBehaviour
             healthBar.maxValue = currentMaxHealth;
             healthBar.value = health;
         }
+        if (nameplateHealthBar != null)
+        {
+            nameplateHealthBar.maxValue = currentMaxHealth;
+            nameplateHealthBar.value = health;
+
+            nameplateHealthBarGroup = nameplateHealthBar.GetComponentInParent<CanvasGroup>();
+
+            if (nameplateHealthBarGroup != null)
+            {
+                if (showNameplateHealthBar)
+                {
+                    if (showOnlyBelowMaxHealth && health >= currentMaxHealth)
+                    {
+                        nameplateHealthBarGroup.alpha = 0f;
+                    }
+                    else
+                    {
+                        nameplateHealthBarGroup.alpha = 1f;
+                    }
+                }
+                else
+                {
+                    nameplateHealthBarGroup.alpha = 0f;
+                }
+            }
+        }
         if (healthBarText != null)
         {
             if (healthBarTextInPercentage)
@@ -184,7 +229,17 @@ public class CharacterState : MonoBehaviour
                 }
                 else
                 {
-                    healthBarText.text = healthPercentage.ToString("F1") + "%";
+                    string result = healthPercentage.ToString("F1") + "%";
+
+                    if (health > 0)
+                    {
+                        if (result == "0%" || result == "0.0%" || result == "0.00%" || result == "00.0%" || result == "00.00%" || result == "0,0%" || result == "0,00%" || result == "00,0%" || result == "00,00%")
+                        {
+                            result = "0.1%";
+                        }
+                    }
+
+                    healthBarText.text = result;
                 }
             }
             else
@@ -215,9 +270,9 @@ public class CharacterState : MonoBehaviour
         if (characterNameText != null)
         {
             characterNameText.text = characterName;
-            characterNameTextGroup = characterNameText.GetComponentInParent<CanvasGroup>();
+            //characterNameTextGroup = characterNameText.GetComponentInParent<CanvasGroup>();
         }
-        if (characterNameTextGroup != null)
+        /*if (characterNameTextGroup != null)
         {
             if (!hideNameplate && showCharacterName)
             {
@@ -226,6 +281,25 @@ public class CharacterState : MonoBehaviour
             else
             {
                 characterNameTextGroup.LeanAlpha(0f, 0.5f);
+            }
+        }*/
+        if (nameplateCharacterNameText != null)
+        {
+            if (showCharacterLevel)
+                nameplateCharacterNameText.text = $"<b>Lv{characterLevel}</b> {characterName}";
+            else
+                nameplateCharacterNameText.text = characterName;
+            nameplateCharacterNameTextGroup = nameplateCharacterNameText.GetComponentInParent<CanvasGroup>();
+        }
+        if (nameplateCharacterNameTextGroup != null)
+        {
+            if (!hideNameplate && showCharacterName)
+            {
+                nameplateCharacterNameTextGroup.alpha = 1f;
+            }
+            else
+            {
+                nameplateCharacterNameTextGroup.LeanAlpha(0f, 0.5f);
             }
         }
         if (characterNameTextParty != null)
@@ -287,6 +361,13 @@ public class CharacterState : MonoBehaviour
             characterNameText.text = characterName;
         if (characterNameTextParty)
             characterNameTextParty.text = characterName;
+        if (nameplateCharacterNameText != null)
+        {
+            if (showCharacterLevel)
+                nameplateCharacterNameText.text = $"<b>Lv{characterLevel}</b> {characterName}";
+            else
+                nameplateCharacterNameText.text = characterName;
+        }
     }
 
     public void ModifyHealth(Damage damage, bool kill = false)
@@ -607,29 +688,37 @@ public class CharacterState : MonoBehaviour
 
         if (health <= 0 && !invulnerable)
         {
-            health = 0;
-            dead = true;
-            onDeath.Invoke();
-            if (effectsArray != null)
+            if (canDie)
             {
-                Dictionary<string, StatusEffect> temp = new Dictionary<string, StatusEffect>();
-
-                for (int i = 0; i < effectsArray.Length; i++)
+                health = 0;
+                dead = true;
+                onDeath.Invoke();
+                if (effectsArray != null)
                 {
-                    if (effectsArray[i].data.lostOnDeath)
+                    Dictionary<string, StatusEffect> temp = new Dictionary<string, StatusEffect>();
+
+                    for (int i = 0; i < effectsArray.Length; i++)
                     {
-                        effectsArray[i].onExpire.Invoke(this);
-                        effectsArray[i].Remove();
-                        if (showDamagePopups)
-                            ShowStatusEffectFlyText(effectsArray[i], " - ");
+                        if (effectsArray[i].data.lostOnDeath)
+                        {
+                            effectsArray[i].onExpire.Invoke(this);
+                            effectsArray[i].Remove();
+                            if (showDamagePopups)
+                                ShowStatusEffectFlyText(effectsArray[i], " - ");
+                        }
+                        else
+                        {
+                            temp.Add(effectsArray[i].data.statusName, effectsArray[i]);
+                        }
                     }
-                    else
-                    {
-                        temp.Add(effectsArray[i].data.statusName, effectsArray[i]);
-                    }
+                    effects = new Dictionary<string, StatusEffect>(temp);
+                    effectsArray = effects.Values.ToArray();
                 }
-                effects = new Dictionary<string, StatusEffect>(temp);
-                effectsArray = effects.Values.ToArray();
+            }
+            else
+            {
+                health = 1;
+                dead = false;
             }
         }
         if (health > currentMaxHealth)
@@ -699,6 +788,30 @@ public class CharacterState : MonoBehaviour
             healthBar.value = health;
             healthBar.maxValue = currentMaxHealth;
         }
+        if (nameplateHealthBar != null)
+        {
+            nameplateHealthBar.maxValue = currentMaxHealth;
+            nameplateHealthBar.value = health;
+
+            if (nameplateHealthBarGroup != null)
+            {
+                if (showNameplateHealthBar)
+                {
+                    if (showOnlyBelowMaxHealth && health >= currentMaxHealth)
+                    {
+                        nameplateHealthBarGroup.alpha = 0f;
+                    }
+                    else
+                    {
+                        nameplateHealthBarGroup.alpha = 1f;
+                    }
+                }
+                else
+                {
+                    nameplateHealthBarGroup.alpha = 0f;
+                }
+            }
+        }
         if (healthBarText != null)
         {
             if (healthBarTextInPercentage)
@@ -712,7 +825,17 @@ public class CharacterState : MonoBehaviour
                 }
                 else
                 {
-                    healthBarText.text = healthPercentage.ToString("F1") + "%";
+                    string result = healthPercentage.ToString("F1") + "%";
+
+                    if (health > 0)
+                    {
+                        if (result == "0%" || result == "0.0%" || result == "0.00%" || result == "00.0%" || result == "00.00%" || result == "0,0%" || result == "0,00%" || result == "00,0%" || result == "00,00%")
+                        {
+                            result = "0.1%";
+                        }
+                    }
+
+                    healthBarText.text = result;
                 }
             }
             else
@@ -1497,7 +1620,7 @@ public class CharacterState : MonoBehaviour
 
     private void RecalculateCurrentMaxHealth()
     {
-        float result = 1f;
+        float result = currentMaxHealth;
 
         List<float> a = new List<float>(maxHealthModifiers.Values.ToArray());
 
@@ -1535,12 +1658,12 @@ public class CharacterState : MonoBehaviour
         }
     }
 
-    public void AddEffect(StatusEffectData data, bool self = false, int tag = 0)
+    public void AddEffect(StatusEffectData data, bool self = false, int tag = 0, int stacks = 0)
     {
-        AddEffect(data, null, self, tag);
+        AddEffect(data, null, self, tag, stacks);
     }
 
-    public void AddEffect(StatusEffectData data, Damage? damage, bool self = false, int tag = 0)
+    public void AddEffect(StatusEffectData data, Damage? damage, bool self = false, int tag = 0, int stacks = 0)
     {
         if (data.statusEffect == null)
             return;
@@ -1561,7 +1684,7 @@ public class CharacterState : MonoBehaviour
         if (effects.ContainsKey(name))
         {
             if (!data.unique)
-                effects[name].Refresh();
+                effects[name].Refresh(stacks);
             return;
         }
         if (effectsArray != null)
@@ -1582,15 +1705,15 @@ public class CharacterState : MonoBehaviour
             effect.damage = new Damage((Damage)damage);
         }
 
-        AddEffect(effect, damage, self, tag);
+        AddEffect(effect, damage, self, tag, stacks);
     }
 
-    public void AddEffect(string name, bool self = false, int tag = 0)
+    public void AddEffect(string name, bool self = false, int tag = 0, int stacks = 0)
     {
         AddEffect(name, null, self, tag);
     }
 
-    public void AddEffect(string name, Damage? damage, bool self = false, int tag = 0)
+    public void AddEffect(string name, Damage? damage, bool self = false, int tag = 0, int stacks = 0)
     {
         if (!gameObject.activeSelf)
             return;
@@ -1606,7 +1729,7 @@ public class CharacterState : MonoBehaviour
         if (effects.ContainsKey(name))
         {
             if (!effects[name].data.unique)
-                effects[name].Refresh();
+                effects[name].Refresh(stacks);
             return;
         }
         for (int i = 0; i < FightTimeline.Instance.allAvailableStatusEffects.Count; i++)
@@ -1636,12 +1759,12 @@ public class CharacterState : MonoBehaviour
         }
     }
 
-    public void AddEffect(StatusEffect effect, bool self = false, int tag = 0)
+    public void AddEffect(StatusEffect effect, bool self = false, int tag = 0, int stacks = 0)
     {
         AddEffect(effect, null, self, tag);
     }
 
-    public void AddEffect(StatusEffect effect, Damage? damage, bool self = false, int tag = 0)
+    public void AddEffect(StatusEffect effect, Damage? damage, bool self = false, int tag = 0, int stacks = 0)
     {
         if (!gameObject.activeSelf)
             return;
@@ -1664,7 +1787,7 @@ public class CharacterState : MonoBehaviour
         if (effects.ContainsKey(name))
         {
             if (!effect.data.unique)
-                effects[name].Refresh();
+                effects[name].Refresh(stacks);
             return;
         }
         if (effectsArray != null)
@@ -1687,6 +1810,7 @@ public class CharacterState : MonoBehaviour
             return;
 
         effect.uniqueTag = tag;
+        effect.stacks = stacks;
         effects.Add(name, effect);
         effectsArray = effects.Values.ToArray();
         if (effect.data.negative)
@@ -1714,17 +1838,17 @@ public class CharacterState : MonoBehaviour
         effect.onApplication.Invoke(this);
     }
 
-    public void RemoveEffect(StatusEffectData data, bool expired, int tag = 0)
+    public void RemoveEffect(StatusEffectData data, bool expired, int tag = 0, int stacks = 0)
     {
-        RemoveEffect(data.statusName, expired, tag);
+        RemoveEffect(data.statusName, expired, tag, stacks);
     }
 
-    public void RemoveEffect(StatusEffect effect, bool expired, int tag = 0)
+    public void RemoveEffect(StatusEffect effect, bool expired, int tag = 0, int stacks = 0)
     {
-        RemoveEffect(effect.data.statusName, expired, tag);
+        RemoveEffect(effect.data.statusName, expired, tag, stacks);
     }
 
-    public void RemoveEffect(string name, bool expired, int tag = 0)
+    public void RemoveEffect(string name, bool expired, int tag = 0, int stacks = 0)
     {
         if (!gameObject.activeSelf)
             return;
@@ -1737,7 +1861,7 @@ public class CharacterState : MonoBehaviour
         {
             for (int i = 0; i < (tag * -1); i++)
             {
-                RemoveEffect(name, expired, i + 1);
+                RemoveEffect(name, expired, i + 1, stacks);
             }
             return;
         }
@@ -1755,15 +1879,30 @@ public class CharacterState : MonoBehaviour
         if (invulnerable)
             return;
 
-        if (expired)
-            effects[name].onExpire.Invoke(this);
+        if (effects[name].stacks <= 1)
+        {
+            if (expired)
+                effects[name].onExpire.Invoke(this);
+            else
+                effects[name].onCleanse.Invoke(this);
+
+            effects.Remove(name);
+            effectsArray = effects.Values.ToArray();
+
+            temp.Remove();
+        }
         else
-            effects[name].onCleanse.Invoke(this);
-
-        effects.Remove(name);
-        effectsArray = effects.Values.ToArray();
-
-        temp.Remove();
+        {
+            if (stacks > 1)
+            {
+                effects[name].stacks -= stacks;
+            }
+            else
+            {
+                effects[name].stacks -= 1;
+            }
+            effects[name].onReduce.Invoke(this);
+        }
     }
 
     public bool HasEffect(string name, int tag = 0)
@@ -1791,8 +1930,9 @@ public class CharacterState : MonoBehaviour
         if (data.hidden) 
             return;
 
-        // Hard coded the Short (@S) and Long (@L) that are used to distinguish between few of the same debuffs, needs a better implementation
-        string result = $"{prefix}{Utilities.InsertSpaceBeforeCapitals(data.statusName).Replace("@s","").Replace("@l","")}";
+        // Hard coded the Short (@s) and Long (@l) that are used to distinguish between few of the same debuffs,
+        // also the '#' character which is used for non capitalised letter sequences. This needs a better implementation
+        string result = $"{prefix}{Utilities.InsertSpaceBeforeCapitals(data.statusName).Replace("@s","").Replace("@l","").Replace("#"," ")}";
 
         Color color = neutralPopupColor;
 
@@ -1924,7 +2064,7 @@ public class CharacterState : MonoBehaviour
         if (!gameObject.activeSelf)
             return;
 
-        if (characterNameTextGroup != null)
+        /*if (characterNameTextGroup != null)
         {
             if (!hideNameplate && showCharacterName)
             {
@@ -1933,6 +2073,17 @@ public class CharacterState : MonoBehaviour
             else
             {
                 characterNameTextGroup.alpha = 0f;
+            }
+        }*/
+        if (nameplateCharacterNameTextGroup != null)
+        {
+            if (!hideNameplate && showCharacterName)
+            {
+                nameplateCharacterNameTextGroup.alpha = 1f;
+            }
+            else
+            {
+                nameplateCharacterNameTextGroup.alpha = 0f;
             }
         }
         // No idea why these gotta be reversed lmao

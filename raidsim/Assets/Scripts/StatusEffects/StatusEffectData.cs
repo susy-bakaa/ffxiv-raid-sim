@@ -22,6 +22,7 @@ public class StatusEffectData : ScriptableObject
     public int maxStacks = 1;
     public GameObject statusEffect;
     public GameObject hudElement;
+    public List<Sprite> icons = new List<Sprite>();
     public List<StatusEffectData> incompatableStatusEffects = new List<StatusEffectData>();
     public List<CharacterState.Role> assignedRoles = new List<CharacterState.Role>();
 
@@ -31,12 +32,30 @@ public class StatusEffectData : ScriptableObject
         public string name;
         public StatusEffectData data;
         public int tag;
+        public int stacks;
 
-        public StatusEffectInfo(StatusEffectData effect, int tag)
+        public StatusEffectInfo(StatusEffectData effect, int tag, int stacks)
         {
             name = effect.statusName + "_" + tag;
             this.data = effect;
             this.tag = tag;
+            this.stacks = stacks;
+        }
+    }
+
+    [System.Serializable]
+    public struct StatusEffectInfoArray
+    {
+        public string name;
+        public StatusEffectInfo[] effectInfos;
+
+        public StatusEffectInfoArray(StatusEffectInfo[] effectInfos)
+        {
+            if (effectInfos != null && effectInfos.Length > 0)
+                name = effectInfos[0].name;
+            else
+                name = string.Empty;
+            this.effectInfos = effectInfos;
         }
     }
 }

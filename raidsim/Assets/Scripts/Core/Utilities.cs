@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using static CharacterState;
@@ -276,6 +277,11 @@ public static class Utilities
         }
     }
 
+    /// <summary>
+    /// Inserts automatically spaces before all capital letters in a string. Using '#' you can exlude parts of the string if you do not want capitalization for the whole string.
+    /// </summary>
+    /// <param name="input">The string being processed.</param>
+    /// <returns></returns>
     public static string InsertSpaceBeforeCapitals(string input)
     {
         if (string.IsNullOrEmpty(input))
@@ -283,13 +289,40 @@ public static class Utilities
             return input;
         }
 
+        // Split the string by '#' and process each segment
+        string[] segments = input.Split('#');
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < segments.Length; i++)
+        {
+            if (i % 2 == 0)
+            {
+                // Process segments outside of '#' (even indices)
+                result.Append(ProcessSegment(segments[i]));
+            }
+            else
+            {
+                // Append segments inside '#' without processing (odd indices)
+                result.Append(segments[i]);
+            }
+
+            // Reassemble with '#' where necessary
+            if (i < segments.Length - 1)
+            {
+                result.Append('#');
+            }
+        }
+
+        return result.ToString();
+    }
+
+    private static string ProcessSegment(string segment)
+    {
         // Regular expression pattern to match capital letters not at the start of the string
         string pattern = "(?<!^)([A-Z])";
 
         // Insert a space before each match
-        string result = Regex.Replace(input, pattern, " $1");
-
-        return result;
+        return Regex.Replace(segment, pattern, " $1");
     }
 
     public static bool IsReversePitch(this AudioSource source)

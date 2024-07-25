@@ -15,14 +15,34 @@ public class TetherTrigger : MonoBehaviour
     public Transform endPoint;
     public Vector3 endOffset;
     public float maxDistance;
+    public float breakDelay = 0.5f;
+    public bool initializeOnStart;
+    public bool worldSpace = true;
 
-    public UnityEvent onForm;
+    public UnityEvent<CharacterState> onForm;
     public UnityEvent onBreak;
+    public UnityEvent onSolved;
+
+    private bool initialized;
+    private CharacterState startCharacter;
+    private CharacterState endCharacter;
 
     void Awake()
     {
         lineRenderer = GetComponentInChildren<LineRenderer>();
         lineRenderer.gameObject.SetActive(false);
+        if (partyList == null)
+        {
+            partyList = FightTimeline.Instance.partyList;
+        }
+    }
+
+    void Start()
+    {
+        if (initializeOnStart)
+        {
+            Initialize();
+        }
     }
 
     void Update()
@@ -32,15 +52,41 @@ public class TetherTrigger : MonoBehaviour
 
         if (lineRenderer != null)
         {
-            lineRenderer.SetPositions(new Vector3[2] { startPoint.position + startOffset, endPoint.position + endOffset });
+            if (worldSpace)
+            {
+                lineRenderer.SetPositions(new Vector3[2] { startPoint.position + startOffset, endPoint.position + endOffset });
+            }
+            else
+            {
+                lineRenderer.SetPositions(new Vector3[2] { startPoint.localPosition + startOffset, endPoint.localPosition + endOffset });
+            }
         }
 
         if (maxDistance > 0f)
         {
-            if (Vector3.Distance(startPoint.position, endPoint.position) > maxDistance)
+            if (worldSpace)
             {
-                BreakTether();
+                if (Vector3.Distance(startPoint.position, endPoint.position) > maxDistance)
+                {
+                    BreakTether();
+                }
             }
+            else
+            {
+                if (Vector3.Distance(startPoint.localPosition, endPoint.localPosition) > maxDistance)
+                {
+                    BreakTether();
+                }
+            }
+        }
+    }
+
+    public void Initialize()
+    {
+        if (!initialized)
+        {
+            FormTether();
+            initialized = true;
         }
     }
 
@@ -101,7 +147,7 @@ public class TetherTrigger : MonoBehaviour
 
     public void FormTether(CharacterState target)
     {
-        FormTether(startPoint, target.transform);
+        FormTether(startPoint, target.transform.GetChild(target.transform.childCount - 1).transform);
     }
 
     public void FormTether(Transform start, Transform end)
@@ -109,12 +155,34 @@ public class TetherTrigger : MonoBehaviour
         lineRenderer.gameObject.SetActive(true);
         startPoint = start;
         endPoint = end;
-        onForm.Invoke();
+
+        if (end.parent.TryGetComponent(out CharacterState endState))
+        {
+            endCharacter = endState;
+            onForm.Invoke(endState);
+        }
+        else if (start.parent.TryGetComponent(out CharacterState startState))
+        {
+            startCharacter = startState;
+            onForm.Invoke(startState);
+        }
+        else
+        {
+            endCharacter = null;
+            startCharacter = null;
+            onForm.Invoke(null);
+        }
     }
 
     public void BreakTether()
     {
         lineRenderer.gameObject.SetActive(false);
-        onBreak.Invoke();
+        Utilities.FunctionTimer.Create(() => onBreak.Invoke(), breakDelay, $"TetherTrigger_{this}_{GetHashCode()}_Break_Delay", false, true);
+    }
+
+    public void SolveTether()
+    {
+        lineRenderer.gameObject.SetActive(false);
+        Utilities.FunctionTimer.Create(() => onSolved.Invoke(), breakDelay, $"TetherTrigger_{this}_{GetHashCode()}_Solve_Delay", false, true);
     }
 }

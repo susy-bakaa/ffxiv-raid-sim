@@ -7911,14 +7911,14 @@ MonoBehaviour:
     waitForRotation: 0
   - name: Move to safety to D
     node: {fileID: 1662086591}
-    waitAtNode: 6
+    waitAtNode: 7
     action: {fileID: 0}
     waitForAction: 0
     rotation: {x: 0, y: 0, z: 0}
     waitForRotation: 0
   - name: Move to take west tower
     node: {fileID: 199530005}
-    waitAtNode: 7
+    waitAtNode: 6
     action: {fileID: 0}
     waitForAction: 0
     rotation: {x: 0, y: 0, z: 0}
@@ -13099,14 +13099,14 @@ MonoBehaviour:
     waitForRotation: 0
   - name: Move to safety to D
     node: {fileID: 1662086591}
-    waitAtNode: 7
+    waitAtNode: 8
     action: {fileID: 0}
     waitForAction: 0
     rotation: {x: 0, y: 0, z: 0}
     waitForRotation: 0
   - name: Move to take east tower
     node: {fileID: 1158669055}
-    waitAtNode: 8
+    waitAtNode: 7
     action: {fileID: 0}
     waitForAction: 0
     rotation: {x: 0, y: 0, z: 0}
@@ -21178,14 +21178,14 @@ MonoBehaviour:
     waitForRotation: 0
   - name: Move to safety to D
     node: {fileID: 1662086591}
-    waitAtNode: 5.5
+    waitAtNode: 6.5
     action: {fileID: 0}
     waitForAction: 0
     rotation: {x: 0, y: 0, z: 0}
     waitForRotation: 0
   - name: Move to take west tower
     node: {fileID: 199530005}
-    waitAtNode: 7
+    waitAtNode: 6
     action: {fileID: 0}
     waitForAction: 0
     rotation: {x: 0, y: 0, z: 0}
@@ -21816,6 +21816,7 @@ MonoBehaviour:
     tag: -2
   ignoreRoles: 1
   cleansEffect: 1
+  killsEffect: 0
 --- !u!1 &726428836
 GameObject:
   m_ObjectHideFlags: 0
@@ -27469,16 +27470,16 @@ MonoBehaviour:
     waitForRotation: 0
   - name: Move to D
     node: {fileID: 1662086591}
-    waitAtNode: 4
+    waitAtNode: 6
     action: {fileID: 0}
     waitForAction: 0
     rotation: {x: 0, y: 0, z: 0}
     waitForRotation: 0
   - name: Move to take middle tower
     node: {fileID: 1385463268}
-    waitAtNode: 3
+    waitAtNode: 2
     action: {fileID: 11400000, guid: 23431c7c666d5df4ba311aa96187fb79, type: 2}
-    waitForAction: 4
+    waitForAction: 3
     rotation: {x: 0, y: 0, z: 0}
     waitForRotation: 0
   - name: Move to take COB at C
@@ -27511,6 +27512,7 @@ GameObject:
   m_Component:
   - component: {fileID: 913829987}
   - component: {fileID: 913829989}
+  - component: {fileID: 913829993}
   - component: {fileID: 913829990}
   - component: {fileID: 913829992}
   - component: {fileID: 913829991}
@@ -27554,6 +27556,18 @@ MonoBehaviour:
   onExecute:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 913829993}
+        m_TargetAssemblyTypeName: RaidwideDebuffMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 913829991}
         m_TargetAssemblyTypeName: RaidwideDamageMechanic, Assembly-CSharp
         m_MethodName: TriggerMechanic
@@ -27615,6 +27629,7 @@ MonoBehaviour:
     tag: 0
   ignoreRoles: 1
   cleansEffect: 0
+  killsEffect: 0
 --- !u!114 &913829991
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27649,6 +27664,28 @@ MonoBehaviour:
     tag: 0
   ignoreRoles: 1
   cleansEffect: 1
+  killsEffect: 0
+--- !u!114 &913829993
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 913829986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de07d17f5bc4b524bb3d56bd7b027d12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicName: Critical Error
+  party: {fileID: 2884399813960674742}
+  effect:
+    name: CriticalOverflowBug
+    data: {fileID: 11400000, guid: 22f0ce800856a1f4e8be8f08ef44eb85, type: 2}
+    tag: 0
+  ignoreRoles: 1
+  cleansEffect: 0
+  killsEffect: 1
 --- !u!224 &914353678 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7939404535349026735, guid: 7b36a3a931b25374093ec15938b1c6b1, type: 3}
@@ -27825,16 +27862,16 @@ MonoBehaviour:
     waitForRotation: 0
   - name: Move to D
     node: {fileID: 1662086591}
-    waitAtNode: 4
+    waitAtNode: 6
     action: {fileID: 0}
     waitForAction: 0
     rotation: {x: 0, y: 0, z: 0}
     waitForRotation: 0
   - name: Move to take middle tower
     node: {fileID: 1385463268}
-    waitAtNode: 3
+    waitAtNode: 2
     action: {fileID: 11400000, guid: 23431c7c666d5df4ba311aa96187fb79, type: 2}
-    waitForAction: 4
+    waitForAction: 3
     rotation: {x: 0, y: 0, z: 0}
     waitForRotation: 0
   - name: Move to take COB at C
@@ -28514,14 +28551,14 @@ MonoBehaviour:
     waitForRotation: 0
   - name: Move to safety to D
     node: {fileID: 1662086591}
-    waitAtNode: 6.5
+    waitAtNode: 7.5
     action: {fileID: 0}
     waitForAction: 0
     rotation: {x: 0, y: 0, z: 0}
     waitForRotation: 0
   - name: Move to take west tower
     node: {fileID: 199530005}
-    waitAtNode: 7
+    waitAtNode: 6
     action: {fileID: 0}
     waitForAction: 0
     rotation: {x: 0, y: 0, z: 0}
@@ -28716,14 +28753,14 @@ MonoBehaviour:
     waitForRotation: 0
   - name: Move to safety to D
     node: {fileID: 1662086591}
-    waitAtNode: 8
+    waitAtNode: 9
     action: {fileID: 0}
     waitForAction: 0
     rotation: {x: 0, y: 0, z: 0}
     waitForRotation: 0
   - name: Move to take east tower
     node: {fileID: 1158669055}
-    waitAtNode: 8
+    waitAtNode: 7
     action: {fileID: 0}
     waitForAction: 0
     rotation: {x: 0, y: 0, z: 0}
@@ -29390,14 +29427,14 @@ MonoBehaviour:
     waitForRotation: 0
   - name: Move to safety to D
     node: {fileID: 1662086591}
-    waitAtNode: 6
+    waitAtNode: 7
     action: {fileID: 0}
     waitForAction: 0
     rotation: {x: 0, y: 0, z: 0}
     waitForRotation: 0
   - name: Move to take west tower
     node: {fileID: 199530005}
-    waitAtNode: 7
+    waitAtNode: 6
     action: {fileID: 0}
     waitForAction: 0
     rotation: {x: 0, y: 0, z: 0}
@@ -31080,16 +31117,16 @@ MonoBehaviour:
     waitForRotation: 0
   - name: Move to D
     node: {fileID: 1662086591}
-    waitAtNode: 4
+    waitAtNode: 6
     action: {fileID: 0}
     waitForAction: 0
     rotation: {x: 0, y: 0, z: 0}
     waitForRotation: 0
   - name: Move to take middle tower
     node: {fileID: 1385463268}
-    waitAtNode: 3
+    waitAtNode: 2
     action: {fileID: 11400000, guid: 23431c7c666d5df4ba311aa96187fb79, type: 2}
-    waitForAction: 4
+    waitForAction: 3
     rotation: {x: 0, y: 0, z: 0}
     waitForRotation: 0
   - name: Move to take COB at C
@@ -43258,16 +43295,16 @@ MonoBehaviour:
     waitForRotation: 0
   - name: Move to D
     node: {fileID: 1662086591}
-    waitAtNode: 4
+    waitAtNode: 6
     action: {fileID: 0}
     waitForAction: 0
     rotation: {x: 0, y: 0, z: 0}
     waitForRotation: 0
   - name: Move to take middle tower
     node: {fileID: 1385463268}
-    waitAtNode: 3
+    waitAtNode: 2
     action: {fileID: 11400000, guid: 23431c7c666d5df4ba311aa96187fb79, type: 2}
-    waitForAction: 4
+    waitForAction: 3
     rotation: {x: 0, y: 0, z: 0}
     waitForRotation: 0
   - name: Move to take COB at C
@@ -55998,19 +56035,19 @@ MonoBehaviour:
     node: {fileID: 877029720}
     waitAtNode: 12.5
     action: {fileID: 11400000, guid: ac769c06cdc629949a04f61ae7717f87, type: 2}
-    waitForAction: 3
+    waitForAction: 2.5
     rotation: {x: 0, y: 0, z: 0}
     waitForRotation: 0
   - name: Move to safety to D
     node: {fileID: 1662086591}
-    waitAtNode: 7.5
+    waitAtNode: 8.5
     action: {fileID: 0}
     waitForAction: 0
     rotation: {x: 0, y: 0, z: 0}
     waitForRotation: 0
   - name: Move to take east tower
     node: {fileID: 1158669055}
-    waitAtNode: 8
+    waitAtNode: 7
     action: {fileID: 0}
     waitForAction: 0
     rotation: {x: 0, y: 0, z: 0}
@@ -57762,14 +57799,14 @@ MonoBehaviour:
     waitForRotation: 0
   - name: Move to safety to D
     node: {fileID: 1662086591}
-    waitAtNode: 7.5
+    waitAtNode: 8.5
     action: {fileID: 0}
     waitForAction: 0
     rotation: {x: 0, y: 0, z: 0}
     waitForRotation: 0
   - name: Move to take east tower
     node: {fileID: 1158669055}
-    waitAtNode: 8
+    waitAtNode: 7
     action: {fileID: 0}
     waitForAction: 0
     rotation: {x: 0, y: 0, z: 0}
@@ -78544,7 +78581,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000985601}
+  m_AnchoredPosition: {x: 0, y: 0.0009669262}
   m_SizeDelta: {x: 0, y: 28}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1708589874755708715
@@ -86601,7 +86638,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000985601}
+  m_AnchoredPosition: {x: 0, y: 0.0009669262}
   m_SizeDelta: {x: 0, y: 28}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!224 &3135064115378163964
@@ -86992,7 +87029,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1907066186657898408}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.99999267
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -98431,7 +98468,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1617453236638306497}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.99999267
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -101833,7 +101870,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 8584483813303231275}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.99999267
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -117733,7 +117770,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000985601}
+  m_AnchoredPosition: {x: 0, y: 0.0009669262}
   m_SizeDelta: {x: 0, y: 28}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &8921141290643998152

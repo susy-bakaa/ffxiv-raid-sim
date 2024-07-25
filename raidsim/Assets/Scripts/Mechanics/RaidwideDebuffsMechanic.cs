@@ -4,7 +4,6 @@ using System.Linq;
 using UnityEngine;
 using static ActionController;
 using static StatusEffectData;
-using static UnityEngine.GraphicsBuffer;
 
 public class RaidwideDebuffsMechanic : FightMechanic
 {
@@ -32,6 +31,8 @@ public class RaidwideDebuffsMechanic : FightMechanic
 
     public override void TriggerMechanic(ActionInfo actionInfo)
     {
+        base.TriggerMechanic(actionInfo);
+
         statusEffects = new List<StatusEffectInfo>(effects); // Copy the effects list
         partyMembers = new List<CharacterState>(party.GetActiveMembers()); // Copy the party members list
         partyMembers.Shuffle();

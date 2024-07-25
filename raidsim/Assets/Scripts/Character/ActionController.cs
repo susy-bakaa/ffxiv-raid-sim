@@ -40,12 +40,17 @@ public class ActionController : MonoBehaviour
     private CanvasGroup castBarGroup;
 
     private CharacterAction lastAction;
+    public CharacterAction LastAction { get { return lastAction; } }
     private float castTime;
+    public float CastTime { get { return castTime; } }
     private float lastCastTime;
+    public float LastCastTime { get { return lastCastTime; } }
     private bool interrupted;
+    public bool Interrupted { get { return interrupted; } }
 
     [Header("Events")]
     public UnityEvent<CastInfo> onCast;
+    public UnityEvent onResetCastBar;
 
     void Awake()
     {
@@ -393,6 +398,9 @@ public class ActionController : MonoBehaviour
 
         interrupted = false;
         castTime = 0f;
+
+        onResetCastBar.Invoke();
+
         if (castBar != null)
         {
             castBar.value = 0f;

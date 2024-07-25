@@ -5,6 +5,7 @@ using UnityEngine;
 public class DestroyObject : MonoBehaviour
 {
     public float lifetime = 1f;
+    public bool log = false;
 
     void Update()
     {
@@ -17,5 +18,11 @@ public class DestroyObject : MonoBehaviour
     public void TriggerDestruction(float delay)
     {
         Destroy(gameObject, delay);
+    }
+
+    public void OnDestroy()
+    {
+        if (log)
+            Debug.Log($"{this} was destroyed!");
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Playables;
@@ -33,6 +34,8 @@ public class DamageTrigger : MonoBehaviour
     public UnityEvent<CharacterState> onHit;
     public UnityEvent<CharacterState> onFail;
     public UnityEvent<CharacterState> onFinish;
+    public UnityEvent onSpawn;
+    public UnityEvent<CharacterCollection> onTrigger;
 
     private int id = 0;
     private bool inProgress = false;
@@ -46,6 +49,8 @@ public class DamageTrigger : MonoBehaviour
 
     void Start()
     {
+        onSpawn.Invoke();
+
         if (initializeOnStart && !initialized)
             Initialize();
     }
@@ -125,8 +130,6 @@ public class DamageTrigger : MonoBehaviour
 
     private void StartDamageTrigger()
     {
-        Debug.Log($"Players {currentPlayers.ToArray().Length}");
-
         if (damageApplicationDelay > 0)
         {
             StartCoroutine(IE_StartDamageTrigger(currentPlayers.ToArray()));
@@ -222,8 +225,6 @@ public class DamageTrigger : MonoBehaviour
         {
             for (int i = 0; i < players.Length; i++)
             {
-                Debug.Log(players[i].characterName);
-
                 if (ignoresOwner)
                 {
                     if (players[i] == owner)
@@ -270,5 +271,6 @@ public class DamageTrigger : MonoBehaviour
         }
 
         onFinish.Invoke(owner);
+        onTrigger.Invoke(new CharacterCollection(players));
     }
 }

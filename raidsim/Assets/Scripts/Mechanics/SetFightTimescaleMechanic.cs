@@ -9,6 +9,8 @@ public class SetFightTimescaleMechanic : FightMechanic
 
     public override void TriggerMechanic(ActionInfo actionInfo)
     {
+        base.TriggerMechanic(actionInfo);
+
         FightTimeline.timeScale = newTimeScale;
     }
 }

@@ -5,31 +5,41 @@ A singleplayer raid and fight mechanic simulator with bots, made in the Unity ga
 # Supported fights
 
 - Omega: Alphascape
-	- Alphascape 4.0 (Savage)
+	- Alphascape 4.0 (Savage) (O12S)
 		- Phase 2
 			- Hello World 1 (BLU)
 			- Hello World 2 (BLU)
 
+# In development fights
+
+- Alexander: Midas
+	- Alexander - The Burden of the Son (Savage) (A8S)
+		- Gavel (BLU)
+
 # Planned fights
 
 - Omega: Alphascape
-	- Alphascape 4.0 (Savage)
+	- Alphascape 4.0 (Savage) (O12S)
 		- Phase 2
 			- Patch (BLU)
-- Alexander: Midas
-	- Alexander - The Burden of the Son (Savage)
-		- Gavel (BLU)
 - Alexander: The Creator
-	- Alexander - The Soul of the Creator (Savage)
+	- Alexander - The Soul of the Creator (Savage) (A12S)
 		- Temporal Stasis (BLU)
-- The Epic of Alexander (Ultimate)
-	- Phase 4
+- The Epic of Alexander (Ultimate) (TEA)
+	- Phase 4 (Perfect Alexander)
 		- The Final Word
 		- Fate Calibration α
 		- Fate Calibration β
-- The Unending Coil of Bahamut (Ultimate)
-	- Phase 3
+- The Unending Coil of Bahamut (Ultimate) (UCOB)
+	- Phase 3 (Bahamut Prime)
 		- Heavensfall
+- The Weapon's Refrain (Ultimate) (UWU)
+	- Phase 3 (Titan)
+		- Gaols
+	- Phase 5 (The Ultima Weapon)
+		- Ultimate Predation
+		- Ultimate Suppression
+		- Ultimate Annihilation
 
 # Installation
 

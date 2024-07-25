@@ -205,7 +205,7 @@ public class FightTimeline : MonoBehaviour
                     {
                         for (int m = 0; m < cEvents[e].triggerMechanics.Length; m++)
                         {
-                            cEvents[e].triggerMechanics[m].TriggerMechanic(new ActionController.ActionInfo());
+                            cEvents[e].triggerMechanics[m].TriggerMechanic(new ActionController.ActionInfo(null, cEvents[e].character, null));
                         }
                     }
                 }

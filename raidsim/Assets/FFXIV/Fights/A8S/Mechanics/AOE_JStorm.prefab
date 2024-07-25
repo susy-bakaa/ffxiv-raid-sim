@@ -119,6 +119,7 @@ GameObject:
   - component: {fileID: 2420509021200257319}
   - component: {fileID: 502108215929725123}
   - component: {fileID: 3719421399136398919}
+  - component: {fileID: 3251041718577460962}
   m_Layer: 0
   m_Name: AOE_JStorm
   m_TagString: aoe
@@ -135,7 +136,7 @@ Transform:
   m_GameObject: {fileID: 6418138628864437263}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 11.05, y: 1.25, z: 6.86}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -237,7 +238,19 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8b991297547dcf84fbd25bc81a4d6fc9, type: 2}
   onHit:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3251041718577460962}
+        m_TargetAssemblyTypeName: FightMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onFail:
     m_PersistentCalls:
       m_Calls: []
@@ -269,6 +282,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 0
+--- !u!114 &3251041718577460962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6418138628864437263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de07d17f5bc4b524bb3d56bd7b027d12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: 
+  party: {fileID: 0}
+  effect:
+    name: FinalPunishment_1
+    data: {fileID: 11400000, guid: 24a3513861d4d044cb912cce40b9d67d, type: 2}
+    tag: 0
+    stacks: 1
+  ignoreRoles: 1
+  cleansEffect: 1
+  killsEffect: 0
 --- !u!1001 &5406278816461125139
 PrefabInstance:
   m_ObjectHideFlags: 0

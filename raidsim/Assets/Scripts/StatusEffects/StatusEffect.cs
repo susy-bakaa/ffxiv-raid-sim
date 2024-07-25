@@ -21,13 +21,16 @@ public class StatusEffect : MonoBehaviour
     public UnityEvent<CharacterState> onUpdate;
     public UnityEvent<CharacterState> onExpire;
     public UnityEvent<CharacterState> onCleanse;
+    public UnityEvent<CharacterState> onReduce;
 
     private bool hasHudElement = false;
     private GameObject hudElement;
     private TextMeshProUGUI hudTimer;
+    private Image hudIcon;
     private bool hasPartyHudElement = false;
     private GameObject partyHudElement;
     private TextMeshProUGUI partyHudTimer;
+    private Image partyHudIcon;
 
     public void Initialize(Transform hudElementParent, Transform partyHudElementParent, Color labelColor, int tag = 0)
     {
@@ -36,12 +39,14 @@ public class StatusEffect : MonoBehaviour
         onUpdate.AddListener(OnUpdate);
         onExpire.AddListener(OnExpire);
         onCleanse.AddListener(OnCleanse);
+        onReduce.AddListener(OnReduce);
 
         if (hudElementParent != null)
         {
             hasHudElement = true;
             hudElement = Instantiate(data.hudElement, hudElementParent);
             hudTimer = hudElement.transform.GetChild(1).GetComponentInChildren<TextMeshProUGUI>();
+            hudIcon = hudElement.transform.GetChild(0).GetComponent<Image>();
             hudTimer.color = labelColor;
         }
         if (partyHudElementParent != null)
@@ -49,6 +54,7 @@ public class StatusEffect : MonoBehaviour
             hasPartyHudElement = true;
             partyHudElement = Instantiate(data.hudElement, partyHudElementParent);
             partyHudTimer = partyHudElement.transform.GetChild(1).GetComponentInChildren<TextMeshProUGUI>();
+            partyHudIcon = partyHudElement.transform.GetChild(0).GetComponent<Image>();
             partyHudTimer.color = labelColor;
         }
 
@@ -65,6 +71,10 @@ public class StatusEffect : MonoBehaviour
                 hudTimer.text = duration.ToString("F0");
             else
                 hudTimer.text = "";
+            if (data.icons.Count > 0)
+            {
+                hudIcon.sprite = data.icons[stacks - 1];
+            }
         }
         if (hasPartyHudElement && duration >= 1)
         {
@@ -72,20 +82,31 @@ public class StatusEffect : MonoBehaviour
                 partyHudTimer.text = duration.ToString("F0");
             else
                 partyHudTimer.text = "";
+            if (data.icons.Count > 0)
+            {
+                partyHudIcon.sprite = data.icons[stacks - 1];
+            }
         }
     }
 
-    public void Refresh(bool ignoreStacks = false, int tag = 0)
+    public void Refresh(int appliedStacks = 0, int tag = 0)
     {
         uniqueTag = tag;
         duration += data.length;
-        if (!ignoreStacks)
+        if (appliedStacks == 0)
             stacks += data.appliedStacks;
+        else if (appliedStacks > 0)
+            stacks += stacks;
 
         if (duration > data.maxLength)
             duration = data.maxLength;
         if (stacks > data.maxStacks)
             stacks = data.maxStacks;
+
+        if (data.icons.Count > 0)
+        {
+            hudIcon.sprite = data.icons[stacks - 1];
+        }
     }
 
     public void Remove()
@@ -105,7 +126,7 @@ public class StatusEffect : MonoBehaviour
     public virtual void OnTick(CharacterState state)
     {
         if (data.infinite)
-            Refresh(true);
+            Refresh(-1);
     }
 
     public virtual void OnUpdate(CharacterState state)
@@ -116,6 +137,10 @@ public class StatusEffect : MonoBehaviour
                 hudTimer.text = duration.ToString("F0");
             else
                 hudTimer.text = "";
+            if (data.icons.Count > 0)
+            {
+                hudIcon.sprite = data.icons[stacks - 1];
+            }
         }
         if (hasPartyHudElement)
         {
@@ -123,6 +148,10 @@ public class StatusEffect : MonoBehaviour
                 partyHudTimer.text = duration.ToString("F0");
             else
                 partyHudTimer.text = "";
+            if (data.icons.Count > 0)
+            {
+                partyHudIcon.sprite = data.icons[stacks - 1];
+            }
         }
     }
 
@@ -142,6 +171,11 @@ public class StatusEffect : MonoBehaviour
             partyHudTimer.text = "";
     }
 
+    public virtual void OnReduce(CharacterState state)
+    {
+
+    }
+
     void OnDestroy()
     {
         onApplication.RemoveListener(OnApplication);
@@ -149,5 +183,6 @@ public class StatusEffect : MonoBehaviour
         onUpdate.RemoveListener(OnUpdate);
         onExpire.RemoveListener(OnExpire);
         onCleanse.RemoveListener(OnCleanse);
+        onReduce.RemoveListener(OnReduce);
     }
 }

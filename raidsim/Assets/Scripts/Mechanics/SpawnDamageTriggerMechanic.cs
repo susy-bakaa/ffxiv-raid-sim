@@ -17,6 +17,8 @@ public class SpawnDamageTriggerMechanic : FightMechanic
 
     public override void TriggerMechanic(ActionInfo actionInfo)
     {
+        base.TriggerMechanic(actionInfo);
+
         if (spawnLocation == null)
         {
             if (actionInfo.target != null)

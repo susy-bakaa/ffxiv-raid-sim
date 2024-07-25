@@ -26,6 +26,7 @@ namespace no00ob.Raidsim.Editor
             MaterialProperty glowTintProp = FindProperty("_GlowTintColor", properties);
             MaterialProperty outlineTintProp = FindProperty("_OutlineTintColor", properties);
             MaterialProperty innerOpacityProp = FindProperty("_InnerOpacity", properties);
+            MaterialProperty alphaProp = FindProperty("_Alpha", properties);
 
             // Clamp the properties
             outerRadiusProp.floatValue = Mathf.Max(outerRadiusProp.floatValue, 0);
@@ -87,12 +88,16 @@ namespace no00ob.Raidsim.Editor
                 outlineProp.floatValue = Mathf.Max(outlineProp.floatValue, 0);
             }
 
+            GUILayout.Space(20);
+            
+            GUILayout.Label("Other", EditorStyles.boldLabel);
+
+            alphaProp.floatValue = EditorGUILayout.Slider("Opacity", alphaProp.floatValue, alphaProp.rangeLimits.x, alphaProp.rangeLimits.y);
+            
+            GUILayout.Space(-10);
+
             // Update material properties
             materialEditor.PropertiesChanged();
-
-            GUILayout.Space(20);
-            GUILayout.Label("Other", EditorStyles.boldLabel);
-            GUILayout.Space(-10);
 
             base.OnGUI(materialEditor, properties);
         }

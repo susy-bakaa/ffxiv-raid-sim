@@ -42,6 +42,8 @@ Shader "Custom/Unlit/RoundAoe"
         _OutlineTintColor ("Outline Tint Color", Color) = (1,1,1,1)
         [HideInInspector]
         _InnerOpacity ("Inner Opacity", Range(0.0, 1.0)) = 1.0
+        [HideInInspector]
+        _Alpha ("Alpha", Range(0.0, 1.0)) = 1.0
     }
     CustomEditor "no00ob.Raidsim.Editor.RoundAoeShaderInspector"
     SubShader
@@ -71,6 +73,7 @@ Shader "Custom/Unlit/RoundAoe"
         fixed4 _InnerTintColor;
         fixed4 _GlowTintColor;
         fixed4 _OutlineTintColor;
+        float _Alpha;
 
         struct Input
         {
@@ -220,6 +223,7 @@ Shader "Custom/Unlit/RoundAoe"
 
             o.Albedo = finalColor;
             o.Alpha = outlineOpacity > 0 ? _OutlineOpacity : combinedOpacity * ((innerOpacity > 0) ? _InnerTintColor.a : (outerOpacity > 0) ? _TintColor.a : _GlowTintColor.a);
+            o.Alpha *= _Alpha;
         }
         ENDCG
     }
