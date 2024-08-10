@@ -24,9 +24,9 @@ public class RaidwideDebuffPairsMechanic : FightMechanic
     {
         for (int i = 0; i < party.members.Count; i++)
         {
-            if (party.members[i].characterName.ToLower().Contains("player"))
+            if (party.members[i].characterState.characterName.ToLower().Contains("player"))
             {
-                player = party.members[i];
+                player = party.members[i].characterState;
             }
         }
     }

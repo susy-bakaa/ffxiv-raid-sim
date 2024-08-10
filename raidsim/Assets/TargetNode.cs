@@ -3,6 +3,9 @@ using UnityEngine.Events;
 
 public class TargetNode : MonoBehaviour
 {
+    private SphereCollider sphereCollider;
+    private CapsuleCollider capsuleCollider;
+
     [SerializeField] private CharacterState characterState;
     [SerializeField] private ActionController actionController;
     [SerializeField] private TargetController targetController;
@@ -11,12 +14,23 @@ public class TargetNode : MonoBehaviour
     public bool Targetable { get { return characterState != null ? !characterState.untargetable : targetable; } }
     [SerializeField] private int group;
     public int Group { get { return group; } }
+    public float hitboxRadius = 0f;
 
     public UnityEvent onTarget;
     public UnityEvent onDetarget;
 
+    public CanvasGroup[] highlightGroups;
+
     void Awake()
     {
+        sphereCollider = GetComponent<SphereCollider>();
+        capsuleCollider = GetComponent<CapsuleCollider>();
+
+        if (capsuleCollider != null && hitboxRadius <= 0f)
+            hitboxRadius = capsuleCollider.radius;
+        if (sphereCollider != null && hitboxRadius <= 0f)
+            hitboxRadius = sphereCollider.radius;
+
         SetupCharacterState();
         SetupActionController();
         SetupTargetController();
@@ -151,5 +165,39 @@ public class TargetNode : MonoBehaviour
         }
 
         return targetController;
+    }
+
+    public bool IsNodeInGroup(int group)
+    {
+        if (this != null)
+        {
+            if (this.Group == group)
+                return true;
+        }
+        return false;
+    }
+
+    public bool IsNodeInGroups(int[] groups)
+    {
+        for (int i = 0; i < groups.Length; i++)
+        {
+            if (IsNodeInGroup(groups[i]))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void UpdateUserInterface(float alpha, float duration)
+    {
+        if (highlightGroups != null && highlightGroups.Length > 0)
+        {
+            for (int i = 0; i < highlightGroups.Length; i++)
+            {
+                highlightGroups[i].LeanAlpha(alpha, duration);
+            }
+        }
     }
 }

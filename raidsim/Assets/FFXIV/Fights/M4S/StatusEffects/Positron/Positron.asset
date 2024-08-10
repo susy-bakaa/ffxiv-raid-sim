@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99b696446f1f2e246b4a8ecc8cc05a7a, type: 3}
+  m_Name: Positron
+  m_EditorClassIdentifier: 
+  statusName: Positron
+  statusDesc: Inflicted with a positive charge that will incur heavy damage when
+    this effect expires. Taking damage from an effect of the opposite charge will
+    remove this effect.
+  negative: 1
+  unique: 1
+  infinite: 0
+  toggle: 0
+  rollsCooldown: 1
+  hidden: 0
+  lostOnDeath: 0
+  unaffectedByTimeScale: 0
+  instantCasts: 0
+  reducesCastTimes: 0
+  length: 20
+  maxLength: 20
+  appliedStacks: 1
+  maxStacks: 6
+  statusEffect: {fileID: 2193113438782787470, guid: 897b04afa7f3eba499291f10f7acad8f, type: 3}
+  hudElement: {fileID: 1873266025266142675, guid: e9a59845ebef92141a8d8d4822972351, type: 3}
+  icons:
+  - {fileID: 21300000, guid: 42cfc7a07b7fc744794c91cb88115f01, type: 3}
+  - {fileID: 21300000, guid: 41e80e5b8daa81b40858a92a71a9f8b3, type: 3}
+  - {fileID: 21300000, guid: 6175ef71b1bbe4347aec9b475dc41294, type: 3}
+  - {fileID: 21300000, guid: 49f4d9bd51516d545bf7144e7fa70083, type: 3}
+  - {fileID: 21300000, guid: 80dd71007bb74ce4e9e7547cd5da121d, type: 3}
+  - {fileID: 21300000, guid: f1c658316a2c81e42912b7bdd9c724ae, type: 3}
+  incompatableStatusEffects:
+  - {fileID: 11400000, guid: a4cf7b81114018d4f97c1c81f62885a9, type: 2}
+  - {fileID: 11400000, guid: 4eb50098bd141734786545b719d52c36, type: 2}
+  assignedRoles: 

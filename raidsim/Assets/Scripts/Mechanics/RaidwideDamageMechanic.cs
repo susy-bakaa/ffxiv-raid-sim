@@ -7,15 +7,14 @@ using static GlobalStructs;
 public class RaidwideDamageMechanic : FightMechanic
 {
     public PartyList party;
+    public bool autoFindParty = true;
     public bool useActionDamage = true;
     public Damage damage = new Damage(0, true, false, Damage.DamageType.magical, Damage.ElementalAspect.unaspected, Damage.PhysicalAspect.none, Damage.DamageApplicationType.normal, string.Empty);
 
     void Awake()
     {
-        if (party == null)
-        {
+        if (party == null && autoFindParty)
             party = FightTimeline.Instance.partyList;
-        }
     }
 
     public override void TriggerMechanic(ActionInfo actionInfo)

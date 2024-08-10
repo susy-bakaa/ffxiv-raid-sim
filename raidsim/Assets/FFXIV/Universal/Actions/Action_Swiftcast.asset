@@ -14,15 +14,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: Swiftcast
   actionType: 2
-  damage: 0
+  damage:
+    name: 
+    value: 0
+    negative: 1
+    ignoreDamageReductions: 0
+    type: 1
+    elementalAspect: 1
+    physicalAspect: 0
+    applicationType: 0
+  isShield: 0
+  isHeal: 0
+  isTargeted: 0
+  targetGroups: 64000000
   maxTargets: 1
   range: 0
   radius: 0
   manaCost: 0
   cast: 0
   recast: 60
-  animationLock: 0.2
+  animationLock: 0.6
   canBeSlideCast: 1
   buff: {fileID: 11400000, guid: b5257a784c306e34a81cf9476d5d2927, type: 2}
   debuff: {fileID: 0}
+  comboAction: {fileID: 0}
   animationName: 

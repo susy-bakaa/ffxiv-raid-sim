@@ -63,13 +63,13 @@ public class SpawnDamageTriggerMechanic : FightMechanic
 
             if (usePlayerHealth)
             {
-                damageTrigger.isAShield = actionInfo.action.data.isAShield;
+                damageTrigger.isAShield = actionInfo.action.data.isShield;
                 damageTrigger.self = actionInfo.sourceIsPlayer;
                 damageTrigger.damage = new Damage(Mathf.RoundToInt(damageMultiplier * actionInfo.source.health), false, true, DamageType.unique, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal, "White Wind");
             }
             else if (useActionDamage)
             {
-                damageTrigger.isAShield = actionInfo.action.data.isAShield;
+                damageTrigger.isAShield = actionInfo.action.data.isShield;
                 damageTrigger.self = actionInfo.sourceIsPlayer;
                 damageTrigger.damage = new Damage(actionInfo.action.data.damage, Mathf.RoundToInt(actionInfo.action.data.damage.value * damageMultiplier));
             }

@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d125dbc2bb1fc754ea156ee20ab7c7da, type: 3}
+  m_Name: BlueAction_Devour
+  m_EditorClassIdentifier: 
+  actionName: Devour
+  actionType: 0
+  damage:
+    name: Devour
+    value: -4200
+    negative: 1
+    ignoreDamageReductions: 0
+    type: 1
+    elementalAspect: 1
+    physicalAspect: 0
+    applicationType: 0
+  isShield: 0
+  isHeal: 1
+  isTargeted: 1
+  targetGroups: 64000000
+  maxTargets: 1
+  range: 3
+  radius: 0
+  manaCost: 300
+  cast: 1
+  recast: 60
+  animationLock: 0.6
+  canBeSlideCast: 0
+  buff: {fileID: 11400000, guid: 03910363663455148bacf9e53d845c67, type: 2}
+  debuff: {fileID: 0}
+  comboAction: {fileID: 0}
+  animationName: General_Casting_Blue

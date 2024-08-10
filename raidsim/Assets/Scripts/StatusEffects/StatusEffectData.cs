@@ -16,6 +16,8 @@ public class StatusEffectData : ScriptableObject
     public bool hidden = false;
     public bool lostOnDeath = true;
     public bool unaffectedByTimeScale = false;
+    public bool instantCasts = false;
+    public float reducesCastTimes = 0f;
     public float length = 10f;
     public float maxLength = 10f;
     public int appliedStacks = 1;

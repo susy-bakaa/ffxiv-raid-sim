@@ -6,6 +6,7 @@ using UnityEngine.Events;
 using UnityEngine.TextCore.Text;
 using static ActionController;
 using static GlobalStructs;
+using static PartyList;
 using static StatusEffectData;
 
 public class RaidwideDebuffStatsMechanic : FightMechanic
@@ -28,58 +29,58 @@ public class RaidwideDebuffStatsMechanic : FightMechanic
     {
         base.TriggerMechanic(actionInfo);
 
-        foreach (CharacterState character in party.members)
+        foreach (PartyMember member in party.members)
         {
             for (int i = 0; i < effectVitals.Count; i++)
             {
-                if (character.HasEffect(effectVitals[i].effect.data.statusName, effectVitals[i].effect.tag))
+                if (member.characterState.HasEffect(effectVitals[i].effect.data.statusName, effectVitals[i].effect.tag))
                 {
                     // Health Check
                     if (effectVitals[i].requiredHealth >= 0)
                     {
-                        if (character.health < effectVitals[i].requiredHealth)
+                        if (member.characterState.health < effectVitals[i].requiredHealth)
                         {
-                            OnFail(character, effectVitals[i]);
+                            OnFail(member.characterState, effectVitals[i]);
                         }
                         else
                         {
-                            OnSucceed(character, effectVitals[i]);
+                            OnSucceed(member.characterState, effectVitals[i]);
                         }
                     }
                     // Max Health Check
                     if (effectVitals[i].requiredMaxHealth >= 0)
                     {
-                        if (character.currentMaxHealth < effectVitals[i].requiredMaxHealth)
+                        if (member.characterState.currentMaxHealth < effectVitals[i].requiredMaxHealth)
                         {
-                            OnFail(character, effectVitals[i]);
+                            OnFail(member.characterState, effectVitals[i]);
                         }
                         else
                         {
-                            OnSucceed(character, effectVitals[i]);
+                            OnSucceed(member.characterState, effectVitals[i]);
                         }
                     }
                     // Has Most Health
                     if (effectVitals[i].hasMostHealth == true)
                     {
-                        if (party.GetHighestHealthMember() != character)
+                        if (party.GetHighestHealthMember() != member.characterState)
                         {
-                            OnFail(character, effectVitals[i]);
+                            OnFail(member.characterState, effectVitals[i]);
                         }
                         else
                         {
-                            OnSucceed(character, effectVitals[i]);
+                            OnSucceed(member.characterState, effectVitals[i]);
                         }
                     }
                     // Has Least Health
                     if (effectVitals[i].hasLeastHealth == true)
                     {
-                        if (party.GetLowestHealthMember() != character)
+                        if (party.GetLowestHealthMember() != member.characterState)
                         {
-                            OnFail(character, effectVitals[i]);
+                            OnFail(member.characterState, effectVitals[i]);
                         }
                         else
                         {
-                            OnSucceed(character, effectVitals[i]);
+                            OnSucceed(member.characterState, effectVitals[i]);
                         }
                     }
                 }

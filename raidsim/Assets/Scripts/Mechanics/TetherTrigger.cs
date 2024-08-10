@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using static PartyList;
 
 public class TetherTrigger : MonoBehaviour
 {
@@ -99,13 +100,13 @@ public class TetherTrigger : MonoBehaviour
                 CharacterState closestMember = null;
                 float closestDistance = float.MaxValue;
 
-                foreach (CharacterState member in partyList.members)
+                foreach (PartyMember member in partyList.members)
                 {
-                    float distance = Vector3.Distance(transform.position, member.transform.position);
+                    float distance = Vector3.Distance(transform.position, member.characterState.transform.position);
                     if (distance < closestDistance)
                     {
                         closestDistance = distance;
-                        closestMember = member;
+                        closestMember = member.characterState;
                     }
                 }
 
@@ -123,13 +124,13 @@ public class TetherTrigger : MonoBehaviour
                 CharacterState furthestMember = null;
                 float furthestDistance = 0f;
 
-                foreach (CharacterState member in partyList.members)
+                foreach (PartyMember member in partyList.members)
                 {
-                    float distance = Vector3.Distance(transform.position, member.transform.position);
+                    float distance = Vector3.Distance(transform.position, member.characterState.transform.position);
                     if (distance > furthestDistance)
                     {
                         furthestDistance = distance;
-                        furthestMember = member;
+                        furthestMember = member.characterState;
                     }
                 }
 

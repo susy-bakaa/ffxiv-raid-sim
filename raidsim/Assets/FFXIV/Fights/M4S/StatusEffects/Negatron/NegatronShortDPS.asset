@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99b696446f1f2e246b4a8ecc8cc05a7a, type: 3}
+  m_Name: NegatronShortDPS
+  m_EditorClassIdentifier: 
+  statusName: Negatron@s@gd
+  statusDesc: Inflicted with a negative charge that will incur heavy damage when
+    this effect expires. Taking damage from an effect of the opposite charge will
+    remove this effect.
+  negative: 1
+  unique: 1
+  infinite: 0
+  toggle: 0
+  rollsCooldown: 1
+  hidden: 0
+  lostOnDeath: 0
+  unaffectedByTimeScale: 0
+  instantCasts: 0
+  reducesCastTimes: 0
+  length: 23
+  maxLength: 23
+  appliedStacks: 1
+  maxStacks: 6
+  statusEffect: {fileID: 2193113438782787470, guid: 0f66d06cd357d014aa08c634926a4614, type: 3}
+  hudElement: {fileID: 1873266025266142675, guid: d8efc80e22d592343a3793b309d2d19f, type: 3}
+  icons:
+  - {fileID: 21300000, guid: f32e36b773fcf7d4ea1a631f937ce27a, type: 3}
+  - {fileID: 21300000, guid: 50e1626ecad679a4bacf6ecbaa813de1, type: 3}
+  - {fileID: 21300000, guid: b265e05e8d7782d459775738250577f8, type: 3}
+  - {fileID: 21300000, guid: 7137105c6b8eb4940af19dd8bd444606, type: 3}
+  - {fileID: 21300000, guid: eb245cfa14833344aa15c2a2df47bba3, type: 3}
+  - {fileID: 21300000, guid: 00cce2ea2d9141d478cacd2db056623d, type: 3}
+  incompatableStatusEffects:
+  - {fileID: 11400000, guid: a4cf7b81114018d4f97c1c81f62885a9, type: 2}
+  - {fileID: 11400000, guid: 6fe0e860e42f9f345ba8177a5cf51034, type: 2}
+  - {fileID: 11400000, guid: b46403034ab2cfa4b823f8e712537608, type: 2}
+  assignedRoles: 02000000

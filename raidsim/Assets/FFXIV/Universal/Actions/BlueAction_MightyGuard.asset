@@ -14,15 +14,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: MightyGuard
   actionType: 0
-  damage: 0
+  damage:
+    name: 
+    value: 0
+    negative: 1
+    ignoreDamageReductions: 0
+    type: 1
+    elementalAspect: 1
+    physicalAspect: 0
+    applicationType: 0
+  isShield: 0
+  isHeal: 0
+  isTargeted: 0
+  targetGroups: 64000000
   maxTargets: 1
   range: 0
   radius: 0
   manaCost: 700
   cast: 2
   recast: 2.5
-  animationLock: 1
+  animationLock: 0.6
   canBeSlideCast: 1
+  rollsGcd: 1
   buff: {fileID: 11400000, guid: f1b27e2dcaffc474a8a7c78be2a5b63d, type: 2}
+  dispelBuffInstead: 0
   debuff: {fileID: 0}
+  dispelDebuffInstead: 0
+  comboAction: {fileID: 0}
   animationName: General_Casting_Blue

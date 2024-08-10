@@ -11,6 +11,7 @@ public class DamageTrigger : MonoBehaviour
     Collider m_collider;
 
     public string damageName = string.Empty;
+    public bool inverted = false;
     public CharacterState owner;
     public bool autoAssignOwner = false;
     public Damage damage;
@@ -91,39 +92,82 @@ public class DamageTrigger : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (!inverted)
         {
-            if (other.transform.parent.TryGetComponent(out CharacterState playerState))
+            if (other.CompareTag("Player"))
             {
-                if (playerState == owner && ignoresOwner)
-                    return;
-                if (!cleaves && owner == null)
-                    return;
-                if (!cleaves && owner != null && playerState != owner)
-                    return;
+                if (other.transform.parent.TryGetComponent(out CharacterState playerState))
+                {
+                    if (playerState == owner && ignoresOwner)
+                        return;
+                    if (!cleaves && owner == null)
+                        return;
+                    if (!cleaves && owner != null && playerState != owner)
+                        return;
 
-                currentPlayers.Add(playerState);
+                    currentPlayers.Add(playerState);
 
-                if (!inProgress && playerActivated && initialized)
-                    StartDamageTrigger();
+                    if (!inProgress && playerActivated && initialized)
+                        StartDamageTrigger();
+                }
+            }
+        }
+        else
+        {
+            if (other.CompareTag("Player"))
+            {
+                if (other.transform.parent.TryGetComponent(out CharacterState playerState))
+                {
+                    if (playerState == owner && ignoresOwner)
+                        return;
+                    if (!cleaves && owner == null)
+                        return;
+                    if (!cleaves && owner != null && playerState != owner)
+                        return;
+
+                    currentPlayers.Remove(playerState);
+                }
             }
         }
     }
 
     void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (!inverted)
         {
-            if (other.transform.parent.TryGetComponent(out CharacterState playerState))
+            if (other.CompareTag("Player"))
             {
-                if (playerState == owner && ignoresOwner)
-                    return;
-                if (!cleaves && owner == null)
-                    return;
-                if (!cleaves && owner != null && playerState != owner)
-                    return;
+                if (other.transform.parent.TryGetComponent(out CharacterState playerState))
+                {
+                    if (playerState == owner && ignoresOwner)
+                        return;
+                    if (!cleaves && owner == null)
+                        return;
+                    if (!cleaves && owner != null && playerState != owner)
+                        return;
 
-                currentPlayers.Remove(playerState);
+                    currentPlayers.Remove(playerState);
+                }
+            }
+        }
+        else
+        {
+            if (other.CompareTag("Player"))
+            {
+                if (other.transform.parent.TryGetComponent(out CharacterState playerState))
+                {
+                    if (playerState == owner && ignoresOwner)
+                        return;
+                    if (!cleaves && owner == null)
+                        return;
+                    if (!cleaves && owner != null && playerState != owner)
+                        return;
+
+                    currentPlayers.Add(playerState);
+
+                    if (!inProgress && playerActivated && initialized)
+                        StartDamageTrigger();
+                }
             }
         }
     }
@@ -205,11 +249,12 @@ public class DamageTrigger : MonoBehaviour
             {
                 if (players.Length < playersRequired)
                 {
+                    Debug.Log("DamageTrigger failed");
                     failed = true;
                     if (damagePerPlayer.value < 0)
                     {
-                        damagePerPlayer = new Damage(damagePerPlayer, -999999);
-                        kill = true;
+                        //damagePerPlayer = new Damage(damagePerPlayer, -999999);
+                        //kill = true;
                     }
                 }
             }
@@ -259,7 +304,8 @@ public class DamageTrigger : MonoBehaviour
                         }
                     }
                 }
-                onHit.Invoke(players[i]);
+                if (players != null && players[i] != null)
+                    onHit.Invoke(players[i]);
                 if (failed)
                     onFail.Invoke(players[i]);
             }

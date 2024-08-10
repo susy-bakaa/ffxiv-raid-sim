@@ -57,15 +57,14 @@ public class ThirdPersonCamera : MonoBehaviour
                 cursorPosition = CursorControl.GetPosition();
                 cursorPositionSet = true;
             }
-#endif
-#if UNITY_EDITOR_WIN
+#elif UNITY_EDITOR_WIN
             if (!cursorPositionSet)
             {
                 cursorPosition = CursorControl.GetPosition();
                 cursorPositionSet = true;
             }
 #endif
-            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.lockState = CursorLockMode.Confined;
             Cursor.visible = false;
         }
         if ((Input.GetMouseButtonUp(1) && !Input.GetMouseButton(0)) || (Input.GetMouseButtonUp(0) && !Input.GetMouseButton(1)))
@@ -77,8 +76,7 @@ public class ThirdPersonCamera : MonoBehaviour
                 CursorControl.SetPosition(cursorPosition);
                 cursorPositionSet = false;
             }
-#endif
-#if UNITY_EDITOR_WIN
+#elif UNITY_EDITOR_WIN
             if (cursorPositionSet)
             {
                 CursorControl.SetPosition(cursorPosition);

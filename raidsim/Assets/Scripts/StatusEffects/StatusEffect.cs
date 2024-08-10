@@ -13,6 +13,7 @@ public class StatusEffect : MonoBehaviour
     public float duration;
     public int stacks;
     public int uniqueTag;
+    public int sortOrder = 0;
     public Damage damage;
 
     [Header("Events")]
@@ -24,15 +25,22 @@ public class StatusEffect : MonoBehaviour
     public UnityEvent<CharacterState> onReduce;
 
     private bool hasHudElement = false;
+    private CanvasGroup hudElementGroup;
     private GameObject hudElement;
     private TextMeshProUGUI hudTimer;
     private Image hudIcon;
     private bool hasPartyHudElement = false;
+    private CanvasGroup partyHudElementGroup;
     private GameObject partyHudElement;
     private TextMeshProUGUI partyHudTimer;
     private Image partyHudIcon;
+    private bool hasTargetHudElement = false;
+    private CanvasGroup targetHudElementGroup;
+    private GameObject targetHudElement;
+    private TextMeshProUGUI targetHudTimer;
+    private Image targetHudIcon;
 
-    public void Initialize(Transform hudElementParent, Transform partyHudElementParent, Color labelColor, int tag = 0)
+    public void Initialize(Transform hudElementParent, Transform partyHudElementParent, Transform targetHudElementParent, Color labelColor, int tag = 0)
     {
         onApplication.AddListener(OnApplication);
         onTick.AddListener(OnTick);
@@ -45,6 +53,20 @@ public class StatusEffect : MonoBehaviour
         {
             hasHudElement = true;
             hudElement = Instantiate(data.hudElement, hudElementParent);
+            hudElementGroup = hudElement.GetComponent<CanvasGroup>();
+            if (hudElementGroup != null)
+            {
+                if (data.hidden)
+                {
+                    hudElementGroup.alpha = 0f;
+                    hudElementGroup.blocksRaycasts = true;
+                }
+                else
+                {
+                    hudElementGroup.alpha = 1f;
+                    hudElementGroup.blocksRaycasts = true;
+                }
+            }
             hudTimer = hudElement.transform.GetChild(1).GetComponentInChildren<TextMeshProUGUI>();
             hudIcon = hudElement.transform.GetChild(0).GetComponent<Image>();
             hudTimer.color = labelColor;
@@ -53,9 +75,45 @@ public class StatusEffect : MonoBehaviour
         {
             hasPartyHudElement = true;
             partyHudElement = Instantiate(data.hudElement, partyHudElementParent);
+            partyHudElementGroup = partyHudElement.GetComponent<CanvasGroup>();
+            if (partyHudElementGroup != null)
+            {
+                if (data.hidden)
+                {
+                    partyHudElementGroup.alpha = 0f;
+                    partyHudElementGroup.blocksRaycasts = true;
+                }
+                else
+                {
+                    partyHudElementGroup.alpha = 1f;
+                    partyHudElementGroup.blocksRaycasts = true;
+                }
+            }
             partyHudTimer = partyHudElement.transform.GetChild(1).GetComponentInChildren<TextMeshProUGUI>();
             partyHudIcon = partyHudElement.transform.GetChild(0).GetComponent<Image>();
             partyHudTimer.color = labelColor;
+        }
+        if (targetHudElementParent != null)
+        {
+            hasTargetHudElement = true;
+            targetHudElement = Instantiate(data.hudElement, targetHudElementParent);
+            targetHudElementGroup = targetHudElement.GetComponent<CanvasGroup>();
+            if (partyHudElementGroup != null)
+            {
+                if (data.hidden)
+                {
+                    targetHudElementGroup.alpha = 0f;
+                    targetHudElementGroup.blocksRaycasts = true;
+                }
+                else
+                {
+                    targetHudElementGroup.alpha = 1f;
+                    targetHudElementGroup.blocksRaycasts = true;
+                }
+            }
+            targetHudTimer = targetHudElement.transform.GetChild(1).GetComponentInChildren<TextMeshProUGUI>();
+            targetHudIcon = targetHudElement.transform.GetChild(0).GetComponent<Image>();
+            targetHudTimer.color = labelColor;
         }
 
         duration = data.length;
@@ -67,7 +125,7 @@ public class StatusEffect : MonoBehaviour
 
         if (hasHudElement)
         {
-            if (!data.infinite && duration >= 1)
+            if ((!data.infinite || data.hidden) && duration >= 1)
                 hudTimer.text = duration.ToString("F0");
             else
                 hudTimer.text = "";
@@ -76,15 +134,26 @@ public class StatusEffect : MonoBehaviour
                 hudIcon.sprite = data.icons[stacks - 1];
             }
         }
-        if (hasPartyHudElement && duration >= 1)
+        if (hasPartyHudElement)
         {
-            if (!data.infinite)
+            if ((!data.infinite || data.hidden) && duration >= 1)
                 partyHudTimer.text = duration.ToString("F0");
             else
                 partyHudTimer.text = "";
             if (data.icons.Count > 0)
             {
                 partyHudIcon.sprite = data.icons[stacks - 1];
+            }
+        }
+        if (hasTargetHudElement)
+        {
+            if ((!data.infinite || data.hidden) && duration >= 1)
+                targetHudTimer.text = duration.ToString("F0");
+            else
+                targetHudTimer.text = "";
+            if (data.icons.Count > 0)
+            {
+                targetHudIcon.sprite = data.icons[stacks - 1];
             }
         }
     }
@@ -115,6 +184,8 @@ public class StatusEffect : MonoBehaviour
             Destroy(hudElement, 0.1f);
         if (hasPartyHudElement)
             Destroy(partyHudElement, 0.1f);
+        if (hasTargetHudElement)
+            Destroy(targetHudElement, 0.1f);
         Destroy(gameObject, 0.1f);
     }
 
@@ -133,7 +204,7 @@ public class StatusEffect : MonoBehaviour
     {
         if (hasHudElement)
         {
-            if (!data.infinite && duration >= 1)
+            if ((!data.infinite || data.hidden) && duration >= 1)
                 hudTimer.text = duration.ToString("F0");
             else
                 hudTimer.text = "";
@@ -144,13 +215,24 @@ public class StatusEffect : MonoBehaviour
         }
         if (hasPartyHudElement)
         {
-            if (!data.infinite && duration >= 1)
+            if ((!data.infinite || data.hidden) && duration >= 1)
                 partyHudTimer.text = duration.ToString("F0");
             else
                 partyHudTimer.text = "";
             if (data.icons.Count > 0)
             {
                 partyHudIcon.sprite = data.icons[stacks - 1];
+            }
+        }
+        if (hasTargetHudElement)
+        {
+            if ((!data.infinite || data.hidden) && duration >= 1)
+                targetHudTimer.text = duration.ToString("F0");
+            else
+                targetHudTimer.text = "";
+            if (data.icons.Count > 0)
+            {
+                targetHudIcon.sprite = data.icons[stacks - 1];
             }
         }
     }
@@ -161,6 +243,8 @@ public class StatusEffect : MonoBehaviour
             hudTimer.text = "";
         if (hasPartyHudElement)
             partyHudTimer.text = "";
+        if (hasTargetHudElement)
+            targetHudTimer.text = "";
     }
 
     public virtual void OnCleanse(CharacterState state)
@@ -169,6 +253,8 @@ public class StatusEffect : MonoBehaviour
             hudTimer.text = "";
         if (hasPartyHudElement)
             partyHudTimer.text = "";
+        if (hasTargetHudElement)
+            targetHudTimer.text = "";
     }
 
     public virtual void OnReduce(CharacterState state)

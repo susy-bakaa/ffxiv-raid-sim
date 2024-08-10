@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 public class UserInput : MonoBehaviour
@@ -11,10 +12,12 @@ public class UserInput : MonoBehaviour
     public CharacterState characterState;
     public SimpleFreecam freecam;
     public ThirdPersonCamera cam;
+    public TargetController targetController;
     public bool inputEnabled = true;
     public bool movementInputEnabled = true;
     public bool rotationInputEnabled = true;
     public bool zoomInputEnabled = true;
+    public bool targetRaycastInputEnabled = true;
     public List<InputBinding> keys = new List<InputBinding>();
 
     void Awake()
@@ -56,6 +59,8 @@ public class UserInput : MonoBehaviour
             cam.enableRotation = rotationInputEnabled;
         }
 
+        targetController.canMouseRaycast = targetRaycastInputEnabled;
+
         for (int i = 0;i < keys.Count; i++)
         {
             //Debug.Log($"KeyBind {keys[i].bind} state {BindedKey(keys[i].bind)}");
@@ -65,6 +70,7 @@ public class UserInput : MonoBehaviour
                     characterAction.PerformAction(keys[i].action);
                 if (keys[i].statusEffect != null && characterState != null)
                     characterState.AddEffect(keys[i].statusEffect);
+                keys[i].onInput.Invoke();
             }
         }
 
@@ -86,13 +92,15 @@ public class UserInput : MonoBehaviour
         public KeyBind bind;
         public CharacterAction action;
         public StatusEffectData statusEffect;
+        public UnityEvent onInput;
 
-        public InputBinding(string name, KeyBind bind, CharacterAction action, StatusEffectData statusEffect)
+        public InputBinding(string name, KeyBind bind, CharacterAction action, StatusEffectData statusEffect, UnityEvent onInput)
         {
             this.name = name;
             this.bind = bind;
             this.action = action;
             this.statusEffect = statusEffect;
+            this.onInput = onInput;
         }
     }
 }

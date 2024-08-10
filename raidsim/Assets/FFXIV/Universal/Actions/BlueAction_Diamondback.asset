@@ -14,14 +14,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: Diamondback
   actionType: 0
-  damage: 0
+  damage:
+    name: 
+    value: 0
+    negative: 1
+    ignoreDamageReductions: 0
+    type: 1
+    elementalAspect: 1
+    physicalAspect: 0
+    applicationType: 0
+  isShield: 0
+  isHeal: 0
+  isTargeted: 0
+  targetGroups: 64000000
   maxTargets: 1
   range: 0
   radius: 0
   manaCost: 3000
   cast: 2
   recast: 2.5
-  animationLock: 0.2
+  animationLock: 0.6
   canBeSlideCast: 0
   buff: {fileID: 11400000, guid: 9763ac9a0191c9b44a49cddcb87631a5, type: 2}
+  debuff: {fileID: 0}
+  comboAction: {fileID: 0}
   animationName: General_Casting_Blue

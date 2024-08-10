@@ -20,6 +20,13 @@ public class DebuffMechanic : FightMechanic
             {
                 if (!cleans)
                 {
+                    for (int i = 0; i < effect.data.incompatableStatusEffects.Count; i++)
+                    {
+                        if (actionInfo.target.HasEffect(effect.data.incompatableStatusEffects[i].statusName))
+                        {
+                            return;
+                        }
+                    }
                     actionInfo.target.AddEffect(effect.data, false, effect.tag, effect.stacks);
                 }
                 else
@@ -34,11 +41,18 @@ public class DebuffMechanic : FightMechanic
             {
                 if (!cleans)
                 {
+                    for (int i = 0; i < effect.data.incompatableStatusEffects.Count; i++)
+                    {
+                        if (actionInfo.source.HasEffect(effect.data.incompatableStatusEffects[i].statusName))
+                        {
+                            return;
+                        }
+                    }
                     actionInfo.source.AddEffect(effect.data, false, effect.tag, effect.stacks);
                 }
                 else
                 {
-                    actionInfo.target.RemoveEffect(effect.data, false, effect.tag, effect.stacks);
+                    actionInfo.source.RemoveEffect(effect.data, false, effect.tag, effect.stacks);
                 }
             }
         }

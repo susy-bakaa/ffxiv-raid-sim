@@ -16,11 +16,15 @@ public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     [Header("Sorting")]
     public int priority = 1;
+    [Header("Data")]
+    public CharacterState characterState;
+    public bool destroyIfMissing = false;
     [Header("Input")]
     public bool blocksAllInput = false;
     public bool blocksPosInput = false;
     public bool blocksRotInput = false;
     public bool blocksScrInput = false;
+    public bool blocksTargetRaycasts = false;
     [Header("Animation")]
     public bool doMovement = false;
     public Vector2 movement = Vector2.zero;
@@ -63,6 +67,14 @@ public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     void Update()
     {
+        if (destroyIfMissing)
+        {
+            if (characterState == null)
+            {
+                Destroy(gameObject, 0.1f);
+            }
+        }
+
         if (lifeTime > 0f && !lifeTimeSetupDone)
         {
             float t = lifeTime;
@@ -148,6 +160,8 @@ public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             input.rotationInputEnabled = false;
         if (blocksScrInput)
             input.zoomInputEnabled = false;
+        if (blocksTargetRaycasts)
+            input.targetRaycastInputEnabled = false;
     }
 
     public void OnPointerExit()
@@ -168,5 +182,7 @@ public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             input.rotationInputEnabled = true;
         if (blocksScrInput)
             input.zoomInputEnabled = true;
+        if (blocksTargetRaycasts)
+            input.targetRaycastInputEnabled = true;
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static ActionController;
 using static GlobalStructs;
+using static PartyList;
 using static StatusEffectData;
 
 public class RaidwideDebuffCountMechanic : FightMechanic
@@ -23,23 +24,23 @@ public class RaidwideDebuffCountMechanic : FightMechanic
         if (!mechanicEnabled)
             return;
 
-        foreach (CharacterState character in party.members)
+        foreach (PartyMember member in party.members)
         {
             for (int i = 0; i < effectCountPairs.Count; i++)
             {
-                if (character.HasEffect(effectCountPairs[i].effect.data.statusName, effectCountPairs[i].effect.tag))
+                if (member.characterState.HasEffect(effectCountPairs[i].effect.data.statusName, effectCountPairs[i].effect.tag))
                 {
                     int results = 0;
                     for (int j = 0; j < effectCountPairs[i].allowedEffects.Count; j++)
                     {
-                        if (character.HasEffect(effectCountPairs[i].allowedEffects[j].data.statusName, effectCountPairs[i].allowedEffects[j].tag))
+                        if (member.characterState.HasEffect(effectCountPairs[i].allowedEffects[j].data.statusName, effectCountPairs[i].allowedEffects[j].tag))
                         {
                             results++;
                         }
                     }
                     if (results < effectCountPairs[i].requiredAmount)
                     {
-                        character.ModifyHealth(new Damage(100, true, true, Damage.DamageType.unique, Damage.ElementalAspect.unaspected, Damage.PhysicalAspect.none, Damage.DamageApplicationType.percentageFromMax, mechanicName));
+                        member.characterState.ModifyHealth(new Damage(100, true, true, Damage.DamageType.unique, Damage.ElementalAspect.unaspected, Damage.PhysicalAspect.none, Damage.DamageApplicationType.percentageFromMax, mechanicName));
                     }
                 }
             }

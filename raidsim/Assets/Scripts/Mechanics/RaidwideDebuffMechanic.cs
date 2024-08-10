@@ -8,6 +8,7 @@ using static UnityEngine.GraphicsBuffer;
 public class RaidwideDebuffMechanic : FightMechanic
 {
     public PartyList party;
+    public bool autoFindParty = false;
     public StatusEffectInfo effect;
     public bool ignoreRoles = true;
     public bool cleansEffect = false;
@@ -15,13 +16,28 @@ public class RaidwideDebuffMechanic : FightMechanic
 
     List<CharacterState> partyMembers;
 
+    void Awake()
+    {
+        if (party == null && autoFindParty)
+            party = FightTimeline.Instance.partyList;
+    }
+
     public override void TriggerMechanic(ActionInfo actionInfo)
     {
         base.TriggerMechanic(actionInfo);
 
+        if (party == null && autoFindParty)
+            party = FightTimeline.Instance.partyList;
+
         if (party != null && party.members.Count > 0)
         {
-            partyMembers = new List<CharacterState>(party.members); // Copy the party members list
+            partyMembers = new List<CharacterState>(); // Copy the party members list
+
+            for (int i = 0; i < party.members.Count; i++)
+            {
+                partyMembers.Add(party.members[i].characterState);
+            }
+
             partyMembers.Shuffle();
 
             // Iterate through each status effect
@@ -52,7 +68,7 @@ public class RaidwideDebuffMechanic : FightMechanic
                     // Apply the effect to the target
                     target.AddEffect(effect.data, false, effect.tag, effect.stacks);
                 }
-                else if (!killsEffect)
+                else if (cleansEffect && !killsEffect)
                 {
                     // Remove the effect to the target
                     target.RemoveEffect(effect.data, false, effect.tag, effect.stacks);

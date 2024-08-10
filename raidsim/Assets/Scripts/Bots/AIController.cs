@@ -11,7 +11,6 @@ public class AIController : MonoBehaviour
     public BotNode clockSpot;
     public float turnSmoothTime;
     private float turnSmoothVelocity;
-    private Transform cameraT;
 
     float currentSpeed;
 
@@ -19,7 +18,6 @@ public class AIController : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         state = GetComponent<CharacterState>();
-        cameraT = Camera.main.transform;
         botTimeline.bot = this;
     }
 

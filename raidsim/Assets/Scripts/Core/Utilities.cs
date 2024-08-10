@@ -5,9 +5,12 @@ using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using static CharacterState;
+using static PartyList;
 
 public static class Utilities
 {
+    private static float lastTimeBasedRateLimitAttempt = 0f;
+
     public static bool RateLimiter(int frequency)
     {
         if (Time.frameCount % frequency == 0)
@@ -29,6 +32,29 @@ public static class Utilities
         if (Utilities.RateLimiter(cycleFrequency))
         {
             //this will happen once per 30 frames
+        }
+    }
+    */
+
+    public static bool TimedRateLimiter(float interval)
+    {
+        if (Time.time - lastTimeBasedRateLimitAttempt >= interval)
+        {
+            lastTimeBasedRateLimitAttempt = Time.time;
+            return true;
+        }
+
+        return false;
+    }
+    /* 
+    // Usage:
+    float cycleInterval = 1f;
+
+    void Update()
+    {
+        if (Utilities.RateLimiter(cycleInterval))
+        {
+            //this will happen once per second
         }
     }
     */
@@ -70,6 +96,8 @@ public static class Utilities
                     }
                 }
             }
+
+            //Debug.Log($"Utilities: FunctionTimer {name} was created with timer of {timer}. Unscaled {useUnscaledTime} OnlyOne {onlyAllowOneInstance}");
 
             GameObject gameObject = new GameObject("FunctionTimer", typeof(MonoBehaviourHook));
 
@@ -275,6 +303,18 @@ public static class Utilities
             if (list[i].key == key)
                 list.RemoveAt(i);
         }
+    }
+
+    public static bool ContainsCharacterState(this IEnumerable<PartyMember> members, CharacterState state)
+    {
+        foreach (var member in members)
+        {
+            if (member.characterState == state)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     /// <summary>

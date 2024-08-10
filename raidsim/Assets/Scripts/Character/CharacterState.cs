@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using NaughtyAttributes;
 using TMPro;
+using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using static GlobalStructs;
 using static GlobalStructs.Damage;
+using static UnityEngine.Rendering.DebugUI;
 
 public class CharacterState : MonoBehaviour
 {
@@ -28,7 +30,7 @@ public class CharacterState : MonoBehaviour
     public int currentMaxHealth;
     public int health = 16000;
     public Dictionary<string, float> maxHealthModifiers = new Dictionary<string, float>();
-    public int shield = 0;
+    public long shield = 0;
     public List<Shield> currentShields = new List<Shield>();
 
     public float defaultSpeed { private set; get; }
@@ -36,6 +38,9 @@ public class CharacterState : MonoBehaviour
     public Dictionary<string, float> speedModifiers = new Dictionary<string, float>();
     public Dictionary<string, float> speed = new Dictionary<string, float>();
     //private float maxSpeed = 15f;
+
+    public float currentDamageOutputMultiplier = 1f;
+    public Dictionary<string, float> damageOutputModifiers = new Dictionary<string, float>();
 
     public float currentDamageReduction = 1f;
     public Dictionary<string,float> damageReduction = new Dictionary<string, float>();
@@ -70,6 +75,24 @@ public class CharacterState : MonoBehaviour
     public float piercingElementDamageModifier = 1f;
     public Dictionary<string, float> bluntElementDamageModifiers = new Dictionary<string, float>();
     public float bluntElementDamageModifier = 1f;
+    public Dictionary<string, float> poisonDamageModifiers = new Dictionary<string, float>();
+    public float poisonDamageModifier = 1f;
+
+    public Dictionary<CharacterState, long> enmity = new Dictionary<CharacterState, long>();
+    public List<Enmity> m_enmity = new List<Enmity>();
+
+    [System.Serializable]
+    public struct Enmity
+    {
+        public CharacterState characterState;
+        public long enmityValue;
+
+        public Enmity(CharacterState characterState, long enmityValue)
+        {
+            this.characterState = characterState;
+            this.enmityValue = enmityValue;
+        }
+    }
 
     [Header("States")]
     public bool invulnerable = false;
@@ -89,22 +112,32 @@ public class CharacterState : MonoBehaviour
     [Header("Effects")]
     private Dictionary<string, StatusEffect> effects = new Dictionary<string, StatusEffect>();
     private StatusEffect[] effectsArray = null;
+    private List<StatusEffect> instantCasts = new List<StatusEffect>();
+    [HideInInspector]
+    public UnityEvent<List<StatusEffect>> onInstantCastsChanged;
 
     [Header("Events")]
     public UnityEvent onDeath;
+    public UnityEvent onSpawn;
 
     [Header("Config")]
     public Transform statusEffectParent;
     public float statusEffectUpdateInterval = 3f;
     private float statusEffectUpdateTimer = 0f;
     public int characterLevel = 0;
+    public int characterAggressionLevel = 1;
+    public int characterLetter = 0;
+    public string letterSpriteAsset = "letters_1";
     public Role role = Role.dps;
+    public bool isAggressive = true;
     public bool hideNameplate = false;
     public bool hidePartyName = false;
 
     [Header("Personal - Name")]
     public bool showCharacterName = true;
     public bool showCharacterLevel = true;
+    public bool showCharacterAggression = true;
+    public bool showCharacterNameLetter = true;
     public TextMeshProUGUI characterNameText;
     public TextMeshProUGUI nameplateCharacterNameText;
     private CanvasGroup characterNameTextGroup;
@@ -117,6 +150,7 @@ public class CharacterState : MonoBehaviour
     public Color otherStatusEffectColor = Color.white;
     [Header("Personal - Damage Popups")]
     public bool showDamagePopups = true;
+    public bool showElementalAspect = true;
     public GameObject damagePopupPrefab;
     public Transform damagePopupParent;
     public Color negativePopupColor = Color.red;
@@ -137,6 +171,8 @@ public class CharacterState : MonoBehaviour
 
     [Header("Party - Name")]
     public bool showPartyCharacterName = true;
+    public bool showPartyCharacterLevel = true;
+    public bool showPartyCharacterNameLetter = true;
     public TextMeshProUGUI characterNameTextParty;
     private CanvasGroup characterNameTextGroupParty;
     [Header("Party - Status Effects")]
@@ -148,6 +184,13 @@ public class CharacterState : MonoBehaviour
     public TextMeshProUGUI healthBarTextParty;
     public Slider shieldBarParty;
     public Slider overShieldBarParty;
+
+    [Header("Target - StatusEffects")]
+    public bool showStatusEffectsWhenTargeted = true;
+    public GameObject targetStatusEffectHolderPrefab;
+    public Transform targetStatusEffectHolderParent;
+    public CanvasGroup targetStatusEffectIconGroup;
+    public Transform targetStatusEffectIconParent;
 
     void Awake()
     {
@@ -172,6 +215,13 @@ public class CharacterState : MonoBehaviour
         if (statusEffectIconParentParty != null)
         {
             foreach (Transform child in statusEffectIconParentParty)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+        if (targetStatusEffectIconParent != null)
+        {
+            foreach (Transform child in targetStatusEffectIconParent)
             {
                 Destroy(child.gameObject);
             }
@@ -285,11 +335,41 @@ public class CharacterState : MonoBehaviour
         }*/
         if (nameplateCharacterNameText != null)
         {
-            if (showCharacterLevel)
-                nameplateCharacterNameText.text = $"<b>Lv{characterLevel}</b> {characterName}";
+            string letter = "";
+
+            if (showCharacterNameLetter && characterLetter >= 0 && characterLetter <= 25)
+            {
+                letter = $"<sprite =\"{letterSpriteAsset}\" name=\"{characterLetter}\" tint=\"FF7E95\">";
+            }
+
+            if (showCharacterAggression)
+            {
+                string aggression = string.Empty;
+                if (isAggressive)
+                    aggression = $"a{characterAggressionLevel}";
+                else
+                    aggression = $"p{characterAggressionLevel}";
+
+                if (showCharacterLevel)
+                {
+                    nameplateCharacterNameText.text = $"<sprite=\"enemy_ranks\" name=\"{aggression}\"><b>Lv{characterLevel}</b> {characterName}{letter}>";
+                }
+                else
+                {
+                    nameplateCharacterNameText.text = $"<sprite=\"enemy_ranks\" name=\"{aggression}\"> {characterName}{letter}";
+                }
+            }
             else
-                nameplateCharacterNameText.text = characterName;
-            nameplateCharacterNameTextGroup = nameplateCharacterNameText.GetComponentInParent<CanvasGroup>();
+            {
+                if (showCharacterLevel)
+                {
+                    nameplateCharacterNameText.text = $"<b>Lv{characterLevel}</b> {characterName}{letter}";
+                }
+                else
+                {
+                    nameplateCharacterNameText.text = $"{characterName}{letter}";
+                }
+            }
         }
         if (nameplateCharacterNameTextGroup != null)
         {
@@ -304,9 +384,26 @@ public class CharacterState : MonoBehaviour
         }
         if (characterNameTextParty != null)
         {
-            characterNameTextParty.text = characterName;
-            characterNameTextGroupParty = characterNameTextParty.GetComponentInParent<CanvasGroup>();
+            string letter = "";
+
+            if (showPartyCharacterNameLetter && characterLetter >= 0 && characterLetter <= 25)
+            {
+                letter = $"<sprite =\"{letterSpriteAsset}\" name=\"{characterLetter}\" tint=\"FF7E95\">";
+            }
+
+            if (showPartyCharacterLevel)
+            {
+                characterNameTextParty.text = $"{letter}Lv{characterLevel} {characterName}";
+            }
+            else
+            {
+                characterNameTextParty.text = $"{letter}{characterName}";
+            }
         }
+
+        if (characterNameTextGroupParty == null && characterNameTextParty != null)
+            characterNameTextGroupParty = characterNameTextParty.transform.parent.GetComponent<CanvasGroup>();
+
         if (characterNameTextGroupParty != null)
         {
             if (!hidePartyName && showPartyCharacterName)
@@ -318,6 +415,11 @@ public class CharacterState : MonoBehaviour
                 characterNameTextGroupParty.LeanAlpha(0f, 0.5f);
             }
         }
+    }
+
+    void Start()
+    {
+        onSpawn.Invoke();
     }
 
     void Update()
@@ -359,18 +461,71 @@ public class CharacterState : MonoBehaviour
 
         if (characterNameText != null)
             characterNameText.text = characterName;
-        if (characterNameTextParty)
-            characterNameTextParty.text = characterName;
+        if (characterNameTextParty != null)
+        {
+            string letter = "";
+
+            if (showPartyCharacterNameLetter && characterLetter >= 0 && characterLetter <= 25)
+            {
+                letter = $"<sprite=\"{letterSpriteAsset}\" name=\"{characterLetter}\">";
+            }
+
+            if (showPartyCharacterLevel)
+            {
+                characterNameTextParty.text = $"{letter}Lv{characterLevel} {characterName}";
+            }
+            else
+            {
+                characterNameTextParty.text = $"{letter}{characterName}";
+            }
+        }
         if (nameplateCharacterNameText != null)
         {
-            if (showCharacterLevel)
-                nameplateCharacterNameText.text = $"<b>Lv{characterLevel}</b> {characterName}";
+            string letter = "";
+
+            if (showCharacterNameLetter && characterLetter >= 0 && characterLetter <= 25)
+            {
+                letter = $"<sprite=\"{letterSpriteAsset}\" name=\"{characterLetter}\" tint=\"FF7E95\">";
+            }
+
+            if (showCharacterAggression)
+            {
+                string aggression = string.Empty;
+                if (isAggressive)
+                    aggression = $"a{characterAggressionLevel}";
+                else
+                    aggression = $"p{characterAggressionLevel}";
+
+                if (showCharacterLevel)
+                {
+                    nameplateCharacterNameText.text = $"<sprite=\"enemy_ranks\" name=\"{aggression}\"><b>Lv{characterLevel}</b> {characterName}{letter}";
+                }
+                else
+                {
+                    nameplateCharacterNameText.text = $"<sprite=\"enemy_ranks\" name=\"{aggression}\"> {characterName}{letter}";
+                }
+            }
             else
-                nameplateCharacterNameText.text = characterName;
+            {
+                if (showCharacterLevel)
+                {
+                    nameplateCharacterNameText.text = $"<b>Lv{characterLevel}</b> {characterName}{letter}";
+                }
+                else
+                {
+                    nameplateCharacterNameText.text = $"{characterName}{letter}";
+                }
+            }
         }
     }
 
-    public void ModifyHealth(Damage damage, bool kill = false)
+    void OnDestroy()
+    {
+        if (targetStatusEffectIconParent != null)
+            Destroy(targetStatusEffectIconParent.gameObject, 0.1f);
+    }
+
+    public void ModifyHealth(Damage damage, bool kill = false, bool noFlyText = false)
     {
         if (!gameObject.activeSelf)
             return;
@@ -551,7 +706,7 @@ public class CharacterState : MonoBehaviour
                     percentage = 0f;
 
                 if (percentage > 0f)
-                    RemoveHealth(m_damage.value / 100.0f, false, kill, ignoreDamageReduction);
+                    RemoveHealth(m_damage.value / 100.0f, false, m_damage.negative, kill, ignoreDamageReduction);
                 // Set the fly text damage to be accurate to the actual damage dealt
                 flyTextDamage.value = Mathf.RoundToInt(health * percentage);
                 break;
@@ -566,40 +721,55 @@ public class CharacterState : MonoBehaviour
                     percentage = 0f;
 
                 if (percentage > 0f)
-                    RemoveHealth(m_damage.value / 100.0f, true, kill, ignoreDamageReduction);
+                    RemoveHealth(m_damage.value / 100.0f, true, m_damage.negative, kill, ignoreDamageReduction);
                 // Set the fly text damage to be accurate to the actual damage dealt
                 flyTextDamage.value = Mathf.RoundToInt(currentMaxHealth * percentage);
                 break;
             }
             case DamageApplicationType.set:
             {
-                int damageAbs = Mathf.Abs(m_damage.value);
+                long damageAbs = (long)Mathf.Abs(m_damage.value);
                 if (damageAbs > 0)
-                    SetHealth(damageAbs, kill, ignoreDamageReduction);
+                    SetHealth(damageAbs, m_damage.negative, kill, ignoreDamageReduction);
                 // Set the fly text damage to be accurate to the actual damage dealt
                 flyTextDamage.value = -1 * (health - m_damage.value);
                 break;
             }
         }
 
-        ShowDamageFlyText(flyTextDamage);
+        if (!noFlyText)
+            ShowDamageFlyText(flyTextDamage);
 
         //ModifyHealth(damage.value, kill);
     }
 
-    private void SetHealth(int value, bool kill = false, bool ignoreDamageReduction = false)
+    private void SetHealth(long value, bool negative, bool kill = false, bool ignoreDamageReduction = false)
     {
         if (kill)
         {
-            ModifyHealth(0, kill, ignoreDamageReduction);
+            if (negative)
+            {
+                ModifyHealth(0, kill, ignoreDamageReduction);
+            }
+            else
+            {
+                ModifyHealth(currentMaxHealth, false, ignoreDamageReduction);
+            }
         }
         else
         {
-            ModifyHealth(-1 * (health - value), kill, ignoreDamageReduction);
+            if (negative)
+            {
+                ModifyHealth(-1 * (health - value), kill, ignoreDamageReduction);
+            }
+            else
+            {
+                ModifyHealth((long)Mathf.Abs(health - value), kill, ignoreDamageReduction);
+            }
         }
     }
 
-    private void RemoveHealth(float percentage, bool fromMax, bool kill = false, bool ignoreDamageReduction = false)
+    private void RemoveHealth(float percentage, bool fromMax, bool negative, bool kill = false, bool ignoreDamageReduction = false)
     {
         if (kill)
         {
@@ -608,11 +778,18 @@ public class CharacterState : MonoBehaviour
         else
         {
             int damage = fromMax ? Mathf.RoundToInt(currentMaxHealth * percentage) : Mathf.RoundToInt(health * percentage);
-            ModifyHealth(-1 * damage, kill, ignoreDamageReduction);
+            if (negative)
+            {
+                ModifyHealth(-1 * damage, kill, ignoreDamageReduction);
+            }
+            else
+            {
+                ModifyHealth(Mathf.Abs(damage), kill, ignoreDamageReduction);
+            }
         }
     }
 
-    private void ModifyHealth(int value, bool kill = false, bool ignoreDamageReduction = false)
+    private void ModifyHealth(long value, bool kill = false, bool ignoreDamageReduction = false)
     {
         if (kill)
         {
@@ -649,7 +826,7 @@ public class CharacterState : MonoBehaviour
         }*/
 
         //
-        int remainingDamage = value;
+        long remainingDamage = value;
 
         if (!invulnerable)
         {
@@ -679,7 +856,7 @@ public class CharacterState : MonoBehaviour
 
             if (remainingDamage != 0)
             {
-                health += remainingDamage;
+                health += (int)remainingDamage;
                 if (kill)
                     shield -= shield;
             }
@@ -730,7 +907,7 @@ public class CharacterState : MonoBehaviour
         //HealthBarUserInterface();
     }
 
-    public void AddShield(int value, string identifier)
+    public void AddShield(long value, string identifier)
     {
         if (!currentShields.ContainsKey(identifier))
         {
@@ -764,7 +941,7 @@ public class CharacterState : MonoBehaviour
 
     private void RecalculateCurrentShield()
     {
-        int result = 0;
+        long result = 0;
 
         if (currentShields.Count > 0)
         {
@@ -991,6 +1168,115 @@ public class CharacterState : MonoBehaviour
         }
 
         currentSpeed = result;
+    }
+
+    public void AddDamageOutputModifier(float value, string identifier)
+    {
+        if (!damageOutputModifiers.ContainsKey(identifier))
+        {
+            damageOutputModifiers.Add(identifier, value);
+        }
+        else
+        {
+            return;
+        }
+
+        RecalculateDamageOutputModifiers();
+    }
+
+    public void RemoveDamageOutputModifier(string identifier)
+    {
+        if (damageOutputModifiers.ContainsKey(identifier))
+        {
+            damageOutputModifiers.Remove(identifier);
+        }
+        else
+        {
+            return;
+        }
+
+        RecalculateDamageOutputModifiers();
+    }
+
+    private void RecalculateDamageOutputModifiers()
+    {
+        float result = 1f;
+
+        List<float> mList = new List<float>(damageOutputModifiers.Values.ToArray());
+
+        if (damageOutputModifiers.Count > 0)
+        {
+            mList.Sort();
+            for (int i = 0; i < damageOutputModifiers.Count; i++)
+            {
+                result *= mList[i];
+            }
+        }
+
+        currentDamageOutputMultiplier = result;
+    }
+
+    public void AddDamageModifier(float value, string identifier, bool poison)
+    {
+        bool update = false;
+
+        if (poison)
+        {
+            if (!poisonDamageModifiers.ContainsKey(identifier))
+            {
+                poisonDamageModifiers.Add(identifier, value);
+                update = true;
+            }
+        }
+
+        if (!update)
+        {
+            return;
+        }
+
+        RecalculateCurrentDamageModifiers(poison);
+    }
+
+    public void RemoveDamageModifier(string identifier, bool poison)
+    {
+        bool update = false;
+
+        if (poison)
+        {
+            if (poisonDamageModifiers.ContainsKey(identifier))
+            {
+                poisonDamageModifiers.Remove(identifier);
+                update = true;
+            }
+        }
+
+        if (!update)
+        {
+            return;
+        }
+
+        RecalculateCurrentDamageModifiers(poison);
+    }
+
+    public void RecalculateCurrentDamageModifiers(bool poison)
+    {
+        if (poison)
+        {
+            float result = 1f;
+
+            List<float> mList = new List<float>(poisonDamageModifiers.Values.ToArray());
+
+            if (poisonDamageModifiers.Count > 0)
+            {
+                mList.Sort();
+                for (int i = 0; i < poisonDamageModifiers.Count; i++)
+                {
+                    result *= mList[i];
+                }
+            }
+
+            poisonDamageModifier = result;
+        }
     }
 
     public void AddDamageModifier(float value, string identifier, DamageType damageType, ElementalAspect elementalAspect = ElementalAspect.none, PhysicalAspect physicalAspect = PhysicalAspect.none)
@@ -1620,7 +1906,7 @@ public class CharacterState : MonoBehaviour
 
     private void RecalculateCurrentMaxHealth()
     {
-        float result = currentMaxHealth;
+        float result = defaultMaxHealth;
 
         List<float> a = new List<float>(maxHealthModifiers.Values.ToArray());
 
@@ -1634,6 +1920,11 @@ public class CharacterState : MonoBehaviour
         }
 
         currentMaxHealth = Mathf.RoundToInt(result);
+
+        if (health > currentMaxHealth)
+        {
+            health = currentMaxHealth;
+        }
 
         if (healthBar != null)
         {
@@ -1655,6 +1946,103 @@ public class CharacterState : MonoBehaviour
                 overShieldBarParty.minValue = currentMaxHealth;
                 overShieldBarParty.maxValue = currentMaxHealth + currentMaxHealth;
             }
+        }
+
+        HealthBarUserInterface();
+    }
+
+    public void AddEnmity(long value, CharacterState character)
+    {
+        if (value <= 0)
+            return;
+
+        if (character == null)
+            return;
+
+        if (enmity.ContainsKey(character))
+        {
+            enmity[character] += value;
+        }
+        else
+        {
+            enmity.Add(character, value);
+        }
+
+        m_enmity.Clear();
+        for (int i = 0; i < enmity.Count; i++)
+        {
+            m_enmity.Add(new Enmity(enmity.Keys.ToArray()[i], enmity.Values.ToArray()[i]));
+        }
+    }
+
+    public void SetEnmity(int value, CharacterState character)
+    {
+        if (value < 0)
+            return;
+
+        if (character == null)
+            return;
+
+        if (enmity.ContainsKey(character))
+        {
+            enmity[character] = value;
+
+            if (enmity[character] <= 0)
+            {
+                ResetEnmity(character);
+            }
+        }
+        else
+        {
+            enmity.Add(character, value);
+        }
+
+        m_enmity.Clear();
+        for (int i = 0; i < enmity.Count; i++)
+        {
+            m_enmity.Add(new Enmity(enmity.Keys.ToArray()[i], enmity.Values.ToArray()[i]));
+        }
+    }
+
+    public void RemoveEnmity(int value, CharacterState character)
+    {
+        if (value <= 0)
+            return;
+
+        if (character == null)
+            return;
+
+        if (enmity.ContainsKey(character))
+        {
+            enmity[character] -= value;
+
+            if (enmity[character] <= 0)
+            {
+                ResetEnmity(character);
+            }
+        }
+
+        m_enmity.Clear();
+        for (int i = 0; i < enmity.Count; i++)
+        {
+            m_enmity.Add(new Enmity(enmity.Keys.ToArray()[i], enmity.Values.ToArray()[i]));
+        }
+    }
+
+    public void ResetEnmity(CharacterState character)
+    {
+        if (character == null)
+            return;
+
+        if (enmity.ContainsKey(character))
+        {
+            enmity.Remove(character);
+        }
+
+        m_enmity.Clear();
+        for (int i = 0; i < enmity.Count; i++)
+        {
+            m_enmity.Add(new Enmity(enmity.Keys.ToArray()[i], enmity.Values.ToArray()[i]));
         }
     }
 
@@ -1813,26 +2201,57 @@ public class CharacterState : MonoBehaviour
         effect.stacks = stacks;
         effects.Add(name, effect);
         effectsArray = effects.Values.ToArray();
+
+        if (effect.data.instantCasts)
+        {
+            if (!instantCasts.Contains(effect))
+            {
+                instantCasts.Add(effect);
+                instantCasts.Sort((x, y) => x.sortOrder.CompareTo(y.sortOrder));
+                onInstantCastsChanged.Invoke(instantCasts);
+            }
+        }
+
+        if (showStatusEffectsWhenTargeted && targetStatusEffectHolderPrefab != null && targetStatusEffectHolderParent != null && targetStatusEffectIconParent == null)
+        {
+            GameObject newStatusEffectHolder = Instantiate(targetStatusEffectHolderPrefab, targetStatusEffectHolderParent);
+            if (newStatusEffectHolder.TryGetComponent(out HudElement result))
+            {
+                result.characterState = this;
+            }
+            if (newStatusEffectHolder.TryGetComponent(out CanvasGroup group))
+            {
+                targetStatusEffectIconGroup = group;
+                targetStatusEffectIconGroup.alpha = 0f;
+            }
+            newStatusEffectHolder.name = newStatusEffectHolder.name.Replace("(Clone)", "").Replace("Target_", $"{characterName.Replace(" ","_")}_");
+            targetStatusEffectIconParent = newStatusEffectHolder.transform;
+        }
+        else if (targetStatusEffectIconParent == null)
+        {
+            targetStatusEffectIconParent = GameObject.Find("Temp_RectTransform").transform;
+        }
+
         if (effect.data.negative)
         {
             if (self)
             {
-                effect.Initialize(statusEffectNegativeIconParent, statusEffectIconParentParty, ownStatusEffectColor);
+                effect.Initialize(statusEffectNegativeIconParent, statusEffectIconParentParty, targetStatusEffectIconParent, ownStatusEffectColor);
             }
             else
             {
-                effect.Initialize(statusEffectNegativeIconParent, statusEffectIconParentParty, otherStatusEffectColor);
+                effect.Initialize(statusEffectNegativeIconParent, statusEffectIconParentParty, targetStatusEffectIconParent, otherStatusEffectColor);
             }
         }
         else
         {
             if (self)
             {
-                effect.Initialize(statusEffectPositiveIconParent, statusEffectIconParentParty, ownStatusEffectColor);
+                effect.Initialize(statusEffectPositiveIconParent, statusEffectIconParentParty, targetStatusEffectIconParent, ownStatusEffectColor);
             }
             else
             {
-                effect.Initialize(statusEffectPositiveIconParent, statusEffectIconParentParty, otherStatusEffectColor);
+                effect.Initialize(statusEffectPositiveIconParent, statusEffectIconParentParty, targetStatusEffectIconParent, otherStatusEffectColor);
             }
         }
         effect.onApplication.Invoke(this);
@@ -1889,6 +2308,16 @@ public class CharacterState : MonoBehaviour
             effects.Remove(name);
             effectsArray = effects.Values.ToArray();
 
+            if (temp.data.instantCasts)
+            {
+                if (instantCasts.Contains(temp))
+                {
+                    instantCasts.Remove(temp);
+                    instantCasts.Sort((x, y) => x.sortOrder.CompareTo(y.sortOrder));
+                    onInstantCastsChanged.Invoke(instantCasts);
+                }
+            }
+
             temp.Remove();
         }
         else
@@ -1931,8 +2360,8 @@ public class CharacterState : MonoBehaviour
             return;
 
         // Hard coded the Short (@s) and Long (@l) that are used to distinguish between few of the same debuffs,
-        // also the '#' character which is used for non capitalised letter sequences. This needs a better implementation
-        string result = $"{prefix}{Utilities.InsertSpaceBeforeCapitals(data.statusName).Replace("@s","").Replace("@l","").Replace("#"," ")}";
+        // also the '#' character which is used for non capitalised letter sequences. This needs a better implementation.
+        string result = $"{prefix}{Utilities.InsertSpaceBeforeCapitals(data.statusName).Replace("@s","").Replace("@l","").Replace("#"," ").Replace("@gd", "").Replace("@gs", "")}";
 
         Color color = neutralPopupColor;
 
@@ -1961,7 +2390,30 @@ public class CharacterState : MonoBehaviour
 
     public void ShowDamageFlyText(Damage damage)
     {
-        string result = $"<sprite=\"damage_types\" name=\"{(int)damage.type}\">{Mathf.Abs(damage.value)}";
+        string result = string.Empty;
+
+        if (showElementalAspect && damage.elementalAspect != ElementalAspect.none && damage.elementalAspect != ElementalAspect.unaspected)
+        {
+            if (damage.value < 0 || damage.value > 0)
+            {
+                result = $"<sprite=\"damage_types\" name=\"{(int)damage.type}\"><sprite=\"damage_types\" name=\"{damage.elementalAspect.ToString("g")}\">{Mathf.Abs(damage.value)}";
+            }
+            else
+            {
+                result = $"<sprite=\"damage_types\" name=\"{(int)damage.type}\"><sprite=\"damage_types\" name=\"{damage.elementalAspect.ToString("g")}\">{damage.value}";
+            }
+        } 
+        else
+        {
+            if (damage.value < 0 || damage.value > 0)
+            {
+                result = $"<sprite=\"damage_types\" name=\"{(int)damage.type}\">{Mathf.Abs(damage.value)}";
+            }
+            else
+            {
+                result = $"<sprite=\"damage_types\" name=\"{(int)damage.type}\">{damage.value}";
+            }
+        }
 
         string source = damage.name;
 
@@ -1973,7 +2425,14 @@ public class CharacterState : MonoBehaviour
         }
         else if (!damage.negative)
         {
-            result = $"<sprite=\"damage_types\" name=\"0\">{Mathf.Abs(damage.value)}";
+            if (damage.value < 0 || damage.value > 0)
+            {
+                result = $"<sprite=\"damage_types\" name=\"0\">{Mathf.Abs(damage.value)}";
+            }
+            else
+            {
+                result = $"<sprite=\"damage_types\" name=\"0\">{damage.value}";
+            }
         }
 
         if (invulnerable)
@@ -2086,16 +2545,15 @@ public class CharacterState : MonoBehaviour
                 nameplateCharacterNameTextGroup.alpha = 0f;
             }
         }
-        // No idea why these gotta be reversed lmao
         if (characterNameTextGroupParty != null)
         {
             if (!hidePartyName && showPartyCharacterName)
             {
-                characterNameTextGroupParty.alpha = 0f;
+                characterNameTextGroupParty.alpha = 1f;
             }
             else
             {
-                characterNameTextGroupParty.alpha = 1f;
+                characterNameTextGroupParty.alpha = 0f;
             }
         }
     }
@@ -2121,9 +2579,9 @@ public class CharacterState : MonoBehaviour
     public struct Shield
     {
         public string key;
-        public int value;
+        public long value;
 
-        public Shield(string key, int value)
+        public Shield(string key, long value)
         {
             this.key = key;
             this.value = value;

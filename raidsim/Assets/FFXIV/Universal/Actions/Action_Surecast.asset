@@ -14,15 +14,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: Surecast
   actionType: 2
-  damage: 0
+  damage:
+    name: 
+    value: 0
+    negative: 1
+    ignoreDamageReductions: 0
+    type: 1
+    elementalAspect: 1
+    physicalAspect: 0
+    applicationType: 0
+  isShield: 0
+  isHeal: 0
+  isTargeted: 0
+  targetGroups: 64000000
   maxTargets: 1
   range: 0
   radius: 0
   manaCost: 0
   cast: 0
   recast: 120
-  animationLock: 0.2
+  animationLock: 0.6
   canBeSlideCast: 1
   buff: {fileID: 11400000, guid: d4a81814e243fe849b1a02894273b337, type: 2}
   debuff: {fileID: 0}
+  comboAction: {fileID: 0}
   animationName: 
