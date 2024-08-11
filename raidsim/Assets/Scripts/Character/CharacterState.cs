@@ -14,7 +14,7 @@ using static UnityEngine.Rendering.DebugUI;
 
 public class CharacterState : MonoBehaviour
 {
-    public enum Role { healer, tank, dps, unassigned }
+    public enum Role { meleeDps, magicalRangedDps, physicalRangedDps, tank, healer, unassigned }
 
     [HideInInspector]
     public PlayerController playerController;
@@ -26,9 +26,9 @@ public class CharacterState : MonoBehaviour
     [Header("Status")]
     public string characterName = "Unknown";
 
-    private int defaultMaxHealth;
-    public int currentMaxHealth;
-    public int health = 16000;
+    private long defaultMaxHealth;
+    public long currentMaxHealth;
+    public long health = 16000;
     public Dictionary<string, float> maxHealthModifiers = new Dictionary<string, float>();
     public long shield = 0;
     public List<Shield> currentShields = new List<Shield>();
@@ -128,7 +128,7 @@ public class CharacterState : MonoBehaviour
     public int characterAggressionLevel = 1;
     public int characterLetter = 0;
     public string letterSpriteAsset = "letters_1";
-    public Role role = Role.dps;
+    public Role role = Role.unassigned;
     public bool isAggressive = true;
     public bool hideNameplate = false;
     public bool hidePartyName = false;
@@ -541,28 +541,37 @@ public class CharacterState : MonoBehaviour
             {
                 case DamageType.magical:
                 {
-                    m_damage.value = Mathf.RoundToInt(m_damage.value * magicalTypeDamageModifier);
                     if (magicalTypeDamageModifier >= 999999)
                     {
                         kill = true;
+                    }
+                    else
+                    {
+                        m_damage.value = Mathf.RoundToInt(m_damage.value * magicalTypeDamageModifier);
                     }
                     break;
                 }
                 case DamageType.physical:
                 {
-                    m_damage.value = Mathf.RoundToInt(m_damage.value * physicalTypeDamageModifier);
                     if (physicalTypeDamageModifier >= 999999)
                     {
                         kill = true;
+                    }
+                    else
+                    {
+                        m_damage.value = Mathf.RoundToInt(m_damage.value * physicalTypeDamageModifier);
                     }
                     break;
                 }
                 case DamageType.unique:
                 {
-                    m_damage.value = Mathf.RoundToInt(m_damage.value * uniqueTypeDamageModifier);
                     if (uniqueTypeDamageModifier >= 999999)
                     {
                         kill = true;
+                    }
+                    else
+                    {
+                        m_damage.value = Mathf.RoundToInt(m_damage.value * uniqueTypeDamageModifier);
                     }
                     break;
                 }
@@ -571,82 +580,109 @@ public class CharacterState : MonoBehaviour
             {
                 case ElementalAspect.unaspected:
                 {
-                    m_damage.value = Mathf.RoundToInt(m_damage.value * unaspectedElementDamageModifier);
                     if (unaspectedElementDamageModifier >= 999999)
                     {
                         kill = true;
+                    }
+                    else
+                    {
+                        m_damage.value = Mathf.RoundToInt(m_damage.value * unaspectedElementDamageModifier);
                     }
                     break;
                 }
                 case ElementalAspect.fire:
                 {
-                    m_damage.value = Mathf.RoundToInt(m_damage.value * fireElementDamageModifier);
                     if (fireElementDamageModifier >= 999999)
                     {
                         kill = true;
+                    }
+                    else
+                    {
+                        m_damage.value = Mathf.RoundToInt(m_damage.value * fireElementDamageModifier);
                     }
                     break;
                 }
                 case ElementalAspect.ice:
                 {
-                    m_damage.value = Mathf.RoundToInt(m_damage.value * iceElementDamageModifier);
                     if (iceElementDamageModifier >= 999999)
                     {
                         kill = true;
+                    }
+                    else
+                    {
+                        m_damage.value = Mathf.RoundToInt(m_damage.value * iceElementDamageModifier);
                     }
                     break;
                 }
                 case ElementalAspect.lightning:
                 {
-                    m_damage.value = Mathf.RoundToInt(m_damage.value * lightningElementDamageModifier);
                     if (lightningElementDamageModifier >= 999999)
                     {
                         kill = true;
+                    }
+                    else
+                    {
+                        m_damage.value = Mathf.RoundToInt(m_damage.value * lightningElementDamageModifier);
                     }
                     break;
                 }
                 case ElementalAspect.water:
                 {
-                    m_damage.value = Mathf.RoundToInt(m_damage.value * waterElementDamageModifier);
                     if (waterElementDamageModifier >= 999999)
                     {
                         kill = true;
+                    }
+                    else
+                    {
+                        m_damage.value = Mathf.RoundToInt(m_damage.value * waterElementDamageModifier);
                     }
                     break;
                 }
                 case ElementalAspect.wind:
                 {
-                    m_damage.value = Mathf.RoundToInt(m_damage.value * windElementDamageModifier);
                     if (windElementDamageModifier >= 999999)
                     {
                         kill = true;
+                    }
+                    else
+                    {
+                        m_damage.value = Mathf.RoundToInt(m_damage.value * windElementDamageModifier);
                     }
                     break;
                 }
                 case ElementalAspect.earth:
                 {
-                    m_damage.value = Mathf.RoundToInt(m_damage.value * earthElementDamageModifier);
                     if (earthElementDamageModifier >= 999999)
                     {
                         kill = true;
+                    }
+                    else
+                    {
+                        m_damage.value = Mathf.RoundToInt(m_damage.value * earthElementDamageModifier);
                     }
                     break;
                 }
                 case ElementalAspect.dark:
                 {
-                    m_damage.value = Mathf.RoundToInt(m_damage.value * darkElementDamageModifier);
                     if (darkElementDamageModifier >= 999999)
                     {
                         kill = true;
+                    }
+                    else
+                    {
+                        m_damage.value = Mathf.RoundToInt(m_damage.value * darkElementDamageModifier);
                     }
                     break;
                 }
                 case ElementalAspect.light:
                 {
-                    m_damage.value = Mathf.RoundToInt(m_damage.value * lightElementDamageModifier);
                     if (lightElementDamageModifier >= 999999)
                     {
                         kill = true;
+                    }
+                    else
+                    {
+                        m_damage.value = Mathf.RoundToInt(m_damage.value * lightElementDamageModifier);
                     }
                     break;
                 }
@@ -655,28 +691,37 @@ public class CharacterState : MonoBehaviour
             {
                 case PhysicalAspect.slashing:
                 {
-                    m_damage.value = Mathf.RoundToInt(m_damage.value * slashingElementDamageModifier);
                     if (slashingElementDamageModifier >= 999999)
                     {
                         kill = true;
+                    }
+                    else
+                    {
+                        m_damage.value = Mathf.RoundToInt(m_damage.value * slashingElementDamageModifier);
                     }
                     break;
                 }
                 case PhysicalAspect.piercing:
                 {
-                    m_damage.value = Mathf.RoundToInt(m_damage.value * piercingElementDamageModifier);
                     if (piercingElementDamageModifier >= 999999)
                     {
                         kill = true;
+                    }
+                    else
+                    {
+                        m_damage.value = Mathf.RoundToInt(m_damage.value * piercingElementDamageModifier);
                     }
                     break;
                 }
                 case PhysicalAspect.blunt:
                 {
-                    m_damage.value = Mathf.RoundToInt(m_damage.value * bluntElementDamageModifier);
                     if (bluntElementDamageModifier >= 999999)
                     {
                         kill = true;
+                    }
+                    else
+                    {
+                        m_damage.value = Mathf.RoundToInt(m_damage.value * bluntElementDamageModifier);
                     }
                     break;
                 }
@@ -686,6 +731,11 @@ public class CharacterState : MonoBehaviour
         float percentage;
         bool ignoreDamageReduction = m_damage.ignoreDamageReductions;
         Damage flyTextDamage = new Damage(m_damage);
+
+        if (m_damage.value > 9999999)
+        {
+            m_damage = new Damage(m_damage, 9999999);
+        }
 
         switch (m_damage.applicationType)
         {
@@ -728,7 +778,7 @@ public class CharacterState : MonoBehaviour
             }
             case DamageApplicationType.set:
             {
-                long damageAbs = (long)Mathf.Abs(m_damage.value);
+                long damageAbs = Math.Abs(m_damage.value);
                 if (damageAbs > 0)
                     SetHealth(damageAbs, m_damage.negative, kill, ignoreDamageReduction);
                 // Set the fly text damage to be accurate to the actual damage dealt
@@ -764,7 +814,7 @@ public class CharacterState : MonoBehaviour
             }
             else
             {
-                ModifyHealth((long)Mathf.Abs(health - value), kill, ignoreDamageReduction);
+                ModifyHealth(Math.Abs(health - value), kill, ignoreDamageReduction);
             }
         }
     }
@@ -777,14 +827,14 @@ public class CharacterState : MonoBehaviour
         }
         else
         {
-            int damage = fromMax ? Mathf.RoundToInt(currentMaxHealth * percentage) : Mathf.RoundToInt(health * percentage);
+            long damage = fromMax ? (long)Math.Round(currentMaxHealth * percentage) : (long)Math.Round(health * percentage);
             if (negative)
             {
                 ModifyHealth(-1 * damage, kill, ignoreDamageReduction);
             }
             else
             {
-                ModifyHealth(Mathf.Abs(damage), kill, ignoreDamageReduction);
+                ModifyHealth(Math.Abs(damage), kill, ignoreDamageReduction);
             }
         }
     }
@@ -793,13 +843,13 @@ public class CharacterState : MonoBehaviour
     {
         if (kill)
         {
-            value = Mathf.RoundToInt(-1 * (float)currentMaxHealth);
+            value = (long)Math.Round(-1 * (float)currentMaxHealth);
         }
 
         if (!kill && !ignoreDamageReduction)
         {
             // Apply damage reduction
-            value = Mathf.RoundToInt(value * currentDamageReduction);
+            value = (long)Math.Round(value * currentDamageReduction);
         }
 
         /*if (shield > 0)
@@ -883,7 +933,7 @@ public class CharacterState : MonoBehaviour
                             if (showDamagePopups)
                                 ShowStatusEffectFlyText(effectsArray[i], " - ");
                         }
-                        else
+                        else if (!temp.ContainsKey(effectsArray[i].data.statusName))
                         {
                             temp.Add(effectsArray[i].data.statusName, effectsArray[i]);
                         }
@@ -945,7 +995,7 @@ public class CharacterState : MonoBehaviour
 
         if (currentShields.Count > 0)
         {
-            currentShields.Sort();
+            currentShields.Sort((x, y) => y.value.CompareTo(x.value));
             for (int i = 0; i < currentShields.Count; i++)
             {
                 result += currentShields[i].value;
@@ -1975,7 +2025,7 @@ public class CharacterState : MonoBehaviour
         }
     }
 
-    public void SetEnmity(int value, CharacterState character)
+    public void SetEnmity(long value, CharacterState character)
     {
         if (value < 0)
             return;
@@ -2004,7 +2054,7 @@ public class CharacterState : MonoBehaviour
         }
     }
 
-    public void RemoveEnmity(int value, CharacterState character)
+    public void RemoveEnmity(long value, CharacterState character)
     {
         if (value <= 0)
             return;
@@ -2062,7 +2112,25 @@ public class CharacterState : MonoBehaviour
         if (health <= 0 || dead)
             return;
 
-        string name = data.statusName;
+        string name = string.Empty;
+        bool refreshed = false;
+
+        if (data.refreshStatusEffects != null && data.refreshStatusEffects.Count > 0)
+        {
+            for (int i = 0; i < data.refreshStatusEffects.Count; i++)
+            {
+                name = data.refreshStatusEffects[i].statusName;
+
+                if (effects.ContainsKey(name))
+                {
+                    if (!data.refreshStatusEffects[i].unique)
+                        effects[name].Refresh(stacks, 0, -1);
+                    refreshed = true;
+                }
+            }
+        }
+
+        name = data.statusName;
 
         if (tag > 0)
         {
@@ -2073,8 +2141,12 @@ public class CharacterState : MonoBehaviour
         {
             if (!data.unique)
                 effects[name].Refresh(stacks);
-            return;
+            refreshed = true;
         }
+
+        if (refreshed)
+            return;
+
         if (effectsArray != null)
         {
             for (int i = 0; i < effectsArray.Length; i++)
@@ -2109,6 +2181,24 @@ public class CharacterState : MonoBehaviour
         if (health <= 0 || dead)
             return;
 
+        string m_name = string.Empty;
+        bool refreshed = false;
+
+        if (effects[name].data.refreshStatusEffects != null && effects[name].data.refreshStatusEffects.Count > 0)
+        {
+            for (int i = 0; i < effects[name].data.refreshStatusEffects.Count; i++)
+            {
+                m_name = effects[name].data.refreshStatusEffects[i].statusName;
+
+                if (effects.ContainsKey(m_name))
+                {
+                    if (!effects[m_name].data.refreshStatusEffects[i].unique)
+                        effects[m_name].Refresh(stacks, 0, -1);
+                    refreshed = true;
+                }
+            }
+        }
+
         if (tag > 0)
         {
             name = $"{name}_{tag}";
@@ -2118,8 +2208,12 @@ public class CharacterState : MonoBehaviour
         {
             if (!effects[name].data.unique)
                 effects[name].Refresh(stacks);
-            return;
+            refreshed = true;
         }
+
+        if (refreshed)
+            return;
+
         for (int i = 0; i < FightTimeline.Instance.allAvailableStatusEffects.Count; i++)
         {
             if (FightTimeline.Instance.allAvailableStatusEffects[i].name == name)
@@ -2165,7 +2259,25 @@ public class CharacterState : MonoBehaviour
             effect.damage = new Damage((Damage)damage);
         }
 
-        string name = effect.data.statusName;
+        string name = string.Empty;
+        bool refreshed = false;
+
+        if (effect.data.refreshStatusEffects != null && effect.data.refreshStatusEffects.Count > 0)
+        {
+            for (int i = 0; i < effect.data.refreshStatusEffects.Count; i++)
+            {
+                name = effect.data.refreshStatusEffects[i].statusName;
+
+                if (effects.ContainsKey(name))
+                {
+                    if (!effect.data.refreshStatusEffects[i].unique)
+                        effects[name].Refresh(stacks, 0, -1);
+                    refreshed = true;
+                }
+            }
+        }
+
+        name = effect.data.statusName;
 
         if (tag > 0)
         {
@@ -2176,8 +2288,12 @@ public class CharacterState : MonoBehaviour
         {
             if (!effect.data.unique)
                 effects[name].Refresh(stacks);
-            return;
+            refreshed = true;
         }
+
+        if (refreshed)
+            return;
+
         if (effectsArray != null)
         {
             for (int i = 0; i < effectsArray.Length; i++)
@@ -2315,6 +2431,19 @@ public class CharacterState : MonoBehaviour
                     instantCasts.Remove(temp);
                     instantCasts.Sort((x, y) => x.sortOrder.CompareTo(y.sortOrder));
                     onInstantCastsChanged.Invoke(instantCasts);
+                }
+            }
+
+            if (temp.data.refreshStatusEffects != null && temp.data.refreshStatusEffects.Count > 0)
+            {
+                for (int i = 0; i < temp.data.refreshStatusEffects.Count; i++)
+                {
+                    string m_name = temp.data.refreshStatusEffects[i].statusName;
+
+                    if (effects.ContainsKey(m_name))
+                    {
+                        RemoveEffect(m_name, expired, tag, stacks);
+                    }
                 }
             }
 

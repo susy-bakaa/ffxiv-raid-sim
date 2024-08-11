@@ -280,14 +280,17 @@ public class DamageTrigger : MonoBehaviour
 
                 if (damagePerPlayer.value != 0 && dealsDamage)
                 {
-                    if (!isAShield)
+                    players[i].ModifyHealth(damagePerPlayer, kill);
+
+                    // Needs a fix or new implementation, but not important since a shield should never be applied directly
+                    /*if (!isAShield)
                     {
                         players[i].ModifyHealth(damagePerPlayer, kill);
                     }
                     else
                     {
                         players[i].AddShield(damagePerPlayer.value, damage.name);
-                    }
+                    }*/
                 }
 
                 if (appliedEffects.Count > 0)

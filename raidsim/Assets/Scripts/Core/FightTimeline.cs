@@ -203,6 +203,7 @@ public class FightTimeline : MonoBehaviour
                 TimelineCharacterEvent[] cEvents = events[i].characterEvents.ToArray();
                 for (int e = 0; e < cEvents.Length; e++)
                 {
+                    Debug.Log(cEvents[e].name);
                     // Check for CharacterEvent actions to be performed on this events character
                     if (cEvents[e].actions != null)
                     {

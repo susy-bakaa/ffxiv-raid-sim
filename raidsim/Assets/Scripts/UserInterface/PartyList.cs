@@ -201,9 +201,26 @@ public class PartyList : MonoBehaviour
 
     public void UpdatePartyList()
     {
+        int i_active = 0;
         for (int i = 0; i < members.Count; i++)
         {
+            PartyMember member = members[i];
+
+            int letter = i_active;
+            if (letter > 7)
+                letter = 7;
+            else if (letter < 0)
+                letter = 0;
+            members[i].characterState.characterLetter = letter;
+            member.letter = members[i].characterState.characterLetter;
+            member.role = member.characterState.role;
             members[i].hudElement.gameObject.SetActive(members[i].characterState.gameObject.activeSelf);
+            members[i] = member;
+
+            if (members[i].characterState.gameObject.activeSelf)
+            {
+                i_active++;
+            }
         }
     }
 
@@ -211,20 +228,31 @@ public class PartyList : MonoBehaviour
     public struct PartyMember
     {
         public string name;
+        public PlayerController playerController;
+        public AIController aiController;
+        public BossController bossController;
         public CharacterState characterState;
         public ActionController actionController;
         public TargetController targetController;
         public HudElement hudElement;
         public int letter;
+        public CharacterState.Role role;
 
-        public PartyMember(string name, CharacterState characterState, ActionController actionController, TargetController targetController, HudElement hudElement, int letter)
+        public PartyMember(string name, PlayerController playerController, AIController aiController, BossController bossController, CharacterState characterState, ActionController actionController, TargetController targetController, HudElement hudElement, int letter)
         {
             this.name = name;
+            this.playerController = playerController;
+            this.aiController = aiController;
+            this.bossController = bossController;
             this.characterState = characterState;
             this.actionController = actionController;
             this.targetController = targetController;
             this.hudElement = hudElement;
             this.letter = letter;
+            if (characterState != null)
+                role = characterState.role;
+            else
+                role = CharacterState.Role.unassigned;
         }
     }
 }

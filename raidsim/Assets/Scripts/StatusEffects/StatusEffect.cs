@@ -158,17 +158,30 @@ public class StatusEffect : MonoBehaviour
         }
     }
 
-    public void Refresh(int appliedStacks = 0, int tag = 0)
+    public void Refresh(int appliedStacks = 0, int tag = 0, float duration = 0)
     {
+        if (duration == 0)
+        {
+            this.duration += data.length;
+            if (this.duration > data.maxLength)
+                this.duration = data.maxLength;
+        }
+        else if (duration <= -1)
+        {
+            if (this.duration > data.maxLength)
+                this.duration = data.maxLength;
+        }
+        else
+        {
+            this.duration = duration;
+        }
+
         uniqueTag = tag;
-        duration += data.length;
         if (appliedStacks == 0)
             stacks += data.appliedStacks;
         else if (appliedStacks > 0)
             stacks += stacks;
 
-        if (duration > data.maxLength)
-            duration = data.maxLength;
         if (stacks > data.maxStacks)
             stacks = data.maxStacks;
 

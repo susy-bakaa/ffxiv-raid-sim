@@ -12,6 +12,10 @@ A singleplayer raid and fight mechanic simulator with bots, made in the Unity ga
 
 # In development fights
 
+- AAC Light-heavyweight Tier
+	- AAC Light-heavyweight M4 (Savage) (M4S)
+		- Sunrise Sabbath (Rinon)
+		- Sunrise Sabbath (AutoCad)
 - Alexander: Midas
 	- Alexander - The Burden of the Son (Savage) (A8S)
 		- Gavel (BLU)

@@ -276,12 +276,12 @@ public class ActionController : MonoBehaviour
             }
             else
             {
-                if (castBar != null && castBarGroup.alpha == 1f)
+                if (castBar != null && castBarGroup != null && castBarGroup.alpha == 1f)
                 {
                     castBarGroup.alpha = 0.99f;
                     castBarGroup.LeanAlpha(0f, 0.5f);
                 }
-                if (castBarParty != null && castBarGroupParty.alpha == 1f)
+                if (castBarParty != null && castBarGroupParty != null && castBarGroupParty.alpha == 1f)
                 {
                     castBarGroupParty.alpha = 0f;
                 }

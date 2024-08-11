@@ -13,9 +13,7 @@ GameObject:
   - component: {fileID: 6224207816645287317}
   - component: {fileID: 7201618511377377683}
   - component: {fileID: 8675217267585818119}
-  - component: {fileID: 5976928449978344183}
   - component: {fileID: 842096823194784604}
-  - component: {fileID: 2141088332648697893}
   - component: {fileID: 6481045979173444240}
   m_Layer: 0
   m_Name: AOE_NegatronLaser
@@ -146,31 +144,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 5976928449978344183}
-        m_TargetAssemblyTypeName: FightMechanic, Assembly-CSharp
-        m_MethodName: TriggerMechanic
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 842096823194784604}
-        m_TargetAssemblyTypeName: FightMechanic, Assembly-CSharp
-        m_MethodName: TriggerMechanic
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 2141088332648697893}
         m_TargetAssemblyTypeName: FightMechanic, Assembly-CSharp
         m_MethodName: TriggerMechanic
         m_Mode: 0
@@ -219,31 +193,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mechanicEnabled: 1
-  mechanicName: 
+  mechanicName: Negatron Stream
   effect:
-    name: Negatron@l
-    data: {fileID: 11400000, guid: a4cf7b81114018d4f97c1c81f62885a9, type: 2}
-    tag: 0
-    stacks: 0
-  applyToTarget: 0
-  cleans: 0
---- !u!114 &5976928449978344183
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2178626897626987660}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 243f9554c19faea429abb43acc690bf3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mechanicEnabled: 1
-  mechanicName: 
-  effect:
-    name: Negatron@s
-    data: {fileID: 11400000, guid: 4eb50098bd141734786545b719d52c36, type: 2}
+    name: Negatron
+    data: {fileID: 11400000, guid: 5f884bae4b98d314281ee65389159b95, type: 2}
     tag: 0
     stacks: 0
   applyToTarget: 0
@@ -261,31 +214,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mechanicEnabled: 1
-  mechanicName: 
+  mechanicName: Positron Stream
   effect:
-    name: Positron@l
-    data: {fileID: 11400000, guid: 6fe0e860e42f9f345ba8177a5cf51034, type: 2}
-    tag: 0
-    stacks: 0
-  applyToTarget: 0
-  cleans: 1
---- !u!114 &2141088332648697893
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2178626897626987660}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 243f9554c19faea429abb43acc690bf3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mechanicEnabled: 1
-  mechanicName: 
-  effect:
-    name: Positron@s
-    data: {fileID: 11400000, guid: b46403034ab2cfa4b823f8e712537608, type: 2}
+    name: Positron
+    data: {fileID: 11400000, guid: 6944cb130413e6a459cbe669ad2cb56a, type: 2}
     tag: 0
     stacks: 0
   applyToTarget: 0

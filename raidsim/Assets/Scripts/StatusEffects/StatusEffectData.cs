@@ -26,6 +26,7 @@ public class StatusEffectData : ScriptableObject
     public GameObject hudElement;
     public List<Sprite> icons = new List<Sprite>();
     public List<StatusEffectData> incompatableStatusEffects = new List<StatusEffectData>();
+    public List<StatusEffectData> refreshStatusEffects = new List<StatusEffectData>();
     public List<CharacterState.Role> assignedRoles = new List<CharacterState.Role>();
 
     [System.Serializable]

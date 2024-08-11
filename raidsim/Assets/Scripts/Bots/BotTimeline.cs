@@ -43,7 +43,14 @@ public class BotTimeline : MonoBehaviour
     {
         for (int i = 0; i < events.Count; i++)
         {
-            currentTarget = events[i].node.transform;
+            if (events[i].node != null)
+            {
+                currentTarget = events[i].node.transform;
+            }
+            else
+            {
+                currentTarget = null;
+            }
             if (events[i].action != null)
             {
                 yield return new WaitForSeconds(events[i].waitForAction);

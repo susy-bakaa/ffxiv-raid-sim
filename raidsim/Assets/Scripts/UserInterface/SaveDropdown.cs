@@ -28,6 +28,11 @@ public class SaveDropdown : MonoBehaviour
 
     void Start()
     {
+        Utilities.FunctionTimer.Create(() => OnStart(), 1f, $"{group}_{key}_dropdown_onstart_delay", true, true);
+    }
+
+    private void OnStart()
+    {
         if (ini.Contains(group, $"i{key}"))
         {
             savedValue = ini.GetInt(group, $"i{key}");
