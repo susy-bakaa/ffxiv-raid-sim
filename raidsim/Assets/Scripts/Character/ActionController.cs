@@ -340,6 +340,9 @@ public class ActionController : MonoBehaviour
 
     public void PerformAutoAction(CharacterAction autoAction)
     {
+        if (!gameObject.activeSelf)
+            return;
+
         // Try to perform the action immediately
         if (!TryPerformAutoAction(autoAction))
         {

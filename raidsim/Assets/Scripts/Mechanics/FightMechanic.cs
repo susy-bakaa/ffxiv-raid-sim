@@ -17,6 +17,11 @@ public class FightMechanic : MonoBehaviour
         }
     }
 
+    public void TriggerMechanicAnimationEvent()
+    {
+        TriggerMechanic(new ActionInfo(null, null, null));
+    }
+
     public void TriggerMechanic()
     {
         TriggerMechanic(new ActionInfo(null, null, null));

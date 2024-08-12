@@ -7,6 +7,7 @@ public class PartyList : MonoBehaviour
 {
     public List<PartyMember> members = new List<PartyMember>();
     public string spriteAsset = "letters_1";
+    public int maxLetters = 7;
     public bool assignLetters = false;
 
     private List<TextMeshProUGUI> names = new List<TextMeshProUGUI>();
@@ -206,9 +207,11 @@ public class PartyList : MonoBehaviour
         {
             PartyMember member = members[i];
 
+            Debug.Log($"update partylist {gameObject.name}");
+
             int letter = i_active;
-            if (letter > 7)
-                letter = 7;
+            if (letter > maxLetters)
+                letter = maxLetters;
             else if (letter < 0)
                 letter = 0;
             members[i].characterState.characterLetter = letter;

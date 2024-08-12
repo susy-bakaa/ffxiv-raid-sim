@@ -4,6 +4,8 @@ using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
 using static GlobalStructs;
+using UnityEngine.UI;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -33,7 +35,21 @@ public class FightTimeline : MonoBehaviour
     public List<BotTimeline> botTimelines = new List<BotTimeline>();
     public List<TimelineEvent> events = new List<TimelineEvent>();
 
+    [Header("User Interface")]
+    public Button[] disableDuringPlayback;
+
     private Dictionary<int, List<CharacterActionData>> randomEventCharacterActions = new Dictionary<int, List<CharacterActionData>>();
+    private Dictionary<int, int> randomEventResults = new Dictionary<int, int>();
+
+    public int GetRandomEventResult(int id)
+    {
+        if (randomEventResults.TryGetValue(id, out int value))
+        {
+            return value;
+        }
+
+        return -1;
+    }
 
 #if UNITY_EDITOR
     [Button("Load All Status Effects")]
@@ -90,30 +106,30 @@ public class FightTimeline : MonoBehaviour
     {
         for (int i = 0; i < events.Count; i++)
         {
-            for (int k = 0; k < events[i].randomSets.Count; k++)
+            for (int k = 0; k < events[i].randomEventPools.Count; k++)
             {
-                EventRandomSet temp = events[i].randomSets[k];
+                RandomEventPool temp = events[i].randomEventPools[k];
 
                 temp.id = k;
-                if (events[i].randomSets[k].id < 0)
+                if (events[i].randomEventPools[k].id < 0)
                 {
                     temp.id = 0;
                 }
-                temp.name = $"{temp.id}_{events[i].randomSets[k].CharacterActionPool.Count}";
+                temp.name = $"{temp.id}_{events[i].randomEventPools[k].CharacterActionPool.Count}";
                 
-                events[i].randomSets[k] = temp;
+                events[i].randomEventPools[k] = temp;
             }
             for (int j = 0; j < events[i].characterEvents.Count; j++)
             {
                 TimelineCharacterEvent temp = events[i].characterEvents[j];
 
-                if (events[i].characterEvents[j].eventRandomSetId < -1 || events[i].randomSets.Count <= 0)
+                if (events[i].characterEvents[j].randomEventPoolId < -1 || events[i].randomEventPools.Count <= 0)
                 {
-                    temp.eventRandomSetId = -1;
+                    temp.randomEventPoolId = -1;
                 }
-                else if (events[i].characterEvents[j].eventRandomSetId > events[i].randomSets.Count - 1)
+                else if (events[i].characterEvents[j].randomEventPoolId > events[i].randomEventPools.Count - 1)
                 {
-                    temp.eventRandomSetId = events[i].randomSets.Count - 1;
+                    temp.randomEventPoolId = events[i].randomEventPools.Count - 1;
                 }
 
                 events[i].characterEvents[j] = temp;
@@ -182,6 +198,13 @@ public class FightTimeline : MonoBehaviour
         Random.InitState(seed);
         Debug.Log($"New random seed: {seed}");
 
+        randomEventResults.Clear();
+
+        for (int i = 0; i < disableDuringPlayback.Length; i++)
+        {
+            disableDuringPlayback[i].interactable = false;
+        }
+
         playing = true;
         StartCoroutine(PlayTimeline());
         for (int i = 0; i < botTimelines.Count; i++)
@@ -203,35 +226,35 @@ public class FightTimeline : MonoBehaviour
                 TimelineCharacterEvent[] cEvents = events[i].characterEvents.ToArray();
                 for (int e = 0; e < cEvents.Length; e++)
                 {
-                    Debug.Log(cEvents[e].name);
+                    //Debug.Log(cEvents[e].name);
                     // Check for CharacterEvent actions to be performed on this events character
                     if (cEvents[e].actions != null)
                     {
                         if (cEvents[e].performCharacterActions != null && cEvents[e].performCharacterActions.Length > 0)
                         {
-                            if (cEvents[e].eventRandomSetId > -1)
+                            if (cEvents[e].randomEventPoolId > -1)
                             {
-                                EventRandomSet ers = new EventRandomSet(-1, null);
+                                RandomEventPool pool = new RandomEventPool(-1, null);
 
-                                for (int r = 0; r < events[i].randomSets.Count; r++)
+                                for (int r = 0; r < events[i].randomEventPools.Count; r++)
                                 {
-                                    if (events[i].randomSets[r].id == cEvents[e].eventRandomSetId)
+                                    if (events[i].randomEventPools[r].id == cEvents[e].randomEventPoolId)
                                     {
-                                        ers = events[i].randomSets[r];
+                                        pool = events[i].randomEventPools[r];
                                     }
                                 }
 
-                                if (ers.id > -1)
+                                if (pool.id > -1)
                                 {
-                                    List<CharacterActionData> availableActions = ers.CharacterActionPool;
+                                    List<CharacterActionData> availableActions = pool.CharacterActionPool;
 
-                                    if (randomEventCharacterActions.ContainsKey(ers.id))
+                                    if (randomEventCharacterActions.ContainsKey(pool.id))
                                     {
-                                        availableActions = randomEventCharacterActions[ers.id];
+                                        availableActions = randomEventCharacterActions[pool.id];
                                     }
                                     else
                                     {
-                                        randomEventCharacterActions.Add(ers.id, ers.CharacterActionPool);
+                                        randomEventCharacterActions.Add(pool.id, pool.CharacterActionPool);
                                     }
 
                                     CharacterActionData temp = availableActions.GetRandomItem();
@@ -241,13 +264,14 @@ public class FightTimeline : MonoBehaviour
                                         if (cEvents[e].performCharacterActions[a].data == temp)
                                         {
                                             cEvents[e].actions.PerformAction(cEvents[e].performCharacterActions[a]);
+                                            randomEventResults.Add(cEvents[e].id, a);
                                             availableActions.Remove(temp);
                                         }
                                     }
 
                                     if (availableActions.Count <= 0)
                                     {
-                                        randomEventCharacterActions.Remove(ers.id);
+                                        randomEventCharacterActions.Remove(pool.id);
                                     }
                                 }
                             }
@@ -262,7 +286,9 @@ public class FightTimeline : MonoBehaviour
                                 }
                                 else
                                 {
-                                    cEvents[e].actions.PerformAction(cEvents[e].performCharacterActions[UnityEngine.Random.Range(0, cEvents[e].performCharacterActions.Length)]);
+                                    int r = UnityEngine.Random.Range(0, cEvents[e].performCharacterActions.Length);
+                                    cEvents[e].actions.PerformAction(cEvents[e].performCharacterActions[r]);
+                                    randomEventResults.Add(cEvents[e].id, r);
                                 }
                             }
                         }
@@ -298,6 +324,7 @@ public class FightTimeline : MonoBehaviour
                             cEvents[e].triggerMechanics[m].TriggerMechanic(new ActionController.ActionInfo(null, cEvents[e].character, null));
                         }
                     }
+                    cEvents[e].onEvent.Invoke();
                 }
             }
             else
@@ -309,6 +336,11 @@ public class FightTimeline : MonoBehaviour
 
         playing = false;
         Debug.Log($"Fight timeline {timelineName} finished!");
+
+        for (int i = 0; i < disableDuringPlayback.Length; i++)
+        {
+            disableDuringPlayback[i].interactable = true;
+        }
     }
 
     public void WipeParty(PartyList party, string cause = "")
@@ -362,26 +394,26 @@ public class FightTimeline : MonoBehaviour
     {
         public string name;
         public float time;
-        public List<EventRandomSet> randomSets;
+        public List<RandomEventPool> randomEventPools;
         public List<TimelineCharacterEvent> characterEvents;
 
-        public TimelineEvent(string name, float time, List<EventRandomSet> randomSets, List<TimelineCharacterEvent> characterEvents)
+        public TimelineEvent(string name, float time, List<RandomEventPool> randomSets, List<TimelineCharacterEvent> characterEvents)
         {
             this.name = name;
             this.time = time;
-            this.randomSets = randomSets;
+            this.randomEventPools = randomSets;
             this.characterEvents = characterEvents;
         }
     }
 
     [System.Serializable]
-    public struct EventRandomSet
+    public struct RandomEventPool
     {
         public string name;
         public int id;
         public List<CharacterActionData> CharacterActionPool;
 
-        public EventRandomSet(int id, List<CharacterActionData> characterActionPool)
+        public RandomEventPool(int id, List<CharacterActionData> characterActionPool)
         {
             this.id = id;
             this.CharacterActionPool = characterActionPool;
@@ -396,6 +428,7 @@ public class FightTimeline : MonoBehaviour
     public struct TimelineCharacterEvent
     {
         public string name;
+        public int id;
         public CharacterState character;
         public ActionController actions;
         public AIController controller;
@@ -403,12 +436,14 @@ public class FightTimeline : MonoBehaviour
         public StatusEffectData[] giveDebuffs;
         public CharacterAction[] performCharacterActions;
         public bool pickRandomCharacterAction;
-        public int eventRandomSetId;
+        public int randomEventPoolId;
         public FightMechanic[] triggerMechanics;
+        public UnityEvent onEvent;
 
-        public TimelineCharacterEvent(string name, CharacterState character, ActionController actions, AIController controller, StatusEffectData[] giveBuffs, StatusEffectData[] giveDebuffs, CharacterAction[] performCharacterActions, bool pickRandomCharacterAction, FightMechanic[] triggerMechanics, int eventRandomSetPoolId = -1)
+        public TimelineCharacterEvent(string name, int id, CharacterState character, ActionController actions, AIController controller, StatusEffectData[] giveBuffs, StatusEffectData[] giveDebuffs, CharacterAction[] performCharacterActions, bool pickRandomCharacterAction, FightMechanic[] triggerMechanics, UnityEvent onEvent, int eventRandomSetPoolId = -1)
         {
             this.name = name;
+            this.id = id;
             this.character = character;
             this.actions = actions;
             this.controller = controller;
@@ -416,8 +451,9 @@ public class FightTimeline : MonoBehaviour
             this.giveDebuffs = giveDebuffs;
             this.performCharacterActions = performCharacterActions;
             this.pickRandomCharacterAction = pickRandomCharacterAction;
-            this.eventRandomSetId = eventRandomSetPoolId;
+            this.randomEventPoolId = eventRandomSetPoolId;
             this.triggerMechanics = triggerMechanics;
+            this.onEvent = onEvent;
         }
     }
 }

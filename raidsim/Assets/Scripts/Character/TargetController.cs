@@ -196,14 +196,14 @@ public class TargetController : MonoBehaviour
         currentTarget = target;
         onTarget.Invoke(currentTarget);
 
-        if (target != null)
+        /*if (target != null)
         {
             Debug.Log($"SetTarget to {target} {target.transform.parent.name}");
         }
         else
         {
             Debug.Log($"SetTarget to null");
-        }
+        }*/
 
         targetColorsUpdated = false;
         targetsTargetColorsUpdated = false;

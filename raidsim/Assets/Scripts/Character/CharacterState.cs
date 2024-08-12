@@ -94,6 +94,19 @@ public class CharacterState : MonoBehaviour
         }
     }
 
+    [System.Serializable]
+    public struct StatusEffectPair
+    {
+        public string name;
+        public StatusEffect statusEffect;
+
+        public StatusEffectPair(string name, StatusEffect statusEffect)
+        {
+            this.name = name;
+            this.statusEffect = statusEffect;
+        }
+    }
+
     [Header("States")]
     public bool invulnerable = false;
     public bool dead = false;
@@ -108,9 +121,11 @@ public class CharacterState : MonoBehaviour
     public bool amnesia = false;
     public bool canDoActions = true;
     public bool canDie = true;
+    public bool disabled = false;
 
     [Header("Effects")]
     private Dictionary<string, StatusEffect> effects = new Dictionary<string, StatusEffect>();
+    public List<StatusEffectPair> m_effects = new List<StatusEffectPair>();
     private StatusEffect[] effectsArray = null;
     private List<StatusEffect> instantCasts = new List<StatusEffect>();
     [HideInInspector]
@@ -121,6 +136,7 @@ public class CharacterState : MonoBehaviour
     public UnityEvent onSpawn;
 
     [Header("Config")]
+    public PartyList partyList;
     public Transform statusEffectParent;
     public float statusEffectUpdateInterval = 3f;
     private float statusEffectUpdateTimer = 0f;
@@ -420,6 +436,27 @@ public class CharacterState : MonoBehaviour
     void Start()
     {
         onSpawn.Invoke();
+
+        if (disabled)
+        {
+            Utilities.FunctionTimer.Create(() => gameObject.SetActive(false), 1f, $"{characterName.Replace(" ", "_")}_disable_on_start", true, true);
+        }
+    }
+
+    void OnEnable()
+    {
+        if (partyList != null)
+        {
+            Utilities.FunctionTimer.Create(() => partyList.UpdatePartyList(), 1f, $"{characterName.Replace(" ", "_")}_on_enable_update_party_list", true, true);
+        }
+    }
+
+    void OnDisable()
+    {
+        if (partyList != null)
+        {
+            Utilities.FunctionTimer.Create(() => partyList.UpdatePartyList(), 1f, $"{characterName.Replace(" ","_")}_on_disable_update_party_list", true, true);
+        }
     }
 
     void Update()
@@ -2316,6 +2353,7 @@ public class CharacterState : MonoBehaviour
         effect.uniqueTag = tag;
         effect.stacks = stacks;
         effects.Add(name, effect);
+        m_effects.Add(new StatusEffectPair(name, effect));
         effectsArray = effects.Values.ToArray();
 
         if (effect.data.instantCasts)
@@ -2422,6 +2460,13 @@ public class CharacterState : MonoBehaviour
                 effects[name].onCleanse.Invoke(this);
 
             effects.Remove(name);
+            for (int i = 0; i < m_effects.Count; i++)
+            {
+                if (m_effects[i].name == name)
+                {
+                    m_effects.RemoveAt(i);
+                }
+            }
             effectsArray = effects.Values.ToArray();
 
             if (temp.data.instantCasts)
