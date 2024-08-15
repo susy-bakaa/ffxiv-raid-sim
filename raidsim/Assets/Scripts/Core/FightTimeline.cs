@@ -34,12 +34,26 @@ public class FightTimeline : MonoBehaviour
     public UnityEvent<bool> onPausedChanged;
     public List<BotTimeline> botTimelines = new List<BotTimeline>();
     public List<TimelineEvent> events = new List<TimelineEvent>();
+    public List<RandomEventResult> m_randomEventResults = new List<RandomEventResult>();
 
     [Header("User Interface")]
     public Button[] disableDuringPlayback;
 
     private Dictionary<int, List<CharacterActionData>> randomEventCharacterActions = new Dictionary<int, List<CharacterActionData>>();
     private Dictionary<int, int> randomEventResults = new Dictionary<int, int>();
+
+    [System.Serializable]
+    public struct RandomEventResult
+    {
+        public int id; 
+        public int value;
+
+        public RandomEventResult(int id, int value)
+        {
+            this.id = id;
+            this.value = value;
+        }
+    }
 
     public int GetRandomEventResult(int id)
     {
@@ -49,6 +63,18 @@ public class FightTimeline : MonoBehaviour
         }
 
         return -1;
+    }
+
+    public void AddRandomEventResult(int id, int result)
+    {
+        int newId = id;
+        while (randomEventResults.ContainsKey(newId))
+        {
+            newId++;
+        }
+        //Debug.Log($"Added RandomEventResult with id of {newId}");
+        randomEventResults.Add(newId, result);
+        m_randomEventResults.Add(new RandomEventResult(newId, result));
     }
 
 #if UNITY_EDITOR
@@ -199,6 +225,7 @@ public class FightTimeline : MonoBehaviour
         Debug.Log($"New random seed: {seed}");
 
         randomEventResults.Clear();
+        m_randomEventResults.Clear();
 
         for (int i = 0; i < disableDuringPlayback.Length; i++)
         {
@@ -265,6 +292,7 @@ public class FightTimeline : MonoBehaviour
                                         {
                                             cEvents[e].actions.PerformAction(cEvents[e].performCharacterActions[a]);
                                             randomEventResults.Add(cEvents[e].id, a);
+                                            m_randomEventResults.Add(new RandomEventResult(cEvents[e].id, a));
                                             availableActions.Remove(temp);
                                         }
                                     }
@@ -289,6 +317,7 @@ public class FightTimeline : MonoBehaviour
                                     int r = UnityEngine.Random.Range(0, cEvents[e].performCharacterActions.Length);
                                     cEvents[e].actions.PerformAction(cEvents[e].performCharacterActions[r]);
                                     randomEventResults.Add(cEvents[e].id, r);
+                                    m_randomEventResults.Add(new RandomEventResult(cEvents[e].id, r));
                                 }
                             }
                         }

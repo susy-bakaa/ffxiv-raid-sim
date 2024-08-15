@@ -439,7 +439,7 @@ public class CharacterState : MonoBehaviour
 
         if (disabled)
         {
-            Utilities.FunctionTimer.Create(() => gameObject.SetActive(false), 1f, $"{characterName.Replace(" ", "_")}_disable_on_start", true, true);
+            Utilities.FunctionTimer.Create(() => gameObject.SetActive(false), 1f, $"{characterName}_disable_on_start", true, true);
         }
     }
 
@@ -447,7 +447,7 @@ public class CharacterState : MonoBehaviour
     {
         if (partyList != null)
         {
-            Utilities.FunctionTimer.Create(() => partyList.UpdatePartyList(), 1f, $"{characterName.Replace(" ", "_")}_on_enable_update_party_list", true, true);
+            Utilities.FunctionTimer.Create(() => partyList.UpdatePartyList(), 1f, $"{characterName}_on_enable_update_party_list", true, true);
         }
     }
 
@@ -1001,7 +1001,7 @@ public class CharacterState : MonoBehaviour
             currentShields.Add(new Shield(identifier, value));
 
             if (showDamagePopups)
-                ShowDamageFlyText(new Damage(value, false, true, DamageType.magical, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal, identifier));
+                ShowDamageFlyText(new Damage(value, false, true, DamageType.magical, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal, Utilities.InsertSpaceBeforeCapitals(identifier)));
         }
         else
         {
@@ -2409,6 +2409,9 @@ public class CharacterState : MonoBehaviour
             }
         }
         effect.onApplication.Invoke(this);
+
+        if (partyList != null)
+            partyList.UpdatePrioritySorting();
     }
 
     public void RemoveEffect(StatusEffectData data, bool expired, int tag = 0, int stacks = 0)
@@ -2487,6 +2490,7 @@ public class CharacterState : MonoBehaviour
 
                     if (effects.ContainsKey(m_name))
                     {
+                        Debug.Log($"Removed sub status {m_name} with a index {i} of {temp.data.refreshStatusEffects.Count} total from {temp.data.statusName}");
                         RemoveEffect(m_name, expired, tag, stacks);
                     }
                 }
@@ -2506,6 +2510,9 @@ public class CharacterState : MonoBehaviour
             }
             effects[name].onReduce.Invoke(this);
         }
+
+        if (partyList != null)
+            partyList.UpdatePrioritySorting();
     }
 
     public bool HasEffect(string name, int tag = 0)

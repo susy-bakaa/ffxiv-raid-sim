@@ -11,6 +11,7 @@ public class PartyList : MonoBehaviour
     public bool assignLetters = false;
 
     private List<TextMeshProUGUI> names = new List<TextMeshProUGUI>();
+    private HudElementPriority hudPriority;
 
 #if UNITY_EDITOR
     void OnValidate()
@@ -31,6 +32,8 @@ public class PartyList : MonoBehaviour
 
     void Awake()
     {
+        hudPriority = GetComponent<HudElementPriority>();
+
         names.Clear();
         for (int i = 0; i < members.Count; i++)
         {
@@ -207,7 +210,7 @@ public class PartyList : MonoBehaviour
         {
             PartyMember member = members[i];
 
-            Debug.Log($"update partylist {gameObject.name}");
+            //Debug.Log($"update partylist {gameObject.name}");
 
             int letter = i_active;
             if (letter > maxLetters)
@@ -225,6 +228,14 @@ public class PartyList : MonoBehaviour
                 i_active++;
             }
         }
+
+        UpdatePrioritySorting();
+    }
+
+    public void UpdatePrioritySorting()
+    {
+        if (hudPriority != null)
+            hudPriority.UpdateSorting();
     }
 
     [System.Serializable]

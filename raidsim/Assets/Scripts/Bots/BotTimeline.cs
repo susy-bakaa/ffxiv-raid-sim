@@ -17,6 +17,13 @@ public class BotTimeline : MonoBehaviour
     public UnityEvent<BotTimeline> onBegin;
     public UnityEvent<BotTimeline> onFinish;
 
+    private int index;
+
+    void Awake()
+    {
+        index = UnityEngine.Random.Range(1000, 10000);
+    }
+
     public void StartTimeline()
     {
         if (controller == null)
@@ -32,11 +39,21 @@ public class BotTimeline : MonoBehaviour
             }
         }
 
-        if (events != null)
+        if (events != null && events.Count > 0)
         {
             StartCoroutine(PlayTimeline());
             onBegin.Invoke(this);
         }
+        else if (events != null)
+        {
+            onBegin.Invoke(this);
+            Utilities.FunctionTimer.Create(() => TriggerOnFinish(), 0.1f, $"{index}_botTimeline_no_events_onFinish_delay", true, true);
+        }
+    }
+
+    private void TriggerOnFinish()
+    {
+        onFinish.Invoke(this);
     }
 
     public IEnumerator PlayTimeline()

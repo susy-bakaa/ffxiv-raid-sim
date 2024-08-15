@@ -7,3 +7,4 @@
 - FINAL FANTASY XIV: Online assets from the game. All in-game assets used are copyrighted and owned by Square Enix.
 - Code partially borrowed and heavily referenced and utilized from the Korean TEA (The Epic of Alexander) simulator. All rights reserved to the original author of that program.
 - Unity INI file script by illa4257. https://github.com/illa4257/unity-IniStorage 
+- Unity find inactive GameObjects function by SO user Programmer. https://stackoverflow.com/questions/44456133/find-inactive-gameobject-by-name-tag-or-layer 

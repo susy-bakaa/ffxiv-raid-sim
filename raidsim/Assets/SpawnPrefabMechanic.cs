@@ -40,9 +40,10 @@ public class SpawnPrefabMechanic : FightMechanic
     {
         if (!string.IsNullOrEmpty(spawnEnemyName) && spawned.TryGetComponent(out SpawnEnemyMechanic enemyMechanic))
         {
-            if (enemyMechanic.enemyObject == null)
+            enemyMechanic.enemyObjectName = spawnEnemyName;
+            if (enemyMechanic.enemyObject != null && enemyMechanic.enemyObject.name != spawnEnemyName)
             {
-                enemyMechanic.enemyObjectName = spawnEnemyName;
+                enemyMechanic.enemyObject = null;
             }
         }
     }

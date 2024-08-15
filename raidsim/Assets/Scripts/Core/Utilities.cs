@@ -62,6 +62,8 @@ public static class Utilities
     private class MonoBehaviourHook : MonoBehaviour
     {
         public Action onUpdate;
+        public string label;
+
         void Update()
         {
             if (onUpdate != null)
@@ -86,6 +88,9 @@ public static class Utilities
         {
             InitIfNeeded();
 
+            if (name != null)
+                name = name.Replace(" ", "_");
+
             if (onlyAllowOneInstance)
             {
                 foreach (var fTimer in activeTimerList)
@@ -99,11 +104,16 @@ public static class Utilities
 
             //Debug.Log($"Utilities: FunctionTimer {name} was created with timer of {timer}. Unscaled {useUnscaledTime} OnlyOne {onlyAllowOneInstance}");
 
-            GameObject gameObject = new GameObject("FunctionTimer", typeof(MonoBehaviourHook));
+            GameObject gameObject = new GameObject($"FunctionTimer{(name != null ? $"_{name}" : "")}", typeof(MonoBehaviourHook));
+
+            gameObject.transform.SetParent(initGameObject.transform);
 
             FunctionTimer functionTimer = new FunctionTimer(action, timer, gameObject, name, useUnscaledTime);
 
-            gameObject.GetComponent<MonoBehaviourHook>().onUpdate = functionTimer.Update;
+            MonoBehaviourHook monoBehaviourHook = gameObject.GetComponent<MonoBehaviourHook>();
+
+            monoBehaviourHook.onUpdate = functionTimer.Update;
+            monoBehaviourHook.label = name != null ? name : "null";
 
             activeTimerList.Add(functionTimer);
             return functionTimer;
@@ -315,6 +325,22 @@ public static class Utilities
             }
         }
         return false;
+    }
+
+    public static GameObject FindInactiveObjectByName(string name)
+    {
+        Transform[] objs = Resources.FindObjectsOfTypeAll<Transform>() as Transform[];
+        for (int i = 0; i < objs.Length; i++)
+        {
+            if (objs[i].hideFlags == HideFlags.None)
+            {
+                if (objs[i].name == name)
+                {
+                    return objs[i].gameObject;
+                }
+            }
+        }
+        return null;
     }
 
     /// <summary>

@@ -249,7 +249,7 @@ public class DamageTrigger : MonoBehaviour
             {
                 if (players.Length < playersRequired)
                 {
-                    Debug.Log("DamageTrigger failed");
+                    //Debug.Log("DamageTrigger failed");
                     failed = true;
                     if (damagePerPlayer.value < 0)
                     {

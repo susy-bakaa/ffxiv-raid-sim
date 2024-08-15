@@ -1,7 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UIElements;
 using static ActionController;
+using static PartyList;
 
 public class SpawnEnemyMechanic : FightMechanic
 {
@@ -10,11 +13,11 @@ public class SpawnEnemyMechanic : FightMechanic
     public bool activateInstead = true;
     public Transform spawnLocation;
 
-    void Awake()
+    public void Awake()
     {
         if (activateInstead && enemyObject == null && !string.IsNullOrEmpty(enemyObjectName))
         {
-            enemyObject = GameObject.Find(enemyObjectName);
+            enemyObject = Utilities.FindInactiveObjectByName(enemyObjectName);
         }
     }
 
@@ -24,7 +27,7 @@ public class SpawnEnemyMechanic : FightMechanic
 
         if (activateInstead && enemyObject == null && !string.IsNullOrEmpty(enemyObjectName))
         {
-            enemyObject = GameObject.Find(enemyObjectName);
+            enemyObject = Utilities.FindInactiveObjectByName(enemyObjectName);
         }
 
         if (enemyObject == null)
@@ -32,11 +35,19 @@ public class SpawnEnemyMechanic : FightMechanic
 
         if (activateInstead && enemyObject != null)
         {
-            enemyObject.SetActive(true);
+            //Debug.Log($"Trying to activate {enemyObject.name}");
             if (enemyObject.TryGetComponent(out CharacterState state))
             {
                 state.disabled = false;
+                //Debug.Log($"Found CharacterState from {enemyObject.name} and setting disabled to {state.disabled}");
             }
+            //else
+            //{
+                //Debug.Log($"Did not find CharacterState from {enemyObject.name} and disabled was not changed!");
+            //}
+            //Debug.Log($"Before SetActive {enemyObject.name} is active {enemyObject.activeSelf}");
+            enemyObject.SetActive(true);
+            //Debug.Log($"After SetActive {enemyObject.name} is active {enemyObject.activeSelf}");
         }
         else if (enemyObject != null)
         {

@@ -7,17 +7,24 @@ using static GlobalStructs.Damage;
 
 public class SpawnDamageTriggerMechanic : FightMechanic
 {
+    public TargetController targetController;
     public GameObject damageTriggerPrefab;
     public Transform spawnLocation;
     public float delay = 0f;
     public bool useActionDamage = true;
     public bool usePlayerHealth = false;
+    public bool useTargetControllerCurrentTargetAsLocation = false;
     public bool dealDamage = true;
     public float damageMultiplier = 1f;
 
     public override void TriggerMechanic(ActionInfo actionInfo)
     {
         base.TriggerMechanic(actionInfo);
+
+        if (targetController != null && targetController.currentTarget != null)
+        {
+            spawnLocation = targetController.currentTarget.transform;
+        }
 
         if (spawnLocation == null)
         {

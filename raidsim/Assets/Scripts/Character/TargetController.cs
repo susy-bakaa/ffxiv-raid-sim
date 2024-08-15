@@ -34,6 +34,7 @@ public class TargetController : MonoBehaviour
     public bool isAi;
     public bool canMouseRaycast = true;
     public bool autoTarget;
+    public bool onlyAliveTargets = false;
 
     [Header("Events")]
     public UnityEvent<TargetNode> onTarget;
@@ -99,6 +100,18 @@ public class TargetController : MonoBehaviour
             UpdateUserInterface();
         if (autoTarget && Utilities.RateLimiter(rateLimit))
             Target();
+    }
+
+    void OnEnable()
+    {
+        if (currentTarget != null)
+        {
+            onTarget.Invoke(currentTarget);
+        }
+        else
+        {
+            onTarget.Invoke(null);
+        }
     }
 
     void HandleMouseClick()
@@ -174,6 +187,14 @@ public class TargetController : MonoBehaviour
 
     public void SetTarget(TargetNode target)
     {
+        if (target != null && target.TryGetCharacterState(out CharacterState state))
+        {
+            if (state.untargetable)
+            {
+                return;
+            }
+        }
+
         if (currentTarget != null && currentTarget != target && isPlayer)
             currentTarget.onDetarget.Invoke();
 
@@ -266,6 +287,15 @@ public class TargetController : MonoBehaviour
 
         foreach (var node in allNodes)
         {
+            // Retrieve CharacterState and check if the target is alive or dead based on the onlyAliveTargets setting
+            if (node.TryGetCharacterState(out CharacterState nodeCharacterState))
+            {
+                if (onlyAliveTargets && nodeCharacterState.dead)
+                {
+                    continue; // Skip this node as it is dead and we only want alive targets
+                }
+            }
+
             if (node.gameObject.CompareTag("target") && (mask & (1 << node.gameObject.layer)) != 0 && node.Targetable && allowedGroups.Contains(node.Group))
             {
                 float distanceToNode = Vector3.Distance(transform.position, node.transform.position);
@@ -279,6 +309,11 @@ public class TargetController : MonoBehaviour
                 }
             }
         }
+
+        // We need to sort it automatically like this here already or the targeting is delayed and slow as fuck
+        // Sort targets based on distance
+        targetableNodes.Sort((a, b) => Vector3.Distance(transform.position, a.transform.position)
+                                        .CompareTo(Vector3.Distance(transform.position, b.transform.position)));
 
         if (sortByEnmity && targetList != null && self != null && self.TryGetCharacterState(out CharacterState selfCharacterState))
         {
@@ -337,6 +372,8 @@ public class TargetController : MonoBehaviour
                             i--;
                         }
                     }
+
+                    Debug.Log($"node {targetableNodes[i].gameObject.name}");
                 }
             }
 
@@ -476,7 +513,10 @@ public class TargetController : MonoBehaviour
                     if (targetCastbar != null)
                     {
                         targetCastbar.minValue = 0f;
-                        targetCastbar.maxValue = m_actionController.LastAction.data.cast;
+                        if (m_actionController.LastAction != null)
+                            targetCastbar.maxValue = m_actionController.LastAction.data.cast;
+                        else
+                            targetCastbar.maxValue = 4.7f;
                         targetCastbar.value = m_actionController.LastCastTime - m_actionController.CastTime;
 
                         if (targetCastbarGroup.alpha == 0f)

@@ -10,13 +10,17 @@ public class CombinedEvent : MonoBehaviour
     public float delay = 0;
     public bool runOnStart = false;
 
+    private int randomIndex;
+
     void Start()
     {
+        randomIndex = UnityEngine.Random.Range(1000, 10000);
+
         if (runOnStart)
         {
             if (delay > 0)
             {
-                Utilities.FunctionTimer.Create(() => BasicCombinedEvent(), delay, $"{gameObject.name}_combinedEvent_start_delay", true, true);
+                Utilities.FunctionTimer.Create(() => BasicCombinedEvent(), delay, $"{randomIndex}_{gameObject.name}_combinedEvent_start_delay", true, true);
             }
             else
             {

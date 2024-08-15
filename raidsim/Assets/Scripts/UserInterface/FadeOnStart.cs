@@ -31,7 +31,7 @@ public class FadeOnStart : MonoBehaviour
     {
         if (delay > 0f)
         {
-            Utilities.FunctionTimer.Create(() => group.LeanAlpha(1f, duration), delay);
+            Utilities.FunctionTimer.Create(() => group.LeanAlpha(1f, duration), delay, $"{gameObject.name}_fadeToBlack_delay", true, true);
         }
         else
         {

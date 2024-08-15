@@ -115,7 +115,14 @@ public class BossController : MonoBehaviour
 
     public void SetRotationTarget(TargetNode target)
     {
-        SetRotationTarget(target.transform);
+        if (target != null)
+        {
+            SetRotationTarget(target.transform);
+        }
+        else
+        {
+            SetRotationTarget((Transform)null);
+        }
     }
 
     public void SetRotationTarget(Transform target)
