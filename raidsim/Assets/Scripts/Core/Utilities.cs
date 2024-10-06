@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static CharacterState;
 using static PartyList;
+using static StatusEffectData;
 
 public static class Utilities
 {
@@ -75,6 +77,8 @@ public static class Utilities
     {
         private static List<FunctionTimer> activeTimerList;
         private static GameObject initGameObject;
+        public static bool Available = false;
+
         private static void InitIfNeeded()
         {
             if (initGameObject == null)
@@ -83,13 +87,24 @@ public static class Utilities
                 activeTimerList = new List<FunctionTimer>();
             }
         }
+        public static bool CleanUp()
+        {
+            Available = false;
+            activeTimerList.Clear();
+            activeTimerList = new List<FunctionTimer>();
+            UnityEngine.Object.Destroy(initGameObject);
+            return true;
+        }
 
         public static FunctionTimer Create(Action action, float timer, string name = null, bool useUnscaledTime = false, bool onlyAllowOneInstance = false)
         {
+            if (!Available)
+                return null;
+
             InitIfNeeded();
 
             if (name != null)
-                name = name.Replace(" ", "_");
+                name = name.Replace(" ", "_").Replace("(", "").Replace(")", "");
 
             if (onlyAllowOneInstance)
             {
@@ -325,6 +340,42 @@ public static class Utilities
             }
         }
         return false;
+    }
+
+    public static bool ContainsInfoPair(this IEnumerable<StatusEffectInfoArray> effectPairs, StatusEffectInfoArray effectPair)
+    {
+        foreach (var ep in effectPairs)
+        {
+            if (ep.name == effectPair.name && ep.effectInfos.Length == effectPair.effectInfos.Length)
+            {
+                for (int i = 0; i < ep.effectInfos.Length; i++)
+                {
+                    if (ep.effectInfos[i].data == effectPair.effectInfos[i].data && ep.effectInfos[i].name == effectPair.effectInfos[i].name && ep.effectInfos[i].tag == effectPair.effectInfos[i].tag && ep.effectInfos[i].stacks == effectPair.effectInfos[i].stacks)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public static void RemoveInfoPair(this List<StatusEffectInfoArray> effectPairs, StatusEffectInfoArray effectPair)
+    {
+        foreach (var ep in effectPairs)
+        {
+            if (ep.name == effectPair.name && ep.effectInfos.Length == effectPair.effectInfos.Length)
+            {
+                for (int i = 0; i < ep.effectInfos.Length; i++)
+                {
+                    if (ep.effectInfos[i].data == effectPair.effectInfos[i].data && ep.effectInfos[i].name == effectPair.effectInfos[i].name && ep.effectInfos[i].tag == effectPair.effectInfos[i].tag && ep.effectInfos[i].stacks == effectPair.effectInfos[i].stacks)
+                    {
+                        effectPairs.Remove(ep);
+                        return;
+                    }
+                }
+            }
+        }
     }
 
     public static GameObject FindInactiveObjectByName(string name)

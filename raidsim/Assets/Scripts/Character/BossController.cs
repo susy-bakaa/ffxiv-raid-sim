@@ -6,26 +6,23 @@ public class BossController : MonoBehaviour
 {
     Animator animator;
     public CharacterState state { get; private set; }
+    public ActionController controller { get; private set; }
 
-    //public BotTimeline bossTimeline;
     public Transform target;
     public Transform lookTarget;
-    //public BotNode startSpot;
+    public bool includeCollider = true;
+    public float stoppingDistance = 3f;
     public float turnSmoothTime;
-    private float turnSmoothVelocity;
 
-    float currentSpeed;
+    private float turnSmoothVelocity;
+    private float currentSpeed;
+    private float targetRadius = 0f;
 
     void Awake()
     {
         animator = GetComponent<Animator>();
         state = GetComponent<CharacterState>();
-        //bossTimeline.boss = this;
-    }
-
-    void OnEnable()
-    {
-        Init();
+        controller = GetComponent<ActionController>();
     }
 
     void Update()
@@ -36,7 +33,7 @@ public class BossController : MonoBehaviour
             animator.SetBool("Diamondback", state.HasEffect("Diamondback"));
         }
 
-        if (currentSpeed > 0)
+        if (currentSpeed > 0 && !controller.isCasting)
         {
             state.still = false;
         }
@@ -45,33 +42,32 @@ public class BossController : MonoBehaviour
             state.still = true;
         }
 
-        if (/*bossTimeline != null && bossTimeline.currentTarget != null &&*/target != null && !state.dead)
+        if (target != null && !state.dead && !controller.isCasting)
         {
-            Vector3 vector = target.position - transform.position;//bossTimeline.currentTarget.position - transform.position;
+            Vector3 vector = target.position - transform.position;
             Vector2 vector2 = new Vector2(vector.x, vector.z);
             Vector2 normalized = vector2.normalized;
             float distanceToTarget = vector.magnitude;
 
+            float totalStoppingDistance = stoppingDistance + targetRadius;
+
             if (normalized != Vector2.zero)
             {
-                float targetAngle = Mathf.Atan2(normalized.x, normalized.y) * 57.29578f;
+                float targetAngle = Mathf.Atan2(normalized.x, normalized.y) * Mathf.Rad2Deg;
                 float angleDifference = Mathf.Abs(Mathf.DeltaAngle(transform.eulerAngles.y, targetAngle));
 
-                // Only apply smoothing if the angle difference is significant
                 if (angleDifference > 1f) // Adjust threshold as needed
                 {
                     transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
                 }
                 else
                 {
-                    // Directly set the angle if it is close enough
                     transform.eulerAngles = Vector3.up * targetAngle;
-                    turnSmoothVelocity = 0f; // Reset the smoothing velocity
+                    turnSmoothVelocity = 0f;
                 }
             }
 
-            float stoppingDistance = 0.1f; // Adjust as needed
-            if (distanceToTarget > stoppingDistance)
+            if (distanceToTarget > totalStoppingDistance)
             {
                 float d = state.currentSpeed * normalized.magnitude;
                 transform.Translate(transform.forward * d * FightTimeline.deltaTime, Space.World);
@@ -85,7 +81,7 @@ public class BossController : MonoBehaviour
 
             if (animator != null)
             {
-                if (Mathf.Abs(animator.GetFloat("Speed") - currentSpeed) > 0.01f) // Adjust threshold as needed
+                if (Mathf.Abs(animator.GetFloat("Speed") - currentSpeed) > 0.01f)
                 {
                     animator.SetFloat("Speed", currentSpeed);
                 }
@@ -95,7 +91,7 @@ public class BossController : MonoBehaviour
         {
             if (lookTarget)
             {
-                Vector3 direction = (lookTarget.position - transform.position).normalized;
+                Vector3 direction = (new Vector3(lookTarget.position.x, 0f, lookTarget.position.z) - new Vector3(transform.position.x, 0f, transform.position.z)).normalized;
                 Quaternion lookRotation = Quaternion.LookRotation(direction);
                 transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, turnSmoothTime * Time.deltaTime);
             }
@@ -108,16 +104,60 @@ public class BossController : MonoBehaviour
         }
     }
 
+    public void SetTarget()
+    {
+        SetTarget((Transform)null);
+    }
+
+
+    public void SetTarget(TargetNode targetNode)
+    {
+        if (targetNode != null)
+        {
+            SetTarget(targetNode.transform);
+        }
+        else
+        {
+            SetTarget((Transform)null);
+        }
+    }
+
+    public void SetTarget(Transform target)
+    {
+        this.target = target;
+
+        if (includeCollider && target != null)
+        {
+            targetRadius = 0f; // Reset radius
+
+            if (target.TryGetComponent(out Collider targetCollider))
+            {
+                if (targetCollider is SphereCollider sphereCollider)
+                {
+                    targetRadius = sphereCollider.radius * sphereCollider.transform.localScale.x;
+                }
+                else if (targetCollider is CapsuleCollider capsuleCollider)
+                {
+                    targetRadius = capsuleCollider.radius * capsuleCollider.transform.localScale.x;
+                }
+            }
+        }
+        else
+        {
+            targetRadius = 0f; // No collider, so no radius offset
+        }
+    }
+
     public void SetRotationTarget()
     {
         SetRotationTarget((Transform)null);
     }
 
-    public void SetRotationTarget(TargetNode target)
+    public void SetRotationTarget(TargetNode targetNode)
     {
-        if (target != null)
+        if (targetNode != null)
         {
-            SetRotationTarget(target.transform);
+            SetRotationTarget(targetNode.transform);
         }
         else
         {
@@ -125,15 +165,8 @@ public class BossController : MonoBehaviour
         }
     }
 
-    public void SetRotationTarget(Transform target)
+    public void SetRotationTarget(Transform lookTarget)
     {
-        lookTarget = target;
-    }
-
-    public void Init()
-    {
-        //transform.position = new Vector3(Random.value * 3f - 1.5f, 0f, Random.value * 3f - 1.5f);
-        //transform.position = new Vector3(Random.Range(-1.5f, 1.5f), 1.1f, Random.Range(-1.5f, 1.5f));
-        //transform.eulerAngles = new Vector3(0f, Random.Range(-360f, 360f), 0f);
+        this.lookTarget = lookTarget;
     }
 }

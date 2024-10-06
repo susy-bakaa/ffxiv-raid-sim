@@ -10,9 +10,12 @@ public class TimedMechanic : FightMechanic
     public float delay = 1f;
     public bool activateOnStart;
     public UnityEvent onFinish;
+    int id = 0;
 
     void Start()
     {
+        id = Random.Range(0,10000);
+
         if (activateOnStart)
         {
             TriggerMechanic(new ActionInfo(null, null, null));
@@ -25,7 +28,7 @@ public class TimedMechanic : FightMechanic
 
         if (delay > 0f)
         {
-            Utilities.FunctionTimer.Create(() => onFinish.Invoke(), delay, $"TriggerMechanic_{this}_{GetHashCode()}_{mechanicName}_Activation_Delay", false, true);
+            Utilities.FunctionTimer.Create(() => onFinish.Invoke(), delay, $"TriggerMechanic_{id}_{mechanicName}_activation_delay", false, true);
         }
         else
         {
@@ -37,6 +40,6 @@ public class TimedMechanic : FightMechanic
     {
         base.InterruptMechanic(actionInfo);
 
-        Utilities.FunctionTimer.StopTimer($"TriggerMechanic_{this}_{GetHashCode()}_{mechanicName}_Activation_Delay");
+        Utilities.FunctionTimer.StopTimer($"TriggerMechanic_{id}_{mechanicName}_activation_delay");
     }
 }

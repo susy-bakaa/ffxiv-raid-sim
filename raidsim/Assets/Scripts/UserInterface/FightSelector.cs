@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using static GlobalVariables;
 
 public class FightSelector : MonoBehaviour
 {
@@ -17,6 +18,13 @@ public class FightSelector : MonoBehaviour
     {
         dropdown = GetComponentInChildren<TMP_Dropdown>();
         //Select(0);
+
+#if UNITY_STANDALONE_WIN
+        //Get the window handle.
+        var windowPtr = FindWindow(null, "raidsim");
+        //Set the title text using the window handle.
+        SetWindowText(windowPtr, $"raidsim - {GetFightName()}");
+#endif
     }
 
     void Update()
@@ -37,11 +45,24 @@ public class FightSelector : MonoBehaviour
 
     public void Reload(string scene)
     {
-        Utilities.FunctionTimer.Create(() => SceneManager.LoadScene(scene), loadDelay);
+        Utilities.FunctionTimer.Create(() => OnLoad(scene), loadDelay);
     }
 
     public void Load()
     {
-        Utilities.FunctionTimer.Create(() => SceneManager.LoadScene(currentScene), loadDelay);
+        Utilities.FunctionTimer.Create(() => OnLoad(currentScene), loadDelay);
+    }
+
+    private void OnLoad(string scene)
+    {
+        if (Utilities.FunctionTimer.CleanUp())
+        { 
+            SceneManager.LoadScene(scene); 
+        }
+    }
+
+    private string GetFightName()
+    {
+        return FightTimeline.Instance.timelineName;
     }
 }

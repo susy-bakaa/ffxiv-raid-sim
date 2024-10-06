@@ -192,6 +192,24 @@ public class PartyList : MonoBehaviour
         return enmityList[enmityList.Count - 1];
     }
 
+    public bool HasAnyEnmity(CharacterState towards)
+    {
+        if (members == null || members.Count == 0)
+        {
+            return false; // or handle the case where there are no members
+        }
+
+        List<CharacterState> enmityList = GetEnmityList(towards);
+
+        if (enmityList[0].enmity.TryGetValue(towards, out long enmity))
+        {
+            if (enmity > 0)
+                return true;
+        }
+
+        return false;
+    }
+
     public bool HasCharacterState(CharacterState characterState)
     {
         for (int i = 0; i < members.Count; i++)

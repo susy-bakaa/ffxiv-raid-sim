@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using static ActionController;
+using static CharacterState;
 using static StatusEffectData;
 
 public class RaidwideDebuffsMechanic : FightMechanic
@@ -12,6 +13,7 @@ public class RaidwideDebuffsMechanic : FightMechanic
     public StatusEffectInfo playerEffect;
     public bool ignoreRoles = true;
     public bool cleansEffects = false;
+    public bool fallbackToRandom = false;
 
     List<StatusEffectInfo> statusEffects;
     List<CharacterState> partyMembers;
@@ -22,7 +24,7 @@ public class RaidwideDebuffsMechanic : FightMechanic
     {
         for (int i = 0; i < party.members.Count; i++)
         {
-            if (party.members[i].characterState.characterName.ToLower().Contains("player"))
+            if (party.members[i].characterState.characterName.ToLower().Contains("player") && party.members[i].characterState.gameObject.CompareTag("Player"))
             {
                 player = party.members[i].characterState;
             }
@@ -57,15 +59,23 @@ public class RaidwideDebuffsMechanic : FightMechanic
                 // Find a suitable party member for the effect
                 CharacterState target = FindSuitableTarget(statusEffects[i], partyMembers);
 
-                // If no suitable target found, apply to a random member
-                if (target == null)
+                // If no suitable target found, apply to a random member if allowed
+                if (target == null && fallbackToRandom)
                     target = partyMembers[Random.Range(0, partyMembers.Count)];
 
-                // Apply the effect to the target
-                target.AddEffect(statusEffects[i].data, false, statusEffects[i].tag);
+                // Make sure target is available
+                if (target != null)
+                {
+                    // Apply the effect to the target
+                    target.AddEffect(statusEffects[i].data, false, statusEffects[i].tag);
 
-                // Remove the effect and player from the possible options
-                partyMembers.Remove(target);
+                    // Remove the effect and player from the possible options
+                    partyMembers.Remove(target);
+                }
+                else
+                {
+                    Debug.LogError($"Failed to find a suitable target for {statusEffects[i].data.statusName} of index {i}!");
+                }
             }
             else
             {
@@ -85,22 +95,64 @@ public class RaidwideDebuffsMechanic : FightMechanic
 
     private CharacterState FindSuitableTarget(StatusEffectInfo effect, List<CharacterState> candidates)
     {
-        foreach (CharacterState.Role role in effect.data.assignedRoles)
+        if (effect.data.assignedRoles != null && effect.data.assignedRoles.Count > 0 && !ignoreRoles)
         {
+            // Create a copy of the assigned roles for this status effect
+            List<Role> assignedRoles = effect.data.assignedRoles;
+
+            // Shuffle the roles so it wont always end up picking the member with the same role that is defined first in effect.data.assignedRoles
+            assignedRoles.Shuffle();
+
+            foreach (Role role in assignedRoles)
+            {
+                // Create a copy of the candidates list
+                List<CharacterState> candidatesCopy = new List<CharacterState>(candidates);
+
+                // Shuffle candidates for more random behaviour as well
+                candidatesCopy.Shuffle();
+
+                // Iterate through the copy of candidates
+                for (int i = 0; i < candidatesCopy.Count; i++)
+                {
+                    var candidate = candidatesCopy[i];
+                    if (candidate.role == role)
+                    {
+                        candidates.Remove(candidate); // Remove the candidate from the original list
+                        return candidate; // Return the suitable candidate
+                    }
+                }
+            }
+        }
+        else if (ignoreRoles)
+        {
+            // Create a copy of all incompatable status effects
+            List<StatusEffectData> incompatableEffects = effect.data.incompatableStatusEffects;
+
             // Create a copy of the candidates list
             List<CharacterState> candidatesCopy = new List<CharacterState>(candidates);
+
+            // Shuffle candidates for more random behaviour as well
+            candidatesCopy.Shuffle();
 
             // Iterate through the copy of candidates
             for (int i = 0; i < candidatesCopy.Count; i++)
             {
                 var candidate = candidatesCopy[i];
-                if (candidate.role == role)
+
+                // Iterate through all of the incompatable status effects
+                foreach (StatusEffectData effectData in incompatableEffects)
                 {
-                    candidates.Remove(candidate); // Remove the candidate from the original list
-                    return candidate; // Return the suitable candidate
+                    // Check if this candidate has one of the incompatable effects
+                    if (!candidate.HasEffect(effectData.statusName))
+                    {
+                        candidates.Remove(candidate); // If not, then remove the candidate from the original list
+                        return candidate; // And return the suitable candidate
+                    }
                 }
             }
         }
+
+        Debug.LogWarning($"No suitable candidate found for status effect {effect.name} from list of {candidates.Count} candidates!");
         return null; // No suitable candidate found
     }
 }

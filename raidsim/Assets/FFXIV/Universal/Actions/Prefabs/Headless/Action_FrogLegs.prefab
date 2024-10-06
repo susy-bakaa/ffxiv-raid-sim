@@ -1,0 +1,109 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &9123129906328758422
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7450335996241967501}
+  - component: {fileID: 5838847281854521668}
+  - component: {fileID: 1467494865416324953}
+  m_Layer: 3
+  m_Name: Action_FrogLegs
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7450335996241967501
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9123129906328758422}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5838847281854521668
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9123129906328758422}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10af295d51be1ef478048c378d84d972, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data: {fileID: 11400000, guid: d55aef14ca639db4ba0be8b23403b5a0, type: 2}
+  isAutoAction: 0
+  isDisabled: 0
+  unavailable: 0
+  hasTarget: 0
+  damageMultiplier: 1
+  distanceToTarget: 0
+  lastAction: {fileID: 0}
+  onExecute:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1467494865416324953}
+        m_TargetAssemblyTypeName: SpawnObjectMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  recastType: 0
+  borderStandard: {fileID: 0}
+  borderDark: {fileID: 0}
+  recastFillAnimator: {fileID: 0}
+  recastFillGroup: {fileID: 0}
+  selectionBorder: {fileID: 0}
+  clickHighlight: {fileID: 0}
+  comboOutlineGroup: {fileID: 0}
+  recastTimeText: {fileID: 0}
+  resourceCostText: {fileID: 0}
+  hudElements: []
+  defaultColors: []
+  unavailableColors: []
+--- !u!114 &1467494865416324953
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9123129906328758422}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f11e796dcb6bd64eada356ab536e195, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: Frog Legs
+  owner: {fileID: 0}
+  targetController: {fileID: 0}
+  damageTriggerPrefab: {fileID: 3384804277230888301, guid: fa64c084896c4c949876dc31d679143c, type: 3}
+  spawnLocation: {fileID: 0}
+  delay: 0
+  autoAssignOwner: 1
+  useActionDamage: 1
+  usePlayerHealth: 0
+  useTargetControllerCurrentTargetAsLocation: 0
+  dealDamage: 1
+  increaseEnmity: 1
+  damageMultiplier: 1

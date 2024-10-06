@@ -38,8 +38,11 @@ public class SaveSlider : MonoBehaviour
 
     public void SaveValue(float value)
     {
+        ini.Load(GlobalVariables.configPath);
+
         savedValue = value;
         ini.Set(group, $"f{key}", savedValue);
-        ini.Save();
+
+        Utilities.FunctionTimer.Create(() => ini.Save(), 0.5f, $"{group}_{key}_slider_savevalue_delay", true, false);
     }
 }

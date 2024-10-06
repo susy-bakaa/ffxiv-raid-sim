@@ -1,20 +1,28 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Playables;
+using static ActionController;
 using static GlobalStructs;
+using Random = UnityEngine.Random;
 
 public class DamageTrigger : MonoBehaviour
 {
     Collider m_collider;
+    public CharacterActionData data;
 
     public string damageName = string.Empty;
     public bool inverted = false;
     public CharacterState owner;
     public bool autoAssignOwner = false;
+    public string ableToHitTag = "Player";
     public Damage damage;
+    public long enmity = 0;
+    public bool increaseEnmity = false;
+    public bool topEnmity = false;
     public bool initializeOnStart = true;
     public bool self = false;
     public bool dealsDamage = true;
@@ -56,6 +64,13 @@ public class DamageTrigger : MonoBehaviour
             Initialize();
     }
 
+    void OnDisable()
+    {
+        initialized = false;
+        currentPlayers.Clear();
+        inProgress = false;
+    }
+
     public void Initialize(float delay = 0f)
     {
         if (autoAssignOwner)
@@ -94,7 +109,7 @@ public class DamageTrigger : MonoBehaviour
     {
         if (!inverted)
         {
-            if (other.CompareTag("Player"))
+            if (other.CompareTag(ableToHitTag))
             {
                 if (other.transform.parent.TryGetComponent(out CharacterState playerState))
                 {
@@ -114,7 +129,7 @@ public class DamageTrigger : MonoBehaviour
         }
         else
         {
-            if (other.CompareTag("Player"))
+            if (other.CompareTag(ableToHitTag))
             {
                 if (other.transform.parent.TryGetComponent(out CharacterState playerState))
                 {
@@ -135,7 +150,7 @@ public class DamageTrigger : MonoBehaviour
     {
         if (!inverted)
         {
-            if (other.CompareTag("Player"))
+            if (other.CompareTag(ableToHitTag))
             {
                 if (other.transform.parent.TryGetComponent(out CharacterState playerState))
                 {
@@ -152,7 +167,7 @@ public class DamageTrigger : MonoBehaviour
         }
         else
         {
-            if (other.CompareTag("Player"))
+            if (other.CompareTag(ableToHitTag))
             {
                 if (other.transform.parent.TryGetComponent(out CharacterState playerState))
                 {
@@ -278,9 +293,31 @@ public class DamageTrigger : MonoBehaviour
                     }
                 }
 
-                if (damagePerPlayer.value != 0 && dealsDamage)
+                if (dealsDamage)
                 {
-                    players[i].ModifyHealth(damagePerPlayer, kill);
+                    if (damagePerPlayer.value != 0)
+                        players[i].ModifyHealth(damagePerPlayer, kill);
+
+                    if (increaseEnmity && owner != null && data != null)
+                    {
+                        enmity = 0;
+
+                        if (topEnmity && owner.partyList != null)
+                        {
+                            CharacterState highestEnmityMember = owner.partyList.GetHighestEnmityMember(players[i]);
+                            long highestEnmity = 0;
+                            highestEnmityMember.enmity.TryGetValue(players[i], out highestEnmity);
+                            owner.ResetEnmity(players[i]);
+                            enmity = highestEnmity;
+                            Debug.Log($"topEnmity {highestEnmityMember.characterName} highestEnmity {highestEnmity} damageTrigger.enmity {enmity}");
+                        }
+
+                        long damageEnmity = Math.Abs(data.enmity);
+                        damageEnmity += Math.Abs(Mathf.RoundToInt(data.damage.value * data.damageEnmityMultiplier));
+                        enmity += damageEnmity;
+                        Debug.Log($"enmity {enmity} damageTrigger.enmity {enmity}");
+                        owner.AddEnmity(enmity, players[i]);
+                    }
 
                     // Needs a fix or new implementation, but not important since a shield should never be applied directly
                     /*if (!isAShield)

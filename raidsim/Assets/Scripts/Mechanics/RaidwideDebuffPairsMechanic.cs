@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using static ActionController;
-using static RaidwideDebuffCountMechanic;
 using static StatusEffectData;
-using static UnityEngine.GraphicsBuffer;
 
 public class RaidwideDebuffPairsMechanic : FightMechanic
 {
@@ -54,13 +52,19 @@ public class RaidwideDebuffPairsMechanic : FightMechanic
         partyMembers.Shuffle();
         statusEffects.Shuffle();
 
-        if (playerEffect.effectInfos[0].data != null && player != null)
+        if (!string.IsNullOrEmpty(playerEffect.name) && playerEffect.effectInfos.Length > 0 && player != null)
         {
-            if (statusEffects.Contains(playerEffect))
+            Debug.Log("rdpm 1");
+            if (statusEffects.ContainsInfoPair(playerEffect))
             {
-                statusEffects.Remove(playerEffect);
+                Debug.Log("rdpm 2");
+                statusEffects.RemoveInfoPair(playerEffect);
                 partyMembers.Remove(player);
-                player.AddEffect(playerEffect.effectInfos[0].data, false, playerEffect.effectInfos[0].tag);
+                for (int i = 0; i < playerEffect.effectInfos.Length; i++)
+                {
+                    Debug.Log("rdpm 3");
+                    player.AddEffect(playerEffect.effectInfos[i].data, false, playerEffect.effectInfos[i].tag, playerEffect.effectInfos[i].stacks);
+                }
             }
         }
 

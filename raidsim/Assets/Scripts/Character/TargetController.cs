@@ -22,6 +22,7 @@ public class TargetController : MonoBehaviour
     public TargetType targetType = TargetType.nearest;
     //public TargetNode selfTarget;
     public List<TargetNode> availableTargets;
+    public List<TargetNode> targetTriggerNodes;
     public List<int> allowedGroups;
     //public KeyCode targetKey = KeyCode.Tab;
     //public KeyCode cancelKey = KeyCode.Escape;
@@ -35,6 +36,7 @@ public class TargetController : MonoBehaviour
     public bool canMouseRaycast = true;
     public bool autoTarget;
     public bool onlyAliveTargets = false;
+    public bool onlyIfSomeoneHasEnmity = false;
 
     [Header("Events")]
     public UnityEvent<TargetNode> onTarget;
@@ -89,6 +91,8 @@ public class TargetController : MonoBehaviour
         }
 
         rateLimit = Random.Range(autoTargetRate - 9, autoTargetRate + 1);
+
+        targetTriggerNodes = new List<TargetNode>();
     }
 
     void Update()
@@ -137,7 +141,7 @@ public class TargetController : MonoBehaviour
 
                 if (Physics.Raycast(ray, out RaycastHit hit, maxTargetDistance))
                 {
-                    if (hit.transform.TryGetComponent(out TargetNode targetNode) && targetNode.gameObject.CompareTag("target") && targetNode.Targetable && allowedGroups.Contains(targetNode.Group))
+                    if (hit.transform.GetChild(hit.transform.childCount - 1).TryGetComponent(out TargetNode targetNode) && targetNode.gameObject.CompareTag("target") && targetNode.Targetable && allowedGroups.Contains(targetNode.Group))
                     {
                         SetTarget(targetNode);
                     }
@@ -191,6 +195,7 @@ public class TargetController : MonoBehaviour
         {
             if (state.untargetable)
             {
+                //Debug.Log($"Set target cancelled {state.characterName} is untargetable");
                 return;
             }
         }
@@ -267,7 +272,21 @@ public class TargetController : MonoBehaviour
     {
         if (targetType == TargetType.enmity && isAi && targetList != null)
         {
-            availableTargets = FindAllTargetableNodes(true, true);
+            if (self == null)
+                Debug.LogError($"TargetController variable 'self' cannot be null when using TargetType.enmity!");
+
+            if (onlyIfSomeoneHasEnmity && self != null && targetList.HasAnyEnmity(self.GetCharacterState()))
+            {
+                availableTargets = FindAllTargetableNodes(true, true);
+            }
+            else if (onlyIfSomeoneHasEnmity)
+            {
+                availableTargets.Clear();
+            }
+            else
+            {
+                availableTargets = FindAllTargetableNodes(true, true);
+            }
         }
         else if (targetType == TargetType.nearest)
         {
@@ -295,6 +314,15 @@ public class TargetController : MonoBehaviour
                     continue; // Skip this node as it is dead and we only want alive targets
                 }
             }
+            // If targeting is set to nearest and we have nodes in the trigger attached to this controllers own target node,
+            // check if the current target node is inside that trigger or skip it
+            if (targetType == TargetType.nearest && targetTriggerNodes != null && targetTriggerNodes.Count > 0)
+            {
+                if (!targetTriggerNodes.Contains(node))
+                {
+                    continue;
+                }
+            }
 
             if (node.gameObject.CompareTag("target") && (mask & (1 << node.gameObject.layer)) != 0 && node.Targetable && allowedGroups.Contains(node.Group))
             {
@@ -311,6 +339,7 @@ public class TargetController : MonoBehaviour
         }
 
         // We need to sort it automatically like this here already or the targeting is delayed and slow as fuck
+        // This is still a mess honestly
         // Sort targets based on distance
         targetableNodes.Sort((a, b) => Vector3.Distance(transform.position, a.transform.position)
                                         .CompareTo(Vector3.Distance(transform.position, b.transform.position)));

@@ -27,6 +27,11 @@ public class FightMechanic : MonoBehaviour
         TriggerMechanic(new ActionInfo(null, null, null));
     }
 
+    public void TriggerMechanic(BotTimeline botTimeline)
+    {
+        TriggerMechanic(new ActionInfo(null, botTimeline.bot.state, null));
+    }
+
     public void TriggerMechanic(CharacterState state)
     {
         TriggerMechanic(new ActionInfo(null, state, null));

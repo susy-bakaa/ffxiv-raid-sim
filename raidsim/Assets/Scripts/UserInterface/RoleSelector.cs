@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using static CharacterState;
 using static PartyList;
 
 public class RoleSelector : MonoBehaviour
@@ -13,6 +14,7 @@ public class RoleSelector : MonoBehaviour
     public PartyMember player;
     public PartyMember[] bots;
     public BotNode[] spots;
+    public List<RoleSelectorPair> roleSelectorPairs = new List<RoleSelectorPair>();
 
 #if UNITY_EDITOR
     void OnValidate()
@@ -20,6 +22,18 @@ public class RoleSelector : MonoBehaviour
         if (autoObtainPlayer && partyList != null && partyList.members != null && partyList.members.Count > 0)
         {
             player = partyList.members[0];
+        }
+        if (roleSelectorPairs != null && roleSelectorPairs.Count > 0)
+        {
+            for (int i = 0; i < roleSelectorPairs.Count; i++)
+            {
+                RoleSelectorPair temp = roleSelectorPairs[i];
+
+                if (roleSelectorPairs[i].gameObject != null)
+                    temp.name = roleSelectorPairs[i].gameObject.name;
+
+                roleSelectorPairs[i] = temp;
+            }
         }
     }
 #endif
@@ -48,7 +62,7 @@ public class RoleSelector : MonoBehaviour
         if (player.playerController == null)
             Debug.LogError("PlayerController is unassigned!");
 
-        player.characterState.role = (CharacterState.Role)value;
+        player.characterState.role = (Role)value;
 
         int botNameIndex = 0;
         bool botDisabled = false;
@@ -69,6 +83,36 @@ public class RoleSelector : MonoBehaviour
             }
         }
 
+        if (roleSelectorPairs != null && roleSelectorPairs.Count > 0)
+        {
+            for (int i = 0; i < roleSelectorPairs.Count; i++)
+            {
+                if (roleSelectorPairs[i].roles.Contains((Role)value))
+                {
+                    roleSelectorPairs[i].gameObject.SetActive(true);
+                }
+                else
+                {
+                    roleSelectorPairs[i].gameObject.SetActive(false);
+                }
+            }
+        }
+
         partyList.UpdatePartyList();
+    }
+
+    [System.Serializable]
+    public struct RoleSelectorPair
+    {
+        public string name;
+        public List<Role> roles;
+        public GameObject gameObject;
+
+        public RoleSelectorPair(string name, List<Role> role, GameObject gameObject)
+        {
+            this.name = name;
+            this.roles = role;
+            this.gameObject = gameObject;
+        }
     }
 }

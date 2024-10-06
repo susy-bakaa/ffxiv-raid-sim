@@ -46,6 +46,13 @@ public class TetherTrigger : MonoBehaviour
         }
     }
 
+    void OnDisable()
+    {
+        initialized = false;
+        startCharacter = null;
+        endCharacter = null;
+    }
+
     void Update()
     {
         if (startPoint == null || endPoint == null) 
@@ -87,6 +94,15 @@ public class TetherTrigger : MonoBehaviour
         if (!initialized)
         {
             FormTether();
+            initialized = true;
+        }
+    }
+
+    public void Initialize(CharacterState target)
+    {
+        if (!initialized)
+        {
+            FormTether(target);
             initialized = true;
         }
     }
@@ -148,7 +164,7 @@ public class TetherTrigger : MonoBehaviour
 
     public void FormTether(CharacterState target)
     {
-        FormTether(startPoint, target.transform.GetChild(target.transform.childCount - 1).transform);
+        FormTether(startPoint, target.transform.GetChild(target.transform.childCount - 2).transform);
     }
 
     public void FormTether(Transform start, Transform end)

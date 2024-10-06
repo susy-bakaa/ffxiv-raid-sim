@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using TMPro;
 using UnityEngine;
@@ -21,6 +22,7 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
     private float aTimer;
     public bool isAvailable { private set; get; }
     public bool isAnimationLocked { private set; get; }
+    public bool isAutoAction = false;
     public bool isDisabled;
     public bool unavailable = false;
     public bool hasTarget = false;
@@ -253,8 +255,12 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     public void Initialize(ActionController controller)
     {
+        if (button == null)
+            button = GetComponent<Button>();
+
         if (button != null)
         {
+            //Debug.Log($"action {gameObject.name} of {controller.gameObject.name} button was linked!");
             button.onClick.AddListener(() => { controller.PerformAction(this); });
         }
     }
@@ -301,31 +307,40 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
             }
         }
 
-        if (actionInfo.action.data.isTargeted && actionInfo.target != null && !actionInfo.targetIsPlayer)
+        if (actionInfo.action.data.isTargeted && actionInfo.target != null)
         {
-            int calculatedDamage = Mathf.RoundToInt((actionInfo.action.data.damage.value * damageMultiplier) * actionInfo.source.currentDamageOutputMultiplier);
-
-            actionInfo.target.ModifyHealth(new Damage(actionInfo.action.data.damage, calculatedDamage, actionInfo.action.data.damage.name));
-
-            //Debug.Log($"Action {actionInfo.action.data.actionName} executed and hit {actionInfo.target.characterName}");
-
-            if (actionInfo.action.data.isHeal && actionInfo.source != null)
+            if (actionInfo.target.targetController != null && actionInfo.target.targetController.self != null)
             {
-                actionInfo.source.ModifyHealth(new Damage(Mathf.Abs(calculatedDamage), false, actionInfo.action.data.damage.name));
-            }
-
-            if (actionInfo.action.data.damage.value != 0 && actionInfo.action.data.damageEnmityMultiplier != 0f)
-            {
-                if (actionInfo.source != null)
+                if (actionInfo.action.data.targetGroups.Contains(actionInfo.target.targetController.self.Group))
                 {
-                    actionInfo.source.AddEnmity(Math.Abs(actionInfo.action.data.enmity), actionInfo.target);
-                    actionInfo.source.AddEnmity(Math.Abs(Mathf.RoundToInt(calculatedDamage * actionInfo.action.data.damageEnmityMultiplier)), actionInfo.target);
+                    int calculatedDamage = Mathf.RoundToInt((actionInfo.action.data.damage.value * damageMultiplier) * actionInfo.source.currentDamageOutputMultiplier);
 
-                    if (actionInfo.action.data.topEnmity)
+                    actionInfo.target.ModifyHealth(new Damage(actionInfo.action.data.damage, calculatedDamage, actionInfo.action.data.damage.name));
+
+                    //Debug.Log($"Action {actionInfo.action.data.actionName} executed and hit {actionInfo.target.characterName}");
+
+                    if (actionInfo.action.data.isHeal && actionInfo.source != null)
                     {
-                        actionInfo.source.ResetEnmity(actionInfo.target);
-                        // Set to current max enmity
-                        actionInfo.source.SetEnmity(1000, actionInfo.target);
+                        actionInfo.source.ModifyHealth(new Damage(Mathf.Abs(calculatedDamage), false, actionInfo.action.data.damage.name));
+                    }
+
+                    if (actionInfo.action.data.damage.negative && actionInfo.action.data.damageEnmityMultiplier != 0f)
+                    {
+                        if (actionInfo.source != null)
+                        {
+                            if (actionInfo.action.data.topEnmity && actionInfo.source.partyList != null)
+                            {
+                                // Set to current max enmity
+                                CharacterState highestEnmityMember = actionInfo.source.partyList.GetHighestEnmityMember(actionInfo.target);
+                                long highestEnmity = 0;
+                                highestEnmityMember.enmity.TryGetValue(actionInfo.target, out highestEnmity);
+                                actionInfo.source.ResetEnmity(actionInfo.target);
+                                actionInfo.source.SetEnmity(highestEnmity, actionInfo.target);
+                            }
+
+                            actionInfo.source.AddEnmity(Math.Abs(actionInfo.action.data.enmity), actionInfo.target);
+                            actionInfo.source.AddEnmity(Math.Abs(Mathf.RoundToInt(calculatedDamage * actionInfo.action.data.damageEnmityMultiplier)), actionInfo.target);
+                        }
                     }
                 }
             }

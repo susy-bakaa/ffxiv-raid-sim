@@ -8,9 +8,11 @@ using static GlobalStructs;
 public class SpawnTetherTriggerMechanic : FightMechanic
 {
     public GameObject tetherTriggerPrefab;
+    public bool enableInstead = false;
     public Transform startPoint;
     public Vector3 startOffset;
     public Transform spawnLocation;
+    public bool setTargetAutomatically = false;
     public float delay = 0f;
 
     public override void TriggerMechanic(ActionInfo actionInfo)
@@ -21,20 +23,35 @@ public class SpawnTetherTriggerMechanic : FightMechanic
         {
             if (actionInfo.target != null)
             {
-                GameObject spawned = Instantiate(tetherTriggerPrefab, actionInfo.target.transform.position, actionInfo.target.transform.rotation, FightTimeline.Instance.mechanicParent);
+                GameObject spawned;
+
+                if (!enableInstead)
+                    spawned = Instantiate(tetherTriggerPrefab, actionInfo.target.transform.position, actionInfo.target.transform.rotation, FightTimeline.Instance.mechanicParent);
+                else
+                    spawned = tetherTriggerPrefab;
 
                 SetupTetherTrigger(spawned, actionInfo);
             }
             else if (actionInfo.source != null && actionInfo.action != null)
             {
-                GameObject spawned = Instantiate(tetherTriggerPrefab, actionInfo.source.transform.position, actionInfo.source.transform.rotation, FightTimeline.Instance.mechanicParent);
+                GameObject spawned;
+
+                if (!enableInstead)
+                    spawned = Instantiate(tetherTriggerPrefab, actionInfo.source.transform.position, actionInfo.source.transform.rotation, FightTimeline.Instance.mechanicParent);
+                else
+                    spawned = tetherTriggerPrefab;
 
                 SetupTetherTrigger(spawned, actionInfo);
             }
         }
         else
         {
-            GameObject spawned = Instantiate(tetherTriggerPrefab, spawnLocation.position, spawnLocation.rotation, FightTimeline.Instance.mechanicParent);
+            GameObject spawned;
+
+            if (!enableInstead)
+                spawned = Instantiate(tetherTriggerPrefab, spawnLocation.position, spawnLocation.rotation, FightTimeline.Instance.mechanicParent);
+            else
+                spawned = tetherTriggerPrefab;
 
             SetupTetherTrigger(spawned, actionInfo);
         }
@@ -44,6 +61,7 @@ public class SpawnTetherTriggerMechanic : FightMechanic
     {
         if (spawned.TryGetComponent(out TetherTrigger tetherTrigger))
         {
+            spawned.gameObject.SetActive(true);
             if (startPoint != null)
             {
                 tetherTrigger.startPoint = startPoint;
@@ -56,12 +74,28 @@ public class SpawnTetherTriggerMechanic : FightMechanic
                 {
                     spawned.gameObject.SetActive(true);
                     if (!tetherTrigger.initializeOnStart)
-                        tetherTrigger.Initialize();
+                    {
+                        if (setTargetAutomatically && actionInfo.target != null)
+                        {
+                            tetherTrigger.Initialize(actionInfo.target);
+                        }
+                        else
+                        {
+                            tetherTrigger.Initialize();
+                        }
+                    }
                 }, delay, $"{tetherTrigger}_{tetherTrigger.GetHashCode()}_{mechanicName.Replace(" ", "")}_Activation_Delay", false, true);
             }
             else if (!tetherTrigger.initializeOnStart)
             {
-                tetherTrigger.Initialize();
+                if (setTargetAutomatically && actionInfo.target != null)
+                {
+                    tetherTrigger.Initialize(actionInfo.target);
+                }
+                else
+                {
+                    tetherTrigger.Initialize();
+                }
             }
         }
     }

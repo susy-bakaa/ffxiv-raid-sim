@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4497258906733055096}
   - component: {fileID: 5439426702944404093}
   - component: {fileID: 3428216030808181527}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: AOE_WhiteWind
   m_TagString: aoe
   m_Icon: {fileID: 0}
@@ -82,7 +82,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 13.85
+  m_Radius: 13.716
   m_Height: 29.8
   m_Direction: 1
   m_Center: {x: 0, y: -0.5, z: 0}
@@ -99,8 +99,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damageName: White Wind
+  inverted: 0
   owner: {fileID: 0}
   autoAssignOwner: 0
+  ableToHitTag: Player
   damage:
     name: White Wind
     value: 0
@@ -110,6 +112,8 @@ MonoBehaviour:
     elementalAspect: 1
     physicalAspect: 0
     applicationType: 0
+  enmity: 0
+  topEnmity: 0
   initializeOnStart: 1
   self: 0
   dealsDamage: 1
@@ -148,6 +152,12 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onSpawn:
+    m_PersistentCalls:
+      m_Calls: []
+  onTrigger:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &3428216030808181527
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -161,6 +171,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 0
+  log: 0
 --- !u!1001 &2511501591068104076
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -171,11 +182,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 85a5fb47b6fa1534481c4496342adca9, type: 3}
       propertyPath: m_LocalScale.x
-      value: 88.875
+      value: 88.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 85a5fb47b6fa1534481c4496342adca9, type: 3}
       propertyPath: m_LocalScale.y
-      value: 88.875
+      value: 88.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 85a5fb47b6fa1534481c4496342adca9, type: 3}
       propertyPath: m_LocalPosition.x

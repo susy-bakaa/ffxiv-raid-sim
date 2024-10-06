@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using NaughtyAttributes;
 using TMPro;
-using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -22,6 +21,8 @@ public class CharacterState : MonoBehaviour
     public AIController aiController;
     [HideInInspector]
     public BossController bossController;
+    [HideInInspector]
+    public TargetController targetController;
 
     [Header("Status")]
     public string characterName = "Unknown";
@@ -79,6 +80,7 @@ public class CharacterState : MonoBehaviour
     public float poisonDamageModifier = 1f;
 
     public Dictionary<CharacterState, long> enmity = new Dictionary<CharacterState, long>();
+#if UNITY_EDITOR
     public List<Enmity> m_enmity = new List<Enmity>();
 
     [System.Serializable]
@@ -106,7 +108,7 @@ public class CharacterState : MonoBehaviour
             this.statusEffect = statusEffect;
         }
     }
-
+#endif
     [Header("States")]
     public bool invulnerable = false;
     public bool dead = false;
@@ -125,7 +127,9 @@ public class CharacterState : MonoBehaviour
 
     [Header("Effects")]
     private Dictionary<string, StatusEffect> effects = new Dictionary<string, StatusEffect>();
+#if UNITY_EDITOR
     public List<StatusEffectPair> m_effects = new List<StatusEffectPair>();
+#endif
     private StatusEffect[] effectsArray = null;
     private List<StatusEffect> instantCasts = new List<StatusEffect>();
     [HideInInspector]
@@ -213,6 +217,7 @@ public class CharacterState : MonoBehaviour
         playerController = GetComponent<PlayerController>();
         aiController = GetComponent<AIController>();
         bossController = GetComponent<BossController>();
+        targetController = GetComponent<TargetController>();
 
         if (statusEffectNegativeIconParent != null)
         {
@@ -251,6 +256,7 @@ public class CharacterState : MonoBehaviour
         untargetable = false;
         bound = false;
         knockbackResistant = false;
+        enmity = new Dictionary<CharacterState, long>();
 
         if (healthBar != null)
         {
@@ -435,7 +441,7 @@ public class CharacterState : MonoBehaviour
 
     void Start()
     {
-        onSpawn.Invoke();
+        Utilities.FunctionTimer.Create(() => onSpawn.Invoke(), 0.85f, $"{characterName}_onSpawn_delay", false, true);
 
         if (disabled)
         {
@@ -560,6 +566,26 @@ public class CharacterState : MonoBehaviour
     {
         if (targetStatusEffectIconParent != null)
             Destroy(targetStatusEffectIconParent.gameObject, 0.1f);
+    }
+
+    public void ToggleState()
+    {
+        disabled = !disabled;
+        gameObject.SetActive(disabled);
+    }
+
+    public void ToggleState(bool state)
+    {
+        if (state)
+        {
+            disabled = false;
+            gameObject.SetActive(true);
+        }
+        else
+        {
+            disabled = true;
+            gameObject.SetActive(false);
+        }
     }
 
     public void ModifyHealth(Damage damage, bool kill = false, bool noFlyText = false)
@@ -2054,12 +2080,13 @@ public class CharacterState : MonoBehaviour
         {
             enmity.Add(character, value);
         }
-
+#if UNITY_EDITOR
         m_enmity.Clear();
         for (int i = 0; i < enmity.Count; i++)
         {
             m_enmity.Add(new Enmity(enmity.Keys.ToArray()[i], enmity.Values.ToArray()[i]));
         }
+#endif
     }
 
     public void SetEnmity(long value, CharacterState character)
@@ -2083,12 +2110,13 @@ public class CharacterState : MonoBehaviour
         {
             enmity.Add(character, value);
         }
-
+#if UNITY_EDITOR
         m_enmity.Clear();
         for (int i = 0; i < enmity.Count; i++)
         {
             m_enmity.Add(new Enmity(enmity.Keys.ToArray()[i], enmity.Values.ToArray()[i]));
         }
+#endif
     }
 
     public void RemoveEnmity(long value, CharacterState character)
@@ -2108,12 +2136,13 @@ public class CharacterState : MonoBehaviour
                 ResetEnmity(character);
             }
         }
-
+#if UNITY_EDITOR
         m_enmity.Clear();
         for (int i = 0; i < enmity.Count; i++)
         {
             m_enmity.Add(new Enmity(enmity.Keys.ToArray()[i], enmity.Values.ToArray()[i]));
         }
+#endif
     }
 
     public void ResetEnmity(CharacterState character)
@@ -2125,12 +2154,13 @@ public class CharacterState : MonoBehaviour
         {
             enmity.Remove(character);
         }
-
+#if UNITY_EDITOR
         m_enmity.Clear();
         for (int i = 0; i < enmity.Count; i++)
         {
             m_enmity.Add(new Enmity(enmity.Keys.ToArray()[i], enmity.Values.ToArray()[i]));
         }
+#endif
     }
 
     public void AddEffect(StatusEffectData data, bool self = false, int tag = 0, int stacks = 0)
@@ -2353,7 +2383,9 @@ public class CharacterState : MonoBehaviour
         effect.uniqueTag = tag;
         effect.stacks = stacks;
         effects.Add(name, effect);
+#if UNITY_EDITOR
         m_effects.Add(new StatusEffectPair(name, effect));
+#endif
         effectsArray = effects.Values.ToArray();
 
         if (effect.data.instantCasts)
@@ -2463,6 +2495,7 @@ public class CharacterState : MonoBehaviour
                 effects[name].onCleanse.Invoke(this);
 
             effects.Remove(name);
+#if UNITY_EDITOR
             for (int i = 0; i < m_effects.Count; i++)
             {
                 if (m_effects[i].name == name)
@@ -2470,6 +2503,7 @@ public class CharacterState : MonoBehaviour
                     m_effects.RemoveAt(i);
                 }
             }
+#endif
             effectsArray = effects.Values.ToArray();
 
             if (temp.data.instantCasts)

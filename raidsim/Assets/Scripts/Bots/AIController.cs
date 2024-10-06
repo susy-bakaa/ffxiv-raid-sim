@@ -10,8 +10,9 @@ public class AIController : MonoBehaviour
     public BotTimeline botTimeline;
     public BotNode clockSpot;
     public float turnSmoothTime;
-    private float turnSmoothVelocity;
+    public bool log;
 
+    float turnSmoothVelocity;
     float currentSpeed;
 
     void Awake()
@@ -88,7 +89,6 @@ public class AIController : MonoBehaviour
             animator.SetFloat("Speed", 0f);
         }
     }
-
 
     public void Init()
     {

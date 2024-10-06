@@ -41,4 +41,19 @@ public class DefenceStanceBuff : StatusEffect
         }
         base.OnExpire(state);
     }
+
+    public override void OnCleanse(CharacterState state)
+    {
+        if (uniqueTag > 0)
+        {
+            state.RemoveDamageReduction($"{data.statusName}_{uniqueTag}");
+            state.RemoveDamageOutputModifier($"{data.statusName}_{uniqueTag}");
+        }
+        else
+        {
+            state.RemoveDamageReduction(data.statusName);
+            state.RemoveDamageOutputModifier(data.statusName);
+        }
+        base.OnCleanse(state);
+    }
 }

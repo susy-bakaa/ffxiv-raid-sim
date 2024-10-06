@@ -23,26 +23,31 @@ public class NextBotTimeline : MonoBehaviour
         if (endIfDisabled && !old.bot.gameObject.activeSelf)
             return;
 
-        if (log)
-            Debug.Log($"[{gameObject.name}] Choosing next bot timeline...");
+        AIController bot = null;
 
         if (old != null)
         {
-            AIController bot = old.bot;
+            bot = old.bot;
+        }
 
+        if (log || (bot != null && bot.log))
+            Debug.Log($"[{gameObject.name}] Choosing next bot timeline...");
+
+        if (bot != null)
+        {
             switch (type)
             {
                 case choiceType.statusEffect:
                     for (int i = 0; i < effects.Count; i++)
                     {
-                        if (log)
+                        if (log || bot.log)
                             Debug.Log($"[{gameObject.name}] Does bot {bot.state.gameObject.name} have {effects[i].data.statusName} with tag {effects[i].tag}?");
                         if (bot.state.HasEffect(effects[i].data.statusName, effects[i].tag))
                         {
                             timelines[i].bot = bot;
                             bot.botTimeline = timelines[i];
                             timelines[i].StartTimeline();
-                            if (log)
+                            if (log || bot.log)
                                 Debug.Log($"[{gameObject.name}] --> Yes, Next bot timeline has been chosen from main status effect {effects[i].data.statusName} as {timelines[i].gameObject.name}!");
                             return;
                         }
@@ -58,14 +63,14 @@ public class NextBotTimeline : MonoBehaviour
                                         timelines[i].bot = bot;
                                         bot.botTimeline = timelines[i];
                                         timelines[i].StartTimeline();
-                                        if (log)
+                                        if (log || bot.log)
                                             Debug.Log($"[{gameObject.name}] --> Yes, Next bot timeline has been chosen from sub status effect {effects[i].data.refreshStatusEffects[k].statusName} as {timelines[i].gameObject.name}!");
                                         return;
                                     }
                                 }
                             }
                         }
-                        if (log)
+                        if (log || bot.log)
                             Debug.Log($"[{gameObject.name}] ---> No, Bot {bot.state.gameObject.name} does not have {effects[i].data.statusName} with tag {effects[i].tag}.");
                     }
                     break;
@@ -79,7 +84,7 @@ public class NextBotTimeline : MonoBehaviour
                             if (indexMapping[i].previousIndex == r)
                             {
                                 r = indexMapping[i].nextIndex;
-                                if (log)
+                                if (log || bot.log)
                                     Debug.Log($"[{gameObject.name}] --- Index Mapping {indexMapping[i].name} of index {i} will result in next index of {r}");
                                 break;
                             }
@@ -91,13 +96,13 @@ public class NextBotTimeline : MonoBehaviour
                         timelines[r].bot = bot;
                         bot.botTimeline = timelines[r];
                         timelines[r].StartTimeline();
-                        if (log)
+                        if (log || bot.log)
                             Debug.Log($"[{gameObject.name}] --> Yes, Next bot timeline has been chosen from fight timeline random event result id of {fightTimelineEventRandomResultId} of result {r} as {timelines[r].gameObject.name}!");
                         return;
                     }
                     break;
             }
-            if (log)
+            if (log || bot.log)
                 Debug.Log($"[{gameObject.name}] --> No, Next bot timeline has not been chosen! Ending execution of bot timeline for {bot.state.gameObject.name}.");
         }
     }

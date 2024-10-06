@@ -5,6 +5,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
+using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(TMP_Dropdown))]
 public class SaveDropdown : MonoBehaviour
@@ -28,7 +29,7 @@ public class SaveDropdown : MonoBehaviour
 
     void Start()
     {
-        Utilities.FunctionTimer.Create(() => OnStart(), 1f, $"{group}_{key}_dropdown_onstart_delay", true, true);
+        Utilities.FunctionTimer.Create(() => OnStart(), Random.Range(1f, 1.25f), $"{group}_{key}_dropdown_onstart_delay", true, true);
     }
 
     private void OnStart()
@@ -46,8 +47,11 @@ public class SaveDropdown : MonoBehaviour
 
     public void SaveValue(int value)
     {
+        ini.Load(GlobalVariables.configPath);
+
         savedValue = value;
         ini.Set(group, $"i{key}", savedValue);
-        ini.Save();
+
+        Utilities.FunctionTimer.Create(() => ini.Save(), 0.5f, $"{group}_{key}_dropdown_savevalue_delay", true, false);
     }
 }

@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using NaughtyAttributes;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -12,9 +14,11 @@ public class ActionController : MonoBehaviour
     CharacterState characterState;
     TargetController targetController;
 
+    public Transform actionParent;
     public List<CharacterAction> actions = new List<CharacterAction>();
     public List<CharacterAction> autoActions = new List<CharacterAction>();
     private CharacterAction autoAttack;
+    public bool loadAutomatically = true;
     public bool autoAttackEnabled = true;
     public bool instantCast = false;
     public bool isAnimationLocked = false;
@@ -47,6 +51,16 @@ public class ActionController : MonoBehaviour
     public UnityEvent<CastInfo> onCast;
     public UnityEvent onResetCastBar;
 
+#if UNITY_EDITOR
+    [Header("Editor")]
+    public CharacterAction actionToPerform;
+    [Button("Perform Action")]
+    public void PerformDebugCharacterAction()
+    {
+        PerformAction(actionToPerform);
+    }
+#endif
+
     private StatusEffect instantCastEffect;
     private CharacterAction lastAction;
     public CharacterAction LastAction { get { return lastAction; } }
@@ -78,6 +92,24 @@ public class ActionController : MonoBehaviour
         if (interruptText != null)
         {
             interruptText.alpha = 0f;
+        }
+
+        if (loadAutomatically && actionParent != null)
+        {
+            actions.Clear();
+            autoActions.Clear();
+            CharacterAction[] allActions = actionParent.GetComponentsInChildren<CharacterAction>();
+            for (int i = 0; i < allActions.Length; i++)
+            {
+                if (allActions[i].isAutoAction)
+                {
+                    autoActions.Add(allActions[i]);
+                }
+                else
+                {
+                    actions.Add(allActions[i]);
+                }
+            }
         }
 
         if (characterState != null)
@@ -306,7 +338,7 @@ public class ActionController : MonoBehaviour
                 autoAttackTimer -= FightTimeline.deltaTime;
             }
         }
-        else if (!autoAttackEnabled)
+        else if (!autoAttackEnabled && autoAttack != null && autoAttack.data != null)
         {
             autoAttackTimer = autoAttack.data.recast;
         }
@@ -387,6 +419,14 @@ public class ActionController : MonoBehaviour
                 if (currentTarget == null)
                 {
                     currentTarget = characterState;
+                }
+
+                if (currentTarget.targetController != null && currentTarget.targetController.self != null && autoAction.data.targetGroups.Length > 0 && autoAction.data.isTargeted)
+                {
+                    if (!autoAction.data.targetGroups.Contains(currentTarget.targetController.self.Group))
+                    {
+                        return false;
+                    }
                 }
 
                 ActionInfo newActionInfo = new ActionInfo(autoAction, characterState, currentTarget);

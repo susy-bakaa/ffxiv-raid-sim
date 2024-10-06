@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,19 +8,26 @@ using static GlobalStructs.Damage;
 
 public class SpawnDamageTriggerMechanic : FightMechanic
 {
+    public CharacterState owner;
     public TargetController targetController;
     public GameObject damageTriggerPrefab;
+    public bool enableInstead = false;
     public Transform spawnLocation;
     public float delay = 0f;
+    public bool autoAssignOwner = false;
     public bool useActionDamage = true;
     public bool usePlayerHealth = false;
     public bool useTargetControllerCurrentTargetAsLocation = false;
     public bool dealDamage = true;
+    public bool increaseEnmity = false;
     public float damageMultiplier = 1f;
 
     public override void TriggerMechanic(ActionInfo actionInfo)
     {
         base.TriggerMechanic(actionInfo);
+
+        if (autoAssignOwner && owner == null && actionInfo.source != null)
+            owner = actionInfo.source;
 
         if (targetController != null && targetController.currentTarget != null)
         {
@@ -30,20 +38,35 @@ public class SpawnDamageTriggerMechanic : FightMechanic
         {
             if (actionInfo.target != null)
             {
-                GameObject spawned = Instantiate(damageTriggerPrefab, actionInfo.target.transform.position, actionInfo.target.transform.rotation, FightTimeline.Instance.mechanicParent);
+                GameObject spawned;
+
+                if (!enableInstead)
+                    spawned = Instantiate(damageTriggerPrefab, actionInfo.target.transform.position, actionInfo.target.transform.rotation, FightTimeline.Instance.mechanicParent);
+                else
+                    spawned = damageTriggerPrefab;
 
                 SetupDamageTrigger(spawned, actionInfo);
             }
             else if (actionInfo.source != null && actionInfo.action != null)
             {
-                GameObject spawned = Instantiate(damageTriggerPrefab, actionInfo.source.transform.position, actionInfo.source.transform.rotation, FightTimeline.Instance.mechanicParent);
+                GameObject spawned;
+
+                if (!enableInstead)
+                    spawned = Instantiate(damageTriggerPrefab, actionInfo.source.transform.position, actionInfo.source.transform.rotation, FightTimeline.Instance.mechanicParent);
+                else
+                    spawned = damageTriggerPrefab;
 
                 SetupDamageTrigger(spawned, actionInfo);
             }
         }
         else
         {
-            GameObject spawned = Instantiate(damageTriggerPrefab, spawnLocation.position, spawnLocation.rotation, FightTimeline.Instance.mechanicParent);
+            GameObject spawned;
+
+            if (!enableInstead)
+                spawned = Instantiate(damageTriggerPrefab, spawnLocation.position, spawnLocation.rotation, FightTimeline.Instance.mechanicParent);
+            else
+                spawned = damageTriggerPrefab;
 
             SetupDamageTrigger(spawned, actionInfo);
         }
@@ -53,6 +76,11 @@ public class SpawnDamageTriggerMechanic : FightMechanic
     {
         if (spawned.TryGetComponent(out DamageTrigger damageTrigger))
         {
+            if (owner != null)
+                damageTrigger.owner = owner;
+            if (actionInfo.action != null && actionInfo.action.data != null)
+                damageTrigger.data = actionInfo.action.data;
+
             if (delay > 0)
             {
                 spawned.gameObject.SetActive(false);
@@ -79,6 +107,12 @@ public class SpawnDamageTriggerMechanic : FightMechanic
                 damageTrigger.isAShield = actionInfo.action.data.isShield;
                 damageTrigger.self = actionInfo.sourceIsPlayer;
                 damageTrigger.damage = new Damage(actionInfo.action.data.damage, Mathf.RoundToInt(actionInfo.action.data.damage.value * damageMultiplier));
+
+                if (increaseEnmity)
+                {
+                    damageTrigger.increaseEnmity = true;
+                    damageTrigger.topEnmity = actionInfo.action.data.topEnmity;
+                }
             }
         }
     }

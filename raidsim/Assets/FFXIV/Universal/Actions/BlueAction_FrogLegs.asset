@@ -17,20 +17,20 @@ MonoBehaviour:
   damage:
     name: 
     value: 0
-    negative: 0
+    negative: 1
     ignoreDamageReductions: 0
-    type: 0
-    elementalAspect: 0
+    type: 1
+    elementalAspect: 1
     physicalAspect: 0
     applicationType: 0
   isShield: 0
   isHeal: 0
-  isTargeted: 1
+  isTargeted: 0
   topEnmity: 1
   targetGroups: 64000000
-  maxTargets: 1
-  range: 3
-  radius: 0
+  maxTargets: 20
+  range: 0
+  radius: 4
   manaCost: 200
   enmity: 1
   damageEnmityMultiplier: 1
@@ -45,3 +45,4 @@ MonoBehaviour:
   dispelDebuffInstead: 0
   comboAction: {fileID: 0}
   animationName: General_Casting_Blue
+  playAnimationDirectly: 0

@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 4031146160907782118}
   - component: {fileID: 3988973170302009987}
   - component: {fileID: 8732657555746304176}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: AOE_Knockback_Test_001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -103,8 +103,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damageName: Test Knockback 001
+  inverted: 0
   owner: {fileID: 0}
   autoAssignOwner: 0
+  ableToHitTag: Player
   damage:
     name: Test Knockback 001
     value: 0
@@ -114,6 +116,8 @@ MonoBehaviour:
     elementalAspect: 1
     physicalAspect: 0
     applicationType: 0
+  enmity: 0
+  topEnmity: 0
   initializeOnStart: 1
   self: 0
   dealsDamage: 0

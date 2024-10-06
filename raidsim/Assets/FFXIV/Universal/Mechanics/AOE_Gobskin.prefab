@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 383363334639875066}
   - component: {fileID: 8959281944284956254}
   - component: {fileID: 5305586029928255759}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: AOE_Gobskin
   m_TagString: aoe
   m_Icon: {fileID: 0}
@@ -82,7 +82,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 18.425
+  m_Radius: 18.288
   m_Height: 39
   m_Direction: 1
   m_Center: {x: 0, y: -0.5, z: 0}
@@ -99,8 +99,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damageName: Gobskin
+  inverted: 0
   owner: {fileID: 0}
   autoAssignOwner: 0
+  ableToHitTag: Player
   damage:
     name: Gobskin
     value: 0
@@ -110,6 +112,8 @@ MonoBehaviour:
     elementalAspect: 1
     physicalAspect: 0
     applicationType: 0
+  enmity: 0
+  topEnmity: 0
   initializeOnStart: 1
   self: 0
   dealsDamage: 0
@@ -149,6 +153,12 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onSpawn:
+    m_PersistentCalls:
+      m_Calls: []
+  onTrigger:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &5305586029928255759
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -162,6 +172,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 0
+  log: 0
 --- !u!1001 &1294221440899537206
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -172,11 +183,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 85a5fb47b6fa1534481c4496342adca9, type: 3}
       propertyPath: m_LocalScale.x
-      value: 118.5
+      value: 117.85
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 85a5fb47b6fa1534481c4496342adca9, type: 3}
       propertyPath: m_LocalScale.y
-      value: 118.5
+      value: 117.85
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 85a5fb47b6fa1534481c4496342adca9, type: 3}
       propertyPath: m_LocalPosition.x

@@ -200,4 +200,28 @@ public class TargetNode : MonoBehaviour
             }
         }
     }
+
+    public void AddNodeToController(TargetNode node)
+    {
+        if (targetController == null)
+            SetupTargetController();
+
+        if (targetController == null)
+            return;
+
+        if (!targetController.targetTriggerNodes.Contains(node))
+            targetController.targetTriggerNodes.Add(node);
+    }
+
+    public void RemoveNodeFromController(TargetNode node)
+    {
+        if (targetController == null)
+            SetupTargetController();
+
+        if (targetController == null)
+            return;
+
+        if (targetController.targetTriggerNodes.Contains(node))
+            targetController.targetTriggerNodes.Remove(node);
+    }
 }

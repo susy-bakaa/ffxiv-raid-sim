@@ -7,6 +7,7 @@ using UnityEngine.Events;
 public class BotTimeline : MonoBehaviour
 {
     ActionController controller;
+    TargetController targeting;
     public AIController bot;
 
     [Header("Timeline")]
@@ -22,6 +23,7 @@ public class BotTimeline : MonoBehaviour
     void Awake()
     {
         index = UnityEngine.Random.Range(1000, 10000);
+        onFinish.AddListener(CleanUp);
     }
 
     public void StartTimeline()
@@ -35,6 +37,18 @@ public class BotTimeline : MonoBehaviour
             else
             {
                 Debug.LogWarning($"No action controller found for {bot}!");
+                return;
+            }
+        }
+        if (targeting == null)
+        {
+            if (bot.TryGetComponent(out TargetController botTC))
+            {
+                targeting = botTC;
+            }
+            else
+            {
+                Debug.LogWarning($"No target controller found for {bot}!");
                 return;
             }
         }
@@ -60,6 +74,7 @@ public class BotTimeline : MonoBehaviour
     {
         for (int i = 0; i < events.Count; i++)
         {
+            targeting.SetTarget(events[i].target);
             if (events[i].node != null)
             {
                 currentTarget = events[i].node.transform;
@@ -83,6 +98,16 @@ public class BotTimeline : MonoBehaviour
         onFinish.Invoke(this);
     }
 
+    public void CleanUp(BotTimeline botTimeline = null)
+    {
+        /*Utilities.FunctionTimer.Create(() =>
+        {
+            bot = null;
+            controller = null;
+            currentTarget = null;
+        }, 1f, $"{gameObject.name}_clean_up_delay", false, true);*/
+    }
+
     [System.Serializable]
     public struct BotEvent
     {
@@ -93,8 +118,9 @@ public class BotTimeline : MonoBehaviour
         public float waitForAction;
         public Vector3 rotation;
         public float waitForRotation;
+        public TargetNode target;
 
-        public BotEvent(string name, Transform node, float waitAtNode, CharacterActionData action, float waitForAction, Vector3 rotation, float waitForRotation)
+        public BotEvent(string name, Transform node, float waitAtNode, CharacterActionData action, float waitForAction, Vector3 rotation, float waitForRotation, TargetNode cycleTarget)
         {
             this.name = name;
             this.node = node;
@@ -103,6 +129,7 @@ public class BotTimeline : MonoBehaviour
             this.waitForAction = waitForAction;
             this.rotation = rotation;
             this.waitForRotation = waitForRotation;
+            this.target = cycleTarget;
         }
     }
 }
