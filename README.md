@@ -9,16 +9,18 @@ A singleplayer raid and fight mechanic simulator with bots, made in the Unity ga
 		- Phase 2
 			- Hello World 1 (BLU)
 			- Hello World 2 (BLU)
+- Alexander: Midas
+	- Alexander - The Burden of the Son (Savage) (A8S)
+		- Gavel (BLU)
 
 # In development fights
+
+Timelines don't work yet for these or the bots are not finished and will die to mechanics.
 
 - AAC Light-heavyweight Tier
 	- AAC Light-heavyweight M4 (Savage) (M4S)
 		- Sunrise Sabbath (Rinon)
 		- Sunrise Sabbath (AutoCad)
-- Alexander: Midas
-	- Alexander - The Burden of the Son (Savage) (A8S)
-		- Gavel (BLU)
 
 # Planned fights
 
