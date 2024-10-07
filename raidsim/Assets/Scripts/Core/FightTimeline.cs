@@ -172,8 +172,6 @@ public class FightTimeline : MonoBehaviour
         }
         Instance = this;
 
-        Utilities.FunctionTimer.Available = true;
-
         if (mechanicParent == null)
         {
             mechanicParent = GameObject.Find("Mechanics").transform;

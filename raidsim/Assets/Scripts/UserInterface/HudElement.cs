@@ -60,7 +60,8 @@ public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         {
             if (blocksAllInput || blocksPosInput || blocksRotInput || blocksScrInput)
             {
-                input = FightTimeline.Instance.input;
+                if (FightTimeline.Instance != null)
+                    input = FightTimeline.Instance.input;
             }
         }
     }
@@ -149,7 +150,7 @@ public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (input == null)
+        if (input == null || FightTimeline.Instance == null)
             return;
 
         if (blocksAllInput)
@@ -171,7 +172,7 @@ public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (input == null)
+        if (input == null || FightTimeline.Instance == null)
             return;
 
         if (blocksAllInput)

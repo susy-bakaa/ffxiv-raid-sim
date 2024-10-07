@@ -74,7 +74,7 @@ public class UserInput : MonoBehaviour
             }
         }
 
-        if (BindedKey(KeyBind.Keys["ResetKey"]))
+        if (BindedKey(KeyBind.Keys["ResetKey"]) || BindedKey(KeyBind.Keys["ResetKeyAlt"]))
         {
             SceneManager.LoadScene("menu");
         }

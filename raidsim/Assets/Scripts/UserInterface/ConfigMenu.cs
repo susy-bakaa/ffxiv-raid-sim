@@ -2,6 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using no00ob.WaveSurvivalGame.UserInterface;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,10 +16,16 @@ public class ConfigMenu : MonoBehaviour
     [SerializeField] private CanvasScaler canvasScaler;
     [SerializeField] private SliderInputLinker scaleSliderSync;
     [SerializeField] private ToggleLinker toggleMovement;
+    [SerializeField] private Toggle fullscreenToggle;
+    [SerializeField] private ResolutionDropdown resolutionDropdown;
     float scale;
     float newScale;
     bool legacy;
     bool newLegacy;
+    bool fullscreen;
+    bool newFullscreen;
+    int resolution;
+    int newResolution;
     [SerializeField] private CanvasGroup applyPopup;
 
     bool menuVisible = false;
@@ -109,6 +118,18 @@ public class ConfigMenu : MonoBehaviour
         newLegacy = value;
     }
 
+    public void ChangeFullscreenMode(bool value)
+    {
+        configSaved = false;
+        newFullscreen = value;
+    }
+
+    public void ChangeResolution(Int32 resolutionIndex)
+    {
+        configSaved = false;
+        newResolution = resolutionIndex;
+    }
+
     public void ApplySettings()
     {
         if (Mathf.Approximately(newScale, 50f))
@@ -122,7 +143,25 @@ public class ConfigMenu : MonoBehaviour
             canvasScaler.scaleFactor = Utilities.Map(newScale, 0, 100, 0.5f, 2f);
         }
         legacy = newLegacy;
-        playerController.legacyMovement = newLegacy;
+        if (playerController != null)
+            playerController.legacyMovement = newLegacy;
+        fullscreen = newFullscreen;
+        Screen.fullScreen = fullscreen;
+        if (Screen.fullScreen)
+            Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+        else
+            Screen.fullScreenMode = FullScreenMode.Windowed;
+        resolution = newResolution;
+        resolutionDropdown.SetResolution(resolution, fullscreen);
+#if UNITY_EDITOR
+        // Get the GameView EditorWindow
+        var gameView = GetGameView();
+
+        if (gameView != null)
+        {
+            gameView.maximized = fullscreen;
+        }
+#endif
         configSaved = true;
     }
 
@@ -145,6 +184,8 @@ public class ConfigMenu : MonoBehaviour
         scaleSliderSync.Slider.value = newScale;
         scaleSliderSync.Sync(0);
         newLegacy = true;
+        newFullscreen = true;
+        newResolution = 0;
         toggleMovement.toggles[0].SetIsOnWithoutNotify(true);
         toggleMovement.toggles[1].SetIsOnWithoutNotify(false);
         ApplySettings();
@@ -159,6 +200,20 @@ public class ConfigMenu : MonoBehaviour
         Debug.Log($"newLegacy {newLegacy} legacy {legacy}");
         toggleMovement.toggles[0].SetIsOnWithoutNotify(newLegacy);
         toggleMovement.toggles[1].SetIsOnWithoutNotify(!newLegacy);
+        newFullscreen = fullscreen;
+        fullscreenToggle.SetIsOnWithoutNotify(newFullscreen);
+        newResolution = resolution;
+        resolutionDropdown.SetResolutionWithoutNotify(newResolution, newFullscreen);
         ApplySettings();
     }
+
+#if UNITY_EDITOR
+    private static EditorWindow GetGameView()
+    {
+        // This returns the GameView EditorWindow
+        var assembly = typeof(EditorWindow).Assembly;
+        var type = assembly.GetType("UnityEditor.GameView");
+        return EditorWindow.GetWindow(type);
+    }
+#endif
 }

@@ -71,13 +71,17 @@ public static class Utilities
             if (onUpdate != null)
                 onUpdate();
         }
+
+        void OnDestroy()
+        {
+            FunctionTimer.StopTimer(label);
+        }
     }
 
     public class FunctionTimer
     {
         private static List<FunctionTimer> activeTimerList;
         private static GameObject initGameObject;
-        public static bool Available = false;
 
         private static void InitIfNeeded()
         {
@@ -89,7 +93,6 @@ public static class Utilities
         }
         public static bool CleanUp()
         {
-            Available = false;
             activeTimerList.Clear();
             activeTimerList = new List<FunctionTimer>();
             UnityEngine.Object.Destroy(initGameObject);
@@ -98,9 +101,6 @@ public static class Utilities
 
         public static FunctionTimer Create(Action action, float timer, string name = null, bool useUnscaledTime = false, bool onlyAllowOneInstance = false)
         {
-            if (!Available)
-                return null;
-
             InitIfNeeded();
 
             if (name != null)
