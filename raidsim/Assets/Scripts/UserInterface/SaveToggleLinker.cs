@@ -55,6 +55,6 @@ public class SaveToggleLinker : MonoBehaviour
         savedValue = value;
         ini.Set(group, $"i{key}", savedValue);
 
-        Utilities.FunctionTimer.Create(() => ini.Save(), 0.5f, $"{group}_{key}_togglelinker_savevalue_delay", true, false);
+        Utilities.FunctionTimer.Create(this, () => ini.Save(), 0.5f, $"{group}_{key}_togglelinker_savevalue_delay", true, false);
     }
 }

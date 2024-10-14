@@ -28,7 +28,7 @@ public class TimedMechanic : FightMechanic
 
         if (delay > 0f)
         {
-            Utilities.FunctionTimer.Create(() => onFinish.Invoke(), delay, $"TriggerMechanic_{id}_{mechanicName}_activation_delay", false, true);
+            Utilities.FunctionTimer.Create(this, () => this.onFinish.Invoke(), delay, $"TriggerMechanic_{id}_{mechanicName}_activation_delay", false, true);
         }
         else
         {

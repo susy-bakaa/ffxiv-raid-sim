@@ -43,6 +43,6 @@ public class SaveSlider : MonoBehaviour
         savedValue = value;
         ini.Set(group, $"f{key}", savedValue);
 
-        Utilities.FunctionTimer.Create(() => ini.Save(), 0.5f, $"{group}_{key}_slider_savevalue_delay", true, false);
+        Utilities.FunctionTimer.Create(this, () => ini.Save(), 0.5f, $"{group}_{key}_slider_savevalue_delay", true, false);
     }
 }

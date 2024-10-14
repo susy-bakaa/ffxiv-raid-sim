@@ -92,7 +92,7 @@ public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             lifeTime = -1f;
             if (fadeOutDelay > 0f)
             {
-                Utilities.FunctionTimer.Create(() => canvasGroup.LeanAlpha(0f, fadeOutTime), fadeOutDelay, $"{gameObject}_{gameObject.GetHashCode()}_HudElement_FadeOutDelay", false, true);
+                Utilities.FunctionTimer.Create(this, () => canvasGroup.LeanAlpha(0f, fadeOutTime), fadeOutDelay, $"{gameObject}_{gameObject.GetHashCode()}_HudElement_FadeOutDelay", false, true);
             }
             else
             {

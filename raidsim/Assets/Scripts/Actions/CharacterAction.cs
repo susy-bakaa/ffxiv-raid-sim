@@ -106,7 +106,7 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
     void Start()
     {
         if (unavailable)
-            Utilities.FunctionTimer.Create(() => gameObject.SetActive(false), 0.2f, $"{data.actionName}_{this}_start_disable_delay");
+            Utilities.FunctionTimer.Create(this, () => gameObject.SetActive(false), 0.2f, $"{data.actionName}_{this}_start_disable_delay");
     }
 
     void Update()
@@ -339,7 +339,7 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
                             }
 
                             actionInfo.source.AddEnmity(Math.Abs(actionInfo.action.data.enmity), actionInfo.target);
-                            actionInfo.source.AddEnmity(Math.Abs(Mathf.RoundToInt(calculatedDamage * actionInfo.action.data.damageEnmityMultiplier)), actionInfo.target);
+                            actionInfo.source.AddEnmity(Math.Abs(Mathf.RoundToInt(calculatedDamage * actionInfo.action.data.damageEnmityMultiplier * actionInfo.source.enmityGenerationModifier)), actionInfo.target);
                         }
                     }
                 }
@@ -401,9 +401,9 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
         clickHighlight.transform.localScale = new Vector3(0f, 0f, 1f);
         clickHighlight.transform.LeanScale(new Vector3(1.5f, 1.5f, 1f), 0.5f);//.setOnComplete(() => { clickHighlight.LeanAlpha(0f, 0.15f); });
-        Utilities.FunctionTimer.Create(() => clickHighlight.LeanAlpha(0f, 0.15f), 0.3f, $"{transform.parent.gameObject.name}_{gameObject.name}_click_animation_fade_delay", true, false);
+        Utilities.FunctionTimer.Create(this, () => clickHighlight.LeanAlpha(0f, 0.15f), 0.3f, $"{transform.parent.gameObject.name}_{gameObject.name}_click_animation_fade_delay", true, false);
         clickHighlight.LeanAlpha(1f, 0.15f);
         if (!pointer)
-            selectionBorder.LeanAlpha(1f, 0.15f).setOnComplete(() => Utilities.FunctionTimer.Create(() => selectionBorder.LeanAlpha(0f, 0.15f), 0.2f, $"{transform.parent.gameObject.name}_{gameObject.name}_click_highlight_fade_delay", true, false));
+            selectionBorder.LeanAlpha(1f, 0.15f).setOnComplete(() => Utilities.FunctionTimer.Create(this, () => selectionBorder.LeanAlpha(0f, 0.15f), 0.2f, $"{transform.parent.gameObject.name}_{gameObject.name}_click_highlight_fade_delay", true, false));
     }
 }

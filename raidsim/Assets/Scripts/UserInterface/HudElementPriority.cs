@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class HudElementPriority : MonoBehaviour
@@ -8,12 +9,7 @@ public class HudElementPriority : MonoBehaviour
     public List<HudElement> hudElements = new List<HudElement>();
     public bool autoUpdate = true;
 
-    private int rateLimit;
-
-    void Awake()
-    {
-        rateLimit = UnityEngine.Random.Range(60, 66);
-    }
+    private int childCount = 0;
 
     void Update()
     {
@@ -21,16 +17,22 @@ public class HudElementPriority : MonoBehaviour
             return;
 
         // Only once per second instead of every frame
-        if (Utilities.RateLimiter(rateLimit))
+        if (transform.childCount != childCount)
         {
             UpdateSorting();
+            childCount = transform.childCount;
         }
     }
 
     public void UpdateSorting()
     {
         hudElements.Clear();
-        hudElements.AddRange(GetComponentsInChildren<HudElement>(true));
+        HudElement[] childElements = GetComponentsInChildren<HudElement>(true);
+        foreach (HudElement childElement in childElements)
+        {
+            if (childElement.transform != transform)
+                hudElements.Add(childElement);
+        }
 
         // Sort hudElements based on priority
         var sortedElements = hudElements.OrderBy(element => element.priority).ToList();

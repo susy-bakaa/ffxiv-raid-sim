@@ -15,6 +15,15 @@ namespace susy_baka.raidsim.UserInterface
         [SerializeField] private UnityEvent<Vector2> onTargetPositionAltered;
         //[SerializeField] private UnityEvent<Vector2> onPositionAltered;
 
+        private Vector2 widgetTransformDefaultPosition;
+        private Vector2 targetTransformDefaultPosition;
+
+        void Awake()
+        {
+            widgetTransformDefaultPosition = widgetTransform.anchoredPosition;
+            targetTransformDefaultPosition = targetTransform.anchoredPosition;
+        }
+
         void IDragHandler.OnDrag(PointerEventData eventData)
         {
             if (targetTransform != null)
@@ -31,6 +40,14 @@ namespace susy_baka.raidsim.UserInterface
                 onTargetPositionAltered.Invoke(targetTransform.anchoredPosition);
 
             //Debug.Log($"OnPointerUp {transform.parent.gameObject.name}");
+        }
+
+        public void ResetPosition()
+        {
+            widgetTransform.anchoredPosition = widgetTransformDefaultPosition;
+            targetTransform.anchoredPosition = targetTransformDefaultPosition;
+            onOwnPositionAltered.Invoke(widgetTransform.anchoredPosition);
+            onTargetPositionAltered.Invoke(targetTransform.anchoredPosition);
         }
     }
 }

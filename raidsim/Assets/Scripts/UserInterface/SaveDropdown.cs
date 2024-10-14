@@ -19,9 +19,11 @@ public class SaveDropdown : MonoBehaviour
     public UnityEvent<int> onStart;
 
     IniStorage ini;
+    int id = 0;
 
     void Awake()
     {
+        id = Random.Range(0, 10000);
         dropdown = GetComponent<TMP_Dropdown>();
         savedValue = 0;
         ini = new IniStorage(GlobalVariables.configPath);
@@ -29,7 +31,7 @@ public class SaveDropdown : MonoBehaviour
 
     void Start()
     {
-        Utilities.FunctionTimer.Create(() => OnStart(), Random.Range(1f, 1.25f), $"{group}_{key}_dropdown_onstart_delay", true, true);
+        Utilities.FunctionTimer.Create(this, () => OnStart(), Random.Range(1f, 1.25f), $"{group}_{key}_dropdown_{id}_onstart_delay", true, true);
     }
 
     private void OnStart()
@@ -37,7 +39,6 @@ public class SaveDropdown : MonoBehaviour
         if (ini.Contains(group, $"i{key}"))
         {
             savedValue = ini.GetInt(group, $"i{key}");
-
             dropdown.value = savedValue;
             dropdown.RefreshShownValue();
             dropdown.onValueChanged.Invoke(savedValue);
@@ -52,6 +53,6 @@ public class SaveDropdown : MonoBehaviour
         savedValue = value;
         ini.Set(group, $"i{key}", savedValue);
 
-        Utilities.FunctionTimer.Create(() => ini.Save(), 0.5f, $"{group}_{key}_dropdown_savevalue_delay", true, false);
+        Utilities.FunctionTimer.Create(this, () => ini.Save(), 0.5f, $"{group}_{key}_dropdown_savevalue_delay", true, false);
     }
 }

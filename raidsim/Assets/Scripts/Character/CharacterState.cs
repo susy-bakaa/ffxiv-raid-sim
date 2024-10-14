@@ -78,6 +78,8 @@ public class CharacterState : MonoBehaviour
     public float bluntElementDamageModifier = 1f;
     public Dictionary<string, float> poisonDamageModifiers = new Dictionary<string, float>();
     public float poisonDamageModifier = 1f;
+    public Dictionary<string, float> enmityGenerationModifiers = new Dictionary<string, float>();
+    public float enmityGenerationModifier = 1f;
 
     public Dictionary<CharacterState, long> enmity = new Dictionary<CharacterState, long>();
 #if UNITY_EDITOR
@@ -124,6 +126,7 @@ public class CharacterState : MonoBehaviour
     public bool canDoActions = true;
     public bool canDie = true;
     public bool disabled = false;
+    public bool canGainEnmity = true;
 
     [Header("Effects")]
     private Dictionary<string, StatusEffect> effects = new Dictionary<string, StatusEffect>();
@@ -160,7 +163,6 @@ public class CharacterState : MonoBehaviour
     public bool showCharacterNameLetter = true;
     public TextMeshProUGUI characterNameText;
     public TextMeshProUGUI nameplateCharacterNameText;
-    private CanvasGroup characterNameTextGroup;
     private CanvasGroup nameplateCharacterNameTextGroup;
     [Header("Personal - Status Effects")]
     public bool showStatusEffects = true;
@@ -211,6 +213,31 @@ public class CharacterState : MonoBehaviour
     public Transform targetStatusEffectHolderParent;
     public CanvasGroup targetStatusEffectIconGroup;
     public Transform targetStatusEffectIconParent;
+
+#if UNITY_EDITOR
+    [Header("Editor")]
+    public StatusEffectData.StatusEffectInfo inflictedEffect;
+    [Button("Inflict Status Effect")]
+    public void InflictStatusEffectButton()
+    {
+        AddEffect(inflictedEffect.data, true, inflictedEffect.tag, inflictedEffect.stacks);
+    }
+    [Button("Cleanse Status Effect")]
+    public void CleanseStatusEffectButton()
+    {
+        RemoveEffect(inflictedEffect.data, true, inflictedEffect.tag, inflictedEffect.stacks);
+    }
+#endif
+
+    public string GetCharacterName()
+    {
+        int index = characterName.IndexOf('#');
+        if (index >= 0) // Check if '#' exists in the string
+        {
+            return characterName.Substring(0, index);
+        }
+        return characterName; // Return the full string if no '#' is found
+    }
 
     void Awake()
     {
@@ -339,22 +366,6 @@ public class CharacterState : MonoBehaviour
         {
             healthBarTextParty.text = health.ToString();
         }
-        if (characterNameText != null)
-        {
-            characterNameText.text = characterName;
-            //characterNameTextGroup = characterNameText.GetComponentInParent<CanvasGroup>();
-        }
-        /*if (characterNameTextGroup != null)
-        {
-            if (!hideNameplate && showCharacterName)
-            {
-                characterNameTextGroup.alpha = 1f;
-            }
-            else
-            {
-                characterNameTextGroup.LeanAlpha(0f, 0.5f);
-            }
-        }*/
         if (nameplateCharacterNameText != null)
         {
             string letter = "";
@@ -374,22 +385,22 @@ public class CharacterState : MonoBehaviour
 
                 if (showCharacterLevel)
                 {
-                    nameplateCharacterNameText.text = $"<sprite=\"enemy_ranks\" name=\"{aggression}\"><b>Lv{characterLevel}</b> {characterName}{letter}>";
+                    nameplateCharacterNameText.text = $"<sprite=\"enemy_ranks\" name=\"{aggression}\"><b>Lv{characterLevel}</b> {GetCharacterName()}{letter}>";
                 }
                 else
                 {
-                    nameplateCharacterNameText.text = $"<sprite=\"enemy_ranks\" name=\"{aggression}\"> {characterName}{letter}";
+                    nameplateCharacterNameText.text = $"<sprite=\"enemy_ranks\" name=\"{aggression}\"> {GetCharacterName()}{letter}";
                 }
             }
             else
             {
                 if (showCharacterLevel)
                 {
-                    nameplateCharacterNameText.text = $"<b>Lv{characterLevel}</b> {characterName}{letter}";
+                    nameplateCharacterNameText.text = $"<b>Lv{characterLevel}</b> {GetCharacterName()}{letter}";
                 }
                 else
                 {
-                    nameplateCharacterNameText.text = $"{characterName}{letter}";
+                    nameplateCharacterNameText.text = $"{GetCharacterName()}{letter}";
                 }
             }
         }
@@ -415,11 +426,11 @@ public class CharacterState : MonoBehaviour
 
             if (showPartyCharacterLevel)
             {
-                characterNameTextParty.text = $"{letter}Lv{characterLevel} {characterName}";
+                characterNameTextParty.text = $"{letter}Lv{characterLevel} {GetCharacterName()}";
             }
             else
             {
-                characterNameTextParty.text = $"{letter}{characterName}";
+                characterNameTextParty.text = $"{letter}{GetCharacterName()}";
             }
         }
 
@@ -441,11 +452,11 @@ public class CharacterState : MonoBehaviour
 
     void Start()
     {
-        Utilities.FunctionTimer.Create(() => onSpawn.Invoke(), 0.85f, $"{characterName}_onSpawn_delay", false, true);
+        Utilities.FunctionTimer.Create(this, () => onSpawn.Invoke(), 0.85f, $"{characterName}_onSpawn_delay", false, true);
 
         if (disabled)
         {
-            Utilities.FunctionTimer.Create(() => gameObject.SetActive(false), 1f, $"{characterName}_disable_on_start", true, true);
+            Utilities.FunctionTimer.Create(this, () => gameObject.SetActive(false), 1f, $"{characterName}_disable_on_start", true, true);
         }
     }
 
@@ -453,7 +464,7 @@ public class CharacterState : MonoBehaviour
     {
         if (partyList != null)
         {
-            Utilities.FunctionTimer.Create(() => partyList.UpdatePartyList(), 1f, $"{characterName}_on_enable_update_party_list", true, true);
+            Utilities.FunctionTimer.Create(this, () => partyList.UpdatePartyList(), 1f, $"{characterName}_on_enable_update_party_list", true, true);
         }
     }
 
@@ -461,7 +472,7 @@ public class CharacterState : MonoBehaviour
     {
         if (partyList != null)
         {
-            Utilities.FunctionTimer.Create(() => partyList.UpdatePartyList(), 1f, $"{characterName.Replace(" ","_")}_on_disable_update_party_list", true, true);
+            Utilities.FunctionTimer.Create(this, () => partyList.UpdatePartyList(), 1f, $"{characterName.Replace(" ","_")}_on_disable_update_party_list", true, true);
         }
     }
 
@@ -484,7 +495,7 @@ public class CharacterState : MonoBehaviour
                 }
             }
             // Update the status effect durations every frame.
-            for (int i = 0; i < effectsArray.Length; i++)
+            for (int i = effectsArray.Length - 1; i >= 0; i--)
             {
                 if (effectsArray[i].data.unaffectedByTimeScale)
                 {
@@ -497,13 +508,13 @@ public class CharacterState : MonoBehaviour
                 effectsArray[i].onUpdate.Invoke(this);
                 if (effectsArray[i].duration <= 0f)
                 {
-                    RemoveEffect(effectsArray[i], true, effectsArray[i].uniqueTag);
+                    RemoveEffect(effectsArray[i], true, effectsArray[i].uniqueTag, effectsArray[i].stacks);
                 }
             }
         }
 
         if (characterNameText != null)
-            characterNameText.text = characterName;
+            characterNameText.text = GetCharacterName();
         if (characterNameTextParty != null)
         {
             string letter = "";
@@ -515,11 +526,11 @@ public class CharacterState : MonoBehaviour
 
             if (showPartyCharacterLevel)
             {
-                characterNameTextParty.text = $"{letter}Lv{characterLevel} {characterName}";
+                characterNameTextParty.text = $"{letter}Lv{characterLevel} {GetCharacterName()}";
             }
             else
             {
-                characterNameTextParty.text = $"{letter}{characterName}";
+                characterNameTextParty.text = $"{letter}{GetCharacterName()}";
             }
         }
         if (nameplateCharacterNameText != null)
@@ -541,22 +552,22 @@ public class CharacterState : MonoBehaviour
 
                 if (showCharacterLevel)
                 {
-                    nameplateCharacterNameText.text = $"<sprite=\"enemy_ranks\" name=\"{aggression}\"><b>Lv{characterLevel}</b> {characterName}{letter}";
+                    nameplateCharacterNameText.text = $"<sprite=\"enemy_ranks\" name=\"{aggression}\"><b>Lv{characterLevel}</b> {GetCharacterName()}{letter}";
                 }
                 else
                 {
-                    nameplateCharacterNameText.text = $"<sprite=\"enemy_ranks\" name=\"{aggression}\"> {characterName}{letter}";
+                    nameplateCharacterNameText.text = $"<sprite=\"enemy_ranks\" name=\"{aggression}\"> {GetCharacterName()}{letter}";
                 }
             }
             else
             {
                 if (showCharacterLevel)
                 {
-                    nameplateCharacterNameText.text = $"<b>Lv{characterLevel}</b> {characterName}{letter}";
+                    nameplateCharacterNameText.text = $"<b>Lv{characterLevel}</b> {GetCharacterName()}{letter}";
                 }
                 else
                 {
-                    nameplateCharacterNameText.text = $"{characterName}{letter}";
+                    nameplateCharacterNameText.text = $"{GetCharacterName()}{letter}";
                 }
             }
         }
@@ -834,7 +845,7 @@ public class CharacterState : MonoBehaviour
                     percentage = 0f;
 
                 if (percentage > 0f)
-                    RemoveHealth(m_damage.value / 100.0f, true, m_damage.negative, kill, ignoreDamageReduction);
+                    RemoveHealth(m_damage.value / 100.0f, true, m_damage.negative, kill, ignoreDamageReduction, true);
                 // Set the fly text damage to be accurate to the actual damage dealt
                 flyTextDamage.value = Mathf.RoundToInt(currentMaxHealth * percentage);
                 break;
@@ -842,10 +853,16 @@ public class CharacterState : MonoBehaviour
             case DamageApplicationType.set:
             {
                 long damageAbs = Math.Abs(m_damage.value);
+
                 if (damageAbs > 0)
-                    SetHealth(damageAbs, m_damage.negative, kill, ignoreDamageReduction);
-                // Set the fly text damage to be accurate to the actual damage dealt
-                flyTextDamage.value = -1 * (health - m_damage.value);
+                {
+                    long previousHealth = health; // Store the current health before applying the damage
+                    SetHealth(damageAbs, m_damage.negative, kill, ignoreDamageReduction, true);
+                    long healthChange = previousHealth - health; // Calculate the actual health change
+
+                    // Set the fly text damage to show the actual health change
+                    flyTextDamage.value = -1 * healthChange;
+                }
                 break;
             }
         }
@@ -856,33 +873,33 @@ public class CharacterState : MonoBehaviour
         //ModifyHealth(damage.value, kill);
     }
 
-    private void SetHealth(long value, bool negative, bool kill = false, bool ignoreDamageReduction = false)
+    private void SetHealth(long value, bool negative, bool kill = false, bool ignoreDamageReduction = false, bool ignoreShields = false)
     {
         if (kill)
         {
             if (negative)
             {
-                ModifyHealth(0, kill, ignoreDamageReduction);
+                ModifyHealth(0, kill, ignoreDamageReduction, ignoreShields);
             }
             else
             {
-                ModifyHealth(currentMaxHealth, false, ignoreDamageReduction);
+                ModifyHealth(currentMaxHealth, false, ignoreDamageReduction, ignoreShields);
             }
         }
         else
         {
             if (negative)
             {
-                ModifyHealth(-1 * (health - value), kill, ignoreDamageReduction);
+                ModifyHealth(-1 * (health - value), kill, ignoreDamageReduction, ignoreShields);
             }
             else
             {
-                ModifyHealth(Math.Abs(health - value), kill, ignoreDamageReduction);
+                ModifyHealth(Math.Abs(health - value), kill, ignoreDamageReduction, ignoreShields);
             }
         }
     }
 
-    private void RemoveHealth(float percentage, bool fromMax, bool negative, bool kill = false, bool ignoreDamageReduction = false)
+    private void RemoveHealth(float percentage, bool fromMax, bool negative, bool kill = false, bool ignoreDamageReduction = false, bool ignoreShields = false)
     {
         if (kill)
         {
@@ -893,16 +910,16 @@ public class CharacterState : MonoBehaviour
             long damage = fromMax ? (long)Math.Round(currentMaxHealth * percentage) : (long)Math.Round(health * percentage);
             if (negative)
             {
-                ModifyHealth(-1 * damage, kill, ignoreDamageReduction);
+                ModifyHealth(-1 * damage, kill, ignoreDamageReduction, ignoreShields);
             }
             else
             {
-                ModifyHealth(Math.Abs(damage), kill, ignoreDamageReduction);
+                ModifyHealth(Math.Abs(damage), kill, ignoreDamageReduction, ignoreShields);
             }
         }
     }
 
-    private void ModifyHealth(long value, bool kill = false, bool ignoreDamageReduction = false)
+    private void ModifyHealth(long value, bool kill = false, bool ignoreDamageReduction = false, bool ignoreShields = false)
     {
         if (kill)
         {
@@ -943,35 +960,50 @@ public class CharacterState : MonoBehaviour
 
         if (!invulnerable)
         {
-            if (currentShields.Count > 0 && !kill && remainingDamage < 0)
+            // Check if shields should be ignored
+            if (ignoreShields || kill)
             {
-                for (int i = currentShields.Count - 1; i >= 0; i--)
+                // Directly reduce health if ignoring shields
+                health += (int)remainingDamage;
+            }
+            else
+            {
+                // Shield reduction logic if not ignoring shields
+                if (currentShields.Count > 0 && !kill && remainingDamage < 0)
                 {
-                    if (remainingDamage >= 0)
+                    for (int i = currentShields.Count - 1; i >= 0; i--)
                     {
-                        break;
-                    }
+                        if (remainingDamage >= 0)
+                        {
+                            break;
+                        }
 
-                    if (currentShields[i].value > Mathf.Abs(remainingDamage))
-                    {
-                        currentShields[i] = new Shield(currentShields[i].key, currentShields[i].value + remainingDamage);
-                        remainingDamage = 0;
+                        if (currentShields[i].value > Mathf.Abs(remainingDamage))
+                        {
+                            currentShields[i] = new Shield(currentShields[i].key, currentShields[i].value + remainingDamage);
+                            remainingDamage = 0;
+                        }
+                        else
+                        {
+                            remainingDamage += currentShields[i].value;
+                            RemoveEffect(currentShields[i].key, false);
+                            if (i < (currentShields.Count - 1))
+                                currentShields.RemoveAt(i);
+                        }
                     }
-                    else
-                    {
-                        remainingDamage += currentShields[i].value;
-                        RemoveEffect(currentShields[i].key, false);
-                        if (i < (currentShields.Count - 1))
-                            currentShields.RemoveAt(i);
-                    }
+                }
+
+                // Reduce health if any damage remains after shield reduction
+                if (remainingDamage != 0)
+                {
+                    health += (int)remainingDamage;
                 }
             }
 
-            if (remainingDamage != 0)
+            // Reset shields if 'kill' flag is active
+            if (kill)
             {
-                health += (int)remainingDamage;
-                if (kill)
-                    shield -= shield;
+                shield -= shield;
             }
         }
         //
@@ -1327,6 +1359,64 @@ public class CharacterState : MonoBehaviour
         }
 
         currentDamageOutputMultiplier = result;
+    }
+
+    public void AddEnmityGenerationModifier(float value, string identifier)
+    {
+        if (!canGainEnmity)
+            return;
+
+        if (!enmityGenerationModifiers.ContainsKey(identifier))
+        {
+            enmityGenerationModifiers.Add(identifier, value);
+        }
+        else
+        {
+            return;
+        }
+
+        RecalculateEnmityGenerationModifier();
+    }
+
+    public void RemoveEnmityGenerationModifier(string identifier)
+    {
+        if (!canGainEnmity)
+            return;
+
+        if (enmityGenerationModifiers.ContainsKey(identifier))
+        {
+            enmityGenerationModifiers.Remove(identifier);
+        }
+        else
+        {
+            return;
+        }
+
+        RecalculateEnmityGenerationModifier();
+    }
+
+    private void RecalculateEnmityGenerationModifier()
+    {
+        if (!canGainEnmity)
+        {
+            enmityGenerationModifier = 0f;
+            return;
+        }
+
+        float result = 1f;
+
+        List<float> mList = new List<float>(enmityGenerationModifiers.Values.ToArray());
+
+        if (enmityGenerationModifiers.Count > 0)
+        {
+            mList.Sort();
+            for (int i = 0; i < enmityGenerationModifiers.Count; i++)
+            {
+                result *= mList[i];
+            }
+        }
+
+        enmityGenerationModifier = result;
     }
 
     public void AddDamageModifier(float value, string identifier, bool poison)
@@ -2066,7 +2156,10 @@ public class CharacterState : MonoBehaviour
 
     public void AddEnmity(long value, CharacterState character)
     {
-        if (value <= 0)
+        if (!canGainEnmity)
+            return;
+
+        if (value < 0)
             return;
 
         if (character == null)
@@ -2091,6 +2184,9 @@ public class CharacterState : MonoBehaviour
 
     public void SetEnmity(long value, CharacterState character)
     {
+        if (!canGainEnmity)
+            return;
+
         if (value < 0)
             return;
 
@@ -2121,7 +2217,10 @@ public class CharacterState : MonoBehaviour
 
     public void RemoveEnmity(long value, CharacterState character)
     {
-        if (value <= 0)
+        if (!canGainEnmity)
+            return;
+
+        if (value < 0)
             return;
 
         if (character == null)
@@ -2147,6 +2246,9 @@ public class CharacterState : MonoBehaviour
 
     public void ResetEnmity(CharacterState character)
     {
+        if (!canGainEnmity)
+            return;
+
         if (character == null)
             return;
 
@@ -2374,11 +2476,13 @@ public class CharacterState : MonoBehaviour
 
         if (showDamagePopups)
         {
-            ShowStatusEffectFlyText(effect, " + ");
+            ShowStatusEffectFlyText(effect, stacks + effect.data.appliedStacks, " + ");
         }
 
         if (invulnerable)
+        {
             return;
+        }
 
         effect.uniqueTag = tag;
         effect.stacks = stacks;
@@ -2410,7 +2514,7 @@ public class CharacterState : MonoBehaviour
                 targetStatusEffectIconGroup = group;
                 targetStatusEffectIconGroup.alpha = 0f;
             }
-            newStatusEffectHolder.name = newStatusEffectHolder.name.Replace("(Clone)", "").Replace("Target_", $"{characterName.Replace(" ","_")}_");
+            newStatusEffectHolder.name = newStatusEffectHolder.name.Replace("(Clone)", "").Replace("Target_", $"{characterName.Replace(" ","_").Replace('#', '_')}_");
             targetStatusEffectIconParent = newStatusEffectHolder.transform;
         }
         else if (targetStatusEffectIconParent == null)
@@ -2487,7 +2591,7 @@ public class CharacterState : MonoBehaviour
         if (invulnerable)
             return;
 
-        if (effects[name].stacks <= 1)
+        if (effects[name].stacks <= 1 || effects[name].stacks <= stacks)
         {
             if (expired)
                 effects[name].onExpire.Invoke(this);
@@ -2564,12 +2668,17 @@ public class CharacterState : MonoBehaviour
         return effectsArray;
     }
 
-    public void ShowStatusEffectFlyText(StatusEffect statusEffect, string prefix)
+    public void ShowStatusEffectFlyText(StatusEffect statusEffect, int stacks, string prefix)
     {
-        ShowStatusEffectFlyText(statusEffect.data, prefix);
+        ShowStatusEffectFlyText(statusEffect.data, stacks, prefix);
     }
 
-    public void ShowStatusEffectFlyText(StatusEffectData data, string prefix)
+    public void ShowStatusEffectFlyText(StatusEffect statusEffect, string prefix)
+    {
+        ShowStatusEffectFlyText(statusEffect.data, statusEffect.stacks, prefix);
+    }
+
+    public void ShowStatusEffectFlyText(StatusEffectData data, int stacks, string prefix)
     {
         if (data.hidden) 
             return;
@@ -2598,7 +2707,16 @@ public class CharacterState : MonoBehaviour
             color = neutralPopupColor;
         }
 
-        Sprite icon = data.hudElement.transform.GetChild(0).GetComponent<Image>().sprite;
+        Sprite icon;
+        int iconIndex = stacks - 1;
+        if (data.icons != null && data.icons.Count > 0 && data.icons.Count >= iconIndex && iconIndex > -1)
+        {
+            icon = data.icons[iconIndex];
+        }
+        else
+        {
+            icon = data.hudElement.transform.GetChild(0).GetComponent<Image>().sprite;
+        }
 
         ShowFlyText(new FlyText(result, color, icon, string.Empty));
     }
@@ -2607,46 +2725,54 @@ public class CharacterState : MonoBehaviour
     {
         string result = string.Empty;
 
-        if (showElementalAspect && damage.elementalAspect != ElementalAspect.none && damage.elementalAspect != ElementalAspect.unaspected)
+        Damage finalDamage = new Damage(damage);
+
+        if (!damage.ignoreDamageReductions)
         {
-            if (damage.value < 0 || damage.value > 0)
+            // Apply damage reduction
+            finalDamage = new Damage(damage, (long)Math.Round(damage.value * currentDamageReduction));
+        }
+
+        if (showElementalAspect && finalDamage.elementalAspect != ElementalAspect.none && finalDamage.elementalAspect != ElementalAspect.unaspected)
+        {
+            if (finalDamage.value < 0 || finalDamage.value > 0)
             {
-                result = $"<sprite=\"damage_types\" name=\"{(int)damage.type}\"><sprite=\"damage_types\" name=\"{damage.elementalAspect.ToString("g")}\">{Mathf.Abs(damage.value)}";
+                result = $"<sprite=\"damage_types\" name=\"{(int)finalDamage.type}\"><sprite=\"damage_types\" name=\"{finalDamage.elementalAspect.ToString("g")}\">{Mathf.Abs(finalDamage.value)}";
             }
             else
             {
-                result = $"<sprite=\"damage_types\" name=\"{(int)damage.type}\"><sprite=\"damage_types\" name=\"{damage.elementalAspect.ToString("g")}\">{damage.value}";
+                result = $"<sprite=\"damage_types\" name=\"{(int)finalDamage.type}\"><sprite=\"damage_types\" name=\"{finalDamage.elementalAspect.ToString("g")}\">{finalDamage.value}";
             }
         } 
         else
         {
-            if (damage.value < 0 || damage.value > 0)
+            if (finalDamage.value < 0 || finalDamage.value > 0)
             {
-                result = $"<sprite=\"damage_types\" name=\"{(int)damage.type}\">{Mathf.Abs(damage.value)}";
+                result = $"<sprite=\"damage_types\" name=\"{(int)finalDamage.type}\">{Mathf.Abs(finalDamage.value)}";
             }
             else
             {
-                result = $"<sprite=\"damage_types\" name=\"{(int)damage.type}\">{damage.value}";
+                result = $"<sprite=\"damage_types\" name=\"{(int)finalDamage.type}\">{finalDamage.value}";
             }
         }
 
-        string source = damage.name;
+        string source = finalDamage.name;
 
         Color color = positivePopupColor;
 
-        if (damage.negative || damage.value < 0)
+        if (finalDamage.negative || finalDamage.value < 0)
         {
             color = negativePopupColor;
         }
-        else if (!damage.negative)
+        else if (!finalDamage.negative)
         {
-            if (damage.value < 0 || damage.value > 0)
+            if (finalDamage.value < 0 || finalDamage.value > 0)
             {
-                result = $"<sprite=\"damage_types\" name=\"0\">{Mathf.Abs(damage.value)}";
+                result = $"<sprite=\"damage_types\" name=\"0\">{Mathf.Abs(finalDamage.value)}";
             }
             else
             {
-                result = $"<sprite=\"damage_types\" name=\"0\">{damage.value}";
+                result = $"<sprite=\"damage_types\" name=\"0\">{finalDamage.value}";
             }
         }
 

@@ -194,12 +194,12 @@ public class TetherTrigger : MonoBehaviour
     public void BreakTether()
     {
         lineRenderer.gameObject.SetActive(false);
-        Utilities.FunctionTimer.Create(() => onBreak.Invoke(), breakDelay, $"TetherTrigger_{this}_{GetHashCode()}_Break_Delay", false, true);
+        Utilities.FunctionTimer.Create(this, () => onBreak.Invoke(), breakDelay, $"TetherTrigger_{this}_{GetHashCode()}_Break_Delay", false, true);
     }
 
     public void SolveTether()
     {
         lineRenderer.gameObject.SetActive(false);
-        Utilities.FunctionTimer.Create(() => onSolved.Invoke(), breakDelay, $"TetherTrigger_{this}_{GetHashCode()}_Solve_Delay", false, true);
+        Utilities.FunctionTimer.Create(this, () => onSolved.Invoke(), breakDelay, $"TetherTrigger_{this}_{GetHashCode()}_Solve_Delay", false, true);
     }
 }

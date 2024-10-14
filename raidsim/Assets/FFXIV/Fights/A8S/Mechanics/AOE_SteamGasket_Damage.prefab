@@ -202,7 +202,7 @@ GameObject:
   - component: {fileID: 7821429421088923007}
   - component: {fileID: 7716594569317342350}
   m_Layer: 0
-  m_Name: AOE_Orb_Puddle
+  m_Name: AOE_SteamGasket_Damage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -284,18 +284,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 510ab2ae02fd4284c869e6f2013bd0fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  data: {fileID: 0}
   damageName: Explosion
+  inverted: 0
   owner: {fileID: 0}
   autoAssignOwner: 0
+  ableToHitTag: Player
   damage:
     name: Explosion
-    value: -2000
+    value: -5000
     negative: 0
     ignoreDamageReductions: 0
     type: 1
     elementalAspect: 1
     physicalAspect: 0
     applicationType: 0
+  enmity: 0
+  increaseEnmity: 0
+  topEnmity: 0
   initializeOnStart: 1
   self: 0
   dealsDamage: 1
@@ -346,6 +352,12 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onSpawn:
+    m_PersistentCalls:
+      m_Calls: []
+  onTrigger:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &7821429421088923007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -359,6 +371,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 0
+  disableInstead: 0
+  log: 0
 --- !u!114 &7716594569317342350
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -372,8 +386,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mechanicEnabled: 1
-  mechanicName: 
+  mechanicName: Steam Gasket Final Punishment Cleanse
   party: {fileID: 0}
+  autoFindParty: 0
   effect:
     name: FinalPunishment_1
     data: {fileID: 11400000, guid: 24a3513861d4d044cb912cce40b9d67d, type: 2}

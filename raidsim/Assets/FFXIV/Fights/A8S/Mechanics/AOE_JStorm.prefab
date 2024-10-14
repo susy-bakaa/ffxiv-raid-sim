@@ -120,6 +120,8 @@ GameObject:
   - component: {fileID: 502108215929725123}
   - component: {fileID: 3719421399136398919}
   - component: {fileID: 3251041718577460962}
+  - component: {fileID: 6251903364008324983}
+  - component: {fileID: 7223787403132602684}
   m_Layer: 0
   m_Name: AOE_JStorm
   m_TagString: aoe
@@ -206,18 +208,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 510ab2ae02fd4284c869e6f2013bd0fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  data: {fileID: 0}
   damageName: Gale Force
+  inverted: 0
   owner: {fileID: 0}
   autoAssignOwner: 0
+  ableToHitTag: Player
   damage:
     name: 
     value: 1
     negative: 1
-    ignoreDamageReductions: 0
+    ignoreDamageReductions: 1
     type: 3
     elementalAspect: 6
     physicalAspect: 0
     applicationType: 3
+  enmity: 0
+  increaseEnmity: 0
+  topEnmity: 0
   initializeOnStart: 1
   self: 0
   dealsDamage: 1
@@ -239,6 +247,18 @@ MonoBehaviour:
   onHit:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 6251903364008324983}
+        m_TargetAssemblyTypeName: FightMechanic, Assembly-CSharp
+        m_MethodName: InterruptMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 3251041718577460962}
         m_TargetAssemblyTypeName: FightMechanic, Assembly-CSharp
         m_MethodName: TriggerMechanic
@@ -269,6 +289,12 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onSpawn:
+    m_PersistentCalls:
+      m_Calls: []
+  onTrigger:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &3719421399136398919
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -282,6 +308,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 0
+  disableInstead: 0
+  log: 0
 --- !u!114 &3251041718577460962
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -297,6 +325,7 @@ MonoBehaviour:
   mechanicEnabled: 1
   mechanicName: 
   party: {fileID: 0}
+  autoFindParty: 0
   effect:
     name: FinalPunishment_1
     data: {fileID: 11400000, guid: 24a3513861d4d044cb912cce40b9d67d, type: 2}
@@ -305,6 +334,75 @@ MonoBehaviour:
   ignoreRoles: 1
   cleansEffect: 1
   killsEffect: 0
+--- !u!114 &6251903364008324983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6418138628864437263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0ddd1407c93fc84b836214d78e073cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: JStorm Fail
+  delay: 36
+  activateOnStart: 1
+  onFinish:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7223787403132602684}
+        m_TargetAssemblyTypeName: FightMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 3719421399136398919}
+        m_TargetAssemblyTypeName: DestroyObject, Assembly-CSharp
+        m_MethodName: TriggerDestruction
+        m_Mode: 4
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0.1
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &7223787403132602684
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6418138628864437263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5cf78bffe51f1a049a1c72ee51491481, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: Hurricane Force
+  party: {fileID: 0}
+  autoFindParty: 1
+  useActionDamage: 0
+  damage:
+    name: Hurricane Force
+    value: -99999
+    negative: 1
+    ignoreDamageReductions: 1
+    type: 3
+    elementalAspect: 6
+    physicalAspect: 0
+    applicationType: 0
 --- !u!1001 &5406278816461125139
 PrefabInstance:
   m_ObjectHideFlags: 0

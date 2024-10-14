@@ -98,8 +98,11 @@ GameObject:
   - component: {fileID: 3710068325710460001}
   - component: {fileID: 8579686092764230461}
   - component: {fileID: 9185109258472505800}
+  - component: {fileID: 497019899465780228}
+  - component: {fileID: 4665560799770944882}
+  - component: {fileID: 4356336796217486386}
   m_Layer: 0
-  m_Name: AOE_Orb
+  m_Name: AOE_SteamGasket
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -183,9 +186,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 510ab2ae02fd4284c869e6f2013bd0fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  data: {fileID: 0}
   damageName: 
+  inverted: 0
   owner: {fileID: 0}
   autoAssignOwner: 0
+  ableToHitTag: Player
   damage:
     name: 
     value: 0
@@ -195,6 +201,9 @@ MonoBehaviour:
     elementalAspect: 1
     physicalAspect: 0
     applicationType: 0
+  enmity: 0
+  increaseEnmity: 0
+  topEnmity: 0
   initializeOnStart: 1
   self: 0
   dealsDamage: 0
@@ -221,6 +230,18 @@ MonoBehaviour:
   onFinish:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 497019899465780228}
+        m_TargetAssemblyTypeName: FightMechanic, Assembly-CSharp
+        m_MethodName: InterruptMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 8579686092764230461}
         m_TargetAssemblyTypeName: FightMechanic, Assembly-CSharp
         m_MethodName: TriggerMechanic
@@ -245,6 +266,12 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onSpawn:
+    m_PersistentCalls:
+      m_Calls: []
+  onTrigger:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &8579686092764230461
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -258,13 +285,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mechanicEnabled: 1
-  mechanicName: 
+  mechanicName: Steam Gasket Explosion
+  owner: {fileID: 0}
+  targetController: {fileID: 0}
   damageTriggerPrefab: {fileID: 7756298124541113061, guid: c3da86c37c273294fa76c4d6d23fee9f, type: 3}
+  enableInstead: 0
   spawnLocation: {fileID: 6545481892164689573}
   delay: 0
+  autoAssignOwner: 0
   useActionDamage: 0
   usePlayerHealth: 0
+  useTargetControllerCurrentTargetAsLocation: 0
   dealDamage: 1
+  increaseEnmity: 0
   damageMultiplier: 1
 --- !u!114 &9185109258472505800
 MonoBehaviour:
@@ -279,6 +312,76 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 0
+  disableInstead: 0
+  log: 0
+--- !u!114 &497019899465780228
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6472054098776802713}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0ddd1407c93fc84b836214d78e073cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: Steam Gasket Fail
+  delay: 36
+  activateOnStart: 1
+  onFinish:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4665560799770944882}
+        m_TargetAssemblyTypeName: FightMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &4665560799770944882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6472054098776802713}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7390c418be5b7b84c96a90e78b124d54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: Start chasing random Player
+  party: {fileID: 0}
+  autoFindParty: 1
+  useRandomMember: 1
+  memberIndex: -1
+--- !u!114 &4356336796217486386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6472054098776802713}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 953f9b4048c99b34faf3bf7910cb77ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  targetUI: {fileID: 0}
+  anchoredPosition: 0
+  x: 1
+  y: 0
+  z: 1
+  speed: 10
 --- !u!1 &8766812616376426699
 GameObject:
   m_ObjectHideFlags: 0

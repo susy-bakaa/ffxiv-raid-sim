@@ -20,7 +20,7 @@ public class BossController : MonoBehaviour
 
     void Awake()
     {
-        animator = GetComponent<Animator>();
+        animator = GetComponentInChildren<Animator>();
         state = GetComponent<CharacterState>();
         controller = GetComponent<ActionController>();
     }

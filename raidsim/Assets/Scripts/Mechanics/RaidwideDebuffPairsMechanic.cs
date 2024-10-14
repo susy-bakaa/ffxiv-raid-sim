@@ -54,15 +54,12 @@ public class RaidwideDebuffPairsMechanic : FightMechanic
 
         if (!string.IsNullOrEmpty(playerEffect.name) && playerEffect.effectInfos.Length > 0 && player != null)
         {
-            Debug.Log("rdpm 1");
             if (statusEffects.ContainsInfoPair(playerEffect))
             {
-                Debug.Log("rdpm 2");
                 statusEffects.RemoveInfoPair(playerEffect);
                 partyMembers.Remove(player);
                 for (int i = 0; i < playerEffect.effectInfos.Length; i++)
                 {
-                    Debug.Log("rdpm 3");
                     player.AddEffect(playerEffect.effectInfos[i].data, false, playerEffect.effectInfos[i].tag, playerEffect.effectInfos[i].stacks);
                 }
             }

@@ -211,7 +211,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 0
-  m_StartCorner: 1
+  m_StartCorner: 0
   m_StartAxis: 0
   m_CellSize: {x: 23, y: 30}
   m_Spacing: {x: 5, y: 5}
@@ -230,6 +230,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hudElements: []
+  autoUpdate: 1
 --- !u!114 &382312039327543928
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -267,13 +268,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 801af055657c9654c94b43ada9206ccd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  priority: 1
+  priority: -1
   characterState: {fileID: 0}
   destroyIfMissing: 1
   blocksAllInput: 0
   blocksPosInput: 0
   blocksRotInput: 0
   blocksScrInput: 0
+  blocksTargetRaycasts: 0
   doMovement: 0
   movement: {x: 0, y: 0}
   fadeOutTime: -1

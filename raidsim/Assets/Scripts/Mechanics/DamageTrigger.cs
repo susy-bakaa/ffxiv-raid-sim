@@ -7,6 +7,7 @@ using UnityEngine.Events;
 using UnityEngine.Playables;
 using static ActionController;
 using static GlobalStructs;
+using static UnityEngine.ParticleSystem;
 using Random = UnityEngine.Random;
 
 public class DamageTrigger : MonoBehaviour
@@ -87,11 +88,11 @@ public class DamageTrigger : MonoBehaviour
         if (m_collider != null && visualDelay > 0f)
         {
             m_collider.enabled = false;
-            Utilities.FunctionTimer.Create(() => m_collider.enabled = true, visualDelay, $"{id}_{damageName}_{gameObject}_{GetHashCode()}_visual_delay", false, true);
+            Utilities.FunctionTimer.Create(this, () => m_collider.enabled = true, visualDelay, $"{id}_{damageName}_{gameObject}_{GetHashCode()}_visual_delay", false, true);
         }
         if (triggerDelay > 0f)
         {
-            Utilities.FunctionTimer.Create(() => {
+            Utilities.FunctionTimer.Create(this, () => {
                 if (!inProgress)
                     StartDamageTrigger();
             }, triggerDelay, $"{id}_{damageName}_{gameObject}_{GetHashCode()}_trigger_delay", false, true);
@@ -199,7 +200,7 @@ public class DamageTrigger : MonoBehaviour
             TriggerDamage(currentPlayers.ToArray());
             if (cooldown > 0f)
             {
-                Utilities.FunctionTimer.Create(() => inProgress = false, cooldown, $"{id}_{damageName}_{gameObject}_{GetHashCode()}_trigger_cooldown", false, true);
+                Utilities.FunctionTimer.Create(this, () => inProgress = false, cooldown, $"{id}_{damageName}_{gameObject}_{GetHashCode()}_trigger_cooldown", false, true);
             }
             else
             {
@@ -215,7 +216,7 @@ public class DamageTrigger : MonoBehaviour
         TriggerDamage(players);
         if (cooldown > 0f)
         {
-            Utilities.FunctionTimer.Create(() => inProgress = false, cooldown, $"{id}_{damageName}_{gameObject}_{GetHashCode()}_trigger_cooldown", false, true);
+            Utilities.FunctionTimer.Create(this, () => inProgress = false, cooldown, $"{id}_{damageName}_{gameObject}_{GetHashCode()}_trigger_cooldown", false, true);
         }
         else
         {
@@ -283,6 +284,52 @@ public class DamageTrigger : MonoBehaviour
 
         if (players.Length > 0)
         {
+            if (increaseEnmity && owner != null && data != null)
+            {
+                // First, collect all enemies from the players' enmity lists
+                HashSet<CharacterState> enemiesToAdd = new HashSet<CharacterState>();
+
+                // Iterate over the players list to gather the enemies they have enmity for
+                foreach (var player in players)
+                {
+                    if (ignoresOwner)
+                    {
+                        if (player == owner)
+                        {
+                            continue;
+                        }
+                    }
+
+                    foreach (var enemy in player.enmity.Keys)
+                    {
+                        // Add the enemy to the set if it's not already there
+                        if (!enemiesToAdd.Contains(enemy))
+                        {
+                            enemiesToAdd.Add(enemy);
+                        }
+                    }
+                }
+
+                // Now, iterate over the gathered enemies and add enmity for each one to the owner
+                foreach (var enemy in enemiesToAdd)
+                {
+                    // If the owner does not already have enmity for this enemy, add them
+                    if (!owner.enmity.ContainsKey(enemy))
+                    {
+                        owner.enmity[enemy] = 0; // Initialize with 0 enmity
+                    }
+
+                    // Calculate the enmity to add based on damage dealt or healing done
+                    long enmityToAdd = Mathf.RoundToInt((damagePerPlayer.value * data.damageEnmityMultiplier) * owner.enmityGenerationModifier);
+
+                    // Set the enmity for the owner (you can use AddEnmity or SetEnmity depending on your logic)
+                    long currentEnmity = owner.enmity[enemy];
+                    currentEnmity += enmityToAdd;
+
+                    owner.SetEnmity(currentEnmity, enemy);
+                }
+            }
+
             for (int i = 0; i < players.Length; i++)
             {
                 if (ignoresOwner)
@@ -302,21 +349,62 @@ public class DamageTrigger : MonoBehaviour
                     {
                         enmity = 0;
 
-                        if (topEnmity && owner.partyList != null)
+                        if (!data.isHeal && !data.isShield && players[i].gameObject.activeInHierarchy)
                         {
-                            CharacterState highestEnmityMember = owner.partyList.GetHighestEnmityMember(players[i]);
-                            long highestEnmity = 0;
-                            highestEnmityMember.enmity.TryGetValue(players[i], out highestEnmity);
-                            owner.ResetEnmity(players[i]);
-                            enmity = highestEnmity;
-                            Debug.Log($"topEnmity {highestEnmityMember.characterName} highestEnmity {highestEnmity} damageTrigger.enmity {enmity}");
-                        }
+                            if (topEnmity && owner.partyList != null)
+                            {
+                                CharacterState highestEnmityMember = owner.partyList.GetHighestEnmityMember(players[i]);
+                                long highestEnmity = 0;
+                                highestEnmityMember.enmity.TryGetValue(players[i], out highestEnmity);
+                                owner.ResetEnmity(players[i]);
+                                enmity = highestEnmity;
+                            }
 
-                        long damageEnmity = Math.Abs(data.enmity);
-                        damageEnmity += Math.Abs(Mathf.RoundToInt(data.damage.value * data.damageEnmityMultiplier));
-                        enmity += damageEnmity;
-                        Debug.Log($"enmity {enmity} damageTrigger.enmity {enmity}");
-                        owner.AddEnmity(enmity, players[i]);
+                            long damageEnmity = Math.Abs(data.enmity);
+                            damageEnmity += Math.Abs(Mathf.RoundToInt(data.damage.value * data.damageEnmityMultiplier * owner.enmityGenerationModifier));
+                            enmity += damageEnmity;
+                            owner.AddEnmity(enmity, players[i]);
+                        }
+                        else if (players[i].gameObject.activeInHierarchy)
+                        {
+                            long healingEnmity = Math.Abs(data.enmity);
+                            healingEnmity += Math.Abs(Mathf.RoundToInt(damagePerPlayer.value * data.damageEnmityMultiplier * owner.enmityGenerationModifier));
+                            enmity += healingEnmity;
+
+                            // Create a list of keys to avoid modifying the dictionary while iterating
+                            var keys = new List<CharacterState>(owner.enmity.Keys);
+
+                            if (keys.Count > 0)
+                            {
+                                // Loop through all enemies the owner has enmity towards
+                                foreach (var targetPlayer in keys)
+                                {
+                                    // Reset current enmity from the enmity dictionary for each iteration
+                                    long currentEnmity = owner.enmity[targetPlayer];
+
+                                    // Calculate the healing enmity for this player based on damage healed
+                                    long healingEnmityForPlayer = Mathf.RoundToInt((damagePerPlayer.value * data.damageEnmityMultiplier) * owner.enmityGenerationModifier);
+
+                                    // Debugging the individual healing enmity calculation
+                                    Debug.Log($"Enmity for {targetPlayer.characterName} amounts to {healingEnmityForPlayer}. Current enmity: {currentEnmity}");
+
+                                    // Add the healing enmity to the current enmity value
+                                    currentEnmity += healingEnmityForPlayer;
+
+                                    // Debugging the total enmity being set
+                                    Debug.Log($"Total enmity for {targetPlayer.characterName} after addition: {currentEnmity}");
+
+                                    // Ensure the enmity is correctly updated per player and does not carry over to the next iteration
+                                    owner.enmity[targetPlayer] = currentEnmity;  // Update the dictionary with the new value
+
+                                    // Update the enmity for this player
+                                    owner.SetEnmity(currentEnmity, targetPlayer);
+                                }
+                            }
+
+                            // Optionally, add the enmity for the character itself (owner) based on healing
+                            //owner.AddEnmity(enmity, owner);
+                        }
                     }
 
                     // Needs a fix or new implementation, but not important since a shield should never be applied directly

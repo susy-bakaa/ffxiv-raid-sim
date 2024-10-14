@@ -12,6 +12,7 @@ public class ConfigMenu : MonoBehaviour
 {
     CanvasGroup group;
     PlayerController playerController;
+    TargetController playerTargeting;
 
     [SerializeField] private CanvasScaler canvasScaler;
     [SerializeField] private SliderInputLinker scaleSliderSync;
@@ -27,6 +28,8 @@ public class ConfigMenu : MonoBehaviour
     int resolution;
     int newResolution;
     [SerializeField] private CanvasGroup applyPopup;
+    public bool isOpen;
+    public bool isApplyPopupOpen;
 
     bool menuVisible = false;
     bool applyPopupVisible = false;
@@ -36,6 +39,11 @@ public class ConfigMenu : MonoBehaviour
     {
         group = GetComponent<CanvasGroup>();
         playerController = FindObjectOfType<PlayerController>();
+        if (playerController != null && playerTargeting == null)
+            playerTargeting = playerController.gameObject.GetComponent<TargetController>();
+
+        if (playerTargeting != null)
+            playerTargeting.SetConfigMenu(this);
 
         scale = scaleSliderSync.Slider.value;
         legacy = toggleMovement.toggles[0].isOn;
@@ -59,12 +67,14 @@ public class ConfigMenu : MonoBehaviour
             group.alpha = 1f;
             group.blocksRaycasts = true;
             group.interactable = true;
+            isOpen = true;
         }
         else
         {
             group.alpha = 0f;
             group.blocksRaycasts = false;
             group.interactable = false;
+            isOpen = false;
         }
     }
 
@@ -77,12 +87,14 @@ public class ConfigMenu : MonoBehaviour
             applyPopup.alpha = 1f;
             applyPopup.blocksRaycasts = true;
             applyPopup.interactable = true;
+            isApplyPopupOpen = true;
         }
         else
         {
             applyPopup.alpha = 0f;
             applyPopup.blocksRaycasts = false;
             applyPopup.interactable = false;
+            isApplyPopupOpen = false;
         }
     }
 
@@ -153,7 +165,7 @@ public class ConfigMenu : MonoBehaviour
             Screen.fullScreenMode = FullScreenMode.Windowed;
         resolution = newResolution;
         resolutionDropdown.SetResolution(resolution, fullscreen);
-#if UNITY_EDITOR
+/*#if UNITY_EDITOR
         // Get the GameView EditorWindow
         var gameView = GetGameView();
 
@@ -161,7 +173,7 @@ public class ConfigMenu : MonoBehaviour
         {
             gameView.maximized = fullscreen;
         }
-#endif
+#endif*/
         configSaved = true;
     }
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using static CharacterState;
 using static PartyList;
@@ -65,11 +66,26 @@ public static class Utilities
     {
         public Action onUpdate;
         public string label;
+        public GameObject trackedObject;
+        public bool usesUnscaledTime;
+        public bool onlyAllowOneInstance;
+        public float time;
 
         void Update()
         {
-            if (onUpdate != null)
+            if (trackedObject == null)
+            {
+                // If the tracked object is null, stop the timer and prevent further updates
+                FunctionTimer.StopTimer(label);
+            }
+            else if (onUpdate != null)
+            {
                 onUpdate();
+            }
+            else
+            {
+                FunctionTimer.StopTimer(label);
+            }
         }
 
         void OnDestroy()
@@ -82,24 +98,44 @@ public static class Utilities
     {
         private static List<FunctionTimer> activeTimerList;
         private static GameObject initGameObject;
+        private static bool eventSubbed = false;
+        private static int currentId;
 
         private static void InitIfNeeded()
         {
+            if (!eventSubbed)
+            {
+                eventSubbed = true;
+                SceneManager.activeSceneChanged += CleanUp;
+            }
+
             if (initGameObject == null)
             {
-                initGameObject = new GameObject("FunctionTimer_Initializer");
+                int newId = UnityEngine.Random.Range(0, 10000);
+                do
+                {
+                    newId = UnityEngine.Random.Range(0, 10000);
+                }
+                while (currentId == newId);
+                currentId = newId;
+
+                initGameObject = new GameObject($"FunctionTimer_Initializer_For_Scene_{SceneManager.GetActiveScene().name.Replace(" ", "_")}_{currentId}");
                 activeTimerList = new List<FunctionTimer>();
             }
         }
-        public static bool CleanUp()
+        public static void CleanUp(Scene scene1, Scene scene2)
         {
-            activeTimerList.Clear();
+            if (string.IsNullOrEmpty(scene1.name))
+                return;
+
+            Debug.Log($"FunctionTimer CleanUp called! {scene1.name} {scene2.name}");
+            if (activeTimerList != null && activeTimerList.Count > 0)
+                activeTimerList.Clear();
             activeTimerList = new List<FunctionTimer>();
             UnityEngine.Object.Destroy(initGameObject);
-            return true;
         }
 
-        public static FunctionTimer Create(Action action, float timer, string name = null, bool useUnscaledTime = false, bool onlyAllowOneInstance = false)
+        public static FunctionTimer Create(MonoBehaviour source, Action action, float timer, string name = null, bool useUnscaledTime = false, bool onlyAllowOneInstance = false)
         {
             InitIfNeeded();
 
@@ -127,8 +163,12 @@ public static class Utilities
 
             MonoBehaviourHook monoBehaviourHook = gameObject.GetComponent<MonoBehaviourHook>();
 
+            monoBehaviourHook.trackedObject = source.gameObject;
             monoBehaviourHook.onUpdate = functionTimer.Update;
             monoBehaviourHook.label = name != null ? name : "null";
+            monoBehaviourHook.usesUnscaledTime = useUnscaledTime;
+            monoBehaviourHook.onlyAllowOneInstance = onlyAllowOneInstance;
+            monoBehaviourHook.time = timer;
 
             activeTimerList.Add(functionTimer);
             return functionTimer;

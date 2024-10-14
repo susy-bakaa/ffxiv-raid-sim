@@ -86,12 +86,12 @@ public class ResolutionDropdown : MonoBehaviour
 
     void Start()
     {
-        Utilities.FunctionTimer.Create(() => OnStart(), Random.Range(1f, 1.25f), $"{group}_{key}_resolution_onstart_delay", true, true);
+        Utilities.FunctionTimer.Create(this, () => OnStart(), Random.Range(1f, 1.25f), $"{group}_{key}_resolution_onstart_delay", true, true);
     }
 
     void Update()
     {
-        if (arrowStandard == null && arrowWhenExpanded == null)
+        if (arrowStandard == null || arrowWhenExpanded == null)
             return;
 
         if (resolutionDropdown.IsExpanded)
@@ -166,6 +166,6 @@ public class ResolutionDropdown : MonoBehaviour
         ini.Set(group, $"i{keyX}", savedValueX);
         ini.Set(group, $"i{keyY}", savedValueY);
 
-        Utilities.FunctionTimer.Create(() => ini.Save(), 0.5f, $"{group}_{key}_dropdown_savevalue_delay", true, false);
+        Utilities.FunctionTimer.Create(this, () => ini.Save(), 0.5f, $"{group}_{key}_dropdown_savevalue_delay", true, false);
     }
 }

@@ -11,6 +11,8 @@ public class CleansableDebuff : StatusEffect
     public bool esunable = true;
     public bool killsOnExpire = false;
 
+    private int id = 0;
+
     public void Reset()
     {
         damage = new Damage(100, true, true, Damage.DamageType.unique, Damage.ElementalAspect.unaspected, Damage.PhysicalAspect.none, Damage.DamageApplicationType.percentageFromMax, string.Empty);
@@ -23,7 +25,7 @@ public class CleansableDebuff : StatusEffect
         {
             if (state.HasEffect(cleanedBy[i].statusName))
             {
-                state.RemoveEffect(data, false, tags);
+                state.RemoveEffect(data, false, tags, stacks);
                 return;
             }
         }
@@ -32,10 +34,12 @@ public class CleansableDebuff : StatusEffect
 
     public override void OnExpire(CharacterState state)
     {
+        id = Random.Range(0, 10000);
+
         if (killsOnExpire)
         {
             // We need to add a small delay to the health modification or else the fly text for the debuff appears twice, this is a simple unnoticable fix for it.
-            Utilities.FunctionTimer.Create(() => state.ModifyHealth(damage, true), 0.1f, $"{gameObject}_{GetHashCode()}_ModifyHealth_Delay", false, true);
+            Utilities.FunctionTimer.Create(this, () => state.ModifyHealth(damage, true), 0.1f, $"{gameObject}_{id}_ModifyHealth_Delay", false, true);
         }
         base.OnExpire(state);
     }

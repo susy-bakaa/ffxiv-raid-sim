@@ -47,6 +47,17 @@ MonoBehaviour:
   data: {fileID: 11400000, guid: f1b27e2dcaffc474a8a7c78be2a5b63d, type: 2}
   duration: 0
   stacks: 0
+  uniqueTag: 0
+  sortOrder: 0
+  damage:
+    name: 
+    value: 0
+    negative: 0
+    ignoreDamageReductions: 0
+    type: 0
+    elementalAspect: 0
+    physicalAspect: 0
+    applicationType: 0
   onApplication:
     m_PersistentCalls:
       m_Calls: []
@@ -62,4 +73,9 @@ MonoBehaviour:
   onCleanse:
     m_PersistentCalls:
       m_Calls: []
-  damageReduction: 0.6
+  onReduce:
+    m_PersistentCalls:
+      m_Calls: []
+  incomingDamageReduction: 0.6
+  outgoingDamageReduction: 0.6
+  enmityGenerationModifier: 11

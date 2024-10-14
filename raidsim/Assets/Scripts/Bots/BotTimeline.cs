@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
+using static StatusEffectData;
 
 public class BotTimeline : MonoBehaviour
 {
+    PartyList party;
     ActionController controller;
     TargetController targeting;
     public AIController bot;
@@ -52,6 +54,18 @@ public class BotTimeline : MonoBehaviour
                 return;
             }
         }
+        if (party == null)
+        {
+            if (bot.TryGetComponent(out CharacterState botCS))
+            {
+                party = botCS.partyList;
+            }
+            else
+            {
+                Debug.LogWarning($"No party list found for {bot}!");
+                return;
+            }
+        }
 
         if (events != null && events.Count > 0)
         {
@@ -61,7 +75,7 @@ public class BotTimeline : MonoBehaviour
         else if (events != null)
         {
             onBegin.Invoke(this);
-            Utilities.FunctionTimer.Create(() => TriggerOnFinish(), 0.1f, $"{index}_botTimeline_no_events_onFinish_delay", true, true);
+            Utilities.FunctionTimer.Create(this, () => TriggerOnFinish(), 0.1f, $"{index}_botTimeline_no_events_onFinish_delay", true, true);
         }
     }
 
@@ -74,7 +88,25 @@ public class BotTimeline : MonoBehaviour
     {
         for (int i = 0; i < events.Count; i++)
         {
-            targeting.SetTarget(events[i].target);
+            if (!string.IsNullOrEmpty(events[i].targetStatusEffectHolder.name) && events[i].targetStatusEffectHolder.data != null && party != null)
+            {
+                foreach (PartyList.PartyMember member in party.members)
+                {
+                    if (member.characterState.HasEffect(events[i].targetStatusEffectHolder.data.statusName, events[i].targetStatusEffectHolder.tag))
+                    {
+                        targeting.SetTarget(member.targetController.self);
+                        break;
+                    }
+                    else
+                    {
+                        targeting.SetTarget(events[i].target);
+                    }
+                }
+            }
+            else
+            {
+                targeting.SetTarget(events[i].target);
+            }
             if (events[i].node != null)
             {
                 currentTarget = events[i].node.transform;
@@ -100,7 +132,7 @@ public class BotTimeline : MonoBehaviour
 
     public void CleanUp(BotTimeline botTimeline = null)
     {
-        /*Utilities.FunctionTimer.Create(() =>
+        /*Utilities.FunctionTimer.Create(this, () =>
         {
             bot = null;
             controller = null;
@@ -119,8 +151,9 @@ public class BotTimeline : MonoBehaviour
         public Vector3 rotation;
         public float waitForRotation;
         public TargetNode target;
+        public StatusEffectInfo targetStatusEffectHolder;
 
-        public BotEvent(string name, Transform node, float waitAtNode, CharacterActionData action, float waitForAction, Vector3 rotation, float waitForRotation, TargetNode cycleTarget)
+        public BotEvent(string name, Transform node, float waitAtNode, CharacterActionData action, float waitForAction, Vector3 rotation, float waitForRotation, TargetNode cycleTarget, StatusEffectInfo targetStatusEffectHolder)
         {
             this.name = name;
             this.node = node;
@@ -130,6 +163,7 @@ public class BotTimeline : MonoBehaviour
             this.rotation = rotation;
             this.waitForRotation = waitForRotation;
             this.target = cycleTarget;
+            this.targetStatusEffectHolder = targetStatusEffectHolder;
         }
     }
 }

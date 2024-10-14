@@ -70,7 +70,7 @@ public class SpawnTetherTriggerMechanic : FightMechanic
             if (delay > 0)
             {
                 spawned.gameObject.SetActive(false);
-                Utilities.FunctionTimer.Create(() =>
+                Utilities.FunctionTimer.Create(this, () =>
                 {
                     spawned.gameObject.SetActive(true);
                     if (!tetherTrigger.initializeOnStart)

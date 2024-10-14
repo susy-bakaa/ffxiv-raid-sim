@@ -84,7 +84,7 @@ public class SpawnDamageTriggerMechanic : FightMechanic
             if (delay > 0)
             {
                 spawned.gameObject.SetActive(false);
-                Utilities.FunctionTimer.Create(() =>
+                Utilities.FunctionTimer.Create(this, () =>
                 {
                     spawned.gameObject.SetActive(true);
                     if (!damageTrigger.initializeOnStart)

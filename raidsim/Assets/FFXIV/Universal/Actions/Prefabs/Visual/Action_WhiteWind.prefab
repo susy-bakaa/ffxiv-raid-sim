@@ -29,7 +29,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 365503505125491395}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -207,14 +207,15 @@ MonoBehaviour:
   owner: {fileID: 0}
   targetController: {fileID: 0}
   damageTriggerPrefab: {fileID: 3384804277230888301, guid: db3b32f4183551c4096a6bb6a4c1ff50, type: 3}
+  enableInstead: 0
   spawnLocation: {fileID: 0}
   delay: 0
-  autoAssignOwner: 0
+  autoAssignOwner: 1
   useActionDamage: 0
   usePlayerHealth: 1
   useTargetControllerCurrentTargetAsLocation: 0
   dealDamage: 0
-  increaseEnmity: 0
+  increaseEnmity: 1
   damageMultiplier: 1
 --- !u!114 &2708056085023501684
 MonoBehaviour:

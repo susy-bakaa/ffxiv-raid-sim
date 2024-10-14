@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.Events;
 using static GlobalStructs;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -31,7 +33,9 @@ public class FightTimeline : MonoBehaviour
     public string timelineName = "Unnamed fight timeline";
     public bool playing = false;
     public bool paused = false;
+    public List<string> pausedBy = new List<string>();
     public UnityEvent<bool> onPausedChanged;
+    public bool disableBotTimelines = false;
     public List<BotTimeline> botTimelines = new List<BotTimeline>();
     public List<TimelineEvent> events = new List<TimelineEvent>();
     public List<RandomEventResult> m_randomEventResults = new List<RandomEventResult>();
@@ -41,6 +45,7 @@ public class FightTimeline : MonoBehaviour
 
     private Dictionary<int, List<CharacterActionData>> randomEventCharacterActions = new Dictionary<int, List<CharacterActionData>>();
     private Dictionary<int, int> randomEventResults = new Dictionary<int, int>();
+    private bool wasPaused;
 
     [System.Serializable]
     public struct RandomEventResult
@@ -198,6 +203,14 @@ public class FightTimeline : MonoBehaviour
         time = Time.time * timeScale;
     }
 
+    void OnDestroy()
+    {
+        pausedBy.Clear();
+        paused = false;
+        Time.timeScale = 1f;
+        Utilities.FunctionTimer.CleanUp(SceneManager.GetActiveScene(), new Scene());
+    }
+
     public void StartTimeline()
     {
         int seed = ((int)System.DateTime.Now.Ticks + Mathf.RoundToInt(Time.time) + System.DateTime.Now.DayOfYear + (int)System.TimeZoneInfo.Local.BaseUtcOffset.Ticks + Mathf.RoundToInt(SystemInfo.batteryLevel) + SystemInfo.graphicsDeviceID + SystemInfo.graphicsDeviceVendorID + SystemInfo.graphicsMemorySize + SystemInfo.processorCount + SystemInfo.processorFrequency + SystemInfo.systemMemorySize) / 6;
@@ -234,6 +247,10 @@ public class FightTimeline : MonoBehaviour
 
         playing = true;
         StartCoroutine(PlayTimeline());
+        
+        if (disableBotTimelines)
+            return;
+
         for (int i = 0; i < botTimelines.Count; i++)
         {
             if (botTimelines[i].bot != null)
@@ -407,15 +424,50 @@ public class FightTimeline : MonoBehaviour
         }
     }
 
-    public void TogglePause()
+    public void TogglePause(string label)
     {
-        TogglePause(!paused);
+        if (pausedBy.Contains(label))
+        {
+            pausedBy.Remove(label);
+        }
+        else
+        {
+            pausedBy.Add(label);
+        }
+
+        UpdatePause();
     }
 
-    public void TogglePause(bool state)
+    public void TogglePause(bool state, string label)
     {
-        onPausedChanged.Invoke(state);
-        paused = state;
+        if (state && !pausedBy.Contains(label))
+        {
+            pausedBy.Add(label);
+        }
+        else if (!state && pausedBy.Contains(label))
+        {
+            pausedBy.Remove(label);
+        }
+
+        UpdatePause();
+    }
+
+    private void UpdatePause()
+    {
+        if (pausedBy.Count > 0)
+        {
+            paused = true;
+        }
+        else
+        {
+            paused = false;
+        }
+
+        if (paused != wasPaused)
+        {
+            wasPaused = paused;
+            onPausedChanged.Invoke(paused);
+        }
     }
 
     [System.Serializable]

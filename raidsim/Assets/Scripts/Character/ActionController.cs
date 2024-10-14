@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NaughtyAttributes;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -25,9 +26,11 @@ public class ActionController : MonoBehaviour
     public bool isCasting = false;
     public bool waitInterruptedCasts = false;
     public bool lockActionsWhenCasting = true;
+    public bool faceTargetWhenCasting = false;
     private bool previousCanDoActions;
     private bool previousIsCasting;
     public float distanceToTarget = 0f;
+    public float castingRotationSpeed = 5f;
 
     [Header("Personal")]
     public bool useCastBar;
@@ -77,7 +80,7 @@ public class ActionController : MonoBehaviour
 
     void Awake()
     {
-        animator = GetComponent<Animator>();
+        animator = GetComponentInChildren<Animator>();
         characterState = GetComponent<CharacterState>();
         targetController = GetComponent<TargetController>();
 
@@ -241,6 +244,21 @@ public class ActionController : MonoBehaviour
             // Simulate FFXIV slidecasting, which is 500ms
             if (lastAction != null)
             {
+                // Handle rotation when casting
+                if (faceTargetWhenCasting && lastAction.data.isTargeted)
+                {
+                    // Get the direction to the target but ignore the vertical component (Y-axis)
+                    Vector3 directionToTarget = targetController.currentTarget.transform.position - transform.position;
+                    directionToTarget.y = 0; // Ensure we only rotate on the Y-axis
+
+                    // If there's some direction (the target is not directly above or below)
+                    if (directionToTarget != Vector3.zero)
+                    {
+                        Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+                        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * castingRotationSpeed); // Smooth rotation, optional
+                    }
+                }
+
                 if ((!characterState.still || characterState.dead || (lastAction.data.range > 0f && lastAction.data.isTargeted && (distanceToTarget > lastAction.data.range))) && castTime > 0.5f)
                 {
                     Interrupt();
@@ -297,14 +315,14 @@ public class ActionController : MonoBehaviour
                 if (castBar != null && castBarGroup.alpha == 1f)
                 {
                     castBarGroup.alpha = 0.99f;
-                    Utilities.FunctionTimer.Create(() => castBarGroup.LeanAlpha(0f, 0.5f), 2f, $"{characterState.characterName}_{this}_castBar_fade_out_if_interrupted", true);
+                    Utilities.FunctionTimer.Create(this, () => castBarGroup.LeanAlpha(0f, 0.5f), 2f, $"{characterState.characterName}_{this}_castBar_fade_out_if_interrupted", true);
                 }
                 if (castBarParty != null && castBarGroupParty.alpha == 1f)
                 {
                     castBarGroupParty.alpha = 0f;
-                    //Utilities.FunctionTimer.Create(() => castBarGroupParty.alpha = 0f, 2f, $"{this}_castBarParty_fade_out_if_interrupted", true);
+                    //Utilities.FunctionTimer.Create(this, () => castBarGroupParty.alpha = 0f, 2f, $"{this}_castBarParty_fade_out_if_interrupted", true);
                 }
-                Utilities.FunctionTimer.Create(() => ResetCastBar(), 2.5f, $"{characterState.characterName}_{this}_interrupted_status", true, true);
+                Utilities.FunctionTimer.Create(this, () => ResetCastBar(), 2.5f, $"{characterState.characterName}_{this}_interrupted_status", true, true);
             }
             else
             {
@@ -433,9 +451,13 @@ public class ActionController : MonoBehaviour
                 autoAction.ExecuteAction(newActionInfo);
 
                 onCast.Invoke(new CastInfo(newActionInfo, instantCast, characterState.GetEffects()));
-                if (animator != null && !string.IsNullOrEmpty(autoAction.data.animationName))
+                if (animator != null && !string.IsNullOrEmpty(autoAction.data.animationName) && !autoAction.data.playAnimationDirectly)
                 {
                     animator.SetTrigger(autoAction.data.animationName);
+                }
+                else if (animator != null && !string.IsNullOrEmpty(autoAction.data.animationName) && autoAction.data.playAnimationDirectly)
+                {
+                    animator.CrossFadeInFixedTime(autoAction.data.animationName, 0.2f);
                 }
 
                 return true;
@@ -583,9 +605,13 @@ public class ActionController : MonoBehaviour
                 StartCoroutine(Cast(castTime, () => { action.ExecuteAction(newActionInfo); }));
                 onCast.Invoke(new CastInfo(newActionInfo, instantCast, characterState.GetEffects()));
 
-                if (animator != null && !string.IsNullOrEmpty(action.data.animationName) && action.data.playAnimationDirectly)
+                if (animator != null && !string.IsNullOrEmpty(action.data.animationName) && !action.data.playAnimationDirectly)
                 {
-                    animator.Play(action.data.animationName);
+                    animator.SetTrigger(action.data.animationName);
+                }
+                else if (animator != null && !string.IsNullOrEmpty(action.data.animationName) && action.data.playAnimationDirectly)
+                {
+                    animator.CrossFadeInFixedTime(action.data.animationName, 0.2f);
                 }
 
                 UpdateCharacterName();

@@ -44,7 +44,7 @@ public class SaveToggle : MonoBehaviour
 
     public void SaveValue(bool value)
     {
-        Utilities.FunctionTimer.Create(() => {
+        Utilities.FunctionTimer.Create(this, () => {
             ini.Load(GlobalVariables.configPath);
 
             savedValue = value.ToInt();

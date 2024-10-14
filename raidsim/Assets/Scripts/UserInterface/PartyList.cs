@@ -143,9 +143,34 @@ public class PartyList : MonoBehaviour
         return highestHealthMember;
     }
 
+    public List<EnmityInfo> GetEnmityValuesList(CharacterState towards)
+    {
+        if (members == null || members.Count == 0 || towards == null)
+        {
+            return new List<EnmityInfo>(); // Return an empty list if there are no members
+        }
+
+        // Create a list of EnmityInfo
+        List<EnmityInfo> enmityInfoList = new List<EnmityInfo>();
+
+        for (int i = 0; i < members.Count; i++)
+        {
+            CharacterState memberState = members[i].characterState;
+            long enmityValue = memberState.enmity.TryGetValue(towards, out long value) ? value : 0;
+
+            // Add the EnmityInfo struct to the list
+            enmityInfoList.Add(new EnmityInfo(memberState.characterName, memberState, towards, (int)enmityValue));
+        }
+
+        // Sort the list based on the enmity value in descending order
+        enmityInfoList.Sort((a, b) => b.enmity.CompareTo(a.enmity));
+
+        return enmityInfoList;
+    }
+
     public List<CharacterState> GetEnmityList(CharacterState towards)
     {
-        if (members == null || members.Count == 0)
+        if (members == null || members.Count == 0 || towards == null)
         {
             return new List<CharacterState>(); // Return an empty list if there are no members
         }
@@ -240,6 +265,8 @@ public class PartyList : MonoBehaviour
             member.role = member.characterState.role;
             members[i].hudElement.gameObject.SetActive(members[i].characterState.gameObject.activeSelf);
             members[i] = member;
+            if (members[i].hudElement != null)
+                members[i].hudElement.characterState = members[i].characterState;
 
             if (members[i].characterState.gameObject.activeSelf)
             {
@@ -285,6 +312,23 @@ public class PartyList : MonoBehaviour
                 role = characterState.role;
             else
                 role = CharacterState.Role.unassigned;
+        }
+    }
+
+    [System.Serializable]
+    public struct EnmityInfo
+    {
+        public string name;
+        public CharacterState state;
+        public CharacterState towards;
+        public int enmity;
+
+        public EnmityInfo(string name, CharacterState state, CharacterState towards, int enmity)
+        {
+            this.name = name;
+            this.state = state;
+            this.towards = towards;
+            this.enmity = enmity;
         }
     }
 }

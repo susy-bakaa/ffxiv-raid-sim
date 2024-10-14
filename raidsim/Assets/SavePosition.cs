@@ -31,7 +31,7 @@ public class SavePosition : MonoBehaviour
     void Start()
     {
         randomDelay = Random.Range(randomDelay, randomDelay + 0.2f);
-        Utilities.FunctionTimer.Create(() => OnStart(), Random.Range(1f, 1.25f), $"{group}_{key}_saveposition_onstart_delay", true, false);
+        Utilities.FunctionTimer.Create(this, () => OnStart(), Random.Range(1f, 1.25f), $"{group}_{key}_saveposition_onstart_delay", true, false);
     }
 
     private void OnStart()
@@ -57,7 +57,7 @@ public class SavePosition : MonoBehaviour
 
     public void SaveValue(Vector2 value)
     {
-        Utilities.FunctionTimer.Create(() => {
+        Utilities.FunctionTimer.Create(this, () => {
             ini.Load(GlobalVariables.configPath);
             posX = value.x;
             posY = value.y;

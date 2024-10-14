@@ -20,7 +20,7 @@ public class CombinedEvent : MonoBehaviour
         {
             if (delay > 0)
             {
-                Utilities.FunctionTimer.Create(() => BasicCombinedEvent(), delay, $"{randomIndex}_{gameObject.name}_combinedEvent_start_delay", true, true);
+                Utilities.FunctionTimer.Create(this, () => BasicCombinedEvent(), delay, $"{randomIndex}_{gameObject.name}_combinedEvent_start_delay", true, true);
             }
             else
             {

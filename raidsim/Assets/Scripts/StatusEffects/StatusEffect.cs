@@ -209,6 +209,7 @@ public class StatusEffect : MonoBehaviour
 
     public virtual void OnTick(CharacterState state)
     {
+        // I think this is being used incorrectly/broken, but infinite effects work as intended so don't touch it I guess?
         if (data.infinite)
             Refresh(-1);
     }

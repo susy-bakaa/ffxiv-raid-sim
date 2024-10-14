@@ -45,20 +45,18 @@ public class FightSelector : MonoBehaviour
 
     public void Reload(string scene)
     {
-        Utilities.FunctionTimer.Create(() => OnLoad(scene), loadDelay);
+        Utilities.FunctionTimer.Create(this, () => OnLoad(scene), loadDelay);
     }
 
     public void Load()
     {
-        Utilities.FunctionTimer.Create(() => OnLoad(currentScene), loadDelay);
+        Utilities.FunctionTimer.Create(this, () => OnLoad(currentScene), loadDelay);
     }
 
     private void OnLoad(string scene)
     {
-        if (Utilities.FunctionTimer.CleanUp())
-        { 
-            SceneManager.LoadScene(scene); 
-        }
+        //Utilities.FunctionTimer.CleanUp();
+        SceneManager.LoadScene(scene);
     }
 
     private string GetFightName()

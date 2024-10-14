@@ -74,9 +74,24 @@ public class UserInput : MonoBehaviour
             }
         }
 
-        if (BindedKey(KeyBind.Keys["ResetKey"]) || BindedKey(KeyBind.Keys["ResetKeyAlt"]))
+        if (BindedKey(KeyBind.Keys["ResetKey"]))
         {
             SceneManager.LoadScene("menu");
+        }
+    }
+
+    public void VirtualKeyPress(string name)
+    {
+        for (int i = 0; i < keys.Count; i++)
+        {
+            if (keys[i].name == name)
+            {
+                if (keys[i].action != null && characterAction != null)
+                    characterAction.PerformAction(keys[i].action);
+                if (keys[i].statusEffect != null && characterState != null)
+                    characterState.AddEffect(keys[i].statusEffect);
+                keys[i].onInput.Invoke();
+            }
         }
     }
 

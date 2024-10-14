@@ -11,6 +11,8 @@ public class TargetController : MonoBehaviour
     public enum TargetType { nearest, sideToSide, enmity }
 
     Camera m_camera;
+    PauseMenu m_pauseMenu;
+    ConfigMenu m_configMenu;
 
     CharacterState m_characterState;
     ActionController m_actionController;
@@ -37,6 +39,7 @@ public class TargetController : MonoBehaviour
     public bool autoTarget;
     public bool onlyAliveTargets = false;
     public bool onlyIfSomeoneHasEnmity = false;
+    public bool enableAutoAttacksOnDoubleMouseRaycast = false;
 
     [Header("Events")]
     public UnityEvent<TargetNode> onTarget;
@@ -67,6 +70,7 @@ public class TargetController : MonoBehaviour
     private bool targetColorsUpdated;
     private bool targetsTargetColorsUpdated;
     private int rateLimit = 55;
+    private bool wasMouseClick = false;
 
 #if UNITY_EDITOR
     [Button("Tab Target")]
@@ -75,6 +79,15 @@ public class TargetController : MonoBehaviour
         CycleTarget();
     }
 #endif
+
+    public void SetPauseMenu(PauseMenu pauseMenu)
+    {
+        m_pauseMenu = pauseMenu;
+    }
+    public void SetConfigMenu(ConfigMenu configMenu)
+    {
+        m_configMenu = configMenu;
+    }
 
     void Awake()
     {
@@ -120,6 +133,13 @@ public class TargetController : MonoBehaviour
 
     void HandleMouseClick()
     {
+        if (m_pauseMenu != null && m_pauseMenu.isOpen)
+            return;
+        if (m_configMenu != null && m_configMenu.isOpen)
+            return;
+        if (m_configMenu != null && m_configMenu.isApplyPopupOpen)
+            return;
+
         if (Input.GetMouseButtonDown(0))
         {
             mouseDownTime = Time.unscaledTime;
@@ -141,12 +161,14 @@ public class TargetController : MonoBehaviour
 
                 if (Physics.Raycast(ray, out RaycastHit hit, maxTargetDistance))
                 {
-                    if (hit.transform.GetChild(hit.transform.childCount - 1).TryGetComponent(out TargetNode targetNode) && targetNode.gameObject.CompareTag("target") && targetNode.Targetable && allowedGroups.Contains(targetNode.Group))
+                    if (hit.transform.childCount > 0 && hit.transform.GetChild(hit.transform.childCount - 1).TryGetComponent(out TargetNode targetNode) && targetNode.gameObject.CompareTag("target") && targetNode.Targetable && allowedGroups.Contains(targetNode.Group))
                     {
+                        wasMouseClick = true;
                         SetTarget(targetNode);
                     }
                     else
                     {
+                        wasMouseClick = true;
                         SetTarget(null);
                     }
                 }
@@ -212,11 +234,19 @@ public class TargetController : MonoBehaviour
                     if (m_characterState.targetStatusEffectIconGroup.alpha >= 1f)
                     {
                         m_characterState.targetStatusEffectIconGroup.alpha = 0.99f;
-                        m_characterState.targetStatusEffectIconGroup.LeanAlpha(0f, fadeDuration);
+                        if (!FightTimeline.Instance.paused)
+                            m_characterState.targetStatusEffectIconGroup.LeanAlpha(0f, fadeDuration);
+                        else
+                            m_characterState.targetStatusEffectIconGroup.alpha = 0f;
                     }
                 }
             }
             currentTarget.UpdateUserInterface(0f, fadeDuration);
+        }
+
+        if (currentTarget == target && enableAutoAttacksOnDoubleMouseRaycast && wasMouseClick && self != null)
+        {
+            self.GetActionController().autoAttackEnabled = true;
         }
 
         currentTarget = target;
@@ -236,6 +266,7 @@ public class TargetController : MonoBehaviour
         m_characterState = null;
         m_actionController = null;
         m_targetController = null;
+        wasMouseClick = false;
 
         // Additional logic for targeting (e.g., UI updates) can go here.
         if (currentTarget != null && isPlayer)
@@ -448,7 +479,10 @@ public class TargetController : MonoBehaviour
 
             if (targetInfo != null && targetInfo.alpha <= 0f)
             {
-                targetInfo.LeanAlpha(1f, fadeDuration);
+                if (!FightTimeline.Instance.paused)
+                    targetInfo.LeanAlpha(1f, fadeDuration);
+                else
+                    targetInfo.alpha = 1f;
             }
 
             // CHARACTER STATE
@@ -510,7 +544,11 @@ public class TargetController : MonoBehaviour
                     if (m_characterState.targetStatusEffectIconGroup.alpha <= 0f)
                     {
                         m_characterState.targetStatusEffectIconGroup.alpha = 0.01f;
-                        m_characterState.targetStatusEffectIconGroup.LeanAlpha(1f, fadeDuration);
+                        if (!FightTimeline.Instance.paused)
+                            m_characterState.targetStatusEffectIconGroup.LeanAlpha(1f, fadeDuration);
+                        else
+                            m_characterState.targetStatusEffectIconGroup.alpha = 1f;
+
                     }
                 }
                 /*}
@@ -550,7 +588,10 @@ public class TargetController : MonoBehaviour
 
                         if (targetCastbarGroup.alpha == 0f)
                         {
-                            targetCastbarGroup.LeanAlpha(1f, 0.1f);
+                            if (!FightTimeline.Instance.paused)
+                                targetCastbarGroup.LeanAlpha(1f, 0.1f);
+                            else
+                                targetCastbarGroup.alpha = 1f;
                         }
                         if (targetCastbarInterruptGroup != null)
                         {
@@ -581,9 +622,9 @@ public class TargetController : MonoBehaviour
                         if (targetCastbar != null && targetCastbarGroup.alpha == 1f)
                         {
                             targetCastbarGroup.alpha = 0.99f;
-                            Utilities.FunctionTimer.Create(() => targetCastbarGroup.LeanAlpha(0f, fadeDuration), 2f, $"{m_actionController}_castBar_fade_out_if_interrupted", true);
+                            Utilities.FunctionTimer.Create(this, () => { if (!FightTimeline.Instance.paused) { targetCastbarGroup.LeanAlpha(0f, fadeDuration); } else { targetCastbarGroup.alpha = 0f; } }, 2f, $"{m_actionController}_castBar_fade_out_if_interrupted", true);
                         }
-                        Utilities.FunctionTimer.Create(() => 
+                        Utilities.FunctionTimer.Create(this, () => 
                         {
                             if (targetCastbar != null)
                             {
@@ -608,7 +649,10 @@ public class TargetController : MonoBehaviour
                         if (targetCastbar != null && targetCastbarGroup.alpha == 1f)
                         {
                             targetCastbarGroup.alpha = 0.99f;
-                            targetCastbarGroup.LeanAlpha(0f, fadeDuration);
+                            if (!FightTimeline.Instance.paused)
+                                targetCastbarGroup.LeanAlpha(0f, fadeDuration);
+                            else
+                                targetCastbarGroup.alpha = 0f;
                         }
                     }
                 }
@@ -621,7 +665,10 @@ public class TargetController : MonoBehaviour
                 }
                 else if (targetCastbarGroup.alpha >= 1f)
                 {
-                    targetCastbarGroup.LeanAlpha(0f, fadeDuration);
+                    if (!FightTimeline.Instance.paused)
+                        targetCastbarGroup.LeanAlpha(0f, fadeDuration);
+                    else
+                        targetCastbarGroup.alpha = 0f;
                 }
             }
             // TARGET CONTROLLER
@@ -655,7 +702,10 @@ public class TargetController : MonoBehaviour
                         if (targetsTargetGroup.alpha <= 0f)
                         {
                             targetsTargetGroup.alpha = 0.01f;
-                            targetsTargetGroup.LeanAlpha(1f, fadeDuration);
+                            if (!FightTimeline.Instance.paused)
+                                targetsTargetGroup.LeanAlpha(1f, fadeDuration);
+                            else
+                                targetsTargetGroup.alpha = 1f;
                         }
                         if (targetsTargetHealth != null)
                         {
@@ -685,7 +735,10 @@ public class TargetController : MonoBehaviour
                     else if (targetsTargetGroup.alpha >= 1f)
                     {
                         targetsTargetGroup.alpha = 0.99f;
-                        targetsTargetGroup.LeanAlpha(0f, fadeDuration);
+                        if (!FightTimeline.Instance.paused)
+                            targetsTargetGroup.LeanAlpha(0f, fadeDuration);
+                        else
+                            targetsTargetGroup.alpha = 0f;
 
                         if (targetsTargetHealth != null)
                         {
@@ -702,7 +755,10 @@ public class TargetController : MonoBehaviour
                 else if (targetsTargetGroup.alpha >= 1f)
                 {
                     targetsTargetGroup.alpha = 0.99f;
-                    targetsTargetGroup.LeanAlpha(0f, fadeDuration);
+                    if (!FightTimeline.Instance.paused)
+                        targetsTargetGroup.LeanAlpha(0f, fadeDuration);
+                    else
+                        targetsTargetGroup.alpha = 0f;
 
                     if (targetsTargetHealth != null)
                     {
@@ -725,7 +781,10 @@ public class TargetController : MonoBehaviour
                 else if (targetsTargetGroup.alpha >= 1f)
                 {
                     targetsTargetGroup.alpha = 0.99f;
-                    targetsTargetGroup.LeanAlpha(0f, fadeDuration);
+                    if (!FightTimeline.Instance.paused)
+                        targetsTargetGroup.LeanAlpha(0f, fadeDuration);
+                    else
+                        targetsTargetGroup.alpha = 0f;
 
                     if (targetsTargetHealth != null)
                     {
@@ -743,7 +802,10 @@ public class TargetController : MonoBehaviour
         else if (targetInfo != null && targetInfo.alpha >= 1f)
         {
             targetInfo.alpha = 0.99f;
-            targetInfo.LeanAlpha(0f, fadeDuration);
+            if (!FightTimeline.Instance.paused)
+                targetInfo.LeanAlpha(0f, fadeDuration);
+            else
+                targetInfo.alpha = 0f;
         }
     }
 
