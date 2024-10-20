@@ -246,6 +246,17 @@ public class PartyList : MonoBehaviour
         return false;
     }
 
+    public PartyMember? GetMember(CharacterState characterState)
+    {
+        for (int i = 0; i < members.Count; i++)
+        {
+            if (members[i].characterState == characterState && members[i].characterState.characterName == characterState.characterName)
+                return members[i];
+        }
+
+        return null;
+    }
+
     public void UpdatePartyList()
     {
         int i_active = 0;

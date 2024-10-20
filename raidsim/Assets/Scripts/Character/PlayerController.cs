@@ -25,6 +25,10 @@ public class PlayerController : MonoBehaviour
     public bool enableInput = true;
     public bool legacyMovement = true;
 
+    private int animatorParameterDead = Animator.StringToHash("Dead");
+    private int animatorParameterSpeed = Animator.StringToHash("Speed");
+    private int animatorParameterDiamondback = Animator.StringToHash("Diamondback");
+
     void Awake()
     {
         if (state == null)
@@ -63,8 +67,8 @@ public class PlayerController : MonoBehaviour
     {
         if (Time.timeScale > 0f)
         {
-            animator.SetBool("Dead", state.dead);
-            animator.SetBool("Diamondback", state.HasEffect("Diamondback"));
+            animator.SetBool(animatorParameterDead, state.dead);
+            animator.SetBool(animatorParameterDiamondback, state.HasEffect("Diamondback"));
 
             if (currentSpeed > 0)
             {
@@ -116,7 +120,7 @@ public class PlayerController : MonoBehaviour
                 value = 0f;
             }
 
-            animator.SetFloat("Speed", value);
+            animator.SetFloat(animatorParameterSpeed, value);
         }
         else if (!state.dead && !state.bound && enableInput)
         {
@@ -209,7 +213,7 @@ public class PlayerController : MonoBehaviour
             release = duration;
             state.uncontrollable = true;
             targetPosition = transform.position + tp;
-            animator.SetFloat("Speed", 0f);
+            animator.SetFloat(animatorParameterSpeed, 0f);
         }
     }
 

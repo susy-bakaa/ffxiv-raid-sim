@@ -78,6 +78,10 @@ public class ActionController : MonoBehaviour
     private float autoAttackTimer;
     private Queue<CharacterAction> queuedAutoActions = new Queue<CharacterAction>();
 
+    private int animatorParameterActionLocked = Animator.StringToHash("ActionLocked");
+    private int animatorParameterCasting = Animator.StringToHash("Casting");
+    private int animatorParameterCastFinishId = Animator.StringToHash("CastFinishId");
+
     void Awake()
     {
         animator = GetComponentInChildren<Animator>();
@@ -424,7 +428,7 @@ public class ActionController : MonoBehaviour
         if (autoAction.data.range > 0f && autoAction.data.isTargeted && (distanceToTarget > autoAction.data.range))
             return false;
 
-        if (autoAction.isAvailable && !autoAction.isDisabled && !autoAction.isAnimationLocked && !autoAction.unavailable)
+        if (autoAction.isAvailable && !autoAction.isDisabled && !autoAction.isAnimationLocked && !autoAction.unavailable && !animator.GetBool(animatorParameterActionLocked))
         {
             if (autoAction.data.actionType == CharacterActionData.ActionType.Auto)
             {
@@ -458,6 +462,14 @@ public class ActionController : MonoBehaviour
                 else if (animator != null && !string.IsNullOrEmpty(autoAction.data.animationName) && autoAction.data.playAnimationDirectly)
                 {
                     animator.CrossFadeInFixedTime(autoAction.data.animationName, 0.2f);
+                }
+                if (animator != null && autoAction.data.onAnimationFinishId >= 0)
+                {
+                    animator.SetInteger(animatorParameterCastFinishId, autoAction.data.onAnimationFinishId);
+                }
+                else
+                {
+                    animator.SetInteger(animatorParameterCastFinishId, 0);
                 }
 
                 return true;
@@ -529,7 +541,7 @@ public class ActionController : MonoBehaviour
         if (castBarElement != null)
             castBarElement.ChangeColors(false);
 
-        if (action.isAvailable && !action.isDisabled && !action.isAnimationLocked && !action.unavailable)
+        if (action.isAvailable && !action.isDisabled && !action.isAnimationLocked && !action.unavailable && !animator.GetBool(animatorParameterActionLocked))
         {
             if (action.data.cast <= 0f || (action.data.cast > 0f && instantCast))
             {
@@ -558,7 +570,7 @@ public class ActionController : MonoBehaviour
                 onCast.Invoke(new CastInfo(newActionInfo, instantCast, characterState.GetEffects()));
                 if (animator != null)
                 {
-                    animator.SetBool("Casting", false);
+                    animator.SetBool(animatorParameterCasting, false);
                 }
 
                 if (action.data.cast > 0f && instantCast && instantCastEffect != null)
@@ -613,6 +625,14 @@ public class ActionController : MonoBehaviour
                 {
                     animator.CrossFadeInFixedTime(action.data.animationName, 0.2f);
                 }
+                if (animator != null && action.data.onAnimationFinishId >= 0)
+                {
+                    animator.SetInteger(animatorParameterCastFinishId, action.data.onAnimationFinishId);
+                }
+                else
+                {
+                    animator.SetInteger(animatorParameterCastFinishId, 0);
+                }
 
                 UpdateCharacterName();
                 if (castBar != null)
@@ -654,7 +674,7 @@ public class ActionController : MonoBehaviour
                 }
                 if (animator != null)
                 {
-                    animator.SetBool("Casting", true);
+                    animator.SetBool(animatorParameterCasting, true);
                 }
             }
         }
@@ -712,7 +732,7 @@ public class ActionController : MonoBehaviour
         }
         if (animator != null)
         {
-            animator.SetBool("Casting", false);
+            animator.SetBool(animatorParameterCasting, false);
         }
         if (castBarElement != null)
             castBarElement.ChangeColors(true);
@@ -728,7 +748,7 @@ public class ActionController : MonoBehaviour
         lastAction = null;
         if (animator != null)
         {
-            animator.SetBool("Casting", false);
+            animator.SetBool(animatorParameterCasting, false);
         }
         UpdateCharacterName();
     }

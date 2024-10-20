@@ -7,30 +7,31 @@ A singleplayer raid and fight mechanic simulator with bots, made in the Unity ga
 - Omega: Alphascape
 	- Alphascape 4.0 (Savage) (O12S)
 		- Phase 2
-			- Hello World 1 (BLU)
-			- Hello World 2 (BLU)
+			- Hello World 1 ([BLU](https://www.icy-veins.com/ffxiv/blue-mage-omega-raid-guide))
+			- Hello World 2 ([BLU](https://www.icy-veins.com/ffxiv/blue-mage-omega-raid-guide))
 - Alexander: Midas
 	- Alexander - The Burden of the Son (Savage) (A8S)
-		- Gavel (BLU)
+		- Gavel ([BLU](https://www.icy-veins.com/ffxiv/blue-mage-brute-justice-raid-guide))
+- AAC Light-heavyweight Tier
+	- AAC Light-heavyweight M4 (Savage) (M4S)
+		- Sunrise Sabbath ([Rinon](https://www.youtube.com/watch?v=1lrk5FbNIPc))
+		- Sunrise Sabbath ([AutoCad/Uptime](https://raidplan.io/plan/OnQXobwatopL1G8u))
 
 # In development fights
 
 Timelines don't work yet for these or the bots are not finished and will die to mechanics.
 
-- AAC Light-heavyweight Tier
-	- AAC Light-heavyweight M4 (Savage) (M4S)
-		- Sunrise Sabbath (Rinon)
-		- Sunrise Sabbath (AutoCad)
+- None currently
 
 # Planned fights
 
 - Omega: Alphascape
 	- Alphascape 4.0 (Savage) (O12S)
 		- Phase 2
-			- Patch (BLU)
+			- Patch ([BLU](https://www.icy-veins.com/ffxiv/blue-mage-omega-raid-guide))
 - Alexander: The Creator
 	- Alexander - The Soul of the Creator (Savage) (A12S)
-		- Temporal Stasis (BLU)
+		- Temporal Stasis ([BLU](https://www.icy-veins.com/ffxiv/blue-mage-alexander-prime-raid-guide))
 - The Epic of Alexander (Ultimate) (TEA)
 	- Phase 4 (Perfect Alexander)
 		- The Final Word
@@ -49,7 +50,7 @@ Timelines don't work yet for these or the bots are not finished and will die to 
 
 # Installation
 
-To use this program, just head over to the releases section and download the latest archive file. You need to extract said archive with some tool such as 7zip and then open up the raidsim.exe to launch the program. If you want to download the source code or expand upon this program, check the git instructions below.
+To use this program, either open the [web version](https://susy-bakaa.github.io/unityweb/raidsim/index.html) or just head over to the releases section and download the latest archive file for your respective operating system. If you wish to try out the program before downloading you may do so with the web version, but be warned though, as the web version is currently not properly tested and might run into sever issues. For the standalone version, you need to extract said archive with some tool such as 7zip and then open up the raidsim.exe to launch the program. There is also a build available for Linux, that is not well tested so it might have some issues. If you instead want to download the source code or expand upon this program, check the git instructions down below.
 
 # Git Usage Instructions
 
@@ -64,3 +65,7 @@ Config file explanation:
 6. File used for ignored folders and file types (By default `.gdriveignore`)
 
 After configuring the settings simply run `gdrive_util.bat` located in the root folder after commiting other changes to GitHub and follow the instructions on the cmd window to manage your Google Drive backups of large files. If you do not have access to the original archive used in this project, as in you're an external contributor, you may manually download the asset archive from here: [ffxiv-raid-sim.tar.gz](https://drive.google.com/file/d/1ybYaJ8LGnHwY5jeCv1Zr6B5fT7FHL51i/view?usp=drive_link)
+
+# Credits
+
+Please check out the [credits file](https://github.com/susy-bakaa/ffxiv-raid-sim/blob/main/credits.md) for all of the credits!

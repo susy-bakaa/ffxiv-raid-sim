@@ -15,6 +15,10 @@ public class AIController : MonoBehaviour
     float turnSmoothVelocity;
     float currentSpeed;
 
+    private int animatorParameterDead = Animator.StringToHash("Dead");
+    private int animatorParameterSpeed = Animator.StringToHash("Speed");
+    private int animatorParameterDiamondback = Animator.StringToHash("Diamondback");
+
     void Awake()
     {
         animator = GetComponent<Animator>();
@@ -29,8 +33,8 @@ public class AIController : MonoBehaviour
 
     void Update()
     {
-        animator.SetBool("Dead", state.dead);
-        animator.SetBool("Diamondback", state.HasEffect("Diamondback"));
+        animator.SetBool(animatorParameterDead, state.dead);
+        animator.SetBool(animatorParameterDiamondback, state.HasEffect("Diamondback"));
 
         if (currentSpeed > 0)
         {
@@ -78,15 +82,15 @@ public class AIController : MonoBehaviour
                 currentSpeed = 0;
             }
 
-            if (Mathf.Abs(animator.GetFloat("Speed") - currentSpeed) > 0.01f) // Adjust threshold as needed
+            if (Mathf.Abs(animator.GetFloat(animatorParameterSpeed) - currentSpeed) > 0.01f) // Adjust threshold as needed
             {
-                animator.SetFloat("Speed", currentSpeed);
+                animator.SetFloat(animatorParameterSpeed, currentSpeed);
             }
         }
         else
         {
             currentSpeed = 0;
-            animator.SetFloat("Speed", 0f);
+            animator.SetFloat(animatorParameterSpeed, 0f);
         }
     }
 

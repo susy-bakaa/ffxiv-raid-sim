@@ -385,14 +385,8 @@ public class DamageTrigger : MonoBehaviour
                                     // Calculate the healing enmity for this player based on damage healed
                                     long healingEnmityForPlayer = Mathf.RoundToInt((damagePerPlayer.value * data.damageEnmityMultiplier) * owner.enmityGenerationModifier);
 
-                                    // Debugging the individual healing enmity calculation
-                                    Debug.Log($"Enmity for {targetPlayer.characterName} amounts to {healingEnmityForPlayer}. Current enmity: {currentEnmity}");
-
                                     // Add the healing enmity to the current enmity value
                                     currentEnmity += healingEnmityForPlayer;
-
-                                    // Debugging the total enmity being set
-                                    Debug.Log($"Total enmity for {targetPlayer.characterName} after addition: {currentEnmity}");
 
                                     // Ensure the enmity is correctly updated per player and does not carry over to the next iteration
                                     owner.enmity[targetPlayer] = currentEnmity;  // Update the dictionary with the new value

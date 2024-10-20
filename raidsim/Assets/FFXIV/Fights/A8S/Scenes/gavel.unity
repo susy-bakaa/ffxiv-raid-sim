@@ -2047,6 +2047,12 @@ MonoBehaviour:
   includeCollider: 1
   stoppingDistance: 0
   turnSmoothTime: 0
+  turningSpeedMultiplier: 5
+  turningSmoothTime: 0.1
+  acceleration: 1
+  deceleration: 2
+  speedThreshold: 0.05
+  ignoreCasting: 0
 --- !u!114 &44656864
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2217,12 +2223,14 @@ MonoBehaviour:
   isAggressive: 1
   hideNameplate: 0
   hidePartyName: 0
+  hidePartyListEntry: 0
   showCharacterName: 1
   showCharacterLevel: 1
   showCharacterAggression: 1
   showCharacterNameLetter: 1
   characterNameText: {fileID: 0}
   nameplateCharacterNameText: {fileID: 369400659}
+  nameplateGroup: {fileID: 0}
   showStatusEffects: 0
   statusEffectPositiveIconParent: {fileID: 1236934537}
   statusEffectNegativeIconParent: {fileID: 1236934537}
@@ -2948,6 +2956,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 1
@@ -4675,6 +4684,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 1
@@ -6612,6 +6622,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 10
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -7419,6 +7430,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -8707,6 +8719,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -9644,12 +9657,14 @@ MonoBehaviour:
   isAggressive: 0
   hideNameplate: 0
   hidePartyName: 0
+  hidePartyListEntry: 0
   showCharacterName: 1
   showCharacterLevel: 0
   showCharacterAggression: 0
   showCharacterNameLetter: 0
   characterNameText: {fileID: 0}
   nameplateCharacterNameText: {fileID: 1573591862}
+  nameplateGroup: {fileID: 0}
   showStatusEffects: 0
   statusEffectPositiveIconParent: {fileID: 1236934537}
   statusEffectNegativeIconParent: {fileID: 1236934537}
@@ -10054,6 +10069,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 30
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -11504,6 +11520,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -13035,12 +13052,14 @@ MonoBehaviour:
   isAggressive: 1
   hideNameplate: 0
   hidePartyName: 0
+  hidePartyListEntry: 0
   showCharacterName: 1
   showCharacterLevel: 1
   showCharacterAggression: 1
   showCharacterNameLetter: 1
   characterNameText: {fileID: 0}
   nameplateCharacterNameText: {fileID: 395565117}
+  nameplateGroup: {fileID: 0}
   showStatusEffects: 0
   statusEffectPositiveIconParent: {fileID: 1236934537}
   statusEffectNegativeIconParent: {fileID: 1236934537}
@@ -13141,6 +13160,12 @@ MonoBehaviour:
   includeCollider: 1
   stoppingDistance: 0
   turnSmoothTime: 0
+  turningSpeedMultiplier: 5
+  turningSmoothTime: 0.1
+  acceleration: 1
+  deceleration: 2
+  speedThreshold: 0.05
+  ignoreCasting: 0
 --- !u!1 &289750016
 GameObject:
   m_ObjectHideFlags: 0
@@ -13572,19 +13597,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 507979540950589349, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 507979540950589349, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 507979540950589349, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 95
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 507979540950589349, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -55
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 706481709186472730, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMax.x
@@ -13696,19 +13721,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1129616199111232973, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1129616199111232973, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1129616199111232973, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 120
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1129616199111232973, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -306.25
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1356157681875067381, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMax.x
@@ -13724,67 +13749,67 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1658567668853664725, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1658567668853664725, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1658567668853664725, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 20
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1658567668853664725, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -160
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2000174161406483027, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2000174161406483027, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2000174161406483027, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 120
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2000174161406483027, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -195
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2337977080070813610, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2337977080070813610, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2337977080070813610, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 145
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2337977080070813610, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -291.25
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2466371797097209404, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2466371797097209404, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2466371797097209404, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 120
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2466371797097209404, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -75
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2608979181051463081, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_LocalPosition.y
@@ -13796,35 +13821,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2931335938858750675, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2931335938858750675, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2931335938858750675, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 120
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2931335938858750675, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -110
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3517486795828306174, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3517486795828306174, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3517486795828306174, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 115
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3517486795828306174, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -223.125
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4609540343564005305, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMax.x
@@ -13884,19 +13909,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7905626745103425427, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7905626745103425427, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7905626745103425427, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 120
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7905626745103425427, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -35
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8230036620794010999, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
@@ -13904,35 +13929,35 @@ PrefabInstance:
       objectReference: {fileID: 7258087961168585015}
     - target: {fileID: 8799823081314190267, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8799823081314190267, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8799823081314190267, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 120
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8799823081314190267, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -145
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9154979646552116387, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9154979646552116387, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9154979646552116387, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 136.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9154979646552116387, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -251.25
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9178151334594336980, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_Size
@@ -13952,19 +13977,19 @@ PrefabInstance:
       objectReference: {fileID: 1720620152}
     - target: {fileID: 9215306383136179363, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9215306383136179363, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9215306383136179363, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 145
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9215306383136179363, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -346.25
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -14106,6 +14131,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -15711,6 +15737,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -16078,6 +16105,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -16948,12 +16976,14 @@ MonoBehaviour:
   isAggressive: 0
   hideNameplate: 0
   hidePartyName: 0
+  hidePartyListEntry: 0
   showCharacterName: 1
   showCharacterLevel: 0
   showCharacterAggression: 0
   showCharacterNameLetter: 0
   characterNameText: {fileID: 0}
   nameplateCharacterNameText: {fileID: 1344591508}
+  nameplateGroup: {fileID: 0}
   showStatusEffects: 0
   statusEffectPositiveIconParent: {fileID: 1236934537}
   statusEffectNegativeIconParent: {fileID: 1236934537}
@@ -18606,6 +18636,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 30
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -20236,6 +20267,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -22181,6 +22213,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -23004,7 +23037,9 @@ MonoBehaviour:
     tag: 0
     stacks: 0
   indexMapping: []
+  indexMapping2: []
   fightTimelineEventRandomResultId: -1
+  fightTimelineEventRandomResultId2: -1
   timelines:
   - {fileID: 752325715}
   - {fileID: 937698198}
@@ -23016,8 +23051,10 @@ MonoBehaviour:
   - {fileID: 912072925}
   type: 0
   allowSubStatuses: 0
+  useDoubleEventCheck: 0
   useIndexMapping: 0
   endIfDisabled: 1
+  forceEnd: 0
   log: 0
 --- !u!1 &472289367
 GameObject:
@@ -25548,6 +25585,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -26067,6 +26105,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -26697,12 +26736,14 @@ MonoBehaviour:
   isAggressive: 0
   hideNameplate: 0
   hidePartyName: 0
+  hidePartyListEntry: 0
   showCharacterName: 1
   showCharacterLevel: 0
   showCharacterAggression: 0
   showCharacterNameLetter: 0
   characterNameText: {fileID: 0}
   nameplateCharacterNameText: {fileID: 49486070}
+  nameplateGroup: {fileID: 0}
   showStatusEffects: 0
   statusEffectPositiveIconParent: {fileID: 1236934537}
   statusEffectNegativeIconParent: {fileID: 1236934537}
@@ -27715,7 +27756,9 @@ MonoBehaviour:
     tag: 0
     stacks: 0
   indexMapping: []
+  indexMapping2: []
   fightTimelineEventRandomResultId: -1
+  fightTimelineEventRandomResultId2: -1
   timelines:
   - {fileID: 752325715}
   - {fileID: 937698198}
@@ -27727,8 +27770,10 @@ MonoBehaviour:
   - {fileID: 912072925}
   type: 0
   allowSubStatuses: 0
+  useDoubleEventCheck: 0
   useIndexMapping: 0
   endIfDisabled: 1
+  forceEnd: 0
   log: 0
 --- !u!1 &616304745
 GameObject:
@@ -31188,6 +31233,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -33101,12 +33147,14 @@ MonoBehaviour:
   isAggressive: 0
   hideNameplate: 0
   hidePartyName: 0
+  hidePartyListEntry: 0
   showCharacterName: 1
   showCharacterLevel: 0
   showCharacterAggression: 0
   showCharacterNameLetter: 0
   characterNameText: {fileID: 0}
   nameplateCharacterNameText: {fileID: 733046892}
+  nameplateGroup: {fileID: 0}
   showStatusEffects: 0
   statusEffectPositiveIconParent: {fileID: 1236934537}
   statusEffectNegativeIconParent: {fileID: 1236934537}
@@ -33872,6 +33920,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -34799,6 +34848,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -35054,6 +35104,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -36457,7 +36508,9 @@ MonoBehaviour:
     tag: 0
     stacks: 0
   indexMapping: []
+  indexMapping2: []
   fightTimelineEventRandomResultId: -1
+  fightTimelineEventRandomResultId2: -1
   timelines:
   - {fileID: 752325715}
   - {fileID: 937698198}
@@ -36469,8 +36522,10 @@ MonoBehaviour:
   - {fileID: 912072925}
   type: 0
   allowSubStatuses: 0
+  useDoubleEventCheck: 0
   useIndexMapping: 0
   endIfDisabled: 1
+  forceEnd: 0
   log: 0
 --- !u!1 &824501631
 GameObject:
@@ -38060,6 +38115,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -38379,6 +38435,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -38806,7 +38863,9 @@ MonoBehaviour:
     tag: 0
     stacks: 0
   indexMapping: []
+  indexMapping2: []
   fightTimelineEventRandomResultId: -1
+  fightTimelineEventRandomResultId2: -1
   timelines:
   - {fileID: 752325715}
   - {fileID: 937698198}
@@ -38818,8 +38877,10 @@ MonoBehaviour:
   - {fileID: 912072925}
   type: 0
   allowSubStatuses: 0
+  useDoubleEventCheck: 0
   useIndexMapping: 0
   endIfDisabled: 1
+  forceEnd: 0
   log: 0
 --- !u!1 &861623923 stripped
 GameObject:
@@ -39103,6 +39164,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -40378,14 +40440,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effects: []
   indexMapping: []
+  indexMapping2: []
   fightTimelineEventRandomResultId: 0
+  fightTimelineEventRandomResultId2: -1
   timelines:
   - {fileID: 1024638179}
   - {fileID: 14761435}
   type: 1
   allowSubStatuses: 0
+  useDoubleEventCheck: 0
   useIndexMapping: 0
   endIfDisabled: 1
+  forceEnd: 0
   log: 0
 --- !u!1 &913916305
 GameObject:
@@ -40850,6 +40916,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 30
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -41088,14 +41155,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effects: []
   indexMapping: []
+  indexMapping2: []
   fightTimelineEventRandomResultId: 0
+  fightTimelineEventRandomResultId2: -1
   timelines:
   - {fileID: 1008615798}
   - {fileID: 1974920135}
   type: 1
   allowSubStatuses: 0
+  useDoubleEventCheck: 0
   useIndexMapping: 0
   endIfDisabled: 1
+  forceEnd: 0
   log: 0
 --- !u!1 &924102866
 GameObject:
@@ -41411,6 +41482,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -43009,6 +43081,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -43988,6 +44061,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -44303,6 +44377,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -45409,6 +45484,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: -7898651954882308024, guid: 063193e18bea7ec469b3f55dbb27434a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: -7835174893954607170, guid: 063193e18bea7ec469b3f55dbb27434a, type: 3}
       propertyPath: m_Layer
       value: 7
@@ -45508,7 +45587,7 @@ PrefabInstance:
     - target: {fileID: -4962774815857126450, guid: 063193e18bea7ec469b3f55dbb27434a, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 8ef348156ea0ead43ae9538d9889d96b, type: 2}
+      objectReference: {fileID: 2100000, guid: e1486ef68bdc1ea46a38748e30114d6d, type: 2}
     - target: {fileID: -4732482318604995513, guid: 063193e18bea7ec469b3f55dbb27434a, type: 3}
       propertyPath: m_Layer
       value: 7
@@ -45940,7 +46019,7 @@ PrefabInstance:
     - target: {fileID: 5521514111544141975, guid: 063193e18bea7ec469b3f55dbb27434a, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 8ef348156ea0ead43ae9538d9889d96b, type: 2}
+      objectReference: {fileID: 2100000, guid: e1486ef68bdc1ea46a38748e30114d6d, type: 2}
     - target: {fileID: 5808083514416435289, guid: 063193e18bea7ec469b3f55dbb27434a, type: 3}
       propertyPath: m_Layer
       value: 7
@@ -46460,12 +46539,14 @@ MonoBehaviour:
   isAggressive: 1
   hideNameplate: 0
   hidePartyName: 0
+  hidePartyListEntry: 0
   showCharacterName: 1
   showCharacterLevel: 1
   showCharacterAggression: 1
   showCharacterNameLetter: 1
   characterNameText: {fileID: 0}
   nameplateCharacterNameText: {fileID: 1423821270}
+  nameplateGroup: {fileID: 0}
   showStatusEffects: 0
   statusEffectPositiveIconParent: {fileID: 1236934537}
   statusEffectNegativeIconParent: {fileID: 1236934537}
@@ -46566,6 +46647,12 @@ MonoBehaviour:
   includeCollider: 1
   stoppingDistance: 0
   turnSmoothTime: 0
+  turningSpeedMultiplier: 5
+  turningSmoothTime: 0.1
+  acceleration: 1
+  deceleration: 2
+  speedThreshold: 0.05
+  ignoreCasting: 0
 --- !u!1 &1023080067
 GameObject:
   m_ObjectHideFlags: 0
@@ -47450,6 +47537,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -47847,6 +47935,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -49663,6 +49752,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -51605,6 +51695,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 1
@@ -51944,6 +52035,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -52488,6 +52580,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 1
@@ -53321,12 +53414,14 @@ MonoBehaviour:
   isAggressive: 0
   hideNameplate: 0
   hidePartyName: 0
+  hidePartyListEntry: 0
   showCharacterName: 1
   showCharacterLevel: 0
   showCharacterAggression: 0
   showCharacterNameLetter: 0
   characterNameText: {fileID: 0}
   nameplateCharacterNameText: {fileID: 713752732}
+  nameplateGroup: {fileID: 0}
   showStatusEffects: 0
   statusEffectPositiveIconParent: {fileID: 1236934537}
   statusEffectNegativeIconParent: {fileID: 1236934537}
@@ -53774,7 +53869,9 @@ MonoBehaviour:
     tag: 0
     stacks: 0
   indexMapping: []
+  indexMapping2: []
   fightTimelineEventRandomResultId: -1
+  fightTimelineEventRandomResultId2: -1
   timelines:
   - {fileID: 752325715}
   - {fileID: 937698198}
@@ -53786,8 +53883,10 @@ MonoBehaviour:
   - {fileID: 912072925}
   type: 0
   allowSubStatuses: 0
+  useDoubleEventCheck: 0
   useIndexMapping: 0
   endIfDisabled: 1
+  forceEnd: 0
   log: 0
 --- !u!1 &1168395739
 GameObject:
@@ -53914,7 +54013,9 @@ MonoBehaviour:
     tag: 0
     stacks: 0
   indexMapping: []
+  indexMapping2: []
   fightTimelineEventRandomResultId: -1
+  fightTimelineEventRandomResultId2: -1
   timelines:
   - {fileID: 752325715}
   - {fileID: 937698198}
@@ -53926,8 +54027,10 @@ MonoBehaviour:
   - {fileID: 912072925}
   type: 0
   allowSubStatuses: 0
+  useDoubleEventCheck: 0
   useIndexMapping: 0
   endIfDisabled: 1
+  forceEnd: 0
   log: 0
 --- !u!1 &1168811686
 GameObject:
@@ -55703,6 +55806,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -55992,7 +56096,7 @@ MonoBehaviour:
   health: 644046
   shield: 0
   currentShields: []
-  currentSpeed: 4.4864
+  currentSpeed: 4.9864
   currentDamageOutputMultiplier: 1
   currentDamageReduction: 1
   magicalTypeDamageModifier: 1
@@ -56049,12 +56153,14 @@ MonoBehaviour:
   isAggressive: 1
   hideNameplate: 0
   hidePartyName: 0
+  hidePartyListEntry: 0
   showCharacterName: 1
   showCharacterLevel: 1
   showCharacterAggression: 1
   showCharacterNameLetter: 1
   characterNameText: {fileID: 0}
   nameplateCharacterNameText: {fileID: 115449017}
+  nameplateGroup: {fileID: 0}
   showStatusEffects: 0
   statusEffectPositiveIconParent: {fileID: 1236934537}
   statusEffectNegativeIconParent: {fileID: 1236934537}
@@ -56113,6 +56219,12 @@ MonoBehaviour:
   includeCollider: 1
   stoppingDistance: 9
   turnSmoothTime: 1
+  turningSpeedMultiplier: 300
+  turningSmoothTime: 0.1
+  acceleration: 1
+  deceleration: 2
+  speedThreshold: 0.05
+  ignoreCasting: 0
 --- !u!114 &1235478973
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -57610,6 +57722,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -58501,12 +58614,14 @@ MonoBehaviour:
   isAggressive: 0
   hideNameplate: 0
   hidePartyName: 0
+  hidePartyListEntry: 0
   showCharacterName: 1
   showCharacterLevel: 0
   showCharacterAggression: 0
   showCharacterNameLetter: 0
   characterNameText: {fileID: 0}
   nameplateCharacterNameText: {fileID: 35614909}
+  nameplateGroup: {fileID: 0}
   showStatusEffects: 0
   statusEffectPositiveIconParent: {fileID: 1236934537}
   statusEffectNegativeIconParent: {fileID: 1236934537}
@@ -60894,6 +61009,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 10
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -61756,6 +61872,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -64562,12 +64679,14 @@ MonoBehaviour:
   isAggressive: 1
   hideNameplate: 0
   hidePartyName: 0
+  hidePartyListEntry: 0
   showCharacterName: 1
   showCharacterLevel: 1
   showCharacterAggression: 1
   showCharacterNameLetter: 1
   characterNameText: {fileID: 0}
   nameplateCharacterNameText: {fileID: 1418950277}
+  nameplateGroup: {fileID: 0}
   showStatusEffects: 0
   statusEffectPositiveIconParent: {fileID: 1236934537}
   statusEffectNegativeIconParent: {fileID: 1236934537}
@@ -64668,6 +64787,12 @@ MonoBehaviour:
   includeCollider: 1
   stoppingDistance: 0
   turnSmoothTime: 0
+  turningSpeedMultiplier: 5
+  turningSmoothTime: 0.1
+  acceleration: 1
+  deceleration: 2
+  speedThreshold: 0.05
+  ignoreCasting: 0
 --- !u!1 &1440760351
 GameObject:
   m_ObjectHideFlags: 0
@@ -66120,6 +66245,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 30
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -68383,6 +68509,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 30
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -68592,6 +68719,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -68751,6 +68879,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 512
+  hidden: 0
   characterState: {fileID: 1562561460}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -69777,6 +69906,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -70198,12 +70328,14 @@ MonoBehaviour:
   isAggressive: 0
   hideNameplate: 0
   hidePartyName: 0
+  hidePartyListEntry: 0
   showCharacterName: 0
   showCharacterLevel: 0
   showCharacterAggression: 0
   showCharacterNameLetter: 0
   characterNameText: {fileID: 0}
   nameplateCharacterNameText: {fileID: 1050092586}
+  nameplateGroup: {fileID: 0}
   showStatusEffects: 0
   statusEffectPositiveIconParent: {fileID: 1236934537}
   statusEffectNegativeIconParent: {fileID: 1236934537}
@@ -70644,6 +70776,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -71317,6 +71450,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -73608,6 +73742,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -75609,6 +75744,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -76246,6 +76382,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 10
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -79093,7 +79230,9 @@ MonoBehaviour:
     tag: 0
     stacks: 0
   indexMapping: []
+  indexMapping2: []
   fightTimelineEventRandomResultId: -1
+  fightTimelineEventRandomResultId2: -1
   timelines:
   - {fileID: 752325715}
   - {fileID: 937698198}
@@ -79105,8 +79244,10 @@ MonoBehaviour:
   - {fileID: 912072925}
   type: 0
   allowSubStatuses: 0
+  useDoubleEventCheck: 0
   useIndexMapping: 0
   endIfDisabled: 1
+  forceEnd: 0
   log: 0
 --- !u!1 &1808214029
 GameObject:
@@ -79837,6 +79978,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -81055,6 +81197,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 10
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -82570,7 +82713,9 @@ MonoBehaviour:
     tag: 0
     stacks: 0
   indexMapping: []
+  indexMapping2: []
   fightTimelineEventRandomResultId: -1
+  fightTimelineEventRandomResultId2: -1
   timelines:
   - {fileID: 752325715}
   - {fileID: 937698198}
@@ -82582,8 +82727,10 @@ MonoBehaviour:
   - {fileID: 912072925}
   type: 0
   allowSubStatuses: 0
+  useDoubleEventCheck: 0
   useIndexMapping: 0
   endIfDisabled: 1
+  forceEnd: 0
   log: 0
 --- !u!1 &1895970281
 GameObject:
@@ -82903,6 +83050,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 30
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -83984,6 +84132,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -84287,6 +84436,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 1
@@ -84775,6 +84925,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -85583,6 +85734,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -96595,12 +96747,14 @@ MonoBehaviour:
   isAggressive: 0
   hideNameplate: 0
   hidePartyName: 0
+  hidePartyListEntry: 0
   showCharacterName: 1
   showCharacterLevel: 0
   showCharacterAggression: 0
   showCharacterNameLetter: 0
   characterNameText: {fileID: 0}
   nameplateCharacterNameText: {fileID: 622786125}
+  nameplateGroup: {fileID: 0}
   showStatusEffects: 0
   statusEffectPositiveIconParent: {fileID: 1236934537}
   statusEffectNegativeIconParent: {fileID: 1236934537}
@@ -98502,12 +98656,14 @@ MonoBehaviour:
   isAggressive: 0
   hideNameplate: 0
   hidePartyName: 0
+  hidePartyListEntry: 0
   showCharacterName: 1
   showCharacterLevel: 0
   showCharacterAggression: 0
   showCharacterNameLetter: 0
   characterNameText: {fileID: 0}
   nameplateCharacterNameText: {fileID: 428908098}
+  nameplateGroup: {fileID: 0}
   showStatusEffects: 0
   statusEffectPositiveIconParent: {fileID: 1236934537}
   statusEffectNegativeIconParent: {fileID: 1236934537}
@@ -100853,6 +101009,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 1
@@ -101511,6 +101668,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -101545,7 +101703,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 300, y: 0}
+  m_AnchoredPosition: {x: 320, y: 0}
   m_SizeDelta: {x: 100, y: 0}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!1 &294589030736907665
@@ -102446,6 +102604,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 1
@@ -102921,6 +103080,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -103667,6 +103827,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -104551,6 +104712,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 1
@@ -105225,6 +105387,7 @@ MonoBehaviour:
   - helloworld2
   - gavel
   - sunrise_sabbath
+  - sunrise_sabbath1
   currentScene: gavel
 --- !u!114 &2265322849226764894
 MonoBehaviour:
@@ -105872,6 +106035,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -106407,12 +106571,14 @@ MonoBehaviour:
   isAggressive: 0
   hideNameplate: 0
   hidePartyName: 0
+  hidePartyListEntry: 0
   showCharacterName: 1
   showCharacterLevel: 0
   showCharacterAggression: 0
   showCharacterNameLetter: 0
   characterNameText: {fileID: 0}
   nameplateCharacterNameText: {fileID: 1243144733}
+  nameplateGroup: {fileID: 0}
   showStatusEffects: 1
   statusEffectPositiveIconParent: {fileID: 817614650}
   statusEffectNegativeIconParent: {fileID: 1424020627}
@@ -107270,6 +107436,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 1
@@ -107401,6 +107568,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -109019,7 +109187,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 30, y: 0}
-  m_SizeDelta: {x: 250, y: 30}
+  m_SizeDelta: {x: 270, y: 30}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!224 &4121667138427211501
 RectTransform:
@@ -109686,6 +109854,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -111501,6 +111670,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 1
@@ -112255,6 +112425,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 1
@@ -112285,6 +112456,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 1
@@ -112609,6 +112781,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -114179,6 +114352,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 1
@@ -114282,6 +114456,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 1
@@ -115809,11 +115984,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 864227202019974020, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0002859668
+      value: 0.00083173823
       objectReference: {fileID: 0}
     - target: {fileID: 2397317220443939482, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Name
       value: Dropdown
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[5].m_Text
+      value: 'M4S: Sunrise Sabbath (AutoCad)'
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -116052,6 +116235,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -116090,6 +116274,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0
@@ -116331,6 +116516,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0

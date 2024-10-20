@@ -9,6 +9,7 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using static GlobalStructs;
 using static GlobalStructs.Damage;
+using static PartyList;
 using static UnityEngine.Rendering.DebugUI;
 
 public class CharacterState : MonoBehaviour
@@ -144,6 +145,7 @@ public class CharacterState : MonoBehaviour
 
     [Header("Config")]
     public PartyList partyList;
+    private PartyMember? partyMember;
     public Transform statusEffectParent;
     public float statusEffectUpdateInterval = 3f;
     private float statusEffectUpdateTimer = 0f;
@@ -155,6 +157,7 @@ public class CharacterState : MonoBehaviour
     public bool isAggressive = true;
     public bool hideNameplate = false;
     public bool hidePartyName = false;
+    public bool hidePartyListEntry = false;
 
     [Header("Personal - Name")]
     public bool showCharacterName = true;
@@ -164,6 +167,7 @@ public class CharacterState : MonoBehaviour
     public TextMeshProUGUI characterNameText;
     public TextMeshProUGUI nameplateCharacterNameText;
     private CanvasGroup nameplateCharacterNameTextGroup;
+    public CanvasGroup nameplateGroup;
     [Header("Personal - Status Effects")]
     public bool showStatusEffects = true;
     public Transform statusEffectPositiveIconParent;
@@ -245,6 +249,19 @@ public class CharacterState : MonoBehaviour
         aiController = GetComponent<AIController>();
         bossController = GetComponent<BossController>();
         targetController = GetComponent<TargetController>();
+
+        if (nameplateGroup == null)
+        {
+            CanvasGroup[] children = transform.GetComponentsInChildren<CanvasGroup>();
+            foreach (CanvasGroup child in children)
+            {
+                if (child.gameObject.name == "NameplateGroup")
+                {
+                    nameplateGroup = child.GetComponent<CanvasGroup>();
+                    break;
+                }
+            }
+        }
 
         if (statusEffectNegativeIconParent != null)
         {
@@ -404,9 +421,30 @@ public class CharacterState : MonoBehaviour
                 }
             }
         }
+        if (partyList != null)
+        {
+            partyMember = partyList.GetMember(this);
+
+            if (partyMember != null && partyMember?.hudElement != null)
+            {
+                HudElement hudElement = partyMember?.hudElement;
+                hudElement.hidden = hidePartyListEntry;
+            }
+        }
+        if (nameplateGroup != null)
+        {
+            if (!hideNameplate)
+            {
+                nameplateGroup.alpha = 1f;
+            }
+            else
+            {
+                nameplateGroup.alpha = 0f;
+            }
+        }
         if (nameplateCharacterNameTextGroup != null)
         {
-            if (!hideNameplate && showCharacterName)
+            if (showCharacterName)
             {
                 nameplateCharacterNameTextGroup.alpha = 1f;
             }
@@ -569,6 +607,25 @@ public class CharacterState : MonoBehaviour
                 {
                     nameplateCharacterNameText.text = $"{GetCharacterName()}{letter}";
                 }
+            }
+        }
+        if (partyList != null)
+        {
+            if (partyMember != null && partyMember?.hudElement != null)
+            {
+                HudElement hudElement = partyMember?.hudElement;
+                hudElement.hidden = hidePartyListEntry;
+            }
+        }
+        if (nameplateGroup != null)
+        {
+            if (!hideNameplate)
+            {
+                nameplateGroup.alpha = 1f;
+            }
+            else
+            {
+                nameplateGroup.alpha = 0f;
             }
         }
     }
@@ -903,7 +960,7 @@ public class CharacterState : MonoBehaviour
     {
         if (kill)
         {
-            ModifyHealth(0, kill, ignoreDamageReduction);
+            ModifyHealth(0, kill, ignoreDamageReduction, ignoreShields);
         }
         else
         {
@@ -1052,13 +1109,13 @@ public class CharacterState : MonoBehaviour
         //HealthBarUserInterface();
     }
 
-    public void AddShield(long value, string identifier)
+    public void AddShield(long value, string identifier, bool showPopup = false)
     {
         if (!currentShields.ContainsKey(identifier))
         {
             currentShields.Add(new Shield(identifier, value));
 
-            if (showDamagePopups)
+            if (showDamagePopups && showPopup)
                 ShowDamageFlyText(new Damage(value, false, true, DamageType.magical, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal, Utilities.InsertSpaceBeforeCapitals(identifier)));
         }
         else
@@ -2417,6 +2474,9 @@ public class CharacterState : MonoBehaviour
 
     public void AddEffect(StatusEffect effect, Damage? damage, bool self = false, int tag = 0, int stacks = 0)
     {
+        //if (effect.data.name.Contains("Cleaned"))
+        //    Debug.LogError("Cleaned detected");
+
         if (!gameObject.activeSelf)
             return;
 
@@ -2583,9 +2643,13 @@ public class CharacterState : MonoBehaviour
 
         StatusEffect temp = effects[name];
 
-        if (showDamagePopups)
+        if (showDamagePopups && (effects[name].stacks <= 1 || effects[name].stacks <= stacks))
         {
             ShowStatusEffectFlyText(temp, " - ");
+        }
+        else
+        {
+            ShowStatusEffectFlyText(temp, 1, " - ");
         }
 
         if (invulnerable)
@@ -2877,7 +2941,7 @@ public class CharacterState : MonoBehaviour
         }*/
         if (nameplateCharacterNameTextGroup != null)
         {
-            if (!hideNameplate && showCharacterName)
+            if (showCharacterName)
             {
                 nameplateCharacterNameTextGroup.alpha = 1f;
             }

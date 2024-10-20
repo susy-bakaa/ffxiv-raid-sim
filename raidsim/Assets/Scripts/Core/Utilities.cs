@@ -304,6 +304,14 @@ public static class Utilities
         }
     }
 
+    public static bool TryGetBool(this Animator animator, int parameter)
+    {
+        if (animator == null)
+            return false;
+        else
+            return animator.GetBool(parameter);
+    }
+
     public static float Map(this float from, float fromMin, float fromMax, float toMin, float toMax)
     {
         var fromAbs = from - fromMin;

@@ -103,7 +103,19 @@ public class TargetController : MonoBehaviour
             self = GetComponentInChildren<TargetNode>();
         }
 
-        rateLimit = Random.Range(autoTargetRate - 9, autoTargetRate + 1);
+        if (autoTargetRate <= 0)
+        {
+            rateLimit = 0;
+        } 
+        else if (autoTargetRate <= 10)
+        {
+            rateLimit = autoTargetRate;
+        }
+        else
+        {
+            rateLimit = Random.Range(autoTargetRate - 9, autoTargetRate + 1);
+        }
+
 
         targetTriggerNodes = new List<TargetNode>();
     }
@@ -115,8 +127,20 @@ public class TargetController : MonoBehaviour
         //HandleTabTargeting();
         if (isPlayer)
             UpdateUserInterface();
-        if (autoTarget && Utilities.RateLimiter(rateLimit))
-            Target();
+        if (autoTarget)
+        {
+            if (rateLimit > 0)
+            {
+                if (Utilities.RateLimiter(rateLimit))
+                {
+                    Target();
+                }
+            }
+            else
+            {
+                Target();
+            }
+        }
     }
 
     void OnEnable()

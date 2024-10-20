@@ -13,9 +13,13 @@ public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     RectTransform rectTransform;
     CanvasGroup canvasGroup;
     UserInput input;
+    HudElementPriority priorityHandler;
 
     [Header("Sorting")]
     public int priority = 1;
+    private int originalPriority;
+    public bool hidden = false;
+    private bool wasHidden;
     [Header("Data")]
     public CharacterState characterState;
     public bool destroyIfMissing = false;
@@ -55,6 +59,7 @@ public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     {
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
+        priorityHandler = GetComponentInParent<HudElementPriority>();
 
         if (input == null)
         {
@@ -64,10 +69,40 @@ public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                     input = FightTimeline.Instance.input;
             }
         }
+
+        originalPriority = priority;
     }
 
     void Update()
     {
+        if (wasHidden != hidden)
+        {
+            if (hidden)
+            {
+                priority = 512;
+                canvasGroup.alpha = 0f;
+                canvasGroup.interactable = false;
+                canvasGroup.blocksRaycasts = false;
+
+                if (priorityHandler != null)
+                    priorityHandler.UpdateSorting();
+            }
+            else
+            {
+                priority = originalPriority;
+
+                if (fadeOutTime < 0f)
+                    canvasGroup.alpha = 1f;
+
+                canvasGroup.interactable = true;
+                canvasGroup.blocksRaycasts = true;
+
+                if (priorityHandler != null)
+                    priorityHandler.UpdateSorting();
+            }
+            wasHidden = hidden;
+        }
+
         if (destroyIfMissing)
         {
             if (characterState == null)

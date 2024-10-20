@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Common;
 using UnityEngine;
 
 public class BossController : MonoBehaviour
@@ -14,9 +15,31 @@ public class BossController : MonoBehaviour
     public float stoppingDistance = 3f;
     public float turnSmoothTime;
 
+    public float turningSpeedMultiplier = 300f; // Multiplier to amplify turning speed, adjust as needed
+    public float turningSmoothTime = 0.1f;   // Smoothing time for turning speed (adjust as needed)
+
+    private float turningVelocity = 0f;    // Smoothing velocity for turning speed
+
     private float turnSmoothVelocity;
-    private float currentSpeed;
     private float targetRadius = 0f;
+
+    public float acceleration = 1f;  // Adjust for how quickly you want the boss to accelerate
+    public float deceleration = 2f;  // Adjust for how quickly you want the boss to decelerate
+    public float speedThreshold = 0.05f; // Threshold to lock speeds when close enough
+
+    private float currentSpeed = 0f; // Track the current speed
+    private float targetSpeed = 0f;  // The speed we want to reach
+
+    private float previousYRotation = 0f;  // To store the previous frame's Y rotation
+    private float turningSpeed = 0f;       // Turning speed to send to the animator
+
+    public bool ignoreCasting = false;
+
+    private int animatorParameterDead = Animator.StringToHash("Dead");
+    private int animatorParameterSpeed = Animator.StringToHash("Speed");
+    private int animatorParameterTurning = Animator.StringToHash("Turning");
+    private int animatorParameterDiamondback = Animator.StringToHash("Diamondback");
+    private int animatorParameterActionLocked = Animator.StringToHash("ActionLocked");
 
     void Awake()
     {
@@ -29,20 +52,11 @@ public class BossController : MonoBehaviour
     {
         if (animator != null)
         {
-            animator.SetBool("Dead", state.dead);
-            animator.SetBool("Diamondback", state.HasEffect("Diamondback"));
+            animator.SetBool(animatorParameterDead, state.dead);
+            animator.SetBool(animatorParameterDiamondback, state.HasEffect("Diamondback"));
         }
 
-        if (currentSpeed > 0 && !controller.isCasting)
-        {
-            state.still = false;
-        }
-        else
-        {
-            state.still = true;
-        }
-
-        if (target != null && !state.dead && !controller.isCasting)
+        if (target != null && !state.dead && ((!ignoreCasting && !controller.isCasting && !animator.TryGetBool(animatorParameterActionLocked)) || ignoreCasting))
         {
             Vector3 vector = target.position - transform.position;
             Vector2 vector2 = new Vector2(vector.x, vector.z);
@@ -59,47 +73,102 @@ public class BossController : MonoBehaviour
                 if (angleDifference > 1f) // Adjust threshold as needed
                 {
                     transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
+
+                    // Calculate turning speed (directional value -1 to 1)
+                    float currentYRotation = transform.eulerAngles.y;
+                    float deltaY = Mathf.DeltaAngle(previousYRotation, currentYRotation); // Difference between last frame's and current Y rotation
+                    float rawTurningSpeed = Mathf.Clamp(deltaY * turningSpeedMultiplier / 180f, -1f, 1f); // Amplify and normalize to range -1 to 1
+
+                    // Smooth the turning speed
+                    turningSpeed = Mathf.SmoothDamp(turningSpeed, rawTurningSpeed, ref turningVelocity, turningSmoothTime);
+
+                    previousYRotation = currentYRotation; // Update previous rotation
                 }
                 else
                 {
                     transform.eulerAngles = Vector3.up * targetAngle;
                     turnSmoothVelocity = 0f;
+                    turningSpeed = 0f;  // No turning
                 }
             }
 
+            // Set targetSpeed based on distance to target
             if (distanceToTarget > totalStoppingDistance)
             {
-                float d = state.currentSpeed * normalized.magnitude;
-                transform.Translate(transform.forward * d * FightTimeline.deltaTime, Space.World);
-                currentSpeed = 0.5f * normalized.magnitude;
+                targetSpeed = state.currentSpeed; // Full speed ahead
             }
             else
             {
-                currentSpeed = 0;
+                targetSpeed = 0; // Stop when within range
                 target = null;
             }
 
+            // Smooth acceleration or deceleration
+            if (Mathf.Abs(currentSpeed - targetSpeed) < speedThreshold)
+            {
+                // Lock the speed to targetSpeed when close enough
+                currentSpeed = targetSpeed;
+            }
+            else if (currentSpeed < targetSpeed)
+            {
+                // Accelerate smoothly
+                currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, acceleration * Time.deltaTime);
+            }
+            else if (currentSpeed > targetSpeed)
+            {
+                // Decelerate smoothly
+                currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, deceleration * Time.deltaTime);
+            }
+
+            // Move the boss
+            if (currentSpeed > 0)
+            {
+                Vector3 moveVector = transform.forward * currentSpeed * Time.deltaTime;
+                transform.Translate(moveVector, Space.World);
+            }
+
+            // Set animator variables
             if (animator != null)
             {
-                if (Mathf.Abs(animator.GetFloat("Speed") - currentSpeed) > 0.01f)
+                if (Mathf.Abs(animator.GetFloat(animatorParameterSpeed) - currentSpeed) > 0.01f)
                 {
-                    animator.SetFloat("Speed", currentSpeed);
+                    animator.SetFloat(animatorParameterSpeed, currentSpeed);
                 }
+                animator.SetFloat(animatorParameterTurning, turningSpeed); // Update turning value in the animator
             }
         }
         else
         {
-            if (lookTarget)
+            // No target, decelerate to a stop
+            targetSpeed = 0;
+            currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, deceleration * Time.deltaTime);
+
+            // Even when the boss is not moving, check for rotation and calculate turning speed
+            if (lookTarget != null && !state.dead && ((!ignoreCasting && !controller.isCasting && !animator.TryGetBool(animatorParameterActionLocked)) || ignoreCasting))
             {
                 Vector3 direction = (new Vector3(lookTarget.position.x, 0f, lookTarget.position.z) - new Vector3(transform.position.x, 0f, transform.position.z)).normalized;
                 Quaternion lookRotation = Quaternion.LookRotation(direction);
                 transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, turnSmoothTime * Time.deltaTime);
+
+                // Calculate turning speed (directional value -1 to 1)
+                float currentYRotation = transform.eulerAngles.y;
+                float deltaY = Mathf.DeltaAngle(previousYRotation, currentYRotation); // Difference between last frame's and current Y rotation
+                float rawTurningSpeed = Mathf.Clamp(deltaY * turningSpeedMultiplier / 180f, -1f, 1f); // Amplify and normalize to range -1 to 1
+
+                // Smooth the turning speed
+                turningSpeed = Mathf.SmoothDamp(turningSpeed, rawTurningSpeed, ref turningVelocity, turningSmoothTime);
+
+                previousYRotation = currentYRotation; // Update previous rotation
+            }
+            else
+            {
+                turningSpeed = 0f; // No turning when there's no look target
             }
 
-            currentSpeed = 0;
             if (animator != null)
             {
-                animator.SetFloat("Speed", 0f);
+                animator.SetFloat(animatorParameterSpeed, currentSpeed);
+                animator.SetFloat(animatorParameterTurning, turningSpeed); // Update turning when stationary
             }
         }
     }

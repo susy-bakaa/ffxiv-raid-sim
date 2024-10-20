@@ -264,6 +264,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7671187878429515254}
+  - component: {fileID: 5429635456094443351}
   - component: {fileID: 3468505267244163948}
   m_Layer: 5
   m_Name: Mech_CleanedNegatron
@@ -294,6 +295,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!225 &5429635456094443351
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2782830212546906010}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!114 &3468505267244163948
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -307,6 +320,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 3
+  hidden: 1
   characterState: {fileID: 0}
   destroyIfMissing: 0
   blocksAllInput: 0

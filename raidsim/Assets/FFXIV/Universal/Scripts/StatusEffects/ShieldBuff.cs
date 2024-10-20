@@ -15,7 +15,7 @@ public class ShieldBuff : StatusEffect
 
     public override void OnApplication(CharacterState state)
     {
-        state.AddShield(shield.value, shield.key);
+        state.AddShield(shield.value, shield.key, true);
         base.OnApplication(state);
     }
 

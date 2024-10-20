@@ -10,22 +10,34 @@ public class MusicLoader : MonoBehaviour
     [SerializeField] private int songCount = 0;
     private AudioSource source = null;
 
-    private void Awake()
+    public void Load()
     {
+        if (GlobalVariables.muteBgm)
+            return;
+
         source = transform.GetComponentInChildren<AudioSource>();
 
-        // Start loading the song asynchronously
-        LoadSongAsync();
+        if (source != null)
+        {
+            // Start loading the song asynchronously
+            LoadSongAsync();
+        }
     }
 
     private void OnDestroy()
     {
+        if (GlobalVariables.muteBgm || source == null)
+            return;
+
         source.Stop();
         source.clip = null;
     }
 
     private async void LoadSongAsync()
     {
+        if (GlobalVariables.muteBgm)
+            return;
+
         string finalPath = string.Empty;
 
         if (useRelativeToExecutable)

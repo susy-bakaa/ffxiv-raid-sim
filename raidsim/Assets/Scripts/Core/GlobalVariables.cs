@@ -22,4 +22,5 @@ public static class GlobalVariables
     [DllImport("user32.dll", EntryPoint = "FindWindow")]
     public static extern System.IntPtr FindWindow(System.String className, System.String windowName);
 #endif
+    public static bool muteBgm = false;
 }

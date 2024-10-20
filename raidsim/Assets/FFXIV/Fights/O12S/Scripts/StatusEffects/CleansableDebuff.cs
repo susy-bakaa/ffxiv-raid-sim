@@ -39,7 +39,7 @@ public class CleansableDebuff : StatusEffect
         if (killsOnExpire)
         {
             // We need to add a small delay to the health modification or else the fly text for the debuff appears twice, this is a simple unnoticable fix for it.
-            Utilities.FunctionTimer.Create(this, () => state.ModifyHealth(damage, true), 0.1f, $"{gameObject}_{id}_ModifyHealth_Delay", false, true);
+            Utilities.FunctionTimer.Create(state, () => state.ModifyHealth(damage, true), 0.1f, $"{data.statusName}_{id}_killsOnExpire_ModifyHealth_Delay", false, true);
         }
         base.OnExpire(state);
     }

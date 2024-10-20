@@ -10,16 +10,23 @@ public class NextBotTimeline : MonoBehaviour
 
     public List<StatusEffectInfo> effects = new List<StatusEffectInfo>();
     public List<IndexMapping> indexMapping = new List<IndexMapping>();
+    public List<IndexMapping> indexMapping2 = new List<IndexMapping>();
     public int fightTimelineEventRandomResultId = -1;
+    public int fightTimelineEventRandomResultId2 = -1;
     public List<BotTimeline> timelines = new List<BotTimeline>();
     public choiceType type = choiceType.statusEffect;
     public bool allowSubStatuses = false;
+    public bool useDoubleEventCheck = false;
     public bool useIndexMapping = false;
     public bool endIfDisabled = true;
+    public bool forceEnd = false;
     public bool log = false;
 
     public void Choose(BotTimeline old)
     {
+        if (forceEnd)
+            return;
+
         if (endIfDisabled && !old.bot.gameObject.activeSelf)
             return;
 
@@ -76,6 +83,7 @@ public class NextBotTimeline : MonoBehaviour
                     break;
                 case choiceType.fightTimelineEventRandomResult:
                     int r = FightTimeline.Instance.GetRandomEventResult(fightTimelineEventRandomResultId);
+                    int r2 = FightTimeline.Instance.GetRandomEventResult(fightTimelineEventRandomResultId2);
 
                     if (useIndexMapping)
                     {
@@ -88,6 +96,21 @@ public class NextBotTimeline : MonoBehaviour
                                     Debug.Log($"[{gameObject.name}] --- Index Mapping {indexMapping[i].name} of index {i} will result in next index of {r}");
                                 break;
                             }
+                        }
+                        // second
+                        if (useDoubleEventCheck)
+                        {
+                            for (int i = 0; i < indexMapping2.Count; i++)
+                            {
+                                if (indexMapping2[i].previousIndex == r2)
+                                {
+                                    r2 = indexMapping2[i].nextIndex;
+                                    if (log || bot.log)
+                                        Debug.Log($"[{gameObject.name}] --- Second Index Mapping {indexMapping2[i].name} of index {i} will result in next index of {r2}");
+                                    break;
+                                }
+                            }
+                            r += r2;
                         }
                     }
 

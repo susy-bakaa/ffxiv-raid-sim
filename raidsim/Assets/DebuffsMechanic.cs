@@ -17,6 +17,7 @@ public class DebuffsMechanic : FightMechanic
     public bool ignoreRoles = false;
     public bool useIndexMapping = false;
     public bool useRoleMapping = false;
+    public bool log = false;
 
     public override void TriggerMechanic(ActionInfo actionInfo)
     {
@@ -33,6 +34,9 @@ public class DebuffsMechanic : FightMechanic
         {
             state = actionInfo.target;
         }
+
+        if (log)
+            Debug.Log($"{gameObject.name} character state is {state.gameObject.name}");
 
         if (effects != null && effects.Count > 0)
         {
@@ -59,6 +63,8 @@ public class DebuffsMechanic : FightMechanic
                         if (roleMapping[i].role == state.role)
                         {
                             r += roleMapping[i].indexOffset;
+                            if (log)
+                                Debug.Log($"{gameObject.name} roleMapping role is of index {i} and is {roleMapping[i].role}, r is {r}");
                             break;
                         }
                     }
@@ -69,8 +75,12 @@ public class DebuffsMechanic : FightMechanic
                 {
                     if (!ignoreRoles)
                     {
-                        if (!effects[r].data.assignedRoles.Contains(state.role))
+                        if (effects[r].data.assignedRoles.Contains(state.role))
                         {
+                            if (log)
+                            {
+                                Debug.Log($"{gameObject.name} effects[r] {effects[r].name} contains {state.gameObject.name} role {state.role}\nAdding effect...");
+                            }
                             state.AddEffect(effects[r].data, false, effects[r].tag, effects[r].stacks);
                         }
                     }

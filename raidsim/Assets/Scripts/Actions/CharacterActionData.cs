@@ -35,6 +35,7 @@ public class CharacterActionData : ScriptableObject
     public CharacterActionData comboAction;
     public string animationName = string.Empty;
     public bool playAnimationDirectly = false;
+    public int onAnimationFinishId = -1;
 
     void Reset()
     {
