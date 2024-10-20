@@ -50,7 +50,7 @@ Timelines don't work yet for these or the bots are not finished and will die to 
 
 # Installation
 
-To use this program, either open the [web version](https://susy-bakaa.github.io/unityweb/raidsim/index.html) or just head over to the releases section and download the latest archive file for your respective operating system. If you wish to try out the program before downloading you may do so with the web version, but be warned though, as the web version is currently not properly tested and might run into sever issues. For the standalone version, you need to extract said archive with some tool such as 7zip and then open up the raidsim.exe to launch the program. There is also a build available for Linux, that is not well tested so it might have some issues. If you instead want to download the source code or expand upon this program, check the git instructions down below.
+To use this program, either open the [web version](https://susy-bakaa.github.io/unityweb/raidsim/index.html) or just head over to the releases section and download the latest archive file for your respective operating system. If you wish to try out the program before downloading you may do so with the web version, but be warned though, as the web version is currently not properly tested and might run into sever issues. For the standalone version, you need to extract said archive with some tool such as 7zip and then open up the raidsim.exe or raidsim.x86_64 to launch the program. The build available for Linux is not well tested so it might have some issues. If you instead want to download the source code or expand upon this program, check the git instructions down below.
 
 # Git Usage Instructions
 

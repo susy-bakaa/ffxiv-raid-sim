@@ -63,8 +63,11 @@ public class ThirdPersonCamera : MonoBehaviour
                 cursorPosition = CursorControl.GetPosition();
                 cursorPositionSet = true;
             }
-#endif
+#elif UNITY_STANDALONE_LINUX
+            Cursor.lockState = CursorLockMode.Locked;
+#else
             Cursor.lockState = CursorLockMode.Confined;
+#endif
             Cursor.visible = false;
         }
         if ((Input.GetMouseButtonUp(1) && !Input.GetMouseButton(0)) || (Input.GetMouseButtonUp(0) && !Input.GetMouseButton(1)))
