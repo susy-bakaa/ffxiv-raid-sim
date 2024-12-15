@@ -16,6 +16,9 @@ A singleplayer raid and fight mechanic simulator with bots, made in the Unity ga
 	- AAC Light-heavyweight M4 (Savage) (M4S)
 		- Sunrise Sabbath ([Rinon](https://www.youtube.com/watch?v=1lrk5FbNIPc))
 		- Sunrise Sabbath ([AutoCad/Uptime](https://raidplan.io/plan/OnQXobwatopL1G8u))
+- The Weapon's Refrain (Ultimate) (UWU)
+	- Phase 3 (Titan)
+		- Gaols ([LPDU](https://www.youtube.com/watch?v=PwEVH50b-rg))
 
 # In development fights
 
@@ -41,8 +44,6 @@ Timelines don't work yet for these or the bots are not finished and will die to 
 	- Phase 3 (Bahamut Prime)
 		- Heavensfall
 - The Weapon's Refrain (Ultimate) (UWU)
-	- Phase 3 (Titan)
-		- Gaols
 	- Phase 5 (The Ultima Weapon)
 		- Ultimate Predation
 		- Ultimate Suppression
