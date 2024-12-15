@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using static CharacterState;
 
 public class PartyList : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class PartyList : MonoBehaviour
     public string spriteAsset = "letters_1";
     public int maxLetters = 7;
     public bool assignLetters = false;
+    public List<Role> priorityOrder = new List<Role>();
 
     private List<TextMeshProUGUI> names = new List<TextMeshProUGUI>();
     private HudElementPriority hudPriority;
@@ -47,6 +49,9 @@ public class PartyList : MonoBehaviour
         {
             for (int i = 0;i < members.Count; i++)
             {
+                if (members[i].characterState == null)
+                    continue;
+
                 members[i].characterState.characterLetter = members[i].letter;
             }
         }
@@ -181,7 +186,15 @@ public class PartyList : MonoBehaviour
 
         for (int i = 0; i < members.Count; i++)
         {
+            if (members[i].characterState == null)
+                continue;
+
             sortedMembers.Add(members[i].characterState);
+        }
+
+        if (sortedMembers == null || sortedMembers.Count < 1)
+        {
+            return new List<CharacterState>();
         }
 
         // Sort the copy based on the enmity towards the specified CharacterState
@@ -226,6 +239,9 @@ public class PartyList : MonoBehaviour
 
         List<CharacterState> enmityList = GetEnmityList(towards);
 
+        if (enmityList == null || enmityList.Count < 1)
+            return false;
+
         if (enmityList[0].enmity.TryGetValue(towards, out long enmity))
         {
             if (enmity > 0)
@@ -257,12 +273,35 @@ public class PartyList : MonoBehaviour
         return null;
     }
 
+    public List<PartyMember> GetPrioritySortedList(StatusEffectData statusEffectData)
+    {
+        List<PartyMember> sortedMembers = new List<PartyMember>();
+
+        for (int i = 0; i < members.Count; i++)
+        {
+            if (members[i].characterState.HasAnyVersionOfEffect(statusEffectData.statusName))
+            {
+                sortedMembers.Add(members[i]);
+            }
+        }
+
+        if (priorityOrder.Count > 0)
+        {
+            sortedMembers.Sort((a, b) => priorityOrder.IndexOf(a.role).CompareTo(priorityOrder.IndexOf(b.role)));
+        }
+
+        return sortedMembers;
+    }
+
     public void UpdatePartyList()
     {
         int i_active = 0;
         for (int i = 0; i < members.Count; i++)
         {
             PartyMember member = members[i];
+
+            if (member.characterState == null)
+                continue;
 
             //Debug.Log($"update partylist {gameObject.name}");
 

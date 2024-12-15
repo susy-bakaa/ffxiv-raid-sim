@@ -2,12 +2,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static ActionController;
-using static GlobalStructs;
+using static GlobalData;
 
 public class FightMechanic : MonoBehaviour
 {
     public bool mechanicEnabled = true;
     public string mechanicName = string.Empty;
+    public bool onlyTriggerOnce = false;
+    public bool log;
+
+    private bool triggered = false;
+
+    private void Awake()
+    {
+        if (FightTimeline.Instance == null)
+            return;
+
+        if (FightTimeline.Instance.log)
+        {
+            log = true;
+        }
+    }
 
     public void TriggerMechanic(CharacterCollection characterCollection)
     {
@@ -39,8 +54,7 @@ public class FightMechanic : MonoBehaviour
 
     public virtual void TriggerMechanic(ActionInfo actionInfo)
     {
-        if (!mechanicEnabled)
-            return;
+
     }
 
     public void InterruptMechanic(CharacterCollection characterCollection)
@@ -64,6 +78,41 @@ public class FightMechanic : MonoBehaviour
     public virtual void InterruptMechanic(ActionInfo actionInfo)
     {
         if (!mechanicEnabled)
+        {
+            string nameToLog = string.IsNullOrEmpty(mechanicName) ? "Unnamed mechanic" : mechanicName;
+            Debug.Log($"[FightMechanic] '{nameToLog}' ({gameObject.name}) is not enabled! Interruption aborted.");
             return;
+        }
+        if (log)
+        {
+            string nameToLog = string.IsNullOrEmpty(mechanicName) ? "Unnamed mechanic" : mechanicName;
+            Debug.Log($"[FightMechanic] '{nameToLog}' ({gameObject.name}) was interrupted with ActionInfo (action: '{actionInfo.action?.gameObject}', source: '{actionInfo.source?.characterName}', target: '{actionInfo.target?.characterName}', targetIsPlayer: '{actionInfo.targetIsPlayer}')");
+        }
+    }
+
+    protected bool CanTrigger(ActionInfo actionInfo)
+    {
+        if (!mechanicEnabled && log)
+        {
+            string nameToLog = string.IsNullOrEmpty(mechanicName) ? "Unnamed mechanic" : mechanicName;
+            Debug.Log($"[FightMechanic] '{nameToLog}' ({gameObject.name}) is not enabled! Execution aborted.");
+            return false;
+        }
+        if (triggered && onlyTriggerOnce)
+        {
+            if (log)
+            {
+                string nameToLog = string.IsNullOrEmpty(mechanicName) ? "Unnamed mechanic" : mechanicName;
+                Debug.Log($"[FightMechanic] '{nameToLog}' ({gameObject.name}) has already been triggered once! Execution aborted.");
+            }
+            return false;
+        }
+        triggered = true;
+        if (log)
+        {
+            string nameToLog = string.IsNullOrEmpty(mechanicName) ? "Unnamed mechanic" : mechanicName;
+            Debug.Log($"[FightMechanic] '{nameToLog}' ({gameObject.name}) triggered with ActionInfo (action: '{actionInfo.action?.gameObject}', source: '{actionInfo.source?.characterName}', target: '{actionInfo.target?.characterName}', targetIsPlayer: '{actionInfo.targetIsPlayer}')");
+        }
+        return true;
     }
 }

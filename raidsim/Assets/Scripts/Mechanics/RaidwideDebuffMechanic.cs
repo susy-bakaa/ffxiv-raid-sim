@@ -24,7 +24,15 @@ public class RaidwideDebuffMechanic : FightMechanic
 
     public override void TriggerMechanic(ActionInfo actionInfo)
     {
-        base.TriggerMechanic(actionInfo);
+        if (!CanTrigger(actionInfo))
+            return;
+
+        CharacterState from = null;
+
+        if (actionInfo.source != null)
+            from = actionInfo.source;
+        else if (actionInfo.target != null)
+            from = actionInfo.target;
 
         if (party == null && autoFindParty)
             party = FightTimeline.Instance.partyList;
@@ -59,19 +67,19 @@ public class RaidwideDebuffMechanic : FightMechanic
                 {
                     if (target.HasEffect(effect.data.statusName, effect.tag))
                     {
-                        target.ModifyHealth(new GlobalStructs.Damage(100, true, true, GlobalStructs.Damage.DamageType.unique, GlobalStructs.Damage.ElementalAspect.unaspected, GlobalStructs.Damage.PhysicalAspect.none, GlobalStructs.Damage.DamageApplicationType.percentageFromMax, Utilities.InsertSpaceBeforeCapitals(effect.data.statusName)), true);
+                        target.ModifyHealth(new GlobalData.Damage(100, true, true, GlobalData.Damage.DamageType.unique, GlobalData.Damage.ElementalAspect.unaspected, GlobalData.Damage.PhysicalAspect.none, GlobalData.Damage.DamageApplicationType.percentageFromMax, Utilities.InsertSpaceBeforeCapitals(effect.data.statusName)), true);
                     }
                 }
 
                 if (!cleansEffect && !killsEffect)
                 {
                     // Apply the effect to the target
-                    target.AddEffect(effect.data, false, effect.tag, effect.stacks);
+                    target.AddEffect(effect.data, from, false, effect.tag, effect.stacks);
                 }
                 else if (cleansEffect && !killsEffect)
                 {
                     // Remove the effect to the target
-                    target.RemoveEffect(effect.data, false, effect.tag, effect.stacks);
+                    target.RemoveEffect(effect.data, false, from, effect.tag, effect.stacks);
                 }
 
                 // Remove the effect and player from the possible options
@@ -85,19 +93,19 @@ public class RaidwideDebuffMechanic : FightMechanic
             {
                 if (actionInfo.source.HasEffect(effect.data.statusName, effect.tag))
                 {
-                    actionInfo.source.ModifyHealth(new GlobalStructs.Damage(100, true, true, GlobalStructs.Damage.DamageType.unique, GlobalStructs.Damage.ElementalAspect.unaspected, GlobalStructs.Damage.PhysicalAspect.none, GlobalStructs.Damage.DamageApplicationType.percentageFromMax, Utilities.InsertSpaceBeforeCapitals(effect.data.statusName)), true);
+                    actionInfo.source.ModifyHealth(new GlobalData.Damage(100, true, true, GlobalData.Damage.DamageType.unique, GlobalData.Damage.ElementalAspect.unaspected, GlobalData.Damage.PhysicalAspect.none, GlobalData.Damage.DamageApplicationType.percentageFromMax, Utilities.InsertSpaceBeforeCapitals(effect.data.statusName)), true);
                 }
             }
 
             if (!cleansEffect && !killsEffect)
             {
                 // Apply the effect to the target
-                actionInfo.source.AddEffect(effect.data, false, effect.tag, effect.stacks);
+                actionInfo.source.AddEffect(effect.data, from, false, effect.tag, effect.stacks);
             }
             else if (!killsEffect)
             {
                 // Remove the effect to the target
-                actionInfo.source.RemoveEffect(effect.data, false, effect.tag, effect.stacks);
+                actionInfo.source.RemoveEffect(effect.data, false, from, effect.tag, effect.stacks);
             }
         }
     }

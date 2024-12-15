@@ -44,7 +44,7 @@ namespace no00ob.Raidsim.Editor
 
             GUILayout.Label("Shape", EditorStyles.boldLabel);
 
-            tintProp.colorValue = EditorGUILayout.ColorField(new GUIContent("Color"), tintProp.colorValue, true, false, false);
+            tintProp.colorValue = EditorGUILayout.ColorField(new GUIContent("Color"), tintProp.colorValue, true, true, false);
             angleProp.floatValue = EditorGUILayout.Slider("Angle", angleProp.floatValue, angleProp.rangeLimits.x, angleProp.rangeLimits.y);
             outerRadiusProp.floatValue = EditorGUILayout.FloatField("Outer Radius", outerRadiusProp.floatValue);
             innerRadiusProp.floatValue = EditorGUILayout.Slider("Inner Radius", innerRadiusProp.floatValue, 0.0f, outerRadiusProp.floatValue);

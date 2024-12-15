@@ -12,7 +12,8 @@ public class RaidwideWipeMechanic : FightMechanic
 
     public override void TriggerMechanic(ActionInfo actionInfo)
     {
-        base.TriggerMechanic(actionInfo);
+        if (!CanTrigger(actionInfo))
+            return;
 
         if (activatesWhenDead)
         {

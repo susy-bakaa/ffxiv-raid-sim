@@ -16,13 +16,13 @@ public class CriticalBugDebuff : StatusEffect
         {
             damageTrigger.owner = state;
         }
-        state.AddEffect(inflictsStatusEffect);
+        state.AddEffect(inflictsStatusEffect, state);
         if (cleansStatusEffects != null && cleansStatusEffects.Count > 0 )
         {
             for (int i = 0; i < cleansStatusEffects.Count; i++)
             {
                 if (state.HasEffect(cleansStatusEffects[i].statusName))
-                    state.RemoveEffect(cleansStatusEffects[i].statusName, false);
+                    state.RemoveEffect(cleansStatusEffects[i].statusName, false, state);
             }
         }
         base.OnExpire(state);

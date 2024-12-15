@@ -34,13 +34,28 @@ public class HudElementPriority : MonoBehaviour
                 hudElements.Add(childElement);
         }
 
-        // Sort hudElements based on priority
-        var sortedElements = hudElements.OrderBy(element => element.priority).ToList();
+        // Separate elements based on omitSorting flag
+        var sortedElements = hudElements.Where(element => !element.omitSorting)
+                                        .OrderBy(element => element.priority)
+                                        .ToList();
+        var omittedElements = hudElements.Where(element => element.omitSorting).ToList();
 
-        // Update sibling indices
-        for (int i = 0; i < sortedElements.Count; i++)
+        if (sortedElements != null && sortedElements.Count > 0)
         {
-            sortedElements[i].transform.SetSiblingIndex(i);
+            // Update sibling indices for sorted elements
+            for (int i = 0; i < sortedElements.Count; i++)
+            {
+                sortedElements[i].transform.SetSiblingIndex(i);
+            }
+        }
+
+        if (omittedElements != null && omittedElements.Count > 0)
+        {
+            // Update sibling indices for omitted elements
+            for (int i = 0; i < omittedElements.Count; i++)
+            {
+                omittedElements[i].transform.SetSiblingIndex(sortedElements.Count + i);
+            }
         }
     }
 }

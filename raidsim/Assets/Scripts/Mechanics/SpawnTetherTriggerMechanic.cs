@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static ActionController;
-using static GlobalStructs.Damage;
-using static GlobalStructs;
+using static GlobalData.Damage;
+using static GlobalData;
 
 public class SpawnTetherTriggerMechanic : FightMechanic
 {
@@ -17,7 +17,8 @@ public class SpawnTetherTriggerMechanic : FightMechanic
 
     public override void TriggerMechanic(ActionInfo actionInfo)
     {
-        base.TriggerMechanic(actionInfo);
+        if (!CanTrigger(actionInfo))
+            return;
 
         if (spawnLocation == null)
         {

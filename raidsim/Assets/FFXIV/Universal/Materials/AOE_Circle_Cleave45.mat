@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: AOE_Circle_Cleave45
-  m_Shader: {fileID: 4800000, guid: e0a1a641ccee9c641b2c5737341e1c93, type: 3}
+  m_Shader: {fileID: 4800000, guid: 084f07535f9aa774baa1cb64872aeacd, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -61,6 +61,9 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _Alpha: 1
+    - _Angle: 45
+    - _AngularOutline: 0.005
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
@@ -70,14 +73,18 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _Glow: 0.05
+    - _GlowOpacity: 0.5
     - _InnerOpacity: 0.5
+    - _InnerRadius: 0
     - _InnerRatio: 1
     - _MaxFill: 0.6
     - _Metallic: 0
     - _MinFill: 0.2
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _Outline: 0.07
+    - _OuterRadius: 0.45
+    - _Outline: 0.005
     - _OutlineOpacity: 0.7
     - _OutlineWidth: 0.05
     - _Parallax: 0.02
@@ -92,7 +99,8 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _GlowTintColor: {r: 1, g: 0.7921569, b: 0, a: 1}
     - _InnerTintColor: {r: 1, g: 0.7921569, b: 0, a: 1}
-    - _OutlineTintColor: {r: 1, g: 0.60784316, b: 0, a: 1}
+    - _OutlineTintColor: {r: 0.8490566, g: 0.6103753, b: 0.1802243, a: 1}
     - _TintColor: {r: 1, g: 0.7921569, b: 0, a: 1}
   m_BuildTextureStacks: []

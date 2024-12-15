@@ -24,6 +24,23 @@ public class DebuffSelector : MonoBehaviour
 
     public void Select(int value)
     {
-        target.playerEffect = effects[value];
+        if (target != null && effects != null && effects.Length > 0)
+        {
+            int maxLength = effects.Length - 1;
+            if (value > maxLength)
+            {
+                value = maxLength;
+            }
+            if (value < 0)
+            {
+                value = 0;
+            }
+
+            target.playerEffect = effects[value];
+        }
+        else
+        {
+            Debug.LogWarning($"DebuffSelector {gameObject.name} component is missing a valid target or effects!");
+        }
     }
 }

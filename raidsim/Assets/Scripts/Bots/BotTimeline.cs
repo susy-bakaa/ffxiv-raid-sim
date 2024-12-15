@@ -117,15 +117,38 @@ public class BotTimeline : MonoBehaviour
             }
             if (events[i].action != null)
             {
-                yield return new WaitForSeconds(events[i].waitForAction);
-                controller.PerformAction(events[i].action.actionName);
+                if (events[i].waitForAction > 0f)
+                {
+                    yield return new WaitForSeconds(events[i].waitForAction);
+                }
+                if (!events[i].unrestrictedAction)
+                    controller.PerformAction(events[i].action.actionName);
+                else
+                    controller.PerformActionUnrestricted(events[i].action.actionName);
+                if (FightTimeline.Instance.log)
+                    Debug.Log($"[BotTimeline] {controller.gameObject.name} perform action {events[i].action.actionName}");
             }
             if (events[i].rotation != Vector3.zero && events[i].waitForRotation > 0)
             {
-                yield return new WaitForSeconds(events[i].waitForRotation);
+                if (events[i].waitForRotation > 0f)
+                {
+                    yield return new WaitForSeconds(events[i].waitForRotation);
+                }
                 // set target rotation or something
             }
-            yield return new WaitForSeconds(events[i].waitAtNode);
+            float finalWait = events[i].waitAtNode;
+            if (events[i].randomWaitVariance > 0f)
+            {
+                finalWait = events[i].waitAtNode + Random.Range(-events[i].randomWaitVariance, events[i].randomWaitVariance);
+            }
+            if (finalWait > 0f)
+            {
+                yield return new WaitForSeconds(finalWait);
+            }
+            else
+            {
+                yield return null;
+            }
         }
         onFinish.Invoke(this);
     }
@@ -146,19 +169,23 @@ public class BotTimeline : MonoBehaviour
         public string name;
         [HideIf("clockSpot")] public Transform node;
         public float waitAtNode;
+        public float randomWaitVariance;
         public CharacterActionData action;
+        public bool unrestrictedAction;
         public float waitForAction;
         public Vector3 rotation;
         public float waitForRotation;
         public TargetNode target;
         public StatusEffectInfo targetStatusEffectHolder;
 
-        public BotEvent(string name, Transform node, float waitAtNode, CharacterActionData action, float waitForAction, Vector3 rotation, float waitForRotation, TargetNode cycleTarget, StatusEffectInfo targetStatusEffectHolder)
+        public BotEvent(string name, Transform node, float waitAtNode, float randomWaitVariance, CharacterActionData action, bool unrestrictedAction, float waitForAction, Vector3 rotation, float waitForRotation, TargetNode cycleTarget, StatusEffectInfo targetStatusEffectHolder)
         {
             this.name = name;
             this.node = node;
             this.waitAtNode = waitAtNode;
+            this.randomWaitVariance = randomWaitVariance;
             this.action = action;
+            this.unrestrictedAction = unrestrictedAction;
             this.waitForAction = waitForAction;
             this.rotation = rotation;
             this.waitForRotation = waitForRotation;

@@ -1,4 +1,15 @@
-﻿using System.IO;
+﻿#if UNITY_WEBPLAYER
+using UnityEngine;
+
+public static class NAudioPlayer
+{
+    public static AudioClip FromMp3Data(byte[] data)
+    {
+        return null;
+    }
+}
+#else
+using System.IO;
 using UnityEngine;
 using NAudio.Wave;
 
@@ -139,3 +150,4 @@ public static class NAudioPlayer
         return audioclip;
     }
 }
+#endif

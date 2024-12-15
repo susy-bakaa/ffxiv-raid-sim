@@ -9,7 +9,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static ActionController;
-using static GlobalStructs;
+using static GlobalData;
 
 public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
@@ -32,6 +32,8 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     [Header("Events")]
     public UnityEvent<ActionInfo> onExecute;
+    public UnityEvent<ActionInfo> onCast;
+    public UnityEvent<ActionInfo> onInterrupt;
 
     [Header("Visuals")]
     public RecastType recastType = RecastType.standard;
@@ -273,16 +275,16 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
             {
                 if (actionInfo.source.HasEffect(data.buff.statusName))
                 {
-                    actionInfo.source.RemoveEffect(data.buff, false);
+                    actionInfo.source.RemoveEffect(data.buff, false, actionInfo.source);
                 }
                 else if (!data.dispelBuffInstead)
                 {
-                    actionInfo.source.AddEffect(data.buff, actionInfo.sourceIsPlayer);
+                    actionInfo.source.AddEffect(data.buff, actionInfo.source, actionInfo.sourceIsPlayer);
                 }
             }
             else
             {
-                actionInfo.source.AddEffect(data.buff, actionInfo.sourceIsPlayer);
+                actionInfo.source.AddEffect(data.buff, actionInfo.source, actionInfo.sourceIsPlayer);
             }
         }
         if (data.debuff != null)
@@ -293,16 +295,16 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
                 {
                     if (actionInfo.source.HasEffect(data.debuff.statusName))
                     {
-                        actionInfo.source.RemoveEffect(data.debuff, false);
+                        actionInfo.source.RemoveEffect(data.debuff, false, actionInfo.source);
                     }
                     else if (!data.dispelDebuffInstead)
                     {
-                        actionInfo.source.AddEffect(data.debuff, actionInfo.sourceIsPlayer);
+                        actionInfo.source.AddEffect(data.debuff, actionInfo.source, actionInfo.sourceIsPlayer);
                     }
                 }
                 else
                 {
-                    actionInfo.source.AddEffect(data.debuff, actionInfo.sourceIsPlayer);
+                    actionInfo.source.AddEffect(data.debuff, actionInfo.source, actionInfo.sourceIsPlayer);
                 }
             }
         }
@@ -315,13 +317,16 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
                 {
                     int calculatedDamage = Mathf.RoundToInt((actionInfo.action.data.damage.value * damageMultiplier) * actionInfo.source.currentDamageOutputMultiplier);
 
-                    actionInfo.target.ModifyHealth(new Damage(actionInfo.action.data.damage, calculatedDamage, actionInfo.action.data.damage.name));
+                    if (actionInfo.action.data.causesDirectDamage)
+                    {
+                        actionInfo.target.ModifyHealth(new Damage(actionInfo.action.data.damage, calculatedDamage, actionInfo.action.data.damage.name));
+                    }
 
                     //Debug.Log($"Action {actionInfo.action.data.actionName} executed and hit {actionInfo.target.characterName}");
 
-                    if (actionInfo.action.data.isHeal && actionInfo.source != null)
+                    if (actionInfo.action.data.isHeal && actionInfo.source != null && actionInfo.action.data.causesDirectDamage)
                     {
-                        actionInfo.source.ModifyHealth(new Damage(Mathf.Abs(calculatedDamage), false, actionInfo.action.data.damage.name));
+                        actionInfo.source.ModifyHealth(new Damage(Mathf.Abs(calculatedDamage), false, actionInfo.source, actionInfo.action.data.damage.name));
                     }
 
                     if (actionInfo.action.data.damage.negative && actionInfo.action.data.damageEnmityMultiplier != 0f)

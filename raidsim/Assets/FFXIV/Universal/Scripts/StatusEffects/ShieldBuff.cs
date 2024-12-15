@@ -5,17 +5,27 @@ using static CharacterState;
 
 public class ShieldBuff : StatusEffect
 {
+    public bool allowAutoShield = true;
     public Shield shield;
 
-    void Awake()
+    void Start()
     {
-        if (!string.IsNullOrEmpty(damage.name) && damage.value != 0)
-            shield = new Shield(damage.name, damage.value);
+        if (allowAutoShield)
+        {
+            if (!string.IsNullOrEmpty(damage.name) && damage.value != 0)
+                shield = new Shield(damage.name.Replace(" ", ""), damage.value);
+        }
     }
 
     public override void OnApplication(CharacterState state)
     {
-        state.AddShield(shield.value, shield.key, true);
+        if(allowAutoShield)
+        {
+            if (!string.IsNullOrEmpty(damage.name) && damage.value != 0)
+                shield = new Shield(damage.name.Replace(" ", ""), damage.value);
+        }
+
+        state.AddShield(shield.value, shield.key, damage.source, true);
         base.OnApplication(state);
     }
 

@@ -45,7 +45,15 @@ public class RaidwideDebuffPairsMechanic : FightMechanic
 #endif
     public override void TriggerMechanic(ActionInfo actionInfo)
     {
-        base.TriggerMechanic(actionInfo);
+        if (!CanTrigger(actionInfo))
+            return;
+
+        CharacterState from = null;
+
+        if (actionInfo.source != null)
+            from = actionInfo.source;
+        else if (actionInfo.target != null)
+            from = actionInfo.target;
 
         statusEffects = new List<StatusEffectInfoArray>(effects); // Copy the effects list
         partyMembers = new List<CharacterState>(party.GetActiveMembers()); // Copy the party members list
@@ -60,7 +68,7 @@ public class RaidwideDebuffPairsMechanic : FightMechanic
                 partyMembers.Remove(player);
                 for (int i = 0; i < playerEffect.effectInfos.Length; i++)
                 {
-                    player.AddEffect(playerEffect.effectInfos[i].data, false, playerEffect.effectInfos[i].tag, playerEffect.effectInfos[i].stacks);
+                    player.AddEffect(playerEffect.effectInfos[i].data, from, false, playerEffect.effectInfos[i].tag, playerEffect.effectInfos[i].stacks);
                 }
             }
         }
@@ -81,7 +89,7 @@ public class RaidwideDebuffPairsMechanic : FightMechanic
                 // Apply the effects to the target
                 for (int j = 0; j < statusEffects[i].effectInfos.Length; j++)
                 {
-                    target.AddEffect(statusEffects[i].effectInfos[j].data, false, statusEffects[i].effectInfos[j].tag, statusEffects[i].effectInfos[j].stacks);
+                    target.AddEffect(statusEffects[i].effectInfos[j].data, from, false, statusEffects[i].effectInfos[j].tag, statusEffects[i].effectInfos[j].stacks);
                 }
 
                 // Remove the effect and player from the possible options
@@ -96,7 +104,7 @@ public class RaidwideDebuffPairsMechanic : FightMechanic
                     {
                         if (partyMembers[m].HasEffect(statusEffects[i].effectInfos[j].data.statusName, statusEffects[i].effectInfos[j].tag))
                         {
-                            partyMembers[m].RemoveEffect(statusEffects[i].effectInfos[j].data, false, statusEffects[i].effectInfos[j].tag, statusEffects[i].effectInfos[j].stacks);
+                            partyMembers[m].RemoveEffect(statusEffects[i].effectInfos[j].data, false, from, statusEffects[i].effectInfos[j].tag, statusEffects[i].effectInfos[j].stacks);
                         }
                     }
                 }

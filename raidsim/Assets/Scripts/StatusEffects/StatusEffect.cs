@@ -4,10 +4,12 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using static GlobalStructs;
+using static GlobalData;
 
 public class StatusEffect : MonoBehaviour
 {
+    CharacterState character;
+
     [Header("Base")]
     public StatusEffectData data;
     public float duration;
@@ -23,6 +25,7 @@ public class StatusEffect : MonoBehaviour
     public UnityEvent<CharacterState> onExpire;
     public UnityEvent<CharacterState> onCleanse;
     public UnityEvent<CharacterState> onReduce;
+    public UnityEvent<CharacterState> onMaxStacks;
 
     private bool hasHudElement = false;
     private CanvasGroup hudElementGroup;
@@ -40,8 +43,9 @@ public class StatusEffect : MonoBehaviour
     private TextMeshProUGUI targetHudTimer;
     private Image targetHudIcon;
 
-    public void Initialize(Transform hudElementParent, Transform partyHudElementParent, Transform targetHudElementParent, Color labelColor, int tag = 0)
+    public void Initialize(CharacterState holder, Transform hudElementParent, Transform partyHudElementParent, Transform targetHudElementParent, Color labelColor)
     {
+        character = holder;
         onApplication.AddListener(OnApplication);
         onTick.AddListener(OnTick);
         onUpdate.AddListener(OnUpdate);
@@ -98,7 +102,7 @@ public class StatusEffect : MonoBehaviour
             hasTargetHudElement = true;
             targetHudElement = Instantiate(data.hudElement, targetHudElementParent);
             targetHudElementGroup = targetHudElement.GetComponent<CanvasGroup>();
-            if (partyHudElementGroup != null)
+            if (targetHudElementGroup != null)
             {
                 if (data.hidden)
                 {
@@ -118,15 +122,16 @@ public class StatusEffect : MonoBehaviour
 
         duration = data.length;
         stacks += data.appliedStacks;
-        uniqueTag = tag;
 
         if (stacks > data.maxStacks)
             stacks = data.maxStacks;
 
         if (hasHudElement)
         {
-            if ((!data.infinite || data.hidden) && duration >= 1)
-                hudTimer.text = duration.ToString("F0");
+            if ((!data.infinite && !data.hidden) && duration >= 1)
+            {
+                hudTimer.text = Utilities.FormatDuration(duration);
+            }
             else
                 hudTimer.text = "";
             if (data.icons.Count > 0)
@@ -136,8 +141,10 @@ public class StatusEffect : MonoBehaviour
         }
         if (hasPartyHudElement)
         {
-            if ((!data.infinite || data.hidden) && duration >= 1)
-                partyHudTimer.text = duration.ToString("F0");
+            if ((!data.infinite && !data.hidden) && duration >= 1)
+            {
+                partyHudTimer.text = Utilities.FormatDuration(duration);
+            }
             else
                 partyHudTimer.text = "";
             if (data.icons.Count > 0)
@@ -147,14 +154,45 @@ public class StatusEffect : MonoBehaviour
         }
         if (hasTargetHudElement)
         {
-            if ((!data.infinite || data.hidden) && duration >= 1)
-                targetHudTimer.text = duration.ToString("F0");
+            if ((!data.infinite && !data.hidden) && duration >= 1)
+            {
+                if ((!data.infinite && !data.hidden) && duration >= 1)
+                {
+                    targetHudTimer.text = Utilities.FormatDuration(duration);
+                }
+                if (data.icons.Count > 0)
+                {
+                    targetHudIcon.sprite = data.icons[stacks - 1];
+                }
+            }
             else
                 targetHudTimer.text = "";
             if (data.icons.Count > 0)
             {
                 targetHudIcon.sprite = data.icons[stacks - 1];
             }
+        }
+    }
+
+    public void AddStack(int appliedStacks)
+    {
+        stacks += appliedStacks;
+
+        if (character != null)
+        {
+            string prefix = " + ";
+            if (appliedStacks < 0)
+                prefix = " - ";
+
+            character.ShowStatusEffectFlyTextWorldspace(data, stacks, prefix);
+        }
+
+        if (stacks > data.maxStacks)
+            stacks = data.maxStacks;
+
+        if (data.icons.Count > 0)
+        {
+            hudIcon.sprite = data.icons[stacks - 1];
         }
     }
 
@@ -212,14 +250,23 @@ public class StatusEffect : MonoBehaviour
         // I think this is being used incorrectly/broken, but infinite effects work as intended so don't touch it I guess?
         if (data.infinite)
             Refresh(-1);
+
+        if (stacks >= data.maxStacks)
+        {
+            onMaxStacks.Invoke(state);
+        }
+
+        //Debug.Log($"{gameObject.name} onTick");
     }
 
     public virtual void OnUpdate(CharacterState state)
     {
         if (hasHudElement)
         {
-            if ((!data.infinite || data.hidden) && duration >= 1)
-                hudTimer.text = duration.ToString("F0");
+            if ((!data.infinite && !data.hidden) && duration >= 1)
+            {
+                hudTimer.text = Utilities.FormatDuration(duration);
+            }
             else
                 hudTimer.text = "";
             if (data.icons.Count > 0)
@@ -229,8 +276,10 @@ public class StatusEffect : MonoBehaviour
         }
         if (hasPartyHudElement)
         {
-            if ((!data.infinite || data.hidden) && duration >= 1)
-                partyHudTimer.text = duration.ToString("F0");
+            if ((!data.infinite && !data.hidden) && duration >= 1)
+            {
+                partyHudTimer.text = Utilities.FormatDuration(duration);
+            }
             else
                 partyHudTimer.text = "";
             if (data.icons.Count > 0)
@@ -240,8 +289,10 @@ public class StatusEffect : MonoBehaviour
         }
         if (hasTargetHudElement)
         {
-            if ((!data.infinite || data.hidden) && duration >= 1)
-                targetHudTimer.text = duration.ToString("F0");
+            if ((!data.infinite && !data.hidden) && duration >= 1)
+            {
+                targetHudTimer.text = Utilities.FormatDuration(duration);
+            }
             else
                 targetHudTimer.text = "";
             if (data.icons.Count > 0)

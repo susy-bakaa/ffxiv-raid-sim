@@ -24,7 +24,8 @@ public class TimedMechanic : FightMechanic
 
     public override void TriggerMechanic(ActionInfo actionInfo)
     {
-        base.TriggerMechanic(actionInfo);
+        if (!CanTrigger(actionInfo))
+            return;
 
         if (delay > 0f)
         {

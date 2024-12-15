@@ -13,9 +13,9 @@ public class DiamondbackBuff : StatusEffect
             state.AddDamageReduction(damageReduction, $"{data.statusName}_{uniqueTag}");
         else
             state.AddDamageReduction(damageReduction, data.statusName);
-        state.bound = true;
-        state.knockbackResistant = true;
-        state.canDoActions = false;
+        state.bound.SetFlag(data.statusName, true);
+        state.knockbackResistant.SetFlag(data.statusName, true);
+        state.canDoActions.SetFlag(data.statusName, false);
         base.OnApplication(state);
     }
 
@@ -25,9 +25,9 @@ public class DiamondbackBuff : StatusEffect
             state.RemoveDamageReduction($"{data.statusName}_{uniqueTag}");
         else
             state.RemoveDamageReduction(data.statusName);
-        state.bound = false;
-        state.knockbackResistant = false;
-        state.canDoActions = true;
+        state.bound.RemoveFlag(data.statusName);
+        state.knockbackResistant.RemoveFlag(data.statusName);
+        state.canDoActions.RemoveFlag(data.statusName);
         base.OnExpire(state);
     }
 }

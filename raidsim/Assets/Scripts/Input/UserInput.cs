@@ -48,7 +48,8 @@ public class UserInput : MonoBehaviour
         }
         else
         {
-            characterController.enableInput = movementInputEnabled;
+            if (characterController != null)
+                characterController.enableInput = movementInputEnabled;
             if (freecam.active)
                 characterController.enableInput = false;
             freecam.enableSpeed = zoomInputEnabled;
@@ -59,7 +60,8 @@ public class UserInput : MonoBehaviour
             cam.enableRotation = rotationInputEnabled;
         }
 
-        targetController.canMouseRaycast = targetRaycastInputEnabled;
+        if (targetController != null)
+            targetController.canMouseRaycast = targetRaycastInputEnabled;
 
         for (int i = 0;i < keys.Count; i++)
         {
@@ -69,7 +71,7 @@ public class UserInput : MonoBehaviour
                 if (keys[i].action != null && characterAction != null)
                     characterAction.PerformAction(keys[i].action);
                 if (keys[i].statusEffect != null && characterState != null)
-                    characterState.AddEffect(keys[i].statusEffect);
+                    characterState.AddEffect(keys[i].statusEffect, characterState);
                 keys[i].onInput.Invoke();
             }
         }
@@ -89,7 +91,7 @@ public class UserInput : MonoBehaviour
                 if (keys[i].action != null && characterAction != null)
                     characterAction.PerformAction(keys[i].action);
                 if (keys[i].statusEffect != null && characterState != null)
-                    characterState.AddEffect(keys[i].statusEffect);
+                    characterState.AddEffect(keys[i].statusEffect, characterState);
                 keys[i].onInput.Invoke();
             }
         }

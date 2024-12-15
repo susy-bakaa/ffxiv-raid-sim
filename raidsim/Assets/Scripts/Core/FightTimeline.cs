@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
-using static GlobalStructs;
+using static GlobalData;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
@@ -28,6 +28,10 @@ public class FightTimeline : MonoBehaviour
     public static float timeScale = 1f;
     public static float time { private set; get; }
     public static float deltaTime { private set; get; }
+    public Vector3 arenaBounds = Vector3.zero;
+    public bool isCircle;
+    private Vector3 originalArenaBounds = Vector3.zero;
+    private bool originalIsCircle;
 
     [Header("Current")]
     public string timelineName = "Unnamed fight timeline";
@@ -39,9 +43,14 @@ public class FightTimeline : MonoBehaviour
     public List<BotTimeline> botTimelines = new List<BotTimeline>();
     public List<TimelineEvent> events = new List<TimelineEvent>();
     public List<RandomEventResult> m_randomEventResults = new List<RandomEventResult>();
+    public bool log = false;
 
     [Header("User Interface")]
     public Button[] disableDuringPlayback;
+    public bool useAutomarker = false;
+    public UnityEvent<bool> onUseAutomarkerChanged;
+
+    // PRIVATE
 
     private Dictionary<int, List<CharacterActionData>> randomEventCharacterActions = new Dictionary<int, List<CharacterActionData>>();
     private Dictionary<int, int> randomEventResults = new Dictionary<int, int>();
@@ -83,6 +92,8 @@ public class FightTimeline : MonoBehaviour
     }
 
 #if UNITY_EDITOR
+    [Header("Editor")]
+    [SerializeField] private float m_wipeDelay;
     [Button("Load All Status Effects")]
     public void LoadEffectsButton()
     {
@@ -110,7 +121,14 @@ public class FightTimeline : MonoBehaviour
     [Button("Wipe Party")]
     public void WipePartyButton()
     {
-        WipeParty(partyList);
+        if (m_wipeDelay > 0f)
+        {
+            Utilities.FunctionTimer.Create(this, () => WipeParty(partyList), m_wipeDelay, "fightTimeline_wipe_delay", false, true);
+        }
+        else
+        {
+            WipeParty(partyList);
+        }
     }
 
     private void Reset()
@@ -183,6 +201,9 @@ public class FightTimeline : MonoBehaviour
         }
 
         input = GetComponentInChildren<UserInput>();
+
+        originalArenaBounds = arenaBounds;
+        originalIsCircle = isCircle;
     }
 
     void Update()
@@ -208,7 +229,7 @@ public class FightTimeline : MonoBehaviour
         pausedBy.Clear();
         paused = false;
         Time.timeScale = 1f;
-        Utilities.FunctionTimer.CleanUp(SceneManager.GetActiveScene(), new Scene());
+        //Utilities.FunctionTimer.CleanUp(SceneManager.GetActiveScene(), new Scene());
     }
 
     public void StartTimeline()
@@ -270,7 +291,61 @@ public class FightTimeline : MonoBehaviour
                 TimelineCharacterEvent[] cEvents = events[i].characterEvents.ToArray();
                 for (int e = 0; e < cEvents.Length; e++)
                 {
-                    //Debug.Log(cEvents[e].name);
+                    Debug.Log(cEvents[e].name);
+                    // Check for CharacterEvent fight mechanics performed for this event
+                    if (cEvents[e].triggerMechanics != null && cEvents[e].triggerMechanics.Length > 0)
+                    {
+                        for (int m = 0; m < cEvents[e].triggerMechanics.Length; m++)
+                        {
+                            if (cEvents[e].character != null)
+                                cEvents[e].triggerMechanics[m].TriggerMechanic(new ActionController.ActionInfo(null, cEvents[e].character, null));
+                            else
+                                cEvents[e].triggerMechanics[m].TriggerMechanic(new ActionController.ActionInfo(null, null, null));
+                        }
+                    }
+                    // Check for CharacterEvent targets to be set for this events character
+                    if (cEvents[e].targets != null)
+                    {
+                        if (!cEvents[e].pickRandomTarget)
+                            cEvents[e].targets.SetTarget(cEvents[e].target);
+                        else
+                            cEvents[e].targets.SetRandomTargetFromList();
+                        if (cEvents[e].faceTarget && cEvents[e].bossController != null && cEvents[e].targets.currentTarget != null)
+                        {
+                            Vector3 direction = cEvents[e].targets.currentTarget.transform.position - cEvents[e].targets.transform.position;
+                            Quaternion rotation = Quaternion.LookRotation(direction);
+                            cEvents[e].targets.transform.rotation = rotation;
+                            cEvents[e].bossController.SetRotationTarget(cEvents[e].targets.currentTarget);
+
+                            if (cEvents[e].randomChecks != null && cEvents[e].randomChecks.Length > 0)
+                            {
+                                for (int r = 0; r < cEvents[e].randomChecks.Length; r++)
+                                {
+                                    if (!cEvents[e].randomChecks[r].matchFromTarget)
+                                        continue;
+
+                                    bool eventMatched = false;
+
+                                    if (cEvents[e].randomChecks[r].matchedEffect != null)
+                                    {
+                                        if (cEvents[e].targets.currentTarget.TryGetCharacterState(out CharacterState characterState))
+                                        {
+                                            if (characterState.HasAnyVersionOfEffect(cEvents[e].randomChecks[r].matchedEffect.statusName))
+                                            {
+                                                eventMatched = true;
+                                                AddRandomEventResult(cEvents[e].id + cEvents[e].randomChecks[r].id, cEvents[e].randomChecks[r].positiveResult);
+                                            }
+                                        }
+                                    }
+
+                                    if (!eventMatched)
+                                    {
+                                        AddRandomEventResult(cEvents[e].id + cEvents[e].randomChecks[r].id, cEvents[e].randomChecks[r].negativeResult);
+                                    }
+                                }
+                            }
+                        }
+                    }
                     // Check for CharacterEvent actions to be performed on this events character
                     if (cEvents[e].actions != null)
                     {
@@ -346,28 +421,42 @@ public class FightTimeline : MonoBehaviour
                         {
                             for (int b = 0; b < cEvents[e].giveBuffs.Length; b++)
                             {
-                                cEvents[e].character.AddEffect(cEvents[e].giveBuffs[b]);
+                                cEvents[e].character.AddEffect(cEvents[e].giveBuffs[b], cEvents[e].character);
                             }
                         }
                         if (cEvents[e].giveDebuffs != null && cEvents[e].giveDebuffs.Length > 0)
                         {
                             for (int d = 0; d < cEvents[e].giveDebuffs.Length; d++)
                             {
-                                cEvents[e].character.AddEffect(cEvents[e].giveDebuffs[d]);
+                                cEvents[e].character.AddEffect(cEvents[e].giveDebuffs[d], cEvents[e].character);
                             }
                         }
                     }
                     // Check for CharacterEvent movement to be performed for this events character
                     if (cEvents[e].controller != null)
                     {
-
-                    }
-                    // Check for CharacterEvent fight mechanics performed for this event
-                    if (cEvents[e].triggerMechanics != null && cEvents[e].triggerMechanics.Length > 0)
-                    {
-                        for (int m = 0; m < cEvents[e].triggerMechanics.Length; m++)
+                        if (cEvents[e].moveToTarget && cEvents[e].teleport && cEvents[e].target != null)
                         {
-                            cEvents[e].triggerMechanics[m].TriggerMechanic(new ActionController.ActionInfo(null, cEvents[e].character, null));
+                            cEvents[e].controller.transform.position = cEvents[e].target.transform.position;
+                            cEvents[e].controller.transform.rotation = cEvents[e].target.transform.rotation;
+                        } 
+                        else if (cEvents[e].moveToTarget && cEvents[e].botTimeline != null)
+                        {
+                            cEvents[e].controller.botTimeline = cEvents[e].botTimeline;
+                            cEvents[e].botTimeline.StartTimeline();
+                        }
+                    }
+                    // Check for CharacterEvent movement to be performed for this events boss
+                    if (cEvents[e].bossController != null)
+                    {
+                        if (cEvents[e].moveToTarget && !cEvents[e].teleport)
+                        {
+                            cEvents[e].bossController.SetTarget(cEvents[e].target);
+                        }
+                        else if (cEvents[e].moveToTarget && cEvents[e].teleport && cEvents[e].target != null)
+                        {
+                            cEvents[e].bossController.transform.position = cEvents[e].target.transform.position;
+                            cEvents[e].bossController.transform.rotation = cEvents[e].target.transform.rotation;
                         }
                     }
                     cEvents[e].onEvent.Invoke();
@@ -424,6 +513,12 @@ public class FightTimeline : MonoBehaviour
         }
     }
 
+    public void ToggleAutomarker()
+    {
+        useAutomarker = !useAutomarker;
+        onUseAutomarkerChanged.Invoke(useAutomarker);
+    }
+
     public void TogglePause(string label)
     {
         if (pausedBy.Contains(label))
@@ -470,6 +565,24 @@ public class FightTimeline : MonoBehaviour
         }
     }
 
+    public void ChangeArena(Vector3 bounds, bool? isCircle = null)
+    {
+        if (bounds != Vector3.zero)
+        {
+            arenaBounds = bounds;
+        }
+        if (isCircle != null)
+        {
+            this.isCircle = (bool)isCircle;
+        }
+    }
+
+    public void ResetArena() 
+    { 
+        arenaBounds = originalArenaBounds; 
+        isCircle = originalIsCircle; 
+    }
+
     [System.Serializable]
     public struct TimelineEvent
     {
@@ -512,29 +625,57 @@ public class FightTimeline : MonoBehaviour
         public int id;
         public CharacterState character;
         public ActionController actions;
+        public TargetController targets;
         public AIController controller;
+        public BossController bossController;
         public StatusEffectData[] giveBuffs;
         public StatusEffectData[] giveDebuffs;
         public CharacterAction[] performCharacterActions;
+        public TargetNode target;
+        public BotTimeline botTimeline;
+        public bool moveToTarget;
+        public bool faceTarget;
+        public bool teleport;
         public bool pickRandomCharacterAction;
+        public bool pickRandomTarget;
         public int randomEventPoolId;
         public FightMechanic[] triggerMechanics;
         public UnityEvent onEvent;
+        public RandomCheck[] randomChecks;
 
-        public TimelineCharacterEvent(string name, int id, CharacterState character, ActionController actions, AIController controller, StatusEffectData[] giveBuffs, StatusEffectData[] giveDebuffs, CharacterAction[] performCharacterActions, bool pickRandomCharacterAction, FightMechanic[] triggerMechanics, UnityEvent onEvent, int eventRandomSetPoolId = -1)
+        /*public TimelineCharacterEvent(string name, int id, CharacterState character, ActionController actions, TargetController targets, AIController controller, BossController bossController, StatusEffectData[] giveBuffs, StatusEffectData[] giveDebuffs, CharacterAction[] performCharacterActions, TargetNode target, BotTimeline botTimeline, bool moveToTarget, bool faceTarget, bool teleport, bool pickRandomCharacterAction, bool pickRandomTarget, FightMechanic[] triggerMechanics, UnityEvent onEvent, int eventRandomSetPoolId = -1)
         {
             this.name = name;
             this.id = id;
             this.character = character;
             this.actions = actions;
+            this.targets = targets;
             this.controller = controller;
+            this.bossController = bossController;
             this.giveBuffs = giveBuffs;
             this.giveDebuffs = giveDebuffs;
             this.performCharacterActions = performCharacterActions;
+            this.target = target;
+            this.botTimeline = botTimeline;
+            this.moveToTarget = moveToTarget;
+            this.faceTarget = faceTarget;
+            this.teleport = teleport;
             this.pickRandomCharacterAction = pickRandomCharacterAction;
+            this.pickRandomTarget = pickRandomTarget;
             this.randomEventPoolId = eventRandomSetPoolId;
             this.triggerMechanics = triggerMechanics;
             this.onEvent = onEvent;
-        }
+        }*/
+    }
+
+    [System.Serializable]
+    public struct RandomCheck
+    {
+        public string name;
+        public StatusEffectData matchedEffect;
+        [MinValue(0)] public int id;
+        [MinValue(0)] public int positiveResult;
+        [MinValue(0)] public int negativeResult;
+        public bool matchFromTarget;
     }
 }

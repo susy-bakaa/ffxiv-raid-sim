@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static ActionController;
-using static GlobalStructs;
+using static GlobalData;
 
 public class RaidwideDamageMechanic : FightMechanic
 {
@@ -19,7 +19,8 @@ public class RaidwideDamageMechanic : FightMechanic
 
     public override void TriggerMechanic(ActionInfo actionInfo)
     {
-        base.TriggerMechanic(actionInfo);
+        if (!CanTrigger(actionInfo))
+            return;
 
         List<CharacterState> members = new List<CharacterState>(party.GetActiveMembers());
 

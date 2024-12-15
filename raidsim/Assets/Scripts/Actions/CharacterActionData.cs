@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static GlobalStructs;
+using static GlobalData;
 
 [CreateAssetMenu(fileName = "New Character Action", menuName = "FFXIV/New Character Action")]
 public class CharacterActionData : ScriptableObject
@@ -12,6 +12,7 @@ public class CharacterActionData : ScriptableObject
     public string actionName = "Unnamed Action";
     public ActionType actionType = ActionType.Spell;
     public Damage damage = new Damage(0, true);
+    public bool causesDirectDamage = true;
     public bool isShield = false;
     public bool isHeal = false;
     public bool isTargeted = false;
@@ -35,10 +36,24 @@ public class CharacterActionData : ScriptableObject
     public CharacterActionData comboAction;
     public string animationName = string.Empty;
     public bool playAnimationDirectly = false;
+    public bool playAnimationOnFinish = false;
     public int onAnimationFinishId = -1;
+
+    private void Awake()
+    {
+        damage = new Damage(damage, null, damage.name);
+    }
 
     void Reset()
     {
         enmity = damage.value;
+        damage = new Damage(0, true);
     }
+
+#if UNITY_EDITOR
+    void OnValidate()
+    {
+        damage = new Damage(damage, null, damage.name);
+    }
+#endif
 }

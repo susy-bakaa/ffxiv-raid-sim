@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using NaughtyAttributes;
 using UnityEngine;
+using static PartyList;
 using static StatusEffectData;
 using static TriggerRandomMechanic;
 
 public class NextBotTimeline : MonoBehaviour
 {
-    public enum choiceType { statusEffect, fightTimelineEventRandomResult }
+    public enum choiceType { statusEffect, fightTimelineEventRandomResult, partyListPriority }
 
     public List<StatusEffectInfo> effects = new List<StatusEffectInfo>();
     public List<IndexMapping> indexMapping = new List<IndexMapping>();
@@ -15,9 +17,14 @@ public class NextBotTimeline : MonoBehaviour
     public int fightTimelineEventRandomResultId2 = -1;
     public List<BotTimeline> timelines = new List<BotTimeline>();
     public choiceType type = choiceType.statusEffect;
-    public bool allowSubStatuses = false;
-    public bool useDoubleEventCheck = false;
-    public bool useIndexMapping = false;
+    private choiceType TypeEnum { get { return type; } }
+    [ShowIf("TypeEnum", choiceType.partyListPriority)] public PartyList partyList;
+    public bool fallbackToLast = false;
+    [ShowIf("TypeEnum", choiceType.statusEffect)] public bool allowSubStatuses = false;
+    [ShowIf("TypeEnum", choiceType.partyListPriority)] public bool useStatusEffectForPriorityCheck = false;
+    [ShowIf("TypeEnum", choiceType.fightTimelineEventRandomResult)] public bool useDoubleEventCheck = false;
+    [ShowIf("TypeEnum", choiceType.fightTimelineEventRandomResult)] public bool useIndexMapping = false;
+    [ShowIf("TypeEnum", choiceType.partyListPriority)] public bool looseStatusCheck = false;
     public bool endIfDisabled = true;
     public bool forceEnd = false;
     public bool log = false;
@@ -80,6 +87,16 @@ public class NextBotTimeline : MonoBehaviour
                         if (log || bot.log)
                             Debug.Log($"[{gameObject.name}] ---> No, Bot {bot.state.gameObject.name} does not have {effects[i].data.statusName} with tag {effects[i].tag}.");
                     }
+                    if (fallbackToLast)
+                    {
+                        int lastIndex = timelines.Count - 1;
+                        timelines[lastIndex].bot = bot;
+                        bot.botTimeline = timelines[lastIndex];
+                        timelines[lastIndex].StartTimeline();
+                        if (log || bot.log)
+                            Debug.Log($"[{gameObject.name}] --> Next bot timeline has been chosen as fallback timeline (last timeline available in list) as {timelines[lastIndex].gameObject.name}!");
+                        return;
+                    }
                     break;
                 case choiceType.fightTimelineEventRandomResult:
                     int r = FightTimeline.Instance.GetRandomEventResult(fightTimelineEventRandomResultId);
@@ -121,6 +138,71 @@ public class NextBotTimeline : MonoBehaviour
                         timelines[r].StartTimeline();
                         if (log || bot.log)
                             Debug.Log($"[{gameObject.name}] --> Yes, Next bot timeline has been chosen from fight timeline random event result id of {fightTimelineEventRandomResultId} of result {r} as {timelines[r].gameObject.name}!");
+                        return;
+                    }
+
+                    if (fallbackToLast)
+                    {
+                        int lastIndex = timelines.Count - 1;
+                        timelines[lastIndex].bot = bot;
+                        bot.botTimeline = timelines[lastIndex];
+                        timelines[lastIndex].StartTimeline();
+                        if (log || bot.log)
+                            Debug.Log($"[{gameObject.name}] --> Next bot timeline has been chosen as fallback timeline (last timeline available in list) as {timelines[lastIndex].gameObject.name}!");
+                        return;
+                    }
+                    break;
+                case choiceType.partyListPriority:
+                    int p = -1;
+
+                    if (partyList != null)
+                    {
+                        if (useStatusEffectForPriorityCheck && effects.Count > 0)
+                        {
+                            if (looseStatusCheck)
+                            {
+                                List<PartyMember> members = partyList.GetPrioritySortedList(effects[0].data);
+
+                                if (members.Count > 0)
+                                {
+                                    for (int i = 0; i < members.Count; i++)
+                                    {
+                                        if (members[i].aiController != null)
+                                        {
+                                            if (members[i].aiController == old.bot)
+                                            {
+                                                p = i;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // Implement later
+                            }
+                        }
+                    }
+                    if (p > -1)
+                    {
+                        if (p < timelines.Count)
+                        {
+                            timelines[p].bot = bot;
+                            bot.botTimeline = timelines[p];
+                            timelines[p].StartTimeline();
+                            if (log || bot.log)
+                                Debug.Log($"[{gameObject.name}] --> Yes, Next bot timeline has been chosen from party list priority {p} as {timelines[p].gameObject.name}!");
+                            return;
+                        }
+                    }
+                    if (fallbackToLast)
+                    {
+                        int lastIndex = timelines.Count - 1;
+                        timelines[lastIndex].bot = bot;
+                        bot.botTimeline = timelines[lastIndex];
+                        timelines[lastIndex].StartTimeline();
+                        if (log || bot.log)
+                            Debug.Log($"[{gameObject.name}] --> Next bot timeline has been chosen as fallback timeline (last timeline available in list) as {timelines[lastIndex].gameObject.name}!");
                         return;
                     }
                     break;

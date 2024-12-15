@@ -11,7 +11,7 @@ public class TargetNode : MonoBehaviour
     [SerializeField] private TargetController targetController;
     [SerializeField] private bool allowAutomaticSetup = true;
     [SerializeField] private bool targetable;
-    public bool Targetable { get { return characterState != null ? !characterState.untargetable : targetable; } }
+    public bool Targetable { get { return characterState != null ? !characterState.untargetable.value : targetable; } }
     [SerializeField] private int group;
     public int Group { get { return group; } }
     public float hitboxRadius = 0f;
@@ -40,7 +40,7 @@ public class TargetNode : MonoBehaviour
     {
         if (characterState != null)
         {
-            targetable = !characterState.untargetable;
+            targetable = !characterState.untargetable.value;
         }
     }
 

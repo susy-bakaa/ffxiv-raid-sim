@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
 {
     CharacterState state;
 
-    public Vector3 maxDistance;
+    public float ySpawnOffset = 1.25f;
     public float turnSmoothTime;
     private float turnSmoothVelocity;
     private float tm;
@@ -24,6 +24,9 @@ public class PlayerController : MonoBehaviour
     public BotNode clockSpot;
     public bool enableInput = true;
     public bool legacyMovement = true;
+    public bool freezeMovement = false;
+    private bool movementFrozen = false;
+    private bool knockedBack = false;
 
     private int animatorParameterDead = Animator.StringToHash("Dead");
     private int animatorParameterSpeed = Animator.StringToHash("Speed");
@@ -48,6 +51,8 @@ public class PlayerController : MonoBehaviour
 
     void OnEnable()
     {
+        freezeMovement = false;
+        movementFrozen = false;
         Init();
     }
 
@@ -70,6 +75,9 @@ public class PlayerController : MonoBehaviour
             animator.SetBool(animatorParameterDead, state.dead);
             animator.SetBool(animatorParameterDiamondback, state.HasEffect("Diamondback"));
 
+            if (CanMove())
+                return;
+
             if (currentSpeed > 0)
             {
                 state.still = false;
@@ -81,11 +89,14 @@ public class PlayerController : MonoBehaviour
         }
 
         tm += FightTimeline.deltaTime;
-        if (tm > release)
+        if (tm > release || state.dead)
         {
-            state.uncontrollable = false;
+            tm = release + 1f;
+            state.uncontrollable.RemoveFlag("knockback");
+            velocity = Vector3.zero;
+            knockedBack = false;
         }
-        if (!state.uncontrollable && !state.dead && !state.bound && enableInput)
+        if (!state.uncontrollable.value && !state.dead && !state.bound.value && enableInput)
         {
             Vector2 vector = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
             Vector2 normalized = vector.normalized;
@@ -122,88 +133,111 @@ public class PlayerController : MonoBehaviour
 
             animator.SetFloat(animatorParameterSpeed, value);
         }
-        else if (!state.dead && !state.bound && enableInput)
+        else if (!state.dead && !state.bound.value && enableInput && knockedBack)
         {
+            animator.SetFloat(animatorParameterSpeed, 0f);
             transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, release);
-        }
-    }
-
-    public void ClampMovement()
-    {
-        if (maxDistance.x != 0)
+            ClampMovement();
+        } 
+        else
         {
-            if (transform.position.x > Mathf.Abs(maxDistance.x))
-            {
-                transform.position = new Vector3(Mathf.Abs(maxDistance.x), transform.position.y, transform.position.z);
-            }
-            else if (transform.position.x < (-1 * maxDistance.x))
-            {
-                transform.position = new Vector3((-1 * maxDistance.x), transform.position.y, transform.position.z);
-            }
+            velocity = Vector3.zero;
+            animator.SetFloat(animatorParameterSpeed, 0f);
         }
-        if (maxDistance.y != 0)
+    }
+
+    private void ClampMovement()
+    {
+        if (FightTimeline.Instance.isCircle)
         {
-            if (transform.position.y > Mathf.Abs(maxDistance.y))
+            // Circular boundary with center at (0,0,0)
+            float radius = 0;
+
+            if (FightTimeline.Instance.arenaBounds.x != 0)
             {
-                transform.position = new Vector3(transform.position.x, Mathf.Abs(maxDistance.y), transform.position.z);
+                radius = Mathf.Abs(FightTimeline.Instance.arenaBounds.x);
             }
-            else if (transform.position.y < (-1 * maxDistance.y))
+            else if (FightTimeline.Instance.arenaBounds.z != 0)
             {
-                transform.position = new Vector3(transform.position.x, (-1 * maxDistance.y), transform.position.z);
+                radius = Mathf.Abs(FightTimeline.Instance.arenaBounds.z);
             }
-        }
-        if (maxDistance.z != 0)
-        {
-            if (transform.position.z > Mathf.Abs(maxDistance.z))
+
+            Vector3 horizontalPosition = new Vector3(transform.position.x, 0, transform.position.z); // Ignore Y-axis
+            float distanceFromCenter = horizontalPosition.magnitude;
+
+            if (distanceFromCenter > radius)
             {
-                transform.position = new Vector3(transform.position.x, transform.position.y, Mathf.Abs(maxDistance.z));
+                // Clamp position to the circle's edge on the horizontal plane
+                Vector3 clampedHorizontalPosition = horizontalPosition.normalized * radius;
+                transform.position = new Vector3(
+                    clampedHorizontalPosition.x,
+                    transform.position.y, // Preserve current height
+                    clampedHorizontalPosition.z
+                );
             }
-            else if (transform.position.z < (-1 * maxDistance.z))
+        }
+
+        // Clamp height (Y-axis) separately, regardless of circular or rectangular bounds
+        float maxHeight = Mathf.Abs(FightTimeline.Instance.arenaBounds.y);
+        if (maxHeight > 0)
+        {
+            transform.position = new Vector3(
+                transform.position.x,
+                Mathf.Clamp(transform.position.y, -maxHeight, maxHeight),
+                transform.position.z
+            );
+        }
+        else if (!FightTimeline.Instance.isCircle) // Rectangular bounds logic
+        {
+            Vector3 maxDistance = FightTimeline.Instance.arenaBounds;
+
+            if (maxDistance.x != 0)
             {
-                transform.position = new Vector3(transform.position.x, transform.position.y, (-1 * maxDistance.z));
+                transform.position = new Vector3(
+                    Mathf.Clamp(transform.position.x, -Mathf.Abs(maxDistance.x), Mathf.Abs(maxDistance.x)),
+                    transform.position.y,
+                    transform.position.z
+                );
+            }
+            if (maxDistance.z != 0)
+            {
+                transform.position = new Vector3(
+                    transform.position.x,
+                    transform.position.y,
+                    Mathf.Clamp(transform.position.z, -Mathf.Abs(maxDistance.z), Mathf.Abs(maxDistance.z))
+                );
             }
         }
     }
 
-    /*public void PhyDamage()
+    private bool CanMove()
     {
-        if (phyResis_timer > 0f | resis_timer > 0f)
+        if (freezeMovement)
         {
-            text.SetActive(true);
+            currentSpeed = 0;
+            animator.SetFloat(animatorParameterSpeed, 0f);
+            state.still = true;
+            ClampMovement();
         }
-    }
 
-    public void MagicDamage()
-    {
-        if (magicResis_timer > 0f | resis_timer > 0f)
+        if (movementFrozen != freezeMovement)
         {
-            text.SetActive(true);
+            movementFrozen = freezeMovement;
+            if (freezeMovement)
+            {
+                state.bound.SetFlag("freezeMovement", true);
+            }
+            else
+            {
+                state.bound.RemoveFlag("freezeMovement");
+            }
         }
-    }
 
-    public void PhyResisDown(float sec)
-    {
-        phyResis_timer = sec;
-    }
+        if (freezeMovement)
+            return true;
 
-    public void MagicResisDown(float sec)
-    {
-        magicResis_timer = sec;
+        return false;
     }
-
-    public void ResisDown(float sec)
-    {
-        resis_timer = sec;
-    }
-
-    public void Stack()
-    {
-        stack++;
-        if (stack >= 2)
-        {
-            text.SetActive(true);
-        }
-    }*/
 
     public void Knockback(Vector3 tp, float duration)
     {
@@ -211,15 +245,16 @@ public class PlayerController : MonoBehaviour
         {
             tm = 0f;
             release = duration;
-            state.uncontrollable = true;
+            state.uncontrollable.SetFlag("knockback", true);
             targetPosition = transform.position + tp;
             animator.SetFloat(animatorParameterSpeed, 0f);
+            knockedBack = true;
         }
     }
 
     public void Init()
     {
-        transform.position = new Vector3(0f, 1.25f, 0f);
+        transform.position = new Vector3(0f, ySpawnOffset, 0f);
         transform.eulerAngles = new Vector3(0f, Random.Range(0, 360), 0f);
         cameraT.gameObject.GetComponent<ThirdPersonCamera>().RandomRotate();
     }

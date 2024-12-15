@@ -21,6 +21,9 @@ public static class GlobalVariables
     public static extern bool SetWindowText(System.IntPtr hwnd, System.String lpString);
     [DllImport("user32.dll", EntryPoint = "FindWindow")]
     public static extern System.IntPtr FindWindow(System.String className, System.String windowName);
+    public static string lastWindowName = "raidsim";
 #endif
     public static bool muteBgm = false;
+    public static Vector3 worldBounds = new Vector3(1000, 1000, 1000);
+    public static Resolution currentGameResolution; // Cached resolution for comparison
 }

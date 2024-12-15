@@ -73,24 +73,14 @@ public static class Utilities
 
         void Update()
         {
-            if (trackedObject == null)
+            if (gameObject.scene.isLoaded == false || trackedObject == null)
             {
-                // If the tracked object is null, stop the timer and prevent further updates
+                // If the tracked object is null or it's scene is not loaded, stop the timer and prevent further updates
                 FunctionTimer.StopTimer(label);
+                return;
             }
-            else if (onUpdate != null)
-            {
-                onUpdate();
-            }
-            else
-            {
-                FunctionTimer.StopTimer(label);
-            }
-        }
 
-        void OnDestroy()
-        {
-            FunctionTimer.StopTimer(label);
+            onUpdate?.Invoke();
         }
     }
 
@@ -103,12 +93,6 @@ public static class Utilities
 
         private static void InitIfNeeded()
         {
-            if (!eventSubbed)
-            {
-                eventSubbed = true;
-                SceneManager.activeSceneChanged += CleanUp;
-            }
-
             if (initGameObject == null)
             {
                 int newId = UnityEngine.Random.Range(0, 10000);
@@ -122,22 +106,57 @@ public static class Utilities
                 initGameObject = new GameObject($"FunctionTimer_Initializer_For_Scene_{SceneManager.GetActiveScene().name.Replace(" ", "_")}_{currentId}");
                 activeTimerList = new List<FunctionTimer>();
             }
+            else if (!initGameObject.scene.isLoaded)
+            {
+                UnityEngine.Object.DestroyImmediate(initGameObject);
+                initGameObject = null;
+                InitIfNeeded();
+            }
+
+            if (!eventSubbed)
+            {
+                Debug.Log("Subscribing to SceneManager.activeSceneChanged.");
+                eventSubbed = true;
+                SceneManager.activeSceneChanged += CleanUp;
+            }
         }
+
         public static void CleanUp(Scene scene1, Scene scene2)
         {
             if (string.IsNullOrEmpty(scene1.name))
                 return;
 
             Debug.Log($"FunctionTimer CleanUp called! {scene1.name} {scene2.name}");
-            if (activeTimerList != null && activeTimerList.Count > 0)
+
+            // Clear active timers and destroy the initializer GameObject
+            if (activeTimerList != null)
+            {
+                foreach (FunctionTimer timer in activeTimerList)
+                {
+                    timer?.DestroySelf(true); // Ensure all timers clean themselves up
+                }
                 activeTimerList.Clear();
-            activeTimerList = new List<FunctionTimer>();
-            UnityEngine.Object.Destroy(initGameObject);
+            }
+
+            if (initGameObject != null)
+            {
+                UnityEngine.Object.DestroyImmediate(initGameObject);
+                initGameObject = null;
+            }
+
+            activeTimerList = null;
+            //eventSubbed = false;
         }
 
         public static FunctionTimer Create(MonoBehaviour source, Action action, float timer, string name = null, bool useUnscaledTime = false, bool onlyAllowOneInstance = false)
         {
             InitIfNeeded();
+
+            if (initGameObject == null || initGameObject.scene != SceneManager.GetActiveScene())
+            {
+                Debug.LogWarning("FunctionTimer operation attempted on a non-active or null initializer.");
+                return null;
+            }
 
             if (name != null)
                 name = name.Replace(" ", "_").Replace("(", "").Replace(")", "");
@@ -182,6 +201,7 @@ public static class Utilities
 
         public static void StopTimer(string name)
         {
+            InitIfNeeded();
             if (activeTimerList != null && activeTimerList.Count > 0)
             {
                 for (int i = 0; i < activeTimerList.Count; i++)
@@ -260,6 +280,53 @@ public static class Utilities
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Retrieves a component of type T from the parents of the specified child transform.
+    /// </summary>
+    /// <typeparam name="T">The type of component to retrieve.</typeparam>
+    /// <param name="child">The child transform to start the search from.</param>
+    /// <returns>The component of type T if found; otherwise, null.</returns>
+    public static T GetComponentInParents<T>(this Transform child) where T : Component
+    {
+        Transform currentParent = child.parent;
+
+        while (currentParent != null)
+        {
+            T component = currentParent.GetComponent<T>();
+            if (component != null)
+                return component;
+
+            currentParent = currentParent.parent;
+        }
+
+        return null; // Return null if no matching component is found
+    }
+
+    /// <summary>
+    /// Retrieves all components of type T in the parent hierarchy of the given child transform.
+    /// </summary>
+    /// <typeparam name="T">The type of component to retrieve.</typeparam>
+    /// <param name="child">The child transform whose parent hierarchy will be searched.</param>
+    /// <returns>A list of components of type T found in the parent hierarchy.</returns>
+    public static List<T> GetComponentsInParents<T>(this Transform child) where T : Component
+    {
+        List<T> components = new List<T>();
+        Transform currentParent = child.parent;
+
+        while (currentParent != null)
+        {
+            T component = currentParent.GetComponent<T>();
+            if (component != null)
+            {
+                components.Add(component);
+            }
+
+            currentParent = currentParent.parent;
+        }
+
+        return components;
     }
 
     public static T GetRandomItem<T>(this IList<T> list)
@@ -426,7 +493,14 @@ public static class Utilities
         }
     }
 
-    public static GameObject FindInactiveObjectByName(string name)
+    /// <summary>
+    /// Finds and returns the first GameObject in the scene with the specified name.
+    /// This method searches through all loaded objects, including inactive ones by type of Transform and checks their names for a match.
+    /// Only objects with HideFlags set to None are considered.
+    /// </summary>
+    /// <param name="name">The name of the GameObject to find.</param>
+    /// <returns>The first GameObject with the specified name, or null if no such GameObject is found.</returns>
+    public static GameObject FindAnyByName(string name)
     {
         Transform[] objs = Resources.FindObjectsOfTypeAll<Transform>() as Transform[];
         for (int i = 0; i < objs.Length; i++)
@@ -440,6 +514,39 @@ public static class Utilities
             }
         }
         return null;
+    }
+
+
+    /// <summary>
+    /// Formats a given duration in seconds into a human-readable string.
+    /// The format is as follows:
+    /// - Less than 60 seconds: "X" (seconds)
+    /// - 60 seconds to 3599 seconds: "Xm" (minutes)
+    /// - 3600 seconds to 86399 seconds: "Xh" (hours)
+    /// - 86400 seconds and above: "Xd" (days)
+    /// </summary>
+    /// <param name="duration">The duration in seconds to format.</param>
+    /// <returns>A formatted string representing the duration.</returns>
+    public static string FormatDuration(float duration)
+    {
+        string result = string.Empty;
+        if (duration < 60)
+        {
+            result = duration.ToString("F0");
+        }
+        else if (duration > 59 && duration < 3600)
+        {
+            result = (duration / 60).ToString("F0") + "m";
+        }
+        else if (duration > 3599 && duration < 86400)
+        {
+            result = (duration / 3600).ToString("F0") + "h";
+        }
+        else if (duration > 86399)
+        {
+            result = (duration / 86400).ToString("F0") + "d";
+        }
+        return result;
     }
 
     /// <summary>

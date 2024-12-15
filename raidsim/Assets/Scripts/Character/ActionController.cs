@@ -126,7 +126,10 @@ public class ActionController : MonoBehaviour
                 actions[i].Initialize(this);
             }
         }
-        previousCanDoActions = characterState.canDoActions;
+        if (characterState != null)
+            previousCanDoActions = characterState.canDoActions.value;
+        else
+            previousCanDoActions = true;
 
         rateLimit = UnityEngine.Random.Range(15, 26);
 
@@ -139,7 +142,10 @@ public class ActionController : MonoBehaviour
 
     void Update()
     {
-        if (!gameObject.activeSelf)
+        if (characterState == null)
+            return;
+
+        if (!gameObject.activeSelf || !gameObject.scene.isLoaded)
             return;
 
         if (Time.timeScale <= 0f)
@@ -195,11 +201,11 @@ public class ActionController : MonoBehaviour
             }
         }
 
-        if (previousCanDoActions != characterState.canDoActions || previousIsCasting != isCasting)
+        if (previousCanDoActions != characterState.canDoActions.value || previousIsCasting != isCasting)
         {
-            previousCanDoActions = characterState.canDoActions;
+            previousCanDoActions = characterState.canDoActions.value;
             previousIsCasting = isCasting;
-            if (characterState.canDoActions && ((!isCasting && lockActionsWhenCasting) || (!lockActionsWhenCasting)))
+            if (characterState.canDoActions.value && ((!isCasting && lockActionsWhenCasting) || (!lockActionsWhenCasting)))
             {
                 if (actions != null && actions.Count > 0)
                 {
@@ -249,7 +255,7 @@ public class ActionController : MonoBehaviour
             if (lastAction != null)
             {
                 // Handle rotation when casting
-                if (faceTargetWhenCasting && lastAction.data.isTargeted)
+                if (faceTargetWhenCasting && lastAction.data.isTargeted && targetController.currentTarget != null)
                 {
                     // Get the direction to the target but ignore the vertical component (Y-axis)
                     Vector3 directionToTarget = targetController.currentTarget.transform.position - transform.position;
@@ -451,6 +457,8 @@ public class ActionController : MonoBehaviour
                     }
                 }
 
+                autoAction.data.damage = new GlobalData.Damage(autoAction.data.damage, characterState);
+
                 ActionInfo newActionInfo = new ActionInfo(autoAction, characterState, currentTarget);
                 autoAction.ExecuteAction(newActionInfo);
 
@@ -475,15 +483,15 @@ public class ActionController : MonoBehaviour
                 return true;
             }
         }
-        else if (characterState.canDoActions && !autoAction.isDisabled && !autoAction.isAnimationLocked && !autoAction.unavailable)
+        else if (characterState.canDoActions.value && !autoAction.isDisabled && !autoAction.isAnimationLocked && !autoAction.unavailable)
         {
             FailAction(autoAction, "Action not ready yet.");
         }
-        else if (characterState.canDoActions && (autoAction.isDisabled || autoAction.unavailable) && !autoAction.isAnimationLocked)
+        else if (characterState.canDoActions.value && (autoAction.isDisabled || autoAction.unavailable) && !autoAction.isAnimationLocked)
         {
             FailAction(autoAction, "Action not available right now.");
         }
-        else if (characterState.canDoActions && autoAction.isAnimationLocked)
+        else if (characterState.canDoActions.value && autoAction.isAnimationLocked)
         {
             FailAction(autoAction, "Action not finished and available yet.");
         }
@@ -526,29 +534,66 @@ public class ActionController : MonoBehaviour
         if (Time.timeScale <= 0f)
             return;
 
+        PerformActionInternal(action, false);
+    }
+
+    public void PerformActionUnrestricted(string name)
+    {
+        for (int i = 0; i < actions.Count; i++)
+        {
+            if (actions[i].data.actionName == name)
+            {
+                PerformActionUnrestricted(actions[i]);
+            }
+        }
+    }
+
+    public void PerformActionUnrestricted(CharacterAction action)
+    {
+        PerformActionInternal(action, false);
+    }
+
+    public void PerformActionHidden(string name)
+    {
+        for (int i = 0; i < actions.Count; i++)
+        {
+            if (actions[i].data.actionName == name)
+            {
+                PerformActionHidden(actions[i]);
+            }
+        }
+    }
+
+    public void PerformActionHidden(CharacterAction action)
+    {
+        PerformActionInternal(action, true);
+    }
+
+    private void PerformActionInternal(CharacterAction action, bool hidden)
+    {
         if (action == null)
             return;
 
         action.OnPointerClick(null);
 
-        if (lockActionsWhenCasting && isCasting)
+        if (lockActionsWhenCasting && isCasting && !hidden)
             return;
 
-        if (action.data.range > 0f && action.data.isTargeted && (distanceToTarget > action.data.range))
+        if (action.data.range > 0f && action.data.isTargeted && (distanceToTarget > action.data.range) && !hidden)
             return;
 
         interrupted = false;
         if (castBarElement != null)
             castBarElement.ChangeColors(false);
 
-        if (action.isAvailable && !action.isDisabled && !action.isAnimationLocked && !action.unavailable && !animator.GetBool(animatorParameterActionLocked))
+        if ((action.isAvailable && !action.isDisabled && !action.isAnimationLocked && !action.unavailable && !animator.GetBool(animatorParameterActionLocked)) || hidden)
         {
             if (action.data.cast <= 0f || (action.data.cast > 0f && instantCast))
             {
                 Utilities.FunctionTimer.StopTimer($"{characterState.characterName}_{this}_castBar_fade_out_if_interrupted");
                 //Utilities.FunctionTimer.StopTimer($"{this}_castBarParty_fade_out_if_interrupted");
                 Utilities.FunctionTimer.StopTimer($"{characterState.characterName}_{this}_interrupted_status");
-                
+
                 CharacterState currentTarget = null;
 
                 if (targetController != null && targetController.currentTarget != null)
@@ -560,22 +605,29 @@ public class ActionController : MonoBehaviour
                     currentTarget = characterState;
                 }
 
+                action.data.damage = new GlobalData.Damage(action.data.damage, characterState);
+
                 ActionInfo newActionInfo = new ActionInfo(action, characterState, currentTarget);
+                action.onCast.Invoke(newActionInfo);
                 action.ExecuteAction(newActionInfo);
 
-                action.ActivateAnimationLock();
-                if (action.data.rollsGcd)
+                if (action.data.animationLock > 0f)
+                    action.ActivateAnimationLock();
+                if (action.data.rollsGcd && action.data.recast > 0f)
                     action.ActivateCooldown();
 
                 onCast.Invoke(new CastInfo(newActionInfo, instantCast, characterState.GetEffects()));
+                
                 if (animator != null)
                 {
                     animator.SetBool(animatorParameterCasting, false);
                 }
 
+                HandleAnimation(action);
+
                 if (action.data.cast > 0f && instantCast && instantCastEffect != null)
                 {
-                    characterState.RemoveEffect(instantCastEffect, false, instantCastEffect.uniqueTag, 1);
+                    characterState.RemoveEffect(instantCastEffect, false, characterState, instantCastEffect.uniqueTag, 1);
                 }
                 else if (action.data.cast > 0f && instantCast && instantCastEffect == null)
                 {
@@ -598,8 +650,9 @@ public class ActionController : MonoBehaviour
                 castTime = action.data.cast;
                 lastCastTime = castTime;
 
-                action.ActivateAnimationLock();
-                if (action.data.rollsGcd)
+                if (action.data.animationLock > 0f)
+                    action.ActivateAnimationLock();
+                if (action.data.rollsGcd && action.data.recast > 0f)
                     action.ActivateCooldown();
 
                 CharacterState currentTarget = null;
@@ -613,80 +666,34 @@ public class ActionController : MonoBehaviour
                     currentTarget = characterState;
                 }
 
+                action.data.damage = new GlobalData.Damage(action.data.damage, characterState);
+
                 ActionInfo newActionInfo = new ActionInfo(action, characterState, currentTarget);
-                StartCoroutine(Cast(castTime, () => { action.ExecuteAction(newActionInfo); }));
+                action.onCast.Invoke(newActionInfo);
+                StartCoroutine(Cast(castTime, () => { action.ExecuteAction(newActionInfo); if (action.data.playAnimationOnFinish) { HandleAnimation(action); } }));
                 onCast.Invoke(new CastInfo(newActionInfo, instantCast, characterState.GetEffects()));
 
-                if (animator != null && !string.IsNullOrEmpty(action.data.animationName) && !action.data.playAnimationDirectly)
-                {
-                    animator.SetTrigger(action.data.animationName);
-                }
-                else if (animator != null && !string.IsNullOrEmpty(action.data.animationName) && action.data.playAnimationDirectly)
-                {
-                    animator.CrossFadeInFixedTime(action.data.animationName, 0.2f);
-                }
-                if (animator != null && action.data.onAnimationFinishId >= 0)
-                {
-                    animator.SetInteger(animatorParameterCastFinishId, action.data.onAnimationFinishId);
-                }
-                else
-                {
-                    animator.SetInteger(animatorParameterCastFinishId, 0);
-                }
+                if (!action.data.playAnimationOnFinish)
+                    HandleAnimation(action);
 
                 UpdateCharacterName();
-                if (castBar != null)
-                {
-                    castBar.maxValue = action.data.cast;
-                    castBar.value = 0f;
-                }
-                if (castLengthText != null)
-                {
-                    castLengthText.text = castTime.ToString("00.00").Replace(',', '.').Replace(':', '.').Replace(';', '.');
-                }
-                if (castNameText != null)
-                {
-                    castNameText.text = Utilities.InsertSpaceBeforeCapitals(action.data.actionName);
-                }
-                if (castBarParty != null)
-                {
-                    castBarParty.maxValue = action.data.cast;
-                    castBarParty.value = 0f;
-                }
-                if (castNameTextParty != null)
-                {
-                    if (newActionInfo.target != null && showCastTargetLetter)
-                    {
-                        castNameTextParty.text = $"{Utilities.InsertSpaceBeforeCapitals(action.data.actionName)}<sprite=\"{newActionInfo.target.letterSpriteAsset}\" name=\"{newActionInfo.target.characterLetter}\">";
-                    }
-                    else if (newActionInfo.source != null && showCastTargetLetter)
-                    {
-                        castNameTextParty.text = $"{Utilities.InsertSpaceBeforeCapitals(action.data.actionName)}<sprite=\"{newActionInfo.source.letterSpriteAsset}\" name=\"{newActionInfo.source.characterLetter}\">";
-                    }
-                    else
-                    {
-                        castNameTextParty.text = Utilities.InsertSpaceBeforeCapitals(action.data.actionName);
-                    }
-                }
-                if (interruptText != null)
-                {
-                    interruptText.alpha = 0f;
-                }
+                UpdateUserInterface(newActionInfo);
+
                 if (animator != null)
                 {
                     animator.SetBool(animatorParameterCasting, true);
                 }
             }
         }
-        else if (characterState.canDoActions && !action.isDisabled && !action.isAnimationLocked && !action.unavailable)
+        else if (characterState.canDoActions.value && !action.isDisabled && !action.isAnimationLocked && !action.unavailable)
         {
             FailAction(action, "Action not ready yet.");
         }
-        else if (characterState.canDoActions && (action.isDisabled || action.unavailable) && !action.isAnimationLocked)
+        else if (characterState.canDoActions.value && (action.isDisabled || action.unavailable) && !action.isAnimationLocked)
         {
             FailAction(action, "Action not available right now.");
         }
-        else if (characterState.canDoActions && action.isAnimationLocked)
+        else if (characterState.canDoActions.value && action.isAnimationLocked)
         {
             FailAction(action, "Action not finished and available yet.");
         }
@@ -726,8 +733,11 @@ public class ActionController : MonoBehaviour
         }
         if (lastAction != null)
         {
-            lastAction.ResetAnimationLock();
-            lastAction.ResetCooldown();
+            if (lastAction.data.animationLock > 0f)
+                lastAction.ResetAnimationLock();
+            if (lastAction.data.recast > 0f)
+                lastAction.ResetCooldown();
+            lastAction.onInterrupt.Invoke(new ActionInfo(lastAction, characterState, null));
             lastAction = null;
         }
         if (animator != null)
@@ -780,6 +790,29 @@ public class ActionController : MonoBehaviour
         }
     }
 
+    private void HandleAnimation(CharacterAction action)
+    {
+        if (animator != null && !string.IsNullOrEmpty(action.data.animationName))
+        {
+            if (!action.data.playAnimationDirectly)
+            {
+                animator.SetTrigger(action.data.animationName);
+            }
+            else
+            {
+                animator.CrossFadeInFixedTime(action.data.animationName, 0.2f);
+            }
+            if (action.data.onAnimationFinishId >= 0)
+            {
+                animator.SetInteger(animatorParameterCastFinishId, action.data.onAnimationFinishId);
+            }
+            else
+            {
+                animator.SetInteger(animatorParameterCastFinishId, 0);
+            }
+        }
+    }
+
     public void UpdateInstantCasts(List<StatusEffect> effects)
     {
         instantCast = false;
@@ -792,6 +825,47 @@ public class ActionController : MonoBehaviour
                 instantCast = true;
                 break;
             }
+        }
+    }
+
+    private void UpdateUserInterface(ActionInfo actionInfo)
+    {
+        if (castBar != null)
+        {
+            castBar.maxValue = actionInfo.action.data.cast;
+            castBar.value = 0f;
+        }
+        if (castLengthText != null)
+        {
+            castLengthText.text = castTime.ToString("00.00").Replace(',', '.').Replace(':', '.').Replace(';', '.');
+        }
+        if (castNameText != null)
+        {
+            castNameText.text = Utilities.InsertSpaceBeforeCapitals(actionInfo.action.data.actionName);
+        }
+        if (castBarParty != null)
+        {
+            castBarParty.maxValue = actionInfo.action.data.cast;
+            castBarParty.value = 0f;
+        }
+        if (castNameTextParty != null)
+        {
+            if (actionInfo.target != null && showCastTargetLetter)
+            {
+                castNameTextParty.text = $"{Utilities.InsertSpaceBeforeCapitals(actionInfo.action.data.actionName)}<sprite=\"{actionInfo.target.letterSpriteAsset}\" name=\"{actionInfo.target.characterLetter}\">";
+            }
+            else if (actionInfo.source != null && showCastTargetLetter)
+            {
+                castNameTextParty.text = $"{Utilities.InsertSpaceBeforeCapitals(actionInfo.action.data.actionName)}<sprite=\"{actionInfo.source.letterSpriteAsset}\" name=\"{actionInfo.source.characterLetter}\">";
+            }
+            else
+            {
+                castNameTextParty.text = Utilities.InsertSpaceBeforeCapitals(actionInfo.action.data.actionName);
+            }
+        }
+        if (interruptText != null)
+        {
+            interruptText.alpha = 0f;
         }
     }
 

@@ -2,11 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using NaughtyAttributes;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Playables;
 using static ActionController;
-using static GlobalStructs;
+using static GlobalData;
 using static UnityEngine.ParticleSystem;
 using Random = UnityEngine.Random;
 
@@ -19,8 +21,13 @@ public class DamageTrigger : MonoBehaviour
     public bool inverted = false;
     public CharacterState owner;
     public bool autoAssignOwner = false;
+    [Tag]
     public string ableToHitTag = "Player";
     public Damage damage;
+    public AnimationCurve damageFalloff = new AnimationCurve(
+        new Keyframe(0f, 1f),
+        new Keyframe(1f, 1f)
+    );
     public long enmity = 0;
     public bool increaseEnmity = false;
     public bool topEnmity = false;
@@ -28,10 +35,14 @@ public class DamageTrigger : MonoBehaviour
     public bool self = false;
     public bool dealsDamage = true;
     public bool passDamage = false;
+    public bool proximityBased = false;
     public bool isAShield = false;
     public bool cleaves = true;
+    public bool cancelsMovement = false;
     public bool ignoresOwner = false;
+    public bool ignoreSnapshot = false;
     public bool playerActivated = true;
+    public bool updateLive = false;
     public bool shared = false;
     public bool enumeration = false;
     public float visualDelay = 0f;
@@ -106,6 +117,18 @@ public class DamageTrigger : MonoBehaviour
         initialized = true;
     }
 
+    public void ResetOwner()
+    {
+        owner = null;
+    }
+
+    public void Activate(bool playerActivated)
+    {
+        this.playerActivated = playerActivated;
+        if (!playerActivated && !inProgress)
+            StartDamageTrigger();
+    }
+
     void OnTriggerEnter(Collider other)
     {
         if (!inverted)
@@ -147,7 +170,53 @@ public class DamageTrigger : MonoBehaviour
         }
     }
 
-    void OnTriggerExit(Collider other)
+    private void OnTriggerStay(Collider other)
+    {
+        if (updateLive)
+        {
+            if (!inverted)
+            {
+                if (other.CompareTag(ableToHitTag) && !inProgress && initialized)
+                {
+                    if (other.transform.parent.TryGetComponent(out CharacterState playerState))
+                    {
+                        if (playerState == owner && ignoresOwner)
+                            return;
+                        if (!cleaves && owner == null)
+                            return;
+                        if (!cleaves && owner != null && playerState != owner)
+                            return;
+
+                        if (!currentPlayers.Contains(playerState))
+                            currentPlayers.Add(playerState);
+
+                        if (playerActivated)
+                            StartDamageTrigger();
+                    }
+                }
+                else
+                {
+                    if (other.CompareTag(ableToHitTag))
+                    {
+                        if (other.transform.parent.TryGetComponent(out CharacterState playerState))
+                        {
+                            if (playerState == owner && ignoresOwner)
+                                return;
+                            if (!cleaves && owner == null)
+                                return;
+                            if (!cleaves && owner != null && playerState != owner)
+                                return;
+
+                            if (currentPlayers.Contains(playerState))
+                                currentPlayers.Remove(playerState);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
     {
         if (!inverted)
         {
@@ -192,19 +261,35 @@ public class DamageTrigger : MonoBehaviour
     {
         if (damageApplicationDelay > 0)
         {
+            /*if (ignoreSnapshot)
+            {
+                if (cancelsMovement)
+                {
+                    for (int i = 0; i < currentPlayers.Count; i++)
+                    {
+                        if (ignoresOwner && currentPlayers[i] == owner)
+                            continue;
+
+                        if (currentPlayers[i].aiController != null)
+                        {
+                            currentPlayers[i].aiController.freezeMovement = true;
+                        }
+                        else if (currentPlayers[i].playerController != null)
+                        {
+                            currentPlayers[i].playerController.freezeMovement = true;
+                        }
+                    }
+                }
+            }*/
             StartCoroutine(IE_StartDamageTrigger(currentPlayers.ToArray()));
         }
         else
         {
-            inProgress = true;
             TriggerDamage(currentPlayers.ToArray());
             if (cooldown > 0f)
             {
+                inProgress = true;
                 Utilities.FunctionTimer.Create(this, () => inProgress = false, cooldown, $"{id}_{damageName}_{gameObject}_{GetHashCode()}_trigger_cooldown", false, true);
-            }
-            else
-            {
-                inProgress = false;
             }
         }
     }
@@ -213,7 +298,23 @@ public class DamageTrigger : MonoBehaviour
     {
         inProgress = true;
         yield return new WaitForSeconds(damageApplicationDelay);
-        TriggerDamage(players);
+        if (ignoreSnapshot)
+        {
+            List<CharacterState> candidates = new List<CharacterState>();
+            currentPlayers.AddRange(players);
+            foreach (CharacterState player in currentPlayers)
+            {
+                if (!candidates.Contains(player))
+                {
+                    candidates.Add(player);
+                }
+            }
+            TriggerDamage(candidates.ToArray());
+        }
+        else
+        {
+            TriggerDamage(players);
+        }
         if (cooldown > 0f)
         {
             Utilities.FunctionTimer.Create(this, () => inProgress = false, cooldown, $"{id}_{damageName}_{gameObject}_{GetHashCode()}_trigger_cooldown", false, true);
@@ -267,11 +368,11 @@ public class DamageTrigger : MonoBehaviour
                 {
                     //Debug.Log("DamageTrigger failed");
                     failed = true;
-                    if (damagePerPlayer.value < 0)
-                    {
+                    //if (damagePerPlayer.value < 0)
+                    //{
                         //damagePerPlayer = new Damage(damagePerPlayer, -999999);
                         //kill = true;
-                    }
+                    //}
                 }
             }
         }
@@ -290,7 +391,7 @@ public class DamageTrigger : MonoBehaviour
                 HashSet<CharacterState> enemiesToAdd = new HashSet<CharacterState>();
 
                 // Iterate over the players list to gather the enemies they have enmity for
-                foreach (var player in players)
+                foreach (CharacterState player in players)
                 {
                     if (ignoresOwner)
                     {
@@ -300,7 +401,7 @@ public class DamageTrigger : MonoBehaviour
                         }
                     }
 
-                    foreach (var enemy in player.enmity.Keys)
+                    foreach (CharacterState enemy in player.enmity.Keys)
                     {
                         // Add the enemy to the set if it's not already there
                         if (!enemiesToAdd.Contains(enemy))
@@ -311,7 +412,7 @@ public class DamageTrigger : MonoBehaviour
                 }
 
                 // Now, iterate over the gathered enemies and add enmity for each one to the owner
-                foreach (var enemy in enemiesToAdd)
+                foreach (CharacterState enemy in enemiesToAdd)
                 {
                     // If the owner does not already have enmity for this enemy, add them
                     if (!owner.enmity.ContainsKey(enemy))
@@ -340,10 +441,36 @@ public class DamageTrigger : MonoBehaviour
                     }
                 }
 
+                if (cancelsMovement)
+                {
+                    if (players[i].aiController != null && players[i].canDie.value)
+                    {
+                        players[i].aiController.freezeMovement = true;
+                    } 
+                    else if (players[i].playerController != null && players[i].canDie.value)
+                    {
+                        players[i].playerController.freezeMovement = true;
+                    }
+                }
+
                 if (dealsDamage)
                 {
-                    if (damagePerPlayer.value != 0)
+                    if (damagePerPlayer.value != 0 && !proximityBased)
+                    {
                         players[i].ModifyHealth(damagePerPlayer, kill);
+                    } 
+                    else if (damagePerPlayer.value != 0 && proximityBased)
+                    {
+                        float distance = Vector3.Distance(players[i].transform.position, transform.position);
+
+                        // Sample the curve at the current distance to get the multiplier
+                        float damageMultiplier = damageFalloff.Evaluate(distance);
+
+                        // Calculate the final damage based on the multiplier
+                        Damage finalDamagePerPlayer = new Damage(damagePerPlayer, Mathf.RoundToInt(damagePerPlayer.value * damageMultiplier));
+
+                        players[i].ModifyHealth(finalDamagePerPlayer, kill);
+                    }
 
                     if (increaseEnmity && owner != null && data != null)
                     {
@@ -418,11 +545,11 @@ public class DamageTrigger : MonoBehaviour
                     {
                         if (passDamage)
                         {
-                            players[i].AddEffect(appliedEffects[k], damage, self);
+                            players[i].AddEffect(appliedEffects[k], damage, damage.source, self);
                         }
                         else
                         {
-                            players[i].AddEffect(appliedEffects[k], self);
+                            players[i].AddEffect(appliedEffects[k], damage.source, self);
                         }
                     }
                 }

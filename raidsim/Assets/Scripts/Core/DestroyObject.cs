@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class DestroyObject : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class DestroyObject : MonoBehaviour
     public float lifetime = 1f;
     public bool disableInstead = false;
     public bool log = false;
+
+    public UnityEvent onDestroy;
 
     private float life;
     private float triggerLife;
@@ -67,12 +70,14 @@ public class DestroyObject : MonoBehaviour
 
     public void OnDestroy()
     {
+        onDestroy.Invoke();
         if (log)
             Debug.Log($"{this} was destroyed!");
     }
 
     private void DisableObject()
     {
+        onDestroy.Invoke();
         if (state == null)
             gameObject.SetActive(false);
         else

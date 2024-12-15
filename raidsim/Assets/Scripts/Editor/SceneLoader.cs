@@ -5,7 +5,6 @@ using UnityEditor.SceneManagement;
 
 namespace susy_baka.Shared.Utils.Editor
 {
-    [ExecuteAlways]
     public class SceneLoaderWindow : EditorWindow
     {
         private Vector2 scrollPosition;

@@ -164,7 +164,7 @@ public class ConfigMenu : MonoBehaviour
         else
             Screen.fullScreenMode = FullScreenMode.Windowed;
         resolution = newResolution;
-        resolutionDropdown.SetResolution(resolution, fullscreen);
+        resolutionDropdown.SetResolution(resolution, Screen.fullScreen);
 /*#if UNITY_EDITOR
         // Get the GameView EditorWindow
         var gameView = GetGameView();

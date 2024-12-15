@@ -222,7 +222,15 @@ Shader "Custom/Unlit/RoundAoe"
             }
 
             o.Albedo = finalColor;
-            o.Alpha = outlineOpacity > 0 ? _OutlineOpacity : combinedOpacity * ((innerOpacity > 0) ? _InnerTintColor.a : (outerOpacity > 0) ? _TintColor.a : _GlowTintColor.a);
+
+            // Alpha calculations for proper blending of the different components
+            // we make sure everything respects _TintColor.a and is multiplied by the global _Alpha value
+            float innerAlpha = innerOpacity > 0 ? _InnerTintColor.a * innerOpacity : 0.0;
+            float outerAlpha = outerOpacity > 0 ? _TintColor.a * outerOpacity : 0.0;
+            float glowAlpha = glowOpacity > 0 ? _GlowTintColor.a * glowOpacity : 0.0;
+            float outlineAlpha = outlineOpacity > 0 ? _OutlineOpacity : 0.0;
+
+            o.Alpha = saturate(innerAlpha + outerAlpha + glowAlpha + outlineAlpha);
             o.Alpha *= _Alpha;
         }
         ENDCG

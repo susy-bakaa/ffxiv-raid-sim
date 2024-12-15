@@ -7,10 +7,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using static GlobalStructs;
-using static GlobalStructs.Damage;
+using static GlobalData;
+using static GlobalData.Damage;
+using static GlobalData.Flag;
 using static PartyList;
-using static UnityEngine.Rendering.DebugUI;
 
 public class CharacterState : MonoBehaviour
 {
@@ -25,6 +25,7 @@ public class CharacterState : MonoBehaviour
     [HideInInspector]
     public TargetController targetController;
 
+    #region Stat Variables
     [Header("Status")]
     public string characterName = "Unknown";
 
@@ -112,20 +113,22 @@ public class CharacterState : MonoBehaviour
         }
     }
 #endif
+    #endregion
+
     [Header("States")]
-    public bool invulnerable = false;
+    public Flag invulnerable = new Flag("invulnerable", AggregateLogic.AnyTrue);
+    public Flag uncontrollable = new Flag("uncontrollable", AggregateLogic.AnyTrue);
+    public Flag untargetable = new Flag("untargetable", AggregateLogic.AnyTrue);
+    public Flag bound = new Flag("bound", AggregateLogic.AnyTrue);
+    public Flag stunned = new Flag("stunned", AggregateLogic.AnyTrue);
+    public Flag knockbackResistant = new Flag("knockbackResistant", AggregateLogic.AnyTrue);
+    public Flag silenced = new Flag("silenced", AggregateLogic.AnyTrue);
+    public Flag pacificied = new Flag("pacificied", AggregateLogic.AnyTrue);
+    public Flag amnesia = new Flag("amnesia", AggregateLogic.AnyTrue);
+    public Flag canDoActions = new Flag("canDoActions", new List<FlagValue> { new FlagValue("base", true) });
+    public Flag canDie = new Flag("canDie", new List<FlagValue> { new FlagValue("base", true) }, AggregateLogic.AnyTrue);
     public bool dead = false;
-    public bool uncontrollable = false;
-    public bool untargetable = false;
-    public bool bound = false;
-    public bool stunned = false;
-    public bool knockbackResistant = false;
     public bool still = false;
-    public bool silenced = false;
-    public bool pacificied = false;
-    public bool amnesia = false;
-    public bool canDoActions = true;
-    public bool canDie = true;
     public bool disabled = false;
     public bool canGainEnmity = true;
 
@@ -159,6 +162,7 @@ public class CharacterState : MonoBehaviour
     public bool hidePartyName = false;
     public bool hidePartyListEntry = false;
 
+    #region User Interface Variables
     [Header("Personal - Name")]
     public bool showCharacterName = true;
     public bool showCharacterLevel = true;
@@ -194,6 +198,10 @@ public class CharacterState : MonoBehaviour
     public bool showOnlyBelowMaxHealth = false;
     public Slider nameplateHealthBar;
     private CanvasGroup nameplateHealthBarGroup;
+    [Header("Personal - Signs")]
+    public bool showSignMarkers = true;
+    public CanvasGroup signMarkersGroup;
+    public List<SignMarker> signMarkers = new List<SignMarker>();
 
     [Header("Party - Name")]
     public bool showPartyCharacterName = true;
@@ -211,6 +219,16 @@ public class CharacterState : MonoBehaviour
     public Slider shieldBarParty;
     public Slider overShieldBarParty;
 
+    [Header("Party - Status Popups")]
+    public bool showStatusPopups = true;
+    public GameObject statusPopupPrefab;
+    public Transform statusPopupParent;
+    public Color statusPopupColor = Color.blue;
+    public float statusPopupTextDelay = 0.5f;
+    public Transform statusPopupPivot;
+    private Queue<FlyText> statusPopupTexts = new Queue<FlyText>();
+    private Coroutine statusPopupCoroutine;
+
     [Header("Target - StatusEffects")]
     public bool showStatusEffectsWhenTargeted = true;
     public GameObject targetStatusEffectHolderPrefab;
@@ -218,21 +236,57 @@ public class CharacterState : MonoBehaviour
     public CanvasGroup targetStatusEffectIconGroup;
     public Transform targetStatusEffectIconParent;
 
+    [Header("Target - Damage Popups")]
+    public bool showTargetDamagePopups = true;
+    public GameObject targetDamagePopupPrefab;
+    public Transform targetDamagePopupParent;
+    public Color targetDamagePopupColor = Color.white;
+    public CharacterState showOnlyFromCharacter;
+
+    private Coroutine ieUpdatePartyList;
+    private Coroutine ieStartSetupDelayed;
+    private GameObject dfUpdatePartyList;
+    #endregion
+
 #if UNITY_EDITOR
     [Header("Editor")]
     public StatusEffectData.StatusEffectInfo inflictedEffect;
+    public Damage inflictedDamage;
     [Button("Inflict Status Effect")]
     public void InflictStatusEffectButton()
     {
-        AddEffect(inflictedEffect.data, true, inflictedEffect.tag, inflictedEffect.stacks);
+        AddEffect(inflictedEffect.data, this, true, inflictedEffect.tag, inflictedEffect.stacks);
     }
     [Button("Cleanse Status Effect")]
     public void CleanseStatusEffectButton()
     {
-        RemoveEffect(inflictedEffect.data, true, inflictedEffect.tag, inflictedEffect.stacks);
+        RemoveEffect(inflictedEffect.data, true, this, inflictedEffect.tag, inflictedEffect.stacks);
+    }
+    [Button("Inflict Damage")]
+    public void InflictDamageButton()
+    {
+        ModifyHealth(inflictedDamage);
+    }
+
+    [Button("Print Flags")]
+    public void PrintFlags()
+    {
+        string charName = string.IsNullOrEmpty(characterName) ? "Unknown" : characterName.Replace(" ", "_");
+        Debug.Log($"[CharacterState.{charName} ({gameObject.name})] invulnerable: {invulnerable.value} values.Count: {invulnerable.values.Count}");
+        Debug.Log($"[CharacterState.{charName} ({gameObject.name})] uncontrollable: {uncontrollable.value} values.Count: {uncontrollable.values.Count}");
+        Debug.Log($"[CharacterState.{charName} ({gameObject.name})] untargetable: {untargetable.value} values.Count: {untargetable.values.Count}");
+        Debug.Log($"[CharacterState.{charName} ({gameObject.name})] bound: {bound.value} values.Count: {bound.values.Count}");
+        Debug.Log($"[CharacterState.{charName} ({gameObject.name})] stunned: {stunned.value} values.Count: {stunned.values.Count}");
+        Debug.Log($"[CharacterState.{charName} ({gameObject.name})] knockbackResistant: {knockbackResistant.value} values.Count: {knockbackResistant.values.Count}");
+        Debug.Log($"[CharacterState.{charName} ({gameObject.name})] silenced: {silenced.value} values.Count: {silenced.values.Count}");
+        Debug.Log($"[CharacterState.{charName} ({gameObject.name})] pacificied: {pacificied.value} values.Count: {pacificied.values.Count}");
+        Debug.Log($"[CharacterState.{charName} ({gameObject.name})] amnesia: {amnesia.value} values.Count: {amnesia.values.Count}");
+        Debug.Log($"[CharacterState.{charName} ({gameObject.name})] canDoActions: {canDoActions.value} values.Count: {canDoActions.values.Count}");
+        Debug.Log($"[CharacterState.{charName} ({gameObject.name})] canDie: {canDie.value} values.Count: {canDie.values.Count}");
     }
 #endif
 
+    #region Name Functions
     public string GetCharacterName()
     {
         int index = characterName.IndexOf('#');
@@ -243,6 +297,37 @@ public class CharacterState : MonoBehaviour
         return characterName; // Return the full string if no '#' is found
     }
 
+    public void UpdateCharacterName()
+    {
+        if (!gameObject.activeSelf)
+            return;
+
+        if (nameplateCharacterNameTextGroup != null)
+        {
+            if (showCharacterName)
+            {
+                nameplateCharacterNameTextGroup.alpha = 1f;
+            }
+            else
+            {
+                nameplateCharacterNameTextGroup.alpha = 0f;
+            }
+        }
+        if (characterNameTextGroupParty != null)
+        {
+            if (!hidePartyName && showPartyCharacterName)
+            {
+                characterNameTextGroupParty.alpha = 1f;
+            }
+            else
+            {
+                characterNameTextGroupParty.alpha = 0f;
+            }
+        }
+    }
+    #endregion
+
+    #region BuiltIn Unity Functions
     void Awake()
     {
         playerController = GetComponent<PlayerController>();
@@ -296,10 +381,18 @@ public class CharacterState : MonoBehaviour
         defaultMaxHealth = health;
         defaultSpeed = currentSpeed;
         dead = false;
-        uncontrollable = false;
-        untargetable = false;
-        bound = false;
-        knockbackResistant = false;
+        invulnerable.ForceUpdate();
+        invulnerable.ForceUpdate();
+        uncontrollable.ForceUpdate();
+        untargetable.ForceUpdate();
+        bound.ForceUpdate();
+        stunned.ForceUpdate();
+        knockbackResistant.ForceUpdate();
+        silenced.ForceUpdate();
+        pacificied.ForceUpdate();
+        amnesia.ForceUpdate();
+        canDoActions.ForceUpdate();
+        canDie.ForceUpdate();
         enmity = new Dictionary<CharacterState, long>();
 
         if (healthBar != null)
@@ -486,38 +579,95 @@ public class CharacterState : MonoBehaviour
                 characterNameTextGroupParty.LeanAlpha(0f, 0.5f);
             }
         }
+        if (signMarkersGroup != null)
+        {
+            signMarkers = new List<SignMarker>();
+            signMarkers.AddRange(signMarkersGroup.GetComponentsInChildren<SignMarker>());
+
+            if (showSignMarkers)
+            {
+                signMarkersGroup.alpha = 1f;
+            }
+            else
+            {
+                signMarkersGroup.alpha = 0f;
+            }
+        }
+
+        if (statusPopupPivot == null)
+        {
+            foreach (Transform child in transform)
+            {
+                if (child.gameObject.name.ToLower().Contains("pivot"))
+                {
+                    statusPopupPivot = child;
+                }
+            }
+        }
     }
 
     void Start()
     {
-        Utilities.FunctionTimer.Create(this, () => onSpawn.Invoke(), 0.85f, $"{characterName}_onSpawn_delay", false, true);
-
-        if (disabled)
+        if (ieStartSetupDelayed == null)
         {
-            Utilities.FunctionTimer.Create(this, () => gameObject.SetActive(false), 1f, $"{characterName}_disable_on_start", true, true);
+            ieStartSetupDelayed = StartCoroutine(IE_StartSetupDelayed(new WaitForSecondsRealtime(0.1f), new WaitForSecondsRealtime(0.2f)));
         }
     }
 
     void OnEnable()
     {
-        if (partyList != null)
+        if (partyList != null && ieUpdatePartyList == null)
         {
-            Utilities.FunctionTimer.Create(this, () => partyList.UpdatePartyList(), 1f, $"{characterName}_on_enable_update_party_list", true, true);
+            ieUpdatePartyList = StartCoroutine(IE_PartyListUpdate(new WaitForSecondsRealtime(0.2f)));
         }
     }
 
     void OnDisable()
     {
-        if (partyList != null)
+        if (partyList != null && gameObject.scene.isLoaded) // ieUpdatePartyList == null &&
         {
-            Utilities.FunctionTimer.Create(this, () => partyList.UpdatePartyList(), 1f, $"{characterName.Replace(" ","_")}_on_disable_update_party_list", true, true);
+            if (dfUpdatePartyList == null)
+                dfUpdatePartyList = new GameObject($"{gameObject.name}_OnDisable_PartyListUpdate", typeof(DelayedFunction));
+
+            if (dfUpdatePartyList.TryGetComponent(out DelayedFunction df))
+            {
+                df.Trigger(() => { partyList.UpdatePartyList(); }, new WaitForSecondsRealtime(0.2f));
+            }
+            //ieUpdatePartyList = StartCoroutine(IE_PartyListUpdate(new WaitForSecondsRealtime(1f)));
         }
+    }
+
+    private IEnumerator IE_PartyListUpdate(WaitForSecondsRealtime wait)
+    {
+        yield return wait;
+        if (this == null || !gameObject.scene.isLoaded)
+            yield break;
+        partyList.UpdatePartyList();
+        ieUpdatePartyList = null;
+    }
+
+    private IEnumerator IE_StartSetupDelayed(WaitForSecondsRealtime wait1, WaitForSecondsRealtime wait2)
+    {
+        yield return wait1;
+        if (this == null || !gameObject.scene.isLoaded)
+            yield break;
+        onSpawn?.Invoke();
+        yield return wait2;
+        if (disabled)
+            gameObject.SetActive(false);
+        ieStartSetupDelayed = null;
     }
 
     void Update()
     {
         if (!gameObject.activeSelf)
             return;
+
+        if (Mathf.Abs(transform.position.y) >= GlobalVariables.worldBounds.y || Mathf.Abs(transform.position.x) >= GlobalVariables.worldBounds.x || Mathf.Abs(transform.position.z) >= GlobalVariables.worldBounds.z)
+        {
+            ModifyHealth(new Damage(100, true, true, DamageType.unique, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.percentageFromMax, "Out of bounds"));
+            transform.position = new Vector3(0f, 1f, 0f);
+        }
 
         statusEffectUpdateTimer += Time.deltaTime;
 
@@ -546,7 +696,7 @@ public class CharacterState : MonoBehaviour
                 effectsArray[i].onUpdate.Invoke(this);
                 if (effectsArray[i].duration <= 0f)
                 {
-                    RemoveEffect(effectsArray[i], true, effectsArray[i].uniqueTag, effectsArray[i].stacks);
+                    RemoveEffect(effectsArray[i], true, this, effectsArray[i].uniqueTag, effectsArray[i].stacks);
                 }
             }
         }
@@ -628,14 +778,28 @@ public class CharacterState : MonoBehaviour
                 nameplateGroup.alpha = 0f;
             }
         }
+        if (signMarkersGroup != null)
+        {
+            if (showSignMarkers)
+            {
+                signMarkersGroup.alpha = 1f;
+            }
+            else
+            {
+                signMarkersGroup.alpha = 0f;
+            }
+        }
     }
 
     void OnDestroy()
     {
         if (targetStatusEffectIconParent != null)
             Destroy(targetStatusEffectIconParent.gameObject, 0.1f);
+        StopAllCoroutines();
     }
+    #endregion
 
+    #region Toggles
     public void ToggleState()
     {
         disabled = !disabled;
@@ -656,6 +820,30 @@ public class CharacterState : MonoBehaviour
         }
     }
 
+    public void ToggleTargetable(bool state)
+    {
+        if (state)
+        {
+            untargetable.RemoveFlag("toggleTargetable");
+        }
+        else
+        {
+            untargetable.SetFlag("toggleTargetable", true);
+        }
+    }
+
+    public void ToggleNameplate(bool state)
+    {
+        hideNameplate = !state;
+    }
+
+    public void TogglePartyListEntry(bool state)
+    {
+        hidePartyListEntry = !state;
+    }
+    #endregion
+
+    #region Health
     public void ModifyHealth(Damage damage, bool kill = false, bool noFlyText = false)
     {
         if (!gameObject.activeSelf)
@@ -873,7 +1061,7 @@ public class CharacterState : MonoBehaviour
             default:
             {
                 if (m_damage.value != 0)
-                    ModifyHealth(m_damage.value, kill, ignoreDamageReduction);
+                    ModifyHealthInternal(m_damage.value, kill, ignoreDamageReduction, ignoreDamageReduction);
                 // Fly text damage is already accurate to the actual damage dealt
                 break;
             }
@@ -887,7 +1075,7 @@ public class CharacterState : MonoBehaviour
                     percentage = 0f;
 
                 if (percentage > 0f)
-                    RemoveHealth(m_damage.value / 100.0f, false, m_damage.negative, kill, ignoreDamageReduction);
+                    RemoveHealth(m_damage.value / 100.0f, false, m_damage.negative, kill, ignoreDamageReduction, ignoreDamageReduction);
                 // Set the fly text damage to be accurate to the actual damage dealt
                 flyTextDamage.value = Mathf.RoundToInt(health * percentage);
                 break;
@@ -924,10 +1112,11 @@ public class CharacterState : MonoBehaviour
             }
         }
 
-        if (!noFlyText)
-            ShowDamageFlyText(flyTextDamage);
+        if (!noFlyText && !showDamagePopups && !showTargetDamagePopups)
+            noFlyText = true;
 
-        //ModifyHealth(damage.value, kill);
+        if (!noFlyText && m_damage.value != 0)
+            ShowDamageFlyText(flyTextDamage);
     }
 
     private void SetHealth(long value, bool negative, bool kill = false, bool ignoreDamageReduction = false, bool ignoreShields = false)
@@ -936,22 +1125,22 @@ public class CharacterState : MonoBehaviour
         {
             if (negative)
             {
-                ModifyHealth(0, kill, ignoreDamageReduction, ignoreShields);
+                ModifyHealthInternal(0, kill, ignoreDamageReduction, ignoreShields);
             }
             else
             {
-                ModifyHealth(currentMaxHealth, false, ignoreDamageReduction, ignoreShields);
+                ModifyHealthInternal(currentMaxHealth, false, ignoreDamageReduction, ignoreShields);
             }
         }
         else
         {
             if (negative)
             {
-                ModifyHealth(-1 * (health - value), kill, ignoreDamageReduction, ignoreShields);
+                ModifyHealthInternal(-1 * (health - value), kill, ignoreDamageReduction, ignoreShields);
             }
             else
             {
-                ModifyHealth(Math.Abs(health - value), kill, ignoreDamageReduction, ignoreShields);
+                ModifyHealthInternal(Math.Abs(health - value), kill, ignoreDamageReduction, ignoreShields);
             }
         }
     }
@@ -960,23 +1149,23 @@ public class CharacterState : MonoBehaviour
     {
         if (kill)
         {
-            ModifyHealth(0, kill, ignoreDamageReduction, ignoreShields);
+            ModifyHealthInternal(0, kill, ignoreDamageReduction, ignoreShields);
         }
         else
         {
             long damage = fromMax ? (long)Math.Round(currentMaxHealth * percentage) : (long)Math.Round(health * percentage);
             if (negative)
             {
-                ModifyHealth(-1 * damage, kill, ignoreDamageReduction, ignoreShields);
+                ModifyHealthInternal(-1 * damage, kill, ignoreDamageReduction, ignoreShields);
             }
             else
             {
-                ModifyHealth(Math.Abs(damage), kill, ignoreDamageReduction, ignoreShields);
+                ModifyHealthInternal(Math.Abs(damage), kill, ignoreDamageReduction, ignoreShields);
             }
         }
     }
 
-    private void ModifyHealth(long value, bool kill = false, bool ignoreDamageReduction = false, bool ignoreShields = false)
+    private void ModifyHealthInternal(long value, bool kill = false, bool ignoreDamageReduction = false, bool ignoreShields = false)
     {
         if (kill)
         {
@@ -1015,8 +1204,11 @@ public class CharacterState : MonoBehaviour
         //
         long remainingDamage = value;
 
-        if (!invulnerable)
+        if (!invulnerable.value)
         {
+            if (FightTimeline.Instance.log)
+                Debug.Log($"[CharacterState.{gameObject.name}] raw damage modified from health | value {value}, kill {kill}, ignoreDamageReduction {ignoreDamageReduction}, ignoreShields {ignoreShields}");
+
             // Check if shields should be ignored
             if (ignoreShields || kill)
             {
@@ -1026,8 +1218,10 @@ public class CharacterState : MonoBehaviour
             else
             {
                 // Shield reduction logic if not ignoring shields
-                if (currentShields.Count > 0 && !kill && remainingDamage < 0)
+                if (currentShields.Count > 0 && remainingDamage < 0 && !kill && !ignoreShields)
                 {
+                    if (FightTimeline.Instance.log)
+                        Debug.Log($"[CharacterState.{gameObject.name}] shields");
                     for (int i = currentShields.Count - 1; i >= 0; i--)
                     {
                         if (remainingDamage >= 0)
@@ -1037,13 +1231,17 @@ public class CharacterState : MonoBehaviour
 
                         if (currentShields[i].value > Mathf.Abs(remainingDamage))
                         {
+                            if (FightTimeline.Instance.log)
+                                Debug.Log($"[CharacterState.{gameObject.name}] shield ({currentShields[i].key}, {currentShields[i].value}) was bigger than damage ({remainingDamage})");
                             currentShields[i] = new Shield(currentShields[i].key, currentShields[i].value + remainingDamage);
                             remainingDamage = 0;
                         }
                         else
                         {
+                            if (FightTimeline.Instance.log)
+                                Debug.Log($"[CharacterState.{gameObject.name}] damage was bigger than shield ({currentShields[i].key}, {currentShields[i].value}) damage ({remainingDamage})");
                             remainingDamage += currentShields[i].value;
-                            RemoveEffect(currentShields[i].key, false);
+                            RemoveEffect(currentShields[i].key, false, this);
                             if (i < (currentShields.Count - 1))
                                 currentShields.RemoveAt(i);
                         }
@@ -1065,9 +1263,9 @@ public class CharacterState : MonoBehaviour
         }
         //
 
-        if (health <= 0 && !invulnerable)
+        if (health <= 0 && !invulnerable.value)
         {
-            if (canDie)
+            if (canDie.value)
             {
                 health = 0;
                 dead = true;
@@ -1082,8 +1280,10 @@ public class CharacterState : MonoBehaviour
                         {
                             effectsArray[i].onExpire.Invoke(this);
                             effectsArray[i].Remove();
-                            if (showDamagePopups)
+                            if (showDamagePopups || showTargetDamagePopups)
                                 ShowStatusEffectFlyText(effectsArray[i], " - ");
+                            if (showStatusPopups)
+                                ShowStatusEffectFlyTextWorldspace(effectsArray[i].data, effectsArray[i].stacks, " - ");
                         }
                         else if (!temp.ContainsKey(effectsArray[i].data.statusName))
                         {
@@ -1109,14 +1309,14 @@ public class CharacterState : MonoBehaviour
         //HealthBarUserInterface();
     }
 
-    public void AddShield(long value, string identifier, bool showPopup = false)
+    public void AddShield(long value, string identifier, CharacterState character, bool showPopup = false)
     {
         if (!currentShields.ContainsKey(identifier))
         {
             currentShields.Add(new Shield(identifier, value));
 
-            if (showDamagePopups && showPopup)
-                ShowDamageFlyText(new Damage(value, false, true, DamageType.magical, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal, Utilities.InsertSpaceBeforeCapitals(identifier)));
+            if ((showDamagePopups || showTargetDamagePopups) && showPopup)
+                ShowDamageFlyText(new Damage(value, false, true, DamageType.magical, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal, character, Utilities.InsertSpaceBeforeCapitals(identifier)));
         }
         else
         {
@@ -1244,6 +1444,83 @@ public class CharacterState : MonoBehaviour
         }
     }
 
+    public void AddMaxHealth(float value, string identifier)
+    {
+        if (!maxHealthModifiers.ContainsKey(identifier))
+        {
+            maxHealthModifiers.Add(identifier, value);
+        }
+        else
+        {
+            return;
+        }
+
+        RecalculateCurrentMaxHealth();
+    }
+
+    public void RemoveMaxHealth(string identifier)
+    {
+        if (maxHealthModifiers.ContainsKey(identifier))
+        {
+            maxHealthModifiers.Remove(identifier);
+        }
+        else
+        {
+            return;
+        }
+
+        RecalculateCurrentMaxHealth();
+    }
+
+    private void RecalculateCurrentMaxHealth()
+    {
+        float result = defaultMaxHealth;
+
+        List<float> a = new List<float>(maxHealthModifiers.Values.ToArray());
+
+        if (maxHealthModifiers.Count > 0)
+        {
+            a.Sort();
+            for (int i = 0; i < maxHealthModifiers.Count; i++)
+            {
+                result *= a[i];
+            }
+        }
+
+        currentMaxHealth = Mathf.RoundToInt(result);
+
+        if (health > currentMaxHealth)
+        {
+            health = currentMaxHealth;
+        }
+
+        if (healthBar != null)
+        {
+            healthBar.value = health;
+            healthBar.maxValue = currentMaxHealth;
+        }
+        if (healthBarParty != null)
+        {
+            healthBarParty.value = health;
+            healthBarParty.maxValue = currentMaxHealth;
+            if (shieldBarParty != null)
+            {
+                shieldBarParty.value = health + shield;
+                shieldBarParty.maxValue = currentMaxHealth;
+            }
+            if (overShieldBarParty != null)
+            {
+                overShieldBarParty.value = health + shield;
+                overShieldBarParty.minValue = currentMaxHealth;
+                overShieldBarParty.maxValue = currentMaxHealth + currentMaxHealth;
+            }
+        }
+
+        HealthBarUserInterface();
+    }
+    #endregion
+
+    #region Stats
     public void AddDamageReduction(float value, string identifier)
     {
         if (!damageReduction.ContainsKey(identifier))
@@ -1416,64 +1693,6 @@ public class CharacterState : MonoBehaviour
         }
 
         currentDamageOutputMultiplier = result;
-    }
-
-    public void AddEnmityGenerationModifier(float value, string identifier)
-    {
-        if (!canGainEnmity)
-            return;
-
-        if (!enmityGenerationModifiers.ContainsKey(identifier))
-        {
-            enmityGenerationModifiers.Add(identifier, value);
-        }
-        else
-        {
-            return;
-        }
-
-        RecalculateEnmityGenerationModifier();
-    }
-
-    public void RemoveEnmityGenerationModifier(string identifier)
-    {
-        if (!canGainEnmity)
-            return;
-
-        if (enmityGenerationModifiers.ContainsKey(identifier))
-        {
-            enmityGenerationModifiers.Remove(identifier);
-        }
-        else
-        {
-            return;
-        }
-
-        RecalculateEnmityGenerationModifier();
-    }
-
-    private void RecalculateEnmityGenerationModifier()
-    {
-        if (!canGainEnmity)
-        {
-            enmityGenerationModifier = 0f;
-            return;
-        }
-
-        float result = 1f;
-
-        List<float> mList = new List<float>(enmityGenerationModifiers.Values.ToArray());
-
-        if (enmityGenerationModifiers.Count > 0)
-        {
-            mList.Sort();
-            for (int i = 0; i < enmityGenerationModifiers.Count; i++)
-            {
-                result *= mList[i];
-            }
-        }
-
-        enmityGenerationModifier = result;
     }
 
     public void AddDamageModifier(float value, string identifier, bool poison)
@@ -2135,80 +2354,65 @@ public class CharacterState : MonoBehaviour
             }
         }
     }
+    #endregion
 
-    public void AddMaxHealth(float value, string identifier)
+    #region Enmity
+    public void AddEnmityGenerationModifier(float value, string identifier)
     {
-        if (!maxHealthModifiers.ContainsKey(identifier))
+        if (!canGainEnmity)
+            return;
+
+        if (!enmityGenerationModifiers.ContainsKey(identifier))
         {
-            maxHealthModifiers.Add(identifier, value);
+            enmityGenerationModifiers.Add(identifier, value);
         }
         else
         {
             return;
         }
 
-        RecalculateCurrentMaxHealth();
+        RecalculateEnmityGenerationModifier();
     }
 
-    public void RemoveMaxHealth(string identifier)
+    public void RemoveEnmityGenerationModifier(string identifier)
     {
-        if (maxHealthModifiers.ContainsKey(identifier))
+        if (!canGainEnmity)
+            return;
+
+        if (enmityGenerationModifiers.ContainsKey(identifier))
         {
-            maxHealthModifiers.Remove(identifier);
+            enmityGenerationModifiers.Remove(identifier);
         }
         else
         {
             return;
         }
 
-        RecalculateCurrentMaxHealth();
+        RecalculateEnmityGenerationModifier();
     }
 
-    private void RecalculateCurrentMaxHealth()
+    private void RecalculateEnmityGenerationModifier()
     {
-        float result = defaultMaxHealth;
-
-        List<float> a = new List<float>(maxHealthModifiers.Values.ToArray());
-
-        if (maxHealthModifiers.Count > 0)
+        if (!canGainEnmity)
         {
-            a.Sort();
-            for (int i = 0; i < maxHealthModifiers.Count; i++)
+            enmityGenerationModifier = 0f;
+            return;
+        }
+
+        float result = 1f;
+
+        List<float> mList = new List<float>(enmityGenerationModifiers.Values.ToArray());
+
+        if (enmityGenerationModifiers.Count > 0)
+        {
+            mList.Sort();
+            for (int i = 0; i < enmityGenerationModifiers.Count; i++)
             {
-                result *= a[i];
+                result *= mList[i];
             }
         }
 
-        currentMaxHealth = Mathf.RoundToInt(result);
-
-        if (health > currentMaxHealth)
-        {
-            health = currentMaxHealth;
-        }
-
-        if (healthBar != null)
-        {
-            healthBar.value = health;
-            healthBar.maxValue = currentMaxHealth;
-        }
-        if (healthBarParty != null)
-        {
-            healthBarParty.value = health;
-            healthBarParty.maxValue = currentMaxHealth;
-            if (shieldBarParty != null)
-            {
-                shieldBarParty.value = health + shield;
-                shieldBarParty.maxValue = currentMaxHealth;
-            }
-            if (overShieldBarParty != null)
-            {
-                overShieldBarParty.value = health + shield;
-                overShieldBarParty.minValue = currentMaxHealth;
-                overShieldBarParty.maxValue = currentMaxHealth + currentMaxHealth;
-            }
-        }
-
-        HealthBarUserInterface();
+        enmityGenerationModifier = result;
     }
 
     public void AddEnmity(long value, CharacterState character)
@@ -2321,13 +2525,15 @@ public class CharacterState : MonoBehaviour
         }
 #endif
     }
+    #endregion
 
-    public void AddEffect(StatusEffectData data, bool self = false, int tag = 0, int stacks = 0)
+    #region Status Effects
+    public void AddEffect(StatusEffectData data, CharacterState character, bool self = false, int tag = 0, int stacks = 0)
     {
-        AddEffect(data, null, self, tag, stacks);
+        AddEffect(data, null, character, self, tag, stacks);
     }
 
-    public void AddEffect(StatusEffectData data, Damage? damage, bool self = false, int tag = 0, int stacks = 0)
+    public void AddEffect(StatusEffectData data, Damage? damage, CharacterState character, bool self = false, int tag = 0, int stacks = 0)
     {
         if (data.statusEffect == null)
             return;
@@ -2336,6 +2542,9 @@ public class CharacterState : MonoBehaviour
             return;
 
         if (health <= 0 || dead)
+            return;
+
+        if (data.negative && invulnerable.value)
             return;
 
         string name = string.Empty;
@@ -2370,6 +2579,11 @@ public class CharacterState : MonoBehaviour
             refreshed = true;
         }
 
+        if (showStatusPopups && refreshed)
+        {
+            ShowStatusEffectFlyTextWorldspace(data, stacks + data.appliedStacks, " + ");
+        }
+
         if (refreshed)
             return;
 
@@ -2391,15 +2605,15 @@ public class CharacterState : MonoBehaviour
             effect.damage = new Damage((Damage)damage);
         }
 
-        AddEffect(effect, damage, self, tag, stacks);
+        AddEffect(effect, damage, character, self, tag, stacks);
     }
 
-    public void AddEffect(string name, bool self = false, int tag = 0, int stacks = 0)
+    public void AddEffect(string name, CharacterState character, bool self = false, int tag = 0, int stacks = 0)
     {
-        AddEffect(name, null, self, tag);
+        AddEffect(name, null, character, self, tag);
     }
 
-    public void AddEffect(string name, Damage? damage, bool self = false, int tag = 0, int stacks = 0)
+    public void AddEffect(string name, Damage? damage, CharacterState character, bool self = false, int tag = 0, int stacks = 0)
     {
         if (!gameObject.activeSelf)
             return;
@@ -2437,6 +2651,11 @@ public class CharacterState : MonoBehaviour
             refreshed = true;
         }
 
+        if (showStatusPopups && refreshed)
+        {
+            ShowStatusEffectFlyTextWorldspace(effects[name].data, stacks + effects[name].data.appliedStacks, " + ");
+        }
+
         if (refreshed)
             return;
 
@@ -2448,7 +2667,7 @@ public class CharacterState : MonoBehaviour
                 {
                     for (int k = 0; k < effectsArray.Length; k++)
                     {
-                        if (FightTimeline.Instance.allAvailableStatusEffects[i].incompatableStatusEffects.Contains(effectsArray[k].data))
+                        if (FightTimeline.Instance.allAvailableStatusEffects[i].incompatableStatusEffects.Contains(effectsArray[k].data) || (FightTimeline.Instance.allAvailableStatusEffects[i].negative && invulnerable.value))
                         {
                             return;
                         }
@@ -2462,17 +2681,17 @@ public class CharacterState : MonoBehaviour
                     effect.damage = new Damage((Damage)damage);
                 }
 
-                AddEffect(effect, damage, self, tag);
+                AddEffect(effect, damage, character, self, tag);
             }
         }
     }
 
-    public void AddEffect(StatusEffect effect, bool self = false, int tag = 0, int stacks = 0)
+    public void AddEffect(StatusEffect effect, CharacterState character, bool self = false, int tag = 0, int stacks = 0)
     {
-        AddEffect(effect, null, self, tag);
+        AddEffect(effect, null, character, self, tag);
     }
 
-    public void AddEffect(StatusEffect effect, Damage? damage, bool self = false, int tag = 0, int stacks = 0)
+    public void AddEffect(StatusEffect effect, Damage? damage, CharacterState character, bool self = false, int tag = 0, int stacks = 0)
     {
         //if (effect.data.name.Contains("Cleaned"))
         //    Debug.LogError("Cleaned detected");
@@ -2520,6 +2739,11 @@ public class CharacterState : MonoBehaviour
             refreshed = true;
         }
 
+        if (showStatusPopups)
+        {
+            ShowStatusEffectFlyTextWorldspace(effect.data, stacks + effect.data.appliedStacks, " + ");
+        }
+
         if (refreshed)
             return;
 
@@ -2534,12 +2758,13 @@ public class CharacterState : MonoBehaviour
             }
         }
 
-        if (showDamagePopups)
+        if (showDamagePopups || showTargetDamagePopups)
         {
-            ShowStatusEffectFlyText(effect, stacks + effect.data.appliedStacks, " + ");
+            ShowStatusEffectFlyText(effect, stacks + effect.data.appliedStacks, " + ", character);
         }
 
-        if (invulnerable)
+        // Only prevent negative effects
+        if (effect.data.negative && invulnerable.value)
         {
             return;
         }
@@ -2586,22 +2811,22 @@ public class CharacterState : MonoBehaviour
         {
             if (self)
             {
-                effect.Initialize(statusEffectNegativeIconParent, statusEffectIconParentParty, targetStatusEffectIconParent, ownStatusEffectColor);
+                effect.Initialize(this,statusEffectNegativeIconParent, statusEffectIconParentParty, targetStatusEffectIconParent, ownStatusEffectColor);
             }
             else
             {
-                effect.Initialize(statusEffectNegativeIconParent, statusEffectIconParentParty, targetStatusEffectIconParent, otherStatusEffectColor);
+                effect.Initialize(this, statusEffectNegativeIconParent, statusEffectIconParentParty, targetStatusEffectIconParent, otherStatusEffectColor);
             }
         }
         else
         {
             if (self)
             {
-                effect.Initialize(statusEffectPositiveIconParent, statusEffectIconParentParty, targetStatusEffectIconParent, ownStatusEffectColor);
+                effect.Initialize(this, statusEffectPositiveIconParent, statusEffectIconParentParty, targetStatusEffectIconParent, ownStatusEffectColor);
             }
             else
             {
-                effect.Initialize(statusEffectPositiveIconParent, statusEffectIconParentParty, targetStatusEffectIconParent, otherStatusEffectColor);
+                effect.Initialize(this, statusEffectPositiveIconParent, statusEffectIconParentParty, targetStatusEffectIconParent, otherStatusEffectColor);
             }
         }
         effect.onApplication.Invoke(this);
@@ -2610,17 +2835,17 @@ public class CharacterState : MonoBehaviour
             partyList.UpdatePrioritySorting();
     }
 
-    public void RemoveEffect(StatusEffectData data, bool expired, int tag = 0, int stacks = 0)
+    public void RemoveEffect(StatusEffectData data, bool expired, CharacterState character, int tag = 0, int stacks = 0)
     {
-        RemoveEffect(data.statusName, expired, tag, stacks);
+        RemoveEffect(data.statusName, expired, character, tag, stacks);
     }
 
-    public void RemoveEffect(StatusEffect effect, bool expired, int tag = 0, int stacks = 0)
+    public void RemoveEffect(StatusEffect effect, bool expired, CharacterState character, int tag = 0, int stacks = 0)
     {
-        RemoveEffect(effect.data.statusName, expired, tag, stacks);
+        RemoveEffect(effect.data.statusName, expired, character, tag, stacks);
     }
 
-    public void RemoveEffect(string name, bool expired, int tag = 0, int stacks = 0)
+    public void RemoveEffect(string name, bool expired, CharacterState character, int tag = 0, int stacks = 0)
     {
         if (!gameObject.activeSelf)
             return;
@@ -2633,7 +2858,7 @@ public class CharacterState : MonoBehaviour
         {
             for (int i = 0; i < (tag * -1); i++)
             {
-                RemoveEffect(name, expired, i + 1, stacks);
+                RemoveEffect(name, expired, character, i + 1, stacks);
             }
             return;
         }
@@ -2643,17 +2868,27 @@ public class CharacterState : MonoBehaviour
 
         StatusEffect temp = effects[name];
 
-        if (showDamagePopups && (effects[name].stacks <= 1 || effects[name].stacks <= stacks))
+        if ((showDamagePopups || showTargetDamagePopups) && (effects[name].stacks <= 1 || effects[name].stacks <= stacks))
         {
-            ShowStatusEffectFlyText(temp, " - ");
+            ShowStatusEffectFlyText(temp, " - ", character);
         }
-        else
+        else if (showDamagePopups || showTargetDamagePopups)
         {
-            ShowStatusEffectFlyText(temp, 1, " - ");
+            ShowStatusEffectFlyText(temp, 1, " - ", character);
+        }
+        if (showStatusPopups && (effects[name].stacks <= 1 || effects[name].stacks <= stacks))
+        {
+            ShowStatusEffectFlyTextWorldspace(temp.data, temp.stacks, " - ");
+        }
+        else if (showStatusPopups)
+        {
+            ShowStatusEffectFlyTextWorldspace(temp.data, 1, " - ");
         }
 
-        if (invulnerable)
-            return;
+        // Not sure why being invulnerable would prevent buffs and debuffs from clearing?
+        // Was causing issues with Titan Gaols, so for now it's gone at least.
+        //if (invulnerable.value)
+        //    return;
 
         if (effects[name].stacks <= 1 || effects[name].stacks <= stacks)
         {
@@ -2692,8 +2927,9 @@ public class CharacterState : MonoBehaviour
 
                     if (effects.ContainsKey(m_name))
                     {
-                        Debug.Log($"Removed sub status {m_name} with a index {i} of {temp.data.refreshStatusEffects.Count} total from {temp.data.statusName}");
-                        RemoveEffect(m_name, expired, tag, stacks);
+                        if (FightTimeline.Instance.log)
+                            Debug.Log($"Removed sub status {m_name} with a index {i} of {temp.data.refreshStatusEffects.Count} total from {temp.data.statusName}");
+                        RemoveEffect(m_name, expired, character, tag, stacks);
                     }
                 }
             }
@@ -2727,33 +2963,65 @@ public class CharacterState : MonoBehaviour
         return effects.ContainsKey(name);
     }
 
+    public bool HasAnyVersionOfEffect(string name)
+    {
+        if (effectsArray != null && effectsArray.Length > 0)
+        {
+            for (int i = 0; i < effectsArray.Length; i++)
+            {
+                if (effectsArray[i].data.statusName == name)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false; 
+    }
+
     public StatusEffect[] GetEffects()
     {
         return effectsArray;
     }
+    #endregion
 
-    public void ShowStatusEffectFlyText(StatusEffect statusEffect, int stacks, string prefix)
+    #region FlyTexts
+    public void ShowStatusEffectFlyText(StatusEffect statusEffect, int stacks, string prefix, CharacterState character = null)
     {
-        ShowStatusEffectFlyText(statusEffect.data, stacks, prefix);
+        ShowStatusEffectFlyText(statusEffect.data, stacks, prefix, character);
     }
 
-    public void ShowStatusEffectFlyText(StatusEffect statusEffect, string prefix)
+    public void ShowStatusEffectFlyText(StatusEffect statusEffect, string prefix, CharacterState character = null)
     {
-        ShowStatusEffectFlyText(statusEffect.data, statusEffect.stacks, prefix);
+        ShowStatusEffectFlyText(statusEffect.data, statusEffect.stacks, prefix, character);
     }
 
-    public void ShowStatusEffectFlyText(StatusEffectData data, int stacks, string prefix)
+    public void ShowStatusEffectFlyText(StatusEffectData data, int stacks, string prefix, CharacterState character = null)
     {
-        if (data.hidden) 
+        ShowStatusEffectFlyTextInternal(data, stacks, prefix, true, character);
+    }
+
+    public void ShowStatusEffectFlyTextWorldspace(StatusEffectData data, int stacks, string prefix, CharacterState character = null)
+    {
+        ShowStatusEffectFlyTextInternal(data, stacks, prefix, false, character);
+    }
+
+    private void ShowStatusEffectFlyTextInternal(StatusEffectData data, int stacks, string prefix, bool feed, CharacterState character)
+    {
+        if (data.hidden)
             return;
 
         // Hard coded the Short (@s) and Long (@l) that are used to distinguish between few of the same debuffs,
         // also the '#' character which is used for non capitalised letter sequences. This needs a better implementation.
-        string result = $"{prefix}{Utilities.InsertSpaceBeforeCapitals(data.statusName).Replace("@s","").Replace("@l","").Replace("#"," ").Replace("@gd", "").Replace("@gs", "")}";
+        string result = $"{prefix}{Utilities.InsertSpaceBeforeCapitals(data.statusName).Replace("@s", "").Replace("@l", "").Replace("#", " ").Replace("@gd", "").Replace("@gs", "")}";
 
         Color color = neutralPopupColor;
 
-        if (prefix.Contains('+'))
+        if (!feed)
+        {
+            color = statusPopupColor;
+        }
+        else if (prefix.Contains('+'))
         {
             if (data.negative)
             {
@@ -2765,11 +3033,14 @@ public class CharacterState : MonoBehaviour
             }
         }
 
-        if (invulnerable)
+        if (invulnerable.value && data.negative && prefix.Contains('+'))
         {
             result = $"{result} Has No Effect";
-            color = neutralPopupColor;
+            if (feed)
+                color = neutralPopupColor;
         }
+
+        //Debug.Log($"data '{data.name}', stacks '{stacks}', prefix '{prefix}', feed '{feed}', character '{character?.characterName} ({character?.gameObject.name})'");
 
         Sprite icon;
         int iconIndex = stacks - 1;
@@ -2782,7 +3053,10 @@ public class CharacterState : MonoBehaviour
             icon = data.hudElement.transform.GetChild(0).GetComponent<Image>().sprite;
         }
 
-        ShowFlyText(new FlyText(result, color, icon, string.Empty));
+        if (feed)
+            ShowFlyText(new FlyText(result, color, icon, string.Empty, character));
+        else
+            ShowFlyTextWorldspace(new FlyText(result, color, icon, string.Empty, character));
     }
 
     public void ShowDamageFlyText(Damage damage)
@@ -2797,27 +3071,29 @@ public class CharacterState : MonoBehaviour
             finalDamage = new Damage(damage, (long)Math.Round(damage.value * currentDamageReduction));
         }
 
+        string finalValue = string.Empty;
+
+        if (finalDamage.value < 0 || finalDamage.value > 0)
+        {
+            finalValue = Mathf.Abs(finalDamage.value).ToString();
+        }
+        else
+        {
+            finalValue = finalDamage.value.ToString();
+        }
+
+        if (invulnerable.value && finalDamage.negative)
+        {
+            finalValue = "DODGE";
+        }
+
         if (showElementalAspect && finalDamage.elementalAspect != ElementalAspect.none && finalDamage.elementalAspect != ElementalAspect.unaspected)
         {
-            if (finalDamage.value < 0 || finalDamage.value > 0)
-            {
-                result = $"<sprite=\"damage_types\" name=\"{(int)finalDamage.type}\"><sprite=\"damage_types\" name=\"{finalDamage.elementalAspect.ToString("g")}\">{Mathf.Abs(finalDamage.value)}";
-            }
-            else
-            {
-                result = $"<sprite=\"damage_types\" name=\"{(int)finalDamage.type}\"><sprite=\"damage_types\" name=\"{finalDamage.elementalAspect.ToString("g")}\">{finalDamage.value}";
-            }
+            result = $"<sprite=\"damage_types\" name=\"{(int)finalDamage.type}\"><sprite=\"damage_types\" name=\"{finalDamage.elementalAspect.ToString("g")}\">{finalValue}";
         } 
         else
         {
-            if (finalDamage.value < 0 || finalDamage.value > 0)
-            {
-                result = $"<sprite=\"damage_types\" name=\"{(int)finalDamage.type}\">{Mathf.Abs(finalDamage.value)}";
-            }
-            else
-            {
-                result = $"<sprite=\"damage_types\" name=\"{(int)finalDamage.type}\">{finalDamage.value}";
-            }
+            result = $"<sprite=\"damage_types\" name=\"{(int)finalDamage.type}\">{finalValue}";
         }
 
         string source = finalDamage.name;
@@ -2830,26 +3106,18 @@ public class CharacterState : MonoBehaviour
         }
         else if (!finalDamage.negative)
         {
-            if (finalDamage.value < 0 || finalDamage.value > 0)
-            {
-                result = $"<sprite=\"damage_types\" name=\"0\">{Mathf.Abs(finalDamage.value)}";
-            }
-            else
-            {
-                result = $"<sprite=\"damage_types\" name=\"0\">{finalDamage.value}";
-            }
+            result = $"<sprite=\"damage_types\" name=\"0\">{finalValue}";
         }
 
-        if (invulnerable)
+        if (invulnerable.value && finalDamage.negative)
         {
-            result = "Invulnerable";
             color = neutralPopupColor;
         }
 
-        ShowFlyText(new FlyText(result, color, null, source));
+        ShowFlyText(new FlyText(result, color, null, source, finalDamage.source));
     }
 
-    public void ShowDamageFlyText(int value, string source)
+    /*public void ShowDamageFlyText(int value, string source)
     {
         string result = Mathf.Abs(value).ToString();
 
@@ -2861,14 +3129,14 @@ public class CharacterState : MonoBehaviour
         }
 
         ShowFlyText(new FlyText(result, color, null, source));
-    }
+    } */
 
     public void ShowFlyText(FlyText text)
     {
         if (!gameObject.activeSelf)
             return;
 
-        if (damagePopupPrefab == null || damagePopupParent == null)
+        if ((damagePopupPrefab == null && targetDamagePopupPrefab == null) || (damagePopupParent == null && targetDamagePopupParent == null))
             return;
 
         if (string.IsNullOrEmpty(text.content))
@@ -2878,33 +3146,103 @@ public class CharacterState : MonoBehaviour
 
         if (popupCoroutine == null)
         {
-            popupCoroutine = StartCoroutine(ProcessFlyTextQueue());
+            popupCoroutine = StartCoroutine(IE_ProcessFlyTextQueue());
         }
     }
 
-    private IEnumerator ProcessFlyTextQueue()
+    public void ShowFlyTextWorldspace(FlyText text)
+    {
+        if (!gameObject.activeSelf)
+            return;
+
+        if (statusPopupPrefab == null || statusPopupParent == null)
+            return;
+
+        if (string.IsNullOrEmpty(text.content))
+            return;
+
+        statusPopupTexts.Enqueue(text);
+
+        if (statusPopupCoroutine == null)
+        {
+            statusPopupCoroutine = StartCoroutine(IE_ProcessWorldspaceFlyTextQueue());
+        }
+    }
+
+    private IEnumerator IE_ProcessFlyTextQueue()
     {
         while (popupTexts.Count > 0)
         {
             FlyText text = popupTexts.Dequeue();
 
-            GameObject go = Instantiate(damagePopupPrefab, damagePopupParent);
+            if (damagePopupParent != null && damagePopupPrefab != null && showDamagePopups)
+            {
+                SetupPopupTextObject(text, damagePopupPrefab, damagePopupParent);
+            }
+            if (targetDamagePopupParent != null && targetDamagePopupPrefab != null && showTargetDamagePopups)
+            {
+                text = new FlyText(text, targetDamagePopupColor);
+                if (showOnlyFromCharacter != null && text.character != null)
+                {
+                    if (text.character == showOnlyFromCharacter)
+                    {
+                        SetupPopupTextObject(text, targetDamagePopupPrefab, targetDamagePopupParent);
+                    }
+                } 
+                else if (showOnlyFromCharacter == null)
+                {
+                    SetupPopupTextObject(text, targetDamagePopupPrefab, targetDamagePopupParent);
+                }
+            }
+
+            yield return new WaitForSeconds(popupTextDelay);
+        }
+
+        popupCoroutine = null;
+    }
+
+    private void SetupPopupTextObject(FlyText text, GameObject prefab, Transform parent)
+    {
+        GameObject go = Instantiate(prefab, parent);
+        TextMeshProUGUI tm = go.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
+        tm.text = text.content;
+        tm.color = text.color;
+
+        TextMeshProUGUI sTm = go.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
+
+        if (!string.IsNullOrEmpty(text.source))
+        {
+            sTm.gameObject.SetActive(true);
+            sTm.text = text.source;
+            sTm.color = text.color;
+        }
+        else
+        {
+            sTm.gameObject.SetActive(false);
+        }
+
+        Image image = go.transform.GetComponentInChildren<Image>();
+        if (text.icon != null)
+        {
+            image.sprite = text.icon;
+            image.gameObject.SetActive(true);
+        }
+        else
+        {
+            image.gameObject.SetActive(false);
+        }
+    }
+
+    private IEnumerator IE_ProcessWorldspaceFlyTextQueue()
+    {
+        while (statusPopupTexts.Count > 0)
+        {
+            FlyText text = statusPopupTexts.Dequeue();
+
+            GameObject go = Instantiate(statusPopupPrefab, statusPopupParent);
             TextMeshProUGUI tm = go.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
             tm.text = text.content;
             tm.color = text.color;
-
-            TextMeshProUGUI sTm = go.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
-
-            if (!string.IsNullOrEmpty(text.source))
-            {
-                sTm.gameObject.SetActive(true);
-                sTm.text = text.source;
-                sTm.color = text.color;
-            }
-            else
-            {
-                sTm.gameObject.SetActive(false);
-            }
 
             Image image = go.transform.GetComponentInChildren<Image>();
             if (text.icon != null)
@@ -2917,52 +3255,20 @@ public class CharacterState : MonoBehaviour
                 image.gameObject.SetActive(false);
             }
 
-            yield return new WaitForSeconds(popupTextDelay);
+            if (go.TryGetComponent(out HudElement e))
+            {
+                e.characterState = this;
+                e.Initialize();
+            }
+
+            yield return new WaitForSeconds(statusPopupTextDelay);
         }
 
-        popupCoroutine = null;
+        statusPopupCoroutine = null;
     }
+    #endregion
 
-    public void UpdateCharacterName()
-    {
-        if (!gameObject.activeSelf)
-            return;
-
-        /*if (characterNameTextGroup != null)
-        {
-            if (!hideNameplate && showCharacterName)
-            {
-                characterNameTextGroup.alpha = 1f;
-            }
-            else
-            {
-                characterNameTextGroup.alpha = 0f;
-            }
-        }*/
-        if (nameplateCharacterNameTextGroup != null)
-        {
-            if (showCharacterName)
-            {
-                nameplateCharacterNameTextGroup.alpha = 1f;
-            }
-            else
-            {
-                nameplateCharacterNameTextGroup.alpha = 0f;
-            }
-        }
-        if (characterNameTextGroupParty != null)
-        {
-            if (!hidePartyName && showPartyCharacterName)
-            {
-                characterNameTextGroupParty.alpha = 1f;
-            }
-            else
-            {
-                characterNameTextGroupParty.alpha = 0f;
-            }
-        }
-    }
-
+    #region Data Structs
     [System.Serializable]
     public struct FlyText
     {
@@ -2970,13 +3276,24 @@ public class CharacterState : MonoBehaviour
         public Color color;
         public Sprite icon;
         public string source;
+        public CharacterState character;
 
-        public FlyText(string content, Color color, Sprite icon, string source)
+        public FlyText(string content, Color color, Sprite icon, string source, CharacterState character)
         {
             this.content = content;
             this.color = color;
             this.icon = icon;
             this.source = source;
+            this.character = character;
+        }
+
+        public FlyText(FlyText copy, Color color)
+        {
+            content = copy.content;
+            this.color = color;
+            icon = copy.icon;
+            source = copy.source;
+            character = copy.character;
         }
     }
 
@@ -2992,4 +3309,5 @@ public class CharacterState : MonoBehaviour
             this.value = value;
         }
     }
+    #endregion
 }

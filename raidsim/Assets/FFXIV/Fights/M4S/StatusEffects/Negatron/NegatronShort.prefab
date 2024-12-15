@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8292741570310134728}
   - component: {fileID: 1942980130171814413}
+  - component: {fileID: -8181505522144535446}
   m_Layer: 3
   m_Name: NegatronShort
   m_TagString: Untagged
@@ -58,9 +59,34 @@ MonoBehaviour:
     elementalAspect: 1
     physicalAspect: 0
     applicationType: 2
+    source: {fileID: 0}
   onApplication:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: -8181505522144535446}
+        m_TargetAssemblyTypeName: StateTrigger, Assembly-CSharp
+        m_MethodName: Initialize
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: -8181505522144535446}
+        m_TargetAssemblyTypeName: StateTrigger, Assembly-CSharp
+        m_MethodName: ToggleTarget
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
   onTick:
     m_PersistentCalls:
       m_Calls: []
@@ -69,14 +95,65 @@ MonoBehaviour:
       m_Calls: []
   onExpire:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: -8181505522144535446}
+        m_TargetAssemblyTypeName: StateTrigger, Assembly-CSharp
+        m_MethodName: ToggleTarget
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onCleanse:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: -8181505522144535446}
+        m_TargetAssemblyTypeName: StateTrigger, Assembly-CSharp
+        m_MethodName: ToggleTarget
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onReduce:
+    m_PersistentCalls:
+      m_Calls: []
+  onMaxStacks:
     m_PersistentCalls:
       m_Calls: []
   cleanedBy: []
   tags: 0
   esunable: 0
   killsOnExpire: 1
+--- !u!114 &-8181505522144535446
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2193113438782787470}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4e614f0643db6c4682d46d7fc562556, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  state: 0
+  source: {fileID: 0}
+  target: {fileID: 0}
+  targetName: VisualEffects/Negatron_Effect
+  targetParent: _
+  targetIndex: 2
+  useStatusEffectTagAsTargetIndex: 0
+  localParent: 1
+  toggleObject: 0
+  toggleCharacterState: 0
+  toggleCharacterEffect: 1
+  log: 0

@@ -5,6 +5,7 @@ using NaughtyAttributes;
 #endif
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -20,9 +21,14 @@ public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     private int originalPriority;
     public bool hidden = false;
     private bool wasHidden;
+    public bool omitSorting = false;
     [Header("Data")]
     public CharacterState characterState;
     public bool destroyIfMissing = false;
+    public bool initializeOnStart = false;
+    public bool isPartyListElement = false;
+    public GameObject untargetableOverlay;
+    public Button targetButton;
     [Header("Input")]
     public bool blocksAllInput = false;
     public bool blocksPosInput = false;
@@ -43,8 +49,12 @@ public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public List<Outline> outlines = new List<Outline>();
     public List<Color> defaultColors = new List<Color>();
     public List<Color> alternativeColors = new List<Color>();
+    [Header("Events")]
+    public UnityEvent onInitialize;
 
 #if UNITY_EDITOR
+    [Header("Editor")]
+    public int dummy;
     private bool currentColor = false;
 
     [Button("Swap Color")]
@@ -61,6 +71,21 @@ public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         canvasGroup = GetComponent<CanvasGroup>();
         priorityHandler = GetComponentInParent<HudElementPriority>();
 
+        if (transform.parent != null && transform.parent.TryGetComponent(out PartyList pList))
+        {
+            pList.UpdatePartyList();
+            isPartyListElement = true;
+            if (untargetableOverlay == null || targetButton == null)
+            {
+                untargetableOverlay = transform.GetChild(transform.childCount - 1).gameObject;
+                targetButton = transform.GetComponentInChildren<Button>();
+                if (targetButton.gameObject.name == untargetableOverlay.gameObject.name)
+                {
+                    untargetableOverlay = null;
+                }
+            }
+        }
+
         if (input == null)
         {
             if (blocksAllInput || blocksPosInput || blocksRotInput || blocksScrInput)
@@ -73,32 +98,78 @@ public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         originalPriority = priority;
     }
 
+    void Start()
+    {
+        if (initializeOnStart)
+        {
+            Initialize();
+        }
+    }
+
     void Update()
     {
+        if (isPartyListElement)
+        {
+            if (Utilities.RateLimiter(13))
+            {
+                if (characterState != null)
+                {
+                    if (characterState.untargetable.value)
+                    {
+                        if (untargetableOverlay != null)
+                            untargetableOverlay.SetActive(true);
+                        if (targetButton != null)
+                            targetButton.interactable = false;
+                    }
+                    else
+                    {
+                        if (untargetableOverlay != null)
+                            untargetableOverlay.SetActive(false);
+                        if (targetButton != null)
+                            targetButton.interactable = true;
+                    }
+                }
+            }
+        }
+
         if (wasHidden != hidden)
         {
             if (hidden)
             {
-                priority = 512;
-                canvasGroup.alpha = 0f;
-                canvasGroup.interactable = false;
-                canvasGroup.blocksRaycasts = false;
+                if (!omitSorting)
+                {
+                    priority = 512;
+                    canvasGroup.alpha = 0f;
+                    canvasGroup.interactable = false;
+                    canvasGroup.blocksRaycasts = false;
 
-                if (priorityHandler != null)
-                    priorityHandler.UpdateSorting();
+                    if (priorityHandler != null)
+                        priorityHandler.UpdateSorting();
+                }
+                else
+                {
+                    canvasGroup.alpha = 0f;
+                }
             }
             else
             {
-                priority = originalPriority;
+                if (!omitSorting)
+                {
+                    priority = originalPriority;
 
-                if (fadeOutTime < 0f)
+                    if (fadeOutTime < 0f)
+                        canvasGroup.alpha = 1f;
+
+                    canvasGroup.interactable = true;
+                    canvasGroup.blocksRaycasts = true;
+
+                    if (priorityHandler != null)
+                        priorityHandler.UpdateSorting();
+                }
+                else
+                {
                     canvasGroup.alpha = 1f;
-
-                canvasGroup.interactable = true;
-                canvasGroup.blocksRaycasts = true;
-
-                if (priorityHandler != null)
-                    priorityHandler.UpdateSorting();
+                }
             }
             wasHidden = hidden;
         }
@@ -140,6 +211,11 @@ public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         {
             rectTransform.anchoredPosition += movement * Time.deltaTime;
         }
+    }
+
+    public void Initialize()
+    {
+        onInitialize.Invoke();
     }
 
     public void ChangeColors(bool alt)

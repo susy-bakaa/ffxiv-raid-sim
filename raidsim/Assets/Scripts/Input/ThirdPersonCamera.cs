@@ -27,7 +27,10 @@ public class ThirdPersonCamera : MonoBehaviour
 
     private Vector2 cursorPosition;
     private bool cursorPositionSet;
-
+#if UNITY_STANDALONE_LINUX
+    private float heldTime;
+    private float heldTimeThreshold = 0.2f;
+#endif
     void Awake()
     {
         if (freecam == null)
@@ -36,6 +39,9 @@ public class ThirdPersonCamera : MonoBehaviour
 
     void Update()
     {
+        if (target == null)
+            return;
+
         if (!freecam.active)
         {
             if (enableRotation)
@@ -49,6 +55,9 @@ public class ThirdPersonCamera : MonoBehaviour
 
     void HandleCameraRotation()
     {
+        if (target == null)
+            return;
+
         if (Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(0))
         {
 #if PLATFORM_STANDALONE_WIN
@@ -63,8 +72,8 @@ public class ThirdPersonCamera : MonoBehaviour
                 cursorPosition = CursorControl.GetPosition();
                 cursorPositionSet = true;
             }
-#elif UNITY_STANDALONE_LINUX
-            Cursor.lockState = CursorLockMode.Locked;
+//#elif UNITY_STANDALONE_LINUX
+//            Cursor.lockState = CursorLockMode.Locked;
 #else
             Cursor.lockState = CursorLockMode.Confined;
 #endif
@@ -85,11 +94,25 @@ public class ThirdPersonCamera : MonoBehaviour
                 CursorControl.SetPosition(cursorPosition);
                 cursorPositionSet = false;
             }
+#elif UNITY_STANDALONE_LINUX
+            heldTime = 0;
 #endif
             Cursor.visible = true;
         }
         if (Input.GetMouseButton(1) || Input.GetMouseButton(0))
         {
+#if UNITY_STANDALONE_LINUX
+            
+            if (heldTime >= heldTimeThreshold)
+            {
+                heldTime = heldTimeThreshold;
+                Cursor.lockState = CursorLockMode.Locked;
+            }
+            else
+            {
+                heldTime += Time.unscaledDeltaTime;
+            }
+#endif
             yaw += Input.GetAxis("Mouse X") * mouseSensitivity;
             pitch -= Input.GetAxis("Mouse Y") * mouseSensitivity;
             pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
@@ -107,6 +130,9 @@ public class ThirdPersonCamera : MonoBehaviour
 
     void UpdateCameraPosition()
     {
+        if (target == null)
+            return;
+
         transform.position = target.position + new Vector3(0f, 2f, 0f) - transform.forward * dstFromTarget;
     }
 

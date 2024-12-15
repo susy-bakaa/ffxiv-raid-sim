@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99b696446f1f2e246b4a8ecc8cc05a7a, type: 3}
+  m_Name: AetheriallyCharged
+  m_EditorClassIdentifier: 
+  statusName: Aetherially Charged
+  statusDesc: Charged with aether.
+  negative: 0
+  unique: 1
+  infinite: 1
+  toggle: 0
+  rollsCooldown: 1
+  hidden: 0
+  lostOnDeath: 1
+  unaffectedByTimeScale: 0
+  instantCasts: 0
+  reducesCastTimes: 0
+  length: 9999
+  maxLength: 9999
+  appliedStacks: 1
+  maxStacks: 5
+  statusEffect: {fileID: 2952943525002301481, guid: 0967e0ad70ec7ca4692bd661513c1f36, type: 3}
+  hudElement: {fileID: 2782830212546906010, guid: b73174986e97b2f4981a76775dacee45, type: 3}
+  icons:
+  - {fileID: 21300000, guid: 58fa8b40ad5a56148bc99c14f9945bc7, type: 3}
+  - {fileID: 21300000, guid: 58fa8b40ad5a56148bc99c14f9945bc7, type: 3}
+  - {fileID: 21300000, guid: b0af5a0a9ecaa964f83e5b7047a365ae, type: 3}
+  - {fileID: 21300000, guid: 6bc22f6c9510b224d8c6a5aff72e9b3d, type: 3}
+  - {fileID: 21300000, guid: 6bc22f6c9510b224d8c6a5aff72e9b3d, type: 3}
+  incompatableStatusEffects:
+  - {fileID: 11400000, guid: 07264ad086d85124bb61d4665065192f, type: 2}
+  refreshStatusEffects: []
+  assignedRoles: 

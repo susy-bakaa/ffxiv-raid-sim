@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static ActionController;
-using static GlobalStructs;
+using static GlobalData;
 using static PartyList;
 using static StatusEffectData;
 

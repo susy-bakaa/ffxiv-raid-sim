@@ -14,12 +14,18 @@ public class DebuffMechanic : FightMechanic
 
     public override void TriggerMechanic(ActionInfo actionInfo)
     {
-        base.TriggerMechanic(actionInfo);
+        if (!CanTrigger(actionInfo))
+            return;
 
         if (applyToTarget)
         {
             if (actionInfo.target != null)
             {
+                if (log)
+                {
+                    Debug.Log($"[DebuffMechanic] '{effect.data.statusName}' applied to '{actionInfo.target.characterName}'");
+                }
+
                 if (!cleans)
                 {
                     for (int i = 0; i < effect.data.incompatableStatusEffects.Count; i++)
@@ -29,11 +35,11 @@ public class DebuffMechanic : FightMechanic
                             return;
                         }
                     }
-                    actionInfo.target.AddEffect(effect.data, false, effect.tag, effect.stacks);
+                    actionInfo.target.AddEffect(effect.data, actionInfo.target, false, effect.tag, effect.stacks);
                 }
                 else
                 {
-                    actionInfo.target.RemoveEffect(effect.data, false, effect.tag, effect.stacks);
+                    actionInfo.target.RemoveEffect(effect.data, false, actionInfo.target, effect.tag, effect.stacks);
 
                     if (allowSubStatuses)
                     {
@@ -43,7 +49,7 @@ public class DebuffMechanic : FightMechanic
                             {
                                 if (actionInfo.target.HasEffect(effect.data.refreshStatusEffects[i].statusName))
                                 {
-                                    actionInfo.target.RemoveEffect(effect.data.refreshStatusEffects[i], false, effect.tag, effect.stacks);
+                                    actionInfo.target.RemoveEffect(effect.data.refreshStatusEffects[i], false, actionInfo.target, effect.tag, effect.stacks);
                                 }
                             }
                         }
@@ -64,11 +70,11 @@ public class DebuffMechanic : FightMechanic
                             return;
                         }
                     }
-                    actionInfo.source.AddEffect(effect.data, false, effect.tag, effect.stacks);
+                    actionInfo.source.AddEffect(effect.data, actionInfo.source, false, effect.tag, effect.stacks);
                 }
                 else
                 {
-                    actionInfo.source.RemoveEffect(effect.data, false, effect.tag, effect.stacks);
+                    actionInfo.source.RemoveEffect(effect.data, false, actionInfo.source, effect.tag, effect.stacks);
 
                     if (allowSubStatuses)
                     {
@@ -78,7 +84,7 @@ public class DebuffMechanic : FightMechanic
                             {
                                 if (actionInfo.source.HasEffect(effect.data.refreshStatusEffects[i].statusName))
                                 {
-                                    actionInfo.source.RemoveEffect(effect.data.refreshStatusEffects[i], false, effect.tag, effect.stacks);
+                                    actionInfo.source.RemoveEffect(effect.data.refreshStatusEffects[i], false, actionInfo.source, effect.tag, effect.stacks);
                                 }
                             }
                         }

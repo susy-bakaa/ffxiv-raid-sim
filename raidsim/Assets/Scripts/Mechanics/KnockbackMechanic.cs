@@ -17,11 +17,12 @@ public class KnockbackMechanic : FightMechanic
 
     public override void TriggerMechanic(ActionInfo actionInfo)
     {
-        base.TriggerMechanic(actionInfo);
+        if (!CanTrigger(actionInfo))
+            return;
 
         if (actionInfo.source != null)
         {
-            if ((!actionInfo.source.knockbackResistant && canBeResisted) || !canBeResisted)
+            if ((!actionInfo.source.knockbackResistant.value && canBeResisted) || !canBeResisted || !actionInfo.source.bound.value)
             {
                 // Calculate knockback direction
                 Vector3 knockbackDirection = Vector3.zero;
@@ -52,7 +53,7 @@ public class KnockbackMechanic : FightMechanic
                 } 
                 else if (actionInfo.source.aiController != null)
                 {
-                    // Implement
+                    actionInfo.source.aiController.Knockback(knockbackForce, duration);
                 }
                 else if (actionInfo.source.bossController != null)
                 {

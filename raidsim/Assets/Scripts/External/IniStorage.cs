@@ -388,8 +388,22 @@ public class IniStorage
 
     public bool Load(string path)
     {
+#if UNITY_WEBPLAYER
+        if (SaveHandler.Instance != null)
+        {
+            string[] lines = SaveHandler.Instance.Load();
+            if (lines != null && lines.Length > 0)
+            {
+                Load(lines);
+                return true;
+            }
+            return false;
+        }
+        return false;
+#else
         Path = System.IO.Path.GetFullPath(path);
         return Load();
+#endif
     }
 
     public bool Load()
@@ -485,6 +499,14 @@ public class IniStorage
 
     public bool Save(bool comments, bool split)
     {
+#if UNITY_WEBPLAYER
+        if (SaveHandler.Instance != null)
+        {
+            SaveHandler.Instance.Write(ToLines(comments, split));
+            return true;
+        }
+        return false;
+#else
         try
         {
             File.WriteAllLines(Path, ToLines(comments, split));
@@ -494,6 +516,7 @@ public class IniStorage
         {
             return false;
         }
+#endif
     }
 
     public override string ToString() => String.Join('\n', ToLines());

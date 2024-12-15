@@ -5,7 +5,7 @@ using UnityEngine.AI;
 using UnityEngine.Events;
 using UnityEngine.TextCore.Text;
 using static ActionController;
-using static GlobalStructs;
+using static GlobalData;
 using static PartyList;
 using static StatusEffectData;
 
@@ -27,7 +27,8 @@ public class RaidwideDebuffStatsMechanic : FightMechanic
 
     public override void TriggerMechanic(ActionInfo actionInfo)
     {
-        base.TriggerMechanic(actionInfo);
+        if (!CanTrigger(actionInfo))
+            return;
 
         foreach (PartyMember member in party.members)
         {

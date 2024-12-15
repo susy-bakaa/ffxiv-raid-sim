@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static ActionController;
-using static GlobalStructs;
-using static GlobalStructs.Damage;
+using static GlobalData;
+using static GlobalData.Damage;
 
 public class SpawnDamageTriggerMechanic : FightMechanic
 {
@@ -24,7 +24,8 @@ public class SpawnDamageTriggerMechanic : FightMechanic
 
     public override void TriggerMechanic(ActionInfo actionInfo)
     {
-        base.TriggerMechanic(actionInfo);
+        if (!CanTrigger(actionInfo))
+            return;
 
         if (autoAssignOwner && owner == null && actionInfo.source != null)
             owner = actionInfo.source;
@@ -96,22 +97,25 @@ public class SpawnDamageTriggerMechanic : FightMechanic
                 damageTrigger.Initialize();
             }
 
-            if (usePlayerHealth)
+            if (actionInfo.action != null)
             {
-                damageTrigger.isAShield = actionInfo.action.data.isShield;
-                damageTrigger.self = actionInfo.sourceIsPlayer;
-                damageTrigger.damage = new Damage(Mathf.RoundToInt(damageMultiplier * actionInfo.source.health), false, true, DamageType.unique, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal, "White Wind");
-            }
-            else if (useActionDamage)
-            {
-                damageTrigger.isAShield = actionInfo.action.data.isShield;
-                damageTrigger.self = actionInfo.sourceIsPlayer;
-                damageTrigger.damage = new Damage(actionInfo.action.data.damage, Mathf.RoundToInt(actionInfo.action.data.damage.value * damageMultiplier));
-
-                if (increaseEnmity)
+                if (usePlayerHealth)
                 {
-                    damageTrigger.increaseEnmity = true;
-                    damageTrigger.topEnmity = actionInfo.action.data.topEnmity;
+                    damageTrigger.isAShield = actionInfo.action.data.isShield;
+                    damageTrigger.self = actionInfo.sourceIsPlayer;
+                    damageTrigger.damage = new Damage(Mathf.RoundToInt(damageMultiplier * actionInfo.source.health), false, true, DamageType.unique, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal, actionInfo.source, "White Wind");
+                }
+                else if (useActionDamage)
+                {
+                    damageTrigger.isAShield = actionInfo.action.data.isShield;
+                    damageTrigger.self = actionInfo.sourceIsPlayer;
+                    damageTrigger.damage = new Damage(actionInfo.action.data.damage, Mathf.RoundToInt(actionInfo.action.data.damage.value * damageMultiplier));
+
+                    if (increaseEnmity)
+                    {
+                        damageTrigger.increaseEnmity = true;
+                        damageTrigger.topEnmity = actionInfo.action.data.topEnmity;
+                    }
                 }
             }
         }

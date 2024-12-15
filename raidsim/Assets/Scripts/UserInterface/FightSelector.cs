@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -14,21 +15,43 @@ public class FightSelector : MonoBehaviour
     public List<string> scenes = new List<string>();
     public string currentScene;
 
+    private Coroutine ieLoadSceneDelayed;
+
     void Start()
     {
         dropdown = GetComponentInChildren<TMP_Dropdown>();
         //Select(0);
 
+        if (Application.isEditor)
+            return;
+
 #if UNITY_STANDALONE_WIN
-        //Get the window handle.
-        var windowPtr = FindWindow(null, "raidsim");
-        //Set the title text using the window handle.
-        SetWindowText(windowPtr, $"raidsim - {GetFightName()}");
+        try
+        {
+            var windowPtr = FindWindow(null, GlobalVariables.lastWindowName);
+            if (windowPtr == IntPtr.Zero)
+            {
+                Debug.LogError("Window handle not found. Skipping SetWindowText.");
+            }
+            else
+            {
+                string windowName = $"raidsim - {GetFightName()}";
+                SetWindowText(windowPtr, windowName);
+                GlobalVariables.lastWindowName = windowName;
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Error setting window title: {ex}");
+        }
 #endif
     }
 
     void Update()
     {
+        if (FightTimeline.Instance == null)
+            return;
+
         dropdown.interactable = !FightTimeline.Instance.playing;
         loadButton.interactable = !FightTimeline.Instance.playing;
     }
@@ -45,12 +68,18 @@ public class FightSelector : MonoBehaviour
 
     public void Reload(string scene)
     {
-        Utilities.FunctionTimer.Create(this, () => OnLoad(scene), loadDelay);
+        if (ieLoadSceneDelayed == null)
+        {
+            ieLoadSceneDelayed = StartCoroutine(IE_LoadSceneDelayed(scene, new WaitForSeconds(loadDelay)));
+        }
     }
 
     public void Load()
     {
-        Utilities.FunctionTimer.Create(this, () => OnLoad(currentScene), loadDelay);
+        if (ieLoadSceneDelayed == null)
+        {
+            ieLoadSceneDelayed = StartCoroutine(IE_LoadSceneDelayed(currentScene, new WaitForSeconds(loadDelay)));
+        }
     }
 
     private void OnLoad(string scene)
@@ -62,5 +91,12 @@ public class FightSelector : MonoBehaviour
     private string GetFightName()
     {
         return FightTimeline.Instance.timelineName;
+    }
+
+    private IEnumerator IE_LoadSceneDelayed(string scene, WaitForSeconds wait)
+    {
+        yield return wait;
+        ieLoadSceneDelayed = null;
+        OnLoad(scene);
     }
 }

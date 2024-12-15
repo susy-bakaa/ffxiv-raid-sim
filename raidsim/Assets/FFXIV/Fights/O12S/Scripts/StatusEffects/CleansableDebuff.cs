@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static GlobalStructs;
+using static GlobalData;
 
 public class CleansableDebuff : StatusEffect
 {
@@ -25,7 +25,7 @@ public class CleansableDebuff : StatusEffect
         {
             if (state.HasEffect(cleanedBy[i].statusName))
             {
-                state.RemoveEffect(data, false, tags, stacks);
+                state.RemoveEffect(data, false, state, tags, stacks);
                 return;
             }
         }

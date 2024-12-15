@@ -33,7 +33,15 @@ public class RaidwideDebuffsMechanic : FightMechanic
 
     public override void TriggerMechanic(ActionInfo actionInfo)
     {
-        base.TriggerMechanic(actionInfo);
+        if (!CanTrigger(actionInfo))
+            return;
+
+        CharacterState from = null;
+
+        if (actionInfo.source != null)
+            from = actionInfo.source;
+        else if (actionInfo.target != null)
+            from = actionInfo.target;
 
         statusEffects = new List<StatusEffectInfo>(effects); // Copy the effects list
         partyMembers = new List<CharacterState>(party.GetActiveMembers()); // Copy the party members list
@@ -46,7 +54,17 @@ public class RaidwideDebuffsMechanic : FightMechanic
             {
                 statusEffects.Remove(playerEffect);
                 partyMembers.Remove(player);
-                player.AddEffect(playerEffect.data, false, playerEffect.tag);
+                player.AddEffect(playerEffect.data, from, false, playerEffect.tag);
+            }
+        } 
+        else if (player != null && !string.IsNullOrEmpty(playerEffect.name))
+        {
+            // Handle the case where this effect means that the player is exluded from getting an effect.
+            if (playerEffect.name.Contains('!'))
+            {
+                if (log)
+                    Debug.Log($"[FightMechanic.RaidwideDebuffsMechanic ({gameObject.name})] Player ({player.characterName}) successfully excluded from mechanic!");
+                partyMembers.Remove(player);
             }
         }
 
@@ -59,15 +77,21 @@ public class RaidwideDebuffsMechanic : FightMechanic
                 // Find a suitable party member for the effect
                 CharacterState target = FindSuitableTarget(statusEffects[i], partyMembers);
 
+                if (log)
+                    Debug.Log($"FindSuitableTarget: '{target?.characterName}'");
+
                 // If no suitable target found, apply to a random member if allowed
                 if (target == null && fallbackToRandom)
                     target = partyMembers[Random.Range(0, partyMembers.Count)];
+
+                if (log)
+                    Debug.Log($"fallbackToRandomTarget: '{target?.characterName}'");
 
                 // Make sure target is available
                 if (target != null)
                 {
                     // Apply the effect to the target
-                    target.AddEffect(statusEffects[i].data, false, statusEffects[i].tag);
+                    target.AddEffect(statusEffects[i].data, from, false, statusEffects[i].tag, statusEffects[i].stacks);
 
                     // Remove the effect and player from the possible options
                     partyMembers.Remove(target);
@@ -84,7 +108,7 @@ public class RaidwideDebuffsMechanic : FightMechanic
                 {
                     if (partyMembers[m].HasEffect(statusEffects[i].data.statusName, statusEffects[i].tag))
                     {
-                        partyMembers[m].RemoveEffect(statusEffects[i].data, false, statusEffects[i].tag);
+                        partyMembers[m].RemoveEffect(statusEffects[i].data, false, from, statusEffects[i].tag);
                     }
                 }
             }

@@ -20,7 +20,11 @@ public class SongNAudio : MonoBehaviour
 #pragma warning restore CS0618 // Type or member is obsolete
         yield return www;
 
+#if UNITY_WEBPLAYER
+        aud.Stop();
+#else
         aud.clip = NAudioPlayer.FromMp3Data(www.bytes);
         aud.Play();
+#endif
     }
 }

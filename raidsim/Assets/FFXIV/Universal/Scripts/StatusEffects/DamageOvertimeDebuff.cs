@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static GlobalStructs;
+using static GlobalData;
 
 public class DamageOvertimeDebuff : StatusEffect
 {

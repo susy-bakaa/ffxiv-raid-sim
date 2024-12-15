@@ -24,16 +24,16 @@ RenderSettings:
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
-  m_AmbientMode: 0
-  m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_AmbientMode: 3
+  m_SubtractiveShadowColor: {r: 0.4, g: 0.43333334, b: 0.5, a: 1}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 49bb7994b04f1424ebb51cb588617ed0, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
   m_HaloTexture: {fileID: 0}
   m_SpotCookie: {fileID: 10001, guid: 0000000000000000e000000000000000, type: 0}
   m_DefaultReflectionMode: 0
-  m_DefaultReflectionResolution: 128
+  m_DefaultReflectionResolution: 16
   m_ReflectionBounces: 1
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
@@ -176,8 +176,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   priority: 1
   hidden: 0
+  omitSorting: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
+  initializeOnStart: 0
+  isPartyListElement: 0
+  untargetableOverlay: {fileID: 0}
+  targetButton: {fileID: 0}
   blocksAllInput: 1
   blocksPosInput: 0
   blocksRotInput: 0
@@ -193,6 +198,10 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  dummy: 0
 --- !u!114 &15106632
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -697,6 +706,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b87495e6e8bc5249a85617d1c7453b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  simSceneName: demo
 --- !u!1 &93686671
 GameObject:
   m_ObjectHideFlags: 0
@@ -1094,9 +1104,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Couple shortcuts:\nYou can open the hud layout editor with <color=yellow>F3</color>,
-    open this menu again with <color=yellow>F4</color> and quickly reload a timeline
-    with <color=yellow>F5</color>. \n\nOh also, the movement type option doesn't
+  m_text: "Couple shortcuts:\nYou can open the hud layout editor with <color=yellow>F2</color>,
+    open this menu again with <color=yellow>F3</color> and quickly reload a timeline
+    with <color=yellow>F4</color>. \n\nOh also, the movement type option doesn't
     work yet lol."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1771,8 +1781,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   priority: 1
   hidden: 0
+  omitSorting: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
+  initializeOnStart: 0
+  isPartyListElement: 0
+  untargetableOverlay: {fileID: 0}
+  targetButton: {fileID: 0}
   blocksAllInput: 1
   blocksPosInput: 0
   blocksRotInput: 0
@@ -1788,6 +1803,10 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  dummy: 0
 --- !u!114 &567916575
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1958,8 +1977,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   priority: 1
   hidden: 0
+  omitSorting: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
+  initializeOnStart: 0
+  isPartyListElement: 0
+  untargetableOverlay: {fileID: 0}
+  targetButton: {fileID: 0}
   blocksAllInput: 1
   blocksPosInput: 0
   blocksRotInput: 0
@@ -1975,6 +1999,10 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  dummy: 0
 --- !u!114 &592315239
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2105,8 +2133,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   priority: 1
   hidden: 0
+  omitSorting: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
+  initializeOnStart: 0
+  isPartyListElement: 0
+  untargetableOverlay: {fileID: 0}
+  targetButton: {fileID: 0}
   blocksAllInput: 1
   blocksPosInput: 0
   blocksRotInput: 0
@@ -2122,6 +2155,10 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  dummy: 0
 --- !u!114 &615097177
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2393,8 +2430,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   priority: 1
   hidden: 0
+  omitSorting: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
+  initializeOnStart: 0
+  isPartyListElement: 0
+  untargetableOverlay: {fileID: 0}
+  targetButton: {fileID: 0}
   blocksAllInput: 1
   blocksPosInput: 0
   blocksRotInput: 0
@@ -2410,6 +2452,10 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  dummy: 0
 --- !u!114 &840370794
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2528,7 +2574,7 @@ GameObject:
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
   m_Layer: 0
-  m_Name: Main Camera
+  m_Name: MainCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3191,8 +3237,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   priority: 1
   hidden: 0
+  omitSorting: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
+  initializeOnStart: 0
+  isPartyListElement: 0
+  untargetableOverlay: {fileID: 0}
+  targetButton: {fileID: 0}
   blocksAllInput: 1
   blocksPosInput: 0
   blocksRotInput: 0
@@ -3208,6 +3259,10 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  dummy: 0
 --- !u!114 &1216609438
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3992,8 +4047,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   priority: 1
   hidden: 0
+  omitSorting: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
+  initializeOnStart: 0
+  isPartyListElement: 0
+  untargetableOverlay: {fileID: 0}
+  targetButton: {fileID: 0}
   blocksAllInput: 1
   blocksPosInput: 0
   blocksRotInput: 0
@@ -4009,6 +4069,10 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  dummy: 0
 --- !u!114 &1342763165
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5477,7 +5541,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Version: 0.3.1'
+  m_text: 'Version: 0.4.0'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5606,8 +5670,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   priority: 1
   hidden: 0
+  omitSorting: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
+  initializeOnStart: 0
+  isPartyListElement: 0
+  untargetableOverlay: {fileID: 0}
+  targetButton: {fileID: 0}
   blocksAllInput: 1
   blocksPosInput: 0
   blocksRotInput: 0
@@ -5623,6 +5692,10 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  dummy: 0
 --- !u!114 &1962820789
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6266,6 +6339,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8799823081314190267, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8938043496843643778, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_Size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8938043496843643778, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_Value
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9154979646552116387, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}

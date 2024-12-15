@@ -9,17 +9,24 @@ public class FadeOnStart : MonoBehaviour
     public float delay = 1f;
     public float duration = 1f;
 
+    private int id = 0;
+    private Coroutine ieFadeDelay;
+
     void Awake()
     {
         group = GetComponent<CanvasGroup>();
         group.alpha = 1f;
+        id = Random.Range(1000, 10000);
     }
 
     void Start()
     {
         if (delay > 0f)
         {
-            Utilities.FunctionTimer.Create(this, () => group.LeanAlpha(0f, duration), delay);
+            if (ieFadeDelay == null && gameObject.scene.isLoaded && gameObject.activeSelf)
+            {
+                ieFadeDelay = StartCoroutine(IE_FadeDelay(new WaitForSecondsRealtime(delay), false));
+            }
         }
         else
         {
@@ -31,11 +38,28 @@ public class FadeOnStart : MonoBehaviour
     {
         if (delay > 0f)
         {
-            Utilities.FunctionTimer.Create(this, () => group.LeanAlpha(1f, duration), delay, $"{gameObject.name}_fadeToBlack_delay", true, true);
+            if (ieFadeDelay == null && gameObject.scene.isLoaded && gameObject.activeSelf)
+            {
+                ieFadeDelay = StartCoroutine(IE_FadeDelay(new WaitForSecondsRealtime(delay), true));
+            }
         }
         else
         {
             group.LeanAlpha(1f, duration);
         }
+    }
+
+    private IEnumerator IE_FadeDelay(WaitForSecondsRealtime wait, bool fadeOut)
+    {
+        yield return wait;
+        if (fadeOut)
+        {
+            group.LeanAlpha(1f, duration);
+        }
+        else
+        {
+            group.LeanAlpha(0f, duration);
+        }
+        ieFadeDelay = null;
     }
 }

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 public class TargetController : MonoBehaviour
 {
-    public enum TargetType { nearest, sideToSide, enmity }
+    public enum TargetType { nearest, sideToSide, enmity, random }
 
     Camera m_camera;
     PauseMenu m_pauseMenu;
@@ -18,6 +18,7 @@ public class TargetController : MonoBehaviour
     ActionController m_actionController;
     TargetController m_targetController;
 
+    public bool log = false;
     public TargetNode self;
     public PartyList targetList;
     public TargetNode currentTarget;
@@ -40,8 +41,10 @@ public class TargetController : MonoBehaviour
     public bool onlyAliveTargets = false;
     public bool onlyIfSomeoneHasEnmity = false;
     public bool enableAutoAttacksOnDoubleMouseRaycast = false;
+    public bool ignoreTargetingRestrictions = false;
 
     [Header("Events")]
+    public bool eventsEnabled = true;
     public UnityEvent<TargetNode> onTarget;
 
     [Header("User Interface")]
@@ -65,6 +68,7 @@ public class TargetController : MonoBehaviour
     public List<TargetColor> targetColors;
     public List<HudElementColor> targetColoredHudElements;
     public List<HudElementColor> targetsTargetColoredHudElements;
+    public Transform targetDamagePopupParent;
 
     private float mouseDownTime;
     private bool targetColorsUpdated;
@@ -122,6 +126,14 @@ public class TargetController : MonoBehaviour
 
     void Update()
     {
+        if (!ignoreTargetingRestrictions)
+        {
+            if (Utilities.RateLimiter(13))
+            {
+                UpdateTarget();
+            }
+        }
+
         if (isPlayer && canMouseRaycast)
             HandleMouseClick();
         //HandleTabTargeting();
@@ -147,11 +159,13 @@ public class TargetController : MonoBehaviour
     {
         if (currentTarget != null)
         {
-            onTarget.Invoke(currentTarget);
+            if (eventsEnabled)
+                onTarget.Invoke(currentTarget);
         }
         else
         {
-            onTarget.Invoke(null);
+            if (eventsEnabled)
+                onTarget.Invoke(null);
         }
     }
 
@@ -200,21 +214,26 @@ public class TargetController : MonoBehaviour
         }
     }
 
-    /*void HandleTabTargeting()
+    public void UpdateTarget()
     {
-        if (Input.GetKeyDown(cancelKey))
+        if (currentTarget != null)
         {
-            SetTarget(null);
+            if (currentTarget.TryGetCharacterState(out CharacterState state))
+            {
+                if (state.untargetable.value || state.disabled)
+                {
+                    SetTarget();
+                }
+                else if (self.TryGetCharacterState(out CharacterState characterState))
+                {
+                    if (characterState.disabled)
+                    {
+                        SetTarget();
+                    }
+                }
+            }
         }
-        else if (Input.GetKeyDown(targetKey))
-        {
-            CycleTarget();
-        } 
-        else if (Input.GetKeyDown(selfTargetKey))
-        {
-            SetTarget(selfTarget);
-        }
-    }*/
+    }
 
     public void SetTarget()
     {
@@ -237,12 +256,15 @@ public class TargetController : MonoBehaviour
 
     public void SetTarget(TargetNode target)
     {
-        if (target != null && target.TryGetCharacterState(out CharacterState state))
+        if (!ignoreTargetingRestrictions)
         {
-            if (state.untargetable)
+            if (target != null && target.TryGetCharacterState(out CharacterState state))
             {
-                //Debug.Log($"Set target cancelled {state.characterName} is untargetable");
-                return;
+                if (state.untargetable.value)
+                {
+                    //Debug.Log($"Set target cancelled {state.characterName} is untargetable");
+                    return;
+                }
             }
         }
 
@@ -264,6 +286,8 @@ public class TargetController : MonoBehaviour
                             m_characterState.targetStatusEffectIconGroup.alpha = 0f;
                     }
                 }
+                if (m_characterState.showTargetDamagePopups && targetDamagePopupParent != null)
+                    m_characterState.targetDamagePopupParent = null;
             }
             currentTarget.UpdateUserInterface(0f, fadeDuration);
         }
@@ -274,16 +298,20 @@ public class TargetController : MonoBehaviour
         }
 
         currentTarget = target;
-        onTarget.Invoke(currentTarget);
+        if (eventsEnabled)
+            onTarget.Invoke(currentTarget);
 
-        /*if (target != null)
+        if (log)
         {
-            Debug.Log($"SetTarget to {target} {target.transform.parent.name}");
+            if (target != null)
+            {
+                Debug.Log($"[{gameObject.name}] SetTarget to {target} {target.transform.parent.name}");
+            }
+            else
+            {
+                Debug.Log($"[{gameObject.name}] SetTarget to null");
+            }
         }
-        else
-        {
-            Debug.Log($"SetTarget to null");
-        }*/
 
         targetColorsUpdated = false;
         targetsTargetColorsUpdated = false;
@@ -293,7 +321,7 @@ public class TargetController : MonoBehaviour
         wasMouseClick = false;
 
         // Additional logic for targeting (e.g., UI updates) can go here.
-        if (currentTarget != null && isPlayer)
+        if (currentTarget != null && isPlayer && eventsEnabled)
             currentTarget.onTarget.Invoke();
     }
 
@@ -306,6 +334,10 @@ public class TargetController : MonoBehaviour
         else if (targetType == TargetType.nearest)
         {
             availableTargets = FindAllTargetableNodes(true, false);
+        }
+        else if (targetType == TargetType.random && isAi && targetList != null)
+        {
+            availableTargets = FindAllTargetableNodes(false, false);
         }
 
         if (availableTargets.Count == 0)
@@ -321,6 +353,26 @@ public class TargetController : MonoBehaviour
             int nextIndex = (currentIndex + 1) % availableTargets.Count;
             SetTarget(availableTargets[nextIndex]);
         }
+    }
+
+    public void SetRandomTargetFromList()
+    {
+        if (targetList == null)
+            return;
+
+        List<CharacterState> targets = targetList.GetActiveMembers();
+        List<TargetNode> nodes = new List<TargetNode>();
+        foreach (CharacterState target in targets)
+        {
+            if (target.TryGetComponent(out TargetController targetController))
+            {
+                if (targetController.self != null)
+                    nodes.Add(targetController.self);
+            }
+        }
+        nodes.Shuffle();
+
+        SetTarget(nodes.GetRandomItem());
     }
 
     public void Target()
@@ -346,6 +398,10 @@ public class TargetController : MonoBehaviour
         else if (targetType == TargetType.nearest)
         {
             availableTargets = FindAllTargetableNodes(true, false);
+        }
+        else if (targetType == TargetType.random && isAi && targetList != null)
+        {
+            availableTargets = FindAllTargetableNodes(false, false);
         }
 
         if (availableTargets.Count == 0)
@@ -457,13 +513,36 @@ public class TargetController : MonoBehaviour
                         }
                     }
 
-                    Debug.Log($"node {targetableNodes[i].gameObject.name}");
+                    //Debug.Log($"node {targetableNodes[i].gameObject.name}");
                 }
             }
 
             // Sort targets based on distance
             targetableNodes.Sort((a, b) => Vector3.Distance(transform.position, a.transform.position)
                                             .CompareTo(Vector3.Distance(transform.position, b.transform.position)));
+        }
+        else
+        {
+            // Filter available targets based on if we only want ones from a specified target list.
+            if (isAi && targetList != null)
+            {
+                for (int i = 0; i < targetableNodes.Count; i++)
+                {
+                    if (targetableNodes[i].TryGetCharacterState(out CharacterState result))
+                    {
+                        if (!targetList.HasCharacterState(result))
+                        {
+                            targetableNodes.RemoveAt(i);
+                            i--;
+                        }
+                    }
+
+                    //Debug.Log($"node {targetableNodes[i].gameObject.name}");
+                }
+            }
+
+            // Sort targets randomly
+            targetableNodes.Shuffle();
         }
 
         return targetableNodes;
@@ -472,6 +551,16 @@ public class TargetController : MonoBehaviour
     public void SetAutoTargeting(bool state)
     {
         autoTarget = state;
+    }
+
+    public void SetOnlyAliveTargeting(bool state)
+    {
+        onlyAliveTargets = state;
+    }
+
+    public void SetEventStatus(bool state)
+    {
+        eventsEnabled = state;
     }
 
     void UpdateUserInterface()
@@ -523,11 +612,11 @@ public class TargetController : MonoBehaviour
 
                     if (showTargetLevel)
                     {
-                        targetName.text = $"Lv{m_characterState.characterLevel} {letter}{m_characterState.characterName}";
+                        targetName.text = $"Lv{m_characterState.characterLevel} {letter}{m_characterState.GetCharacterName()}";
                     }
                     else
                     {
-                        targetName.text = $"{letter}{m_characterState.characterName}";
+                        targetName.text = $"{letter}{m_characterState.GetCharacterName()}";
                     }
                 }
                 targetHealth.maxValue = m_characterState.currentMaxHealth;
@@ -575,11 +664,11 @@ public class TargetController : MonoBehaviour
 
                     }
                 }
-                /*}
-                else
+                
+                if (m_characterState.showTargetDamagePopups && targetDamagePopupParent != null)
                 {
-                    targetHealthPercentage.text = m_characterState.health.ToString();
-                }*/
+                    m_characterState.targetDamagePopupParent = targetDamagePopupParent;
+                }
             }
             else
             {
@@ -748,11 +837,11 @@ public class TargetController : MonoBehaviour
 
                             if (showTargetLevel)
                             {
-                                targetsTargetName.text = $"Lv{ttState.characterLevel} {ttState.characterName}{letter}";
+                                targetsTargetName.text = $"Lv{ttState.characterLevel} {ttState.GetCharacterName()}{letter}";
                             }
                             else
                             {
-                                targetsTargetName.text = $"{ttState.characterName}{letter}";
+                                targetsTargetName.text = $"{ttState.GetCharacterName()}{letter}";
                             }
                         }
                     }
