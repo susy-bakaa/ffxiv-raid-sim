@@ -12,6 +12,7 @@ public class DisableInBuild : MonoBehaviour
     public bool disableForWebGL = true;
     public bool disableForWinStandalone = false;
     public bool disableForLinuxStandalone = false;
+    public bool toggleGameObject = false;
 
     private void Awake()
     {
@@ -28,7 +29,7 @@ public class DisableInBuild : MonoBehaviour
                 toggle.interactable = false;
             else if (dropdown != null)
                 dropdown.interactable = false;
-            else
+            if (toggleGameObject)
                 gameObject.SetActive(false);
         }
 #endif
@@ -41,7 +42,7 @@ public class DisableInBuild : MonoBehaviour
                 toggle.interactable = false;
             else if (dropdown != null)
                 dropdown.interactable = false;
-            else
+            if (toggleGameObject)
                 gameObject.SetActive(false);
         }
 #endif
@@ -54,7 +55,7 @@ public class DisableInBuild : MonoBehaviour
                 toggle.interactable = false;
             else if (dropdown != null)
                 dropdown.interactable = false;
-            else
+            if (toggleGameObject)
                 gameObject.SetActive(false);
         }
 #endif

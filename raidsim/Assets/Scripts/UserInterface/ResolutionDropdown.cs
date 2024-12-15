@@ -7,6 +7,7 @@ using UnityEngine.Events;
 [RequireComponent(typeof(TMP_Dropdown))]
 public class ResolutionDropdown : MonoBehaviour
 {
+#pragma warning disable 0414
     private TMP_Dropdown resolutionDropdown;
     [SerializeField] private GameObject arrowStandard;
     [SerializeField] private GameObject arrowWhenExpanded;
@@ -31,9 +32,12 @@ public class ResolutionDropdown : MonoBehaviour
     public UnityEvent<Vector2> onStart;
 
     IniStorage ini;
-
+#pragma warning restore 0414
     void Awake()
     {
+#if UNITY_WEBPLAYER
+        return;
+#else
         savedValueX = 0;
         savedValueY = 0;
         ini = new IniStorage(GlobalVariables.configPath);
@@ -82,15 +86,23 @@ public class ResolutionDropdown : MonoBehaviour
         resolutionDropdown.value = currentResolutionIndex;
         resolutionDropdown.RefreshShownValue();
         SetResolution(currentResolutionIndex, Screen.fullScreen);
+#endif
     }
 
     void Start()
     {
+#if UNITY_WEBPLAYER
+        return;
+#else
         Utilities.FunctionTimer.Create(this, () => OnStart(), Random.Range(1f, 1.25f), $"{group}_{key}_resolution_onstart_delay", true, true);
+#endif
     }
 
     void Update()
     {
+#if UNITY_WEBPLAYER
+        return;
+#else
         if (arrowStandard == null || arrowWhenExpanded == null)
             return;
 
@@ -104,10 +116,14 @@ public class ResolutionDropdown : MonoBehaviour
             arrowWhenExpanded.SetActive(false);
             arrowStandard.SetActive(true);
         }
+#endif
     }
 
     public void SetResolution(int resolutionIndex, bool fullscreen)
     {
+#if UNITY_WEBPLAYER
+        return;
+#else
         currentResolutionIndex = resolutionIndex;
 
         Resolution resolution = filteredResolutions[resolutionIndex];
@@ -126,10 +142,14 @@ public class ResolutionDropdown : MonoBehaviour
 
         resolutionDropdown.SetValueWithoutNotify(currentResolutionIndex);
         resolutionDropdown.RefreshShownValue();
+#endif
     }
 
     public void SetResolutionWithoutNotify(int resolutionIndex, bool fullscreen)
     {
+#if UNITY_WEBPLAYER
+        return;
+#else
         currentResolutionIndex = resolutionIndex;
 
         Resolution resolution = filteredResolutions[resolutionIndex];
@@ -148,10 +168,14 @@ public class ResolutionDropdown : MonoBehaviour
 
         resolutionDropdown.SetValueWithoutNotify(currentResolutionIndex);
         resolutionDropdown.RefreshShownValue();
+#endif
     }
 
     private void OnStart()
     {
+#if UNITY_WEBPLAYER
+        return;
+#else
         if (ini.Contains(group, $"i{keyX}") && ini.Contains(group, $"i{keyY}"))
         {
             savedValueX = ini.GetInt(group, $"i{keyX}");
@@ -171,10 +195,14 @@ public class ResolutionDropdown : MonoBehaviour
             resolutionDropdown.onValueChanged.Invoke(currentResolutionIndex);
             onStart.Invoke(currentResolution);
         }
+#endif
     }
 
     public void SaveValue(int value)
     {
+#if UNITY_WEBPLAYER
+        return;
+#else
         ini.Load(GlobalVariables.configPath);
 
         savedValueX = filteredResolutions[value].width;
@@ -183,5 +211,6 @@ public class ResolutionDropdown : MonoBehaviour
         ini.Set(group, $"i{keyY}", savedValueY);
 
         Utilities.FunctionTimer.Create(this, () => ini.Save(), 0.5f, $"{group}_{key}_dropdown_savevalue_delay", true, false);
+#endif
     }
 }

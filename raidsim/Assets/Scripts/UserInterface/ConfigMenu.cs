@@ -132,14 +132,22 @@ public class ConfigMenu : MonoBehaviour
 
     public void ChangeFullscreenMode(bool value)
     {
+#if UNITY_WEBPLAYER
+        return;
+#else
         configSaved = false;
         newFullscreen = value;
+#endif
     }
 
     public void ChangeResolution(Int32 resolutionIndex)
     {
+#if UNITY_WEBPLAYER
+        return;
+#else
         configSaved = false;
         newResolution = resolutionIndex;
+#endif
     }
 
     public void ApplySettings()
@@ -157,6 +165,9 @@ public class ConfigMenu : MonoBehaviour
         legacy = newLegacy;
         if (playerController != null)
             playerController.legacyMovement = newLegacy;
+#if UNITY_WEBPLAYER
+        configSaved = true;
+#else
         fullscreen = newFullscreen;
         Screen.fullScreen = fullscreen;
         if (Screen.fullScreen)
@@ -165,16 +176,8 @@ public class ConfigMenu : MonoBehaviour
             Screen.fullScreenMode = FullScreenMode.Windowed;
         resolution = newResolution;
         resolutionDropdown.SetResolution(resolution, Screen.fullScreen);
-/*#if UNITY_EDITOR
-        // Get the GameView EditorWindow
-        var gameView = GetGameView();
-
-        if (gameView != null)
-        {
-            gameView.maximized = fullscreen;
-        }
-#endif*/
         configSaved = true;
+#endif
     }
 
     public void CloseSettings()
@@ -196,11 +199,16 @@ public class ConfigMenu : MonoBehaviour
         scaleSliderSync.Slider.value = newScale;
         scaleSliderSync.Sync(0);
         newLegacy = true;
-        newFullscreen = true;
-        newResolution = 0;
         toggleMovement.toggles[0].SetIsOnWithoutNotify(true);
         toggleMovement.toggles[1].SetIsOnWithoutNotify(false);
+#if UNITY_WEBPLAYER
         ApplySettings();
+        return;
+#else
+        newFullscreen = true;
+        newResolution = 0;
+        ApplySettings();
+#endif
     }
 
     public void CancelSettings()
@@ -212,11 +220,16 @@ public class ConfigMenu : MonoBehaviour
         Debug.Log($"newLegacy {newLegacy} legacy {legacy}");
         toggleMovement.toggles[0].SetIsOnWithoutNotify(newLegacy);
         toggleMovement.toggles[1].SetIsOnWithoutNotify(!newLegacy);
+#if UNITY_WEBPLAYER
+        ApplySettings();
+        return;
+#else
         newFullscreen = fullscreen;
         fullscreenToggle.SetIsOnWithoutNotify(newFullscreen);
         newResolution = resolution;
         resolutionDropdown.SetResolutionWithoutNotify(newResolution, newFullscreen);
         ApplySettings();
+#endif
     }
 
 #if UNITY_EDITOR

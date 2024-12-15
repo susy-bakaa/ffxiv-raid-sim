@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+#if UNITY_WEBPLAYER
+using System.Runtime.InteropServices;
+#endif
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -12,6 +15,8 @@ public class MainMenu : MonoBehaviour
 
 #if UNITY_WEBPLAYER
     public const string webplayerQuitURL = "https://susy-bakaa.github.io/tools.html";
+    [DllImport("__Internal")]
+    private static extern void closewindow();
 #endif
     Coroutine ie_exitApp;
 
@@ -62,6 +67,8 @@ public class MainMenu : MonoBehaviour
         UnityEditor.EditorApplication.isPlaying = false;
 #elif UNITY_WEBPLAYER
         Application.OpenURL(webplayerQuitURL);
+        Application.Quit();
+        closewindow();
 #else
         Application.Quit();
 #endif
