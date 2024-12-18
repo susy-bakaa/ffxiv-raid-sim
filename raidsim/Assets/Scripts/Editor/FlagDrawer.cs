@@ -23,10 +23,10 @@ public class FlagDrawer : PropertyDrawer
         string foldoutLabel = property.isExpanded ? label.text : $"{label.text} - {flagState}";
 
         // Repaint the Inspector to keep the value updated
-        if (Event.current.type == EventType.Repaint)
-        {
-            HandleUtility.Repaint();
-        }
+        //if (Event.current.type == EventType.Repaint)
+        //{
+        //    HandleUtility.Repaint();
+        //}
 
         // Calculate the foldout rectangle
         Rect foldoutRect = new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight);
