@@ -19,6 +19,9 @@ A singleplayer raid and fight mechanic simulator with bots, made in the Unity ga
 - The Weapon's Refrain (Ultimate) (UWU)
 	- Phase 3 (Titan)
 		- Gaols ([LPDU](https://www.youtube.com/watch?v=PwEVH50b-rg))
+- Futures Rewritten (Ultimate) (FRU)
+	- Phase 2 (Usurper of Frost)
+		- Diamond Dust ([Early LPDU](https://raidplan.io/plan/NzZWtqr5SbDehlgb))
 
 # In development fights
 
