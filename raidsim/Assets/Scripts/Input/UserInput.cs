@@ -29,6 +29,8 @@ public class UserInput : MonoBehaviour
             for (int i = 0; i < keys.Count; i++)
             {
                 KeyBind.Keys.Add(keys[i].name, keys[i].bind);
+                if (keys[i].action != null)
+                    keys[i].action.currentKeybind = keys[i].bind;
             }
         }
     }
@@ -63,6 +65,9 @@ public class UserInput : MonoBehaviour
         if (targetController != null)
             targetController.canMouseRaycast = targetRaycastInputEnabled;
 
+        if (!inputEnabled)
+            return;
+
         for (int i = 0;i < keys.Count; i++)
         {
             //Debug.Log($"KeyBind {keys[i].bind} state {BindedKey(keys[i].bind)}");
@@ -73,11 +78,17 @@ public class UserInput : MonoBehaviour
                 if (keys[i].statusEffect != null && characterState != null)
                     characterState.AddEffect(keys[i].statusEffect, characterState);
                 keys[i].onInput.Invoke();
+            } 
+            else if (keys[i].bind != null && BindedKeyHeld(keys[i].bind))
+            {
+                keys[i].onHeld.Invoke();
             }
         }
 
         if (BindedKey(KeyBind.Keys["ResetKey"]))
         {
+            if (FightTimeline.Instance != null)
+                FightTimeline.Instance.ResetPauseState();
             SceneManager.LoadScene("menu");
         }
     }
@@ -102,6 +113,25 @@ public class UserInput : MonoBehaviour
         return (keyBind.keyCode != KeyCode.None && (Input.GetKeyDown(keyBind.keyCode) & Input.GetKey(KeyCode.LeftShift) == keyBind.shift & Input.GetKey(KeyCode.LeftAlt) == keyBind.alt & Input.GetKey(KeyCode.LeftControl) == keyBind.control)) || (keyBind.mouseButton != -1 && (Input.GetMouseButton(keyBind.mouseButton) & Input.GetKey(KeyCode.LeftShift) == keyBind.shift & Input.GetKey(KeyCode.LeftAlt) == keyBind.alt & Input.GetKey(KeyCode.LeftControl) == keyBind.control));
     }
 
+    public bool BindedKeyHeld(KeyBind keyBind)
+    {
+        return (keyBind.keyCode != KeyCode.None && (Input.GetKey(keyBind.keyCode) & Input.GetKey(KeyCode.LeftShift) == keyBind.shift & Input.GetKey(KeyCode.LeftAlt) == keyBind.alt & Input.GetKey(KeyCode.LeftControl) == keyBind.control)) || (keyBind.mouseButton != -1 && (Input.GetMouseButton(keyBind.mouseButton) & Input.GetKey(KeyCode.LeftShift) == keyBind.shift & Input.GetKey(KeyCode.LeftAlt) == keyBind.alt & Input.GetKey(KeyCode.LeftControl) == keyBind.control));
+    }
+
+    public void Remap(string name, KeyBind bind)
+    {
+        for (int i = 0; i < keys.Count; i++)
+        {
+            if (keys[i].name == name)
+            {
+                InputBinding updatedKey = keys[i];
+                updatedKey.Rebind(bind);
+                keys[i] = updatedKey;
+                KeyBind.Keys[name] = bind;
+            }
+        }
+    }
+
     [System.Serializable]
     public struct InputBinding 
     {
@@ -110,14 +140,23 @@ public class UserInput : MonoBehaviour
         public CharacterAction action;
         public StatusEffectData statusEffect;
         public UnityEvent onInput;
+        public UnityEvent onHeld;
 
-        public InputBinding(string name, KeyBind bind, CharacterAction action, StatusEffectData statusEffect, UnityEvent onInput)
+        public InputBinding(string name, KeyBind bind, CharacterAction action, StatusEffectData statusEffect, UnityEvent onInput, UnityEvent onHeld)
         {
             this.name = name;
             this.bind = bind;
             this.action = action;
             this.statusEffect = statusEffect;
             this.onInput = onInput;
+            this.onHeld = onHeld;
+        }
+
+        public void Rebind(KeyBind bind)
+        {
+            this.bind = bind;
+            if (action != null)
+                action.currentKeybind = bind;
         }
     }
 }

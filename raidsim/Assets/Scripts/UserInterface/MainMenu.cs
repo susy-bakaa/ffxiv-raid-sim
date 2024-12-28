@@ -23,6 +23,8 @@ public class MainMenu : MonoBehaviour
 #if UNITY_STANDALONE_WIN
     private void Start()
     {
+        KeyBind.SetupKeyNames();
+
         if (Application.isEditor)
             return;
 

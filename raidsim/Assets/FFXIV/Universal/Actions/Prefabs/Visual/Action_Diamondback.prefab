@@ -556,12 +556,25 @@ MonoBehaviour:
   data: {fileID: 11400000, guid: ac769c06cdc629949a04f61ae7717f87, type: 2}
   isAutoAction: 0
   isDisabled: 0
-  unavailable: 1
+  unavailable: 0
   hasTarget: 0
   damageMultiplier: 1
   distanceToTarget: 0
+  chargesLeft: 0
   lastAction: {fileID: 0}
+  currentKeybind:
+    keyCode: 0
+    mouseButton: 0
+    alt: 0
+    control: 0
+    shift: 0
   onExecute:
+    m_PersistentCalls:
+      m_Calls: []
+  onCast:
+    m_PersistentCalls:
+      m_Calls: []
+  onInterrupt:
     m_PersistentCalls:
       m_Calls: []
   recastType: 0
@@ -574,6 +587,7 @@ MonoBehaviour:
   comboOutlineGroup: {fileID: 2570274514405503639}
   recastTimeText: {fileID: 2544659494917657029}
   resourceCostText: {fileID: 5186231299134241363}
+  keybindText: {fileID: 778738236179791645}
   hudElements:
   - {fileID: 9058059636036039493}
   - {fileID: 7419480080577274105}
@@ -600,8 +614,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
+  omitSorting: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
+  initializeOnStart: 0
+  isPartyListElement: 0
+  untargetableOverlay: {fileID: 0}
+  targetButton: {fileID: 0}
   blocksAllInput: 0
   blocksPosInput: 0
   blocksRotInput: 1
@@ -617,6 +637,10 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  dummy: 0
 --- !u!1 &7265140199279320513
 GameObject:
   m_ObjectHideFlags: 0
@@ -1151,11 +1175,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 5695758002240699535}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 36.66}
-  m_SizeDelta: {x: 50, y: 25}
-  m_Pivot: {x: 1, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: -10.5, y: 12.5}
+  m_SizeDelta: {x: 67, y: 25}
+  m_Pivot: {x: 0, y: 1}
 --- !u!222 &4651846071634616263
 CanvasRenderer:
   m_ObjectHideFlags: 0

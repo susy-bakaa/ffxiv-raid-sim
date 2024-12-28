@@ -8,6 +8,8 @@ namespace susy_baka.raidsim.UserInterface
 {
     public class DraggableWindowScript : MonoBehaviour, IDragHandler, IEndDragHandler
     {
+        [Hidden] public SavePosition targetSave;
+
         [SerializeField] private Canvas canvas;
         [SerializeField] private RectTransform widgetTransform;
         [SerializeField] private RectTransform targetTransform;
@@ -22,6 +24,11 @@ namespace susy_baka.raidsim.UserInterface
         {
             widgetTransformDefaultPosition = widgetTransform.anchoredPosition;
             targetTransformDefaultPosition = targetTransform.anchoredPosition;
+
+            if (targetTransform != null)
+            {
+                targetSave = targetTransform.GetComponentInChildren<SavePosition>();
+            }
         }
 
         void IDragHandler.OnDrag(PointerEventData eventData)

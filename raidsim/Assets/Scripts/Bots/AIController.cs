@@ -14,6 +14,10 @@ public class AIController : MonoBehaviour
     public float ySpawnOffset = 1.1f;
     public bool log;
     public bool freezeMovement = false;
+    public bool sliding = false;
+    public float slideDistance = 0f;
+    public float slideDuration = 0.5f;
+    private bool tweening = false;
 
     private float turnSmoothVelocity;
     private float currentSpeed;
@@ -27,6 +31,7 @@ public class AIController : MonoBehaviour
     private int animatorParameterDead = Animator.StringToHash("Dead");
     private int animatorParameterSpeed = Animator.StringToHash("Speed");
     private int animatorParameterDiamondback = Animator.StringToHash("Diamondback");
+    private int animatorParamterSliding = Animator.StringToHash("Slipping");
 
     void Awake()
     {
@@ -49,6 +54,7 @@ public class AIController : MonoBehaviour
         {
             animator.SetBool(animatorParameterDead, state.dead);
             animator.SetBool(animatorParameterDiamondback, state.HasEffect("Diamondback"));
+            animator.SetBool(animatorParamterSliding, (sliding && knockedback));
 
             if (CanMove())
                 return;
@@ -69,6 +75,7 @@ public class AIController : MonoBehaviour
             tm = release + 1f;
             state.uncontrollable.RemoveFlag("knockback");
             knockedback = false;
+            tweening = false;
         }
         if (botTimeline != null && botTimeline.currentTarget != null && !state.dead && !state.bound.value && !state.uncontrollable.value && !knockedback)
         {
@@ -98,6 +105,17 @@ public class AIController : MonoBehaviour
             float stoppingDistance = 0.1f; // Adjust as needed
             if (distanceToTarget > stoppingDistance)
             {
+                if (sliding && slideDistance > 0f && botTimeline != null && botTimeline.currentTarget != null)
+                {
+                    tm = 0f;
+                    release = slideDuration;
+                    state.uncontrollable.SetFlag("knockback", true);
+                    targetPosition = botTimeline.currentTarget.position;
+                    animator.SetFloat(animatorParameterSpeed, 0f);
+                    knockedback = true;
+                    return;
+                }
+
                 float d = state.currentSpeed * normalized.magnitude;
                 transform.Translate(transform.forward * d * FightTimeline.deltaTime, Space.World);
                 currentSpeed = 0.5f * normalized.magnitude;
@@ -116,7 +134,15 @@ public class AIController : MonoBehaviour
         else if (!state.dead && !state.bound.value && knockedback)
         {
             animator.SetFloat(animatorParameterSpeed, 0f);
-            transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, release);
+            if (!sliding)
+            {
+                transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, release);
+            }
+            else if (sliding && !tweening)
+            {
+                tweening = true;
+                LeanTween.move(gameObject, targetPosition, release);
+            }
             ClampMovement();
         }
         else

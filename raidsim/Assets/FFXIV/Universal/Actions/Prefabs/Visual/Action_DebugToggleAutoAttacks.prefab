@@ -32,11 +32,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 6541103997652396163}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 36.66}
-  m_SizeDelta: {x: 50, y: 25}
-  m_Pivot: {x: 1, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: -10.5, y: 12.5}
+  m_SizeDelta: {x: 67, y: 25}
+  m_Pivot: {x: 0, y: 1}
 --- !u!222 &2909225698164525592
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -285,7 +285,14 @@ MonoBehaviour:
   hasTarget: 0
   damageMultiplier: 1
   distanceToTarget: 0
+  chargesLeft: 0
   lastAction: {fileID: 0}
+  currentKeybind:
+    keyCode: 0
+    mouseButton: 0
+    alt: 0
+    control: 0
+    shift: 0
   onExecute:
     m_PersistentCalls:
       m_Calls:
@@ -301,6 +308,12 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onCast:
+    m_PersistentCalls:
+      m_Calls: []
+  onInterrupt:
+    m_PersistentCalls:
+      m_Calls: []
   recastType: 0
   borderStandard: {fileID: 4511685017111601940}
   borderDark: {fileID: 7676412207269557121}
@@ -311,6 +324,7 @@ MonoBehaviour:
   comboOutlineGroup: {fileID: 5352245362974663149}
   recastTimeText: {fileID: 8337785414407384687}
   resourceCostText: {fileID: 0}
+  keybindText: {fileID: 0}
   hudElements:
   - {fileID: 8254097123580381148}
   - {fileID: 2552292792725136658}
@@ -351,8 +365,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
+  omitSorting: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
+  initializeOnStart: 0
+  isPartyListElement: 0
+  untargetableOverlay: {fileID: 0}
+  targetButton: {fileID: 0}
   blocksAllInput: 0
   blocksPosInput: 0
   blocksRotInput: 1
@@ -368,6 +388,10 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  dummy: 0
 --- !u!1 &2712703506316413308
 GameObject:
   m_ObjectHideFlags: 0

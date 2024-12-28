@@ -547,6 +547,12 @@ public class FightTimeline : MonoBehaviour
         UpdatePause();
     }
 
+    public void ResetPauseState()
+    {
+        pausedBy.Clear();
+        UpdatePause();
+    }
+
     private void UpdatePause()
     {
         if (pausedBy.Count > 0)

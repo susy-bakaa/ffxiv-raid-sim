@@ -45,8 +45,10 @@ public class DamageTrigger : MonoBehaviour
     public bool updateLive = false;
     public bool shared = false;
     public bool enumeration = false;
+    public bool requireOwner = false;
     public float visualDelay = 0f;
     public float triggerDelay = 0f;
+    public float triggerDelayVariance = 0f;
     public float damageApplicationDelay = 0.25f;
     public float cooldown = 10f;
     public int playersRequired = 0;
@@ -56,11 +58,21 @@ public class DamageTrigger : MonoBehaviour
     public UnityEvent<CharacterState> onFail;
     public UnityEvent<CharacterState> onFinish;
     public UnityEvent onSpawn;
+    public UnityEvent<CharacterState> onInitialize;
     public UnityEvent<CharacterCollection> onTrigger;
 
     private int id = 0;
     private bool inProgress = false;
     private bool initialized = false;
+
+#if UNITY_EDITOR
+    public int dummy = 0;
+    [Button("Initialize")]
+    public void InitializeButton()
+    {
+        Initialize();
+    }
+#endif
 
     void Awake()
     {
@@ -90,6 +102,11 @@ public class DamageTrigger : MonoBehaviour
             owner = transform.GetComponentInParent<CharacterState>();
         }
 
+        if (owner == null && requireOwner)
+        {
+            return;
+        }
+
         if (delay > 0f)
         {
             visualDelay = delay;
@@ -106,13 +123,15 @@ public class DamageTrigger : MonoBehaviour
             Utilities.FunctionTimer.Create(this, () => {
                 if (!inProgress)
                     StartDamageTrigger();
-            }, triggerDelay, $"{id}_{damageName}_{gameObject}_{GetHashCode()}_trigger_delay", false, true);
+            }, triggerDelay + Random.Range(0f, triggerDelayVariance), $"{id}_{damageName}_{gameObject}_{GetHashCode()}_trigger_delay", false, true);
         }
         else if (!playerActivated)
         {
             if (!inProgress)
                 StartDamageTrigger();
         }
+
+        onInitialize.Invoke(owner);
 
         initialized = true;
     }
@@ -129,7 +148,7 @@ public class DamageTrigger : MonoBehaviour
             StartDamageTrigger();
     }
 
-    void OnTriggerEnter(Collider other)
+    public void OnTriggerEnter(Collider other)
     {
         if (!inverted)
         {
@@ -137,6 +156,8 @@ public class DamageTrigger : MonoBehaviour
             {
                 if (other.transform.parent.TryGetComponent(out CharacterState playerState))
                 {
+                    if (currentPlayers.Contains(playerState))
+                        return;
                     if (playerState == owner && ignoresOwner)
                         return;
                     if (!cleaves && owner == null)
@@ -157,6 +178,8 @@ public class DamageTrigger : MonoBehaviour
             {
                 if (other.transform.parent.TryGetComponent(out CharacterState playerState))
                 {
+                    if (!currentPlayers.Contains(playerState))
+                        return;
                     if (playerState == owner && ignoresOwner)
                         return;
                     if (!cleaves && owner == null)
@@ -170,7 +193,7 @@ public class DamageTrigger : MonoBehaviour
         }
     }
 
-    private void OnTriggerStay(Collider other)
+    public void OnTriggerStay(Collider other)
     {
         if (updateLive)
         {
@@ -180,6 +203,8 @@ public class DamageTrigger : MonoBehaviour
                 {
                     if (other.transform.parent.TryGetComponent(out CharacterState playerState))
                     {
+                        if (currentPlayers.Contains(playerState))
+                            return;
                         if (playerState == owner && ignoresOwner)
                             return;
                         if (!cleaves && owner == null)
@@ -200,6 +225,8 @@ public class DamageTrigger : MonoBehaviour
                     {
                         if (other.transform.parent.TryGetComponent(out CharacterState playerState))
                         {
+                            if (!currentPlayers.Contains(playerState))
+                                return;
                             if (playerState == owner && ignoresOwner)
                                 return;
                             if (!cleaves && owner == null)
@@ -216,7 +243,7 @@ public class DamageTrigger : MonoBehaviour
         }
     }
 
-    private void OnTriggerExit(Collider other)
+    public void OnTriggerExit(Collider other)
     {
         if (!inverted)
         {
@@ -224,6 +251,8 @@ public class DamageTrigger : MonoBehaviour
             {
                 if (other.transform.parent.TryGetComponent(out CharacterState playerState))
                 {
+                    if (!currentPlayers.Contains(playerState))
+                        return;
                     if (playerState == owner && ignoresOwner)
                         return;
                     if (!cleaves && owner == null)
@@ -241,6 +270,8 @@ public class DamageTrigger : MonoBehaviour
             {
                 if (other.transform.parent.TryGetComponent(out CharacterState playerState))
                 {
+                    if (currentPlayers.Contains(playerState))
+                        return;
                     if (playerState == owner && ignoresOwner)
                         return;
                     if (!cleaves && owner == null)

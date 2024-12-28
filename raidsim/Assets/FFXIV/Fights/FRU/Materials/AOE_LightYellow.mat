@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: AOE_PinkTest
+  m_Name: AOE_LightYellow
   m_Shader: {fileID: -6465566751694194690, guid: 66dedb55c1328e3418aed769fb06d4df, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -16,7 +16,7 @@ Material:
   m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3003
+  m_CustomRenderQueue: 3000
   stringTagMap: {}
   disabledShaderPasses: []
   m_LockedProperties: 
@@ -70,8 +70,9 @@ Material:
     m_Ints: []
     m_Floats:
     - NORMAL_MAP: 0
+    - _Alpha: 0
     - _BUILTIN_QueueControl: 0
-    - _BUILTIN_QueueOffset: 3
+    - _BUILTIN_QueueOffset: 0
     - _BlendOp: 0
     - _BumpScale: 1
     - _CameraFadingEnabled: 0
@@ -110,16 +111,16 @@ Material:
     - _SoftParticlesNearFadeDistance: 0
     - _SpecularHighlights: 0
     - _SrcBlend: 1
-    - _Transparency: 0.75
+    - _Transparency: 0.5
     - _UVSec: 0
     - _VertexColorPower: 1
     - _ZWrite: 0
     m_Colors:
     - _CameraFadeParams: {r: 0, g: Infinity, b: 0, a: 0}
-    - _Color: {r: 0.8113208, g: 0.61614454, b: 0.6860621, a: 1}
+    - _Color: {r: 1, g: 0.9595283, b: 0.5330188, a: 1}
     - _ColorAddSubDiff: {r: -1, g: 0, b: 0, a: 0}
     - _Emission: {r: 0, g: 0, b: 0, a: 1}
-    - _EmissionColor: {r: 0.990566, g: 0.4906105, b: 0.7559632, a: 1}
+    - _EmissionColor: {r: 1, g: 0.8431743, b: 0.25943398, a: 1}
     - _FresnelColor: {r: 1, g: 1, b: 1, a: 1}
     - _InvFresnelColor: {r: 1, g: 1, b: 1, a: 1}
     - _SoftParticleFadeParams: {r: 0, g: 1.25, b: 0, a: 0}

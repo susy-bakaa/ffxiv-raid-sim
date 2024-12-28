@@ -115,7 +115,7 @@ public static class Utilities
 
             if (!eventSubbed)
             {
-                Debug.Log("Subscribing to SceneManager.activeSceneChanged.");
+                //Debug.Log("Subscribing to SceneManager.activeSceneChanged.");
                 eventSubbed = true;
                 SceneManager.activeSceneChanged += CleanUp;
             }
@@ -550,11 +550,12 @@ public static class Utilities
     }
 
     /// <summary>
-    /// Inserts automatically spaces before all capital letters in a string. Using '#' you can exlude parts of the string if you do not want capitalization for the whole string.
+    /// Inserts spaces before all capital letters in a string, ignoring parts of the string wrapped between '#' characters. Optionally removes '#' characters from the final result.
     /// </summary>
     /// <param name="input">The string being processed.</param>
-    /// <returns></returns>
-    public static string InsertSpaceBeforeCapitals(string input)
+    /// <param name="removeHash">Whether to remove '#' characters from the final result.</param>
+    /// <returns>The processed string with spaces before capital letters.</returns>
+    public static string InsertSpaceBeforeCapitals(string input, bool removeHash = false)
     {
         if (string.IsNullOrEmpty(input))
         {
@@ -579,13 +580,54 @@ public static class Utilities
             }
 
             // Reassemble with '#' where necessary
-            if (i < segments.Length - 1)
+            if (!removeHash && (i < segments.Length - 1 || input.EndsWith("#")))
             {
                 result.Append('#');
             }
         }
 
         return result.ToString();
+    }
+
+    /// <summary>
+    /// Replaces every '+' in the string with a space, ignoring parts of the string wrapped between '#' characters. Optionally removes '#' characters from the final result.
+    /// </summary>
+    /// <param name="input">The string being processed.</param>
+    /// <param name="removeHash">Whether to remove '#' characters from the final result.</param>
+    /// <returns>The processed string with '+' replaced by spaces and no double spaces.</returns>
+    public static string InsertSpaces(string input, bool removeHash = false)
+    {
+        if (string.IsNullOrEmpty(input))
+        {
+            return input;
+        }
+
+        // Split the string by '#' and process each segment
+        string[] segments = input.Split('#');
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < segments.Length; i++)
+        {
+            if (i % 2 == 0)
+            {
+                // Replace '+' with spaces for segments outside of '#'
+                result.Append(segments[i].Replace("+", " ").Replace("  ", " "));
+            }
+            else
+            {
+                // Append segments inside '#' without processing
+                result.Append(segments[i]);
+            }
+
+            // Reassemble with '#' where necessary
+            if (!removeHash && (i < segments.Length - 1 || input.EndsWith("#")))
+            {
+                result.Append('#');
+            }
+        }
+
+        // Remove any double spaces resulting from processing
+        return result.ToString().Replace("  ", " ");
     }
 
     private static string ProcessSegment(string segment)

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class ThirdPersonCamera : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class ThirdPersonCamera : MonoBehaviour
     public float mouseSensitivity = 1.5f;
     public Transform target;
     public float dstFromTarget = 13f;
+    public Vector3 offsetFromTarget = new Vector3(0f, 2f, 0f);
+    public Vector2 offsetMinMax = new Vector2(-8f, 8f);
     public Vector2 dstMinMax = new Vector2(5f, 20f); // Minimum and maximum distance for zoom
 
     public Vector2 pitchMinMax = new Vector2(-40f, 85f);
@@ -16,6 +19,7 @@ public class ThirdPersonCamera : MonoBehaviour
 
     private Vector3 rotationSmoothVelocity;
     private Vector3 currentRotation;
+    private Vector3 defaultOffset;
 
     private float yaw;
     private float pitch;
@@ -24,6 +28,8 @@ public class ThirdPersonCamera : MonoBehaviour
     public bool enableZooming = true;
     public bool enableRotation = true;
     public bool enableMovement = true;
+
+    public UnityEvent<float> onCameraOffsetUpdated;
 
     private Vector2 cursorPosition;
     private bool cursorPositionSet;
@@ -35,6 +41,8 @@ public class ThirdPersonCamera : MonoBehaviour
     {
         if (freecam == null)
             freecam = GetComponent<SimpleFreecam>();
+
+        defaultOffset = offsetFromTarget;
     }
 
     void Update()
@@ -133,7 +141,18 @@ public class ThirdPersonCamera : MonoBehaviour
         if (target == null)
             return;
 
-        transform.position = target.position + new Vector3(0f, 2f, 0f) - transform.forward * dstFromTarget;
+        transform.position = target.position + offsetFromTarget - transform.forward * dstFromTarget;
+    }
+
+    public void UpdateCameraOffset(float value)
+    {
+        offsetFromTarget.y += value * Time.unscaledDeltaTime;
+        offsetFromTarget.y = Mathf.Clamp(offsetFromTarget.y, offsetMinMax.x, offsetMinMax.y);
+        if (value >= 9999)
+        {
+            offsetFromTarget = defaultOffset;
+        }
+        onCameraOffsetUpdated.Invoke(offsetFromTarget.y);
     }
 
     public void RandomRotate()

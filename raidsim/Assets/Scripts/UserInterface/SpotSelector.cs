@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using NaughtyAttributes;
 using TMPro;
 using UnityEngine;
+using static CharacterState;
 using static PartyList;
 
 public class SpotSelector : MonoBehaviour
@@ -13,6 +15,8 @@ public class SpotSelector : MonoBehaviour
     public PartyMember player;
     public AIController[] bots;
     public BotNode[] spots;
+    public bool changePlayerRole = false;
+    [ShowIf("changePlayerRole")] public Role[] spotRoles;
 
 #if UNITY_EDITOR
     void OnValidate()
@@ -49,6 +53,14 @@ public class SpotSelector : MonoBehaviour
             Debug.LogError("PlayerController is unassigned!");
 
         player.playerController.clockSpot = spots[value];
+
+        if (changePlayerRole)
+        {
+            if (spotRoles != null && spotRoles.Length == spots.Length)
+            {
+                player.characterState.role = spotRoles[value];
+            }
+        }
 
         int botNameIndex = 0; 
 

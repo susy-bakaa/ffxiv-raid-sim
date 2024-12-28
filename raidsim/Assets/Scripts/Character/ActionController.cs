@@ -39,6 +39,9 @@ public class ActionController : MonoBehaviour
     public TextMeshProUGUI castLengthText;
     public CanvasGroup interruptText;
     public HudElement castBarElement;
+    public CanvasGroup speechBubbleGroup;
+    public TextMeshProUGUI speechBubbleText;
+    public AudioSource speechBubbleAudio;
 
     [Header("Party")]
     public bool usePartyCastBar;
@@ -458,6 +461,8 @@ public class ActionController : MonoBehaviour
                 }
 
                 autoAction.data.damage = new GlobalData.Damage(autoAction.data.damage, characterState);
+                
+                autoAction.chargesLeft--;
 
                 ActionInfo newActionInfo = new ActionInfo(autoAction, characterState, currentTarget);
                 autoAction.ExecuteAction(newActionInfo);
@@ -607,6 +612,8 @@ public class ActionController : MonoBehaviour
 
                 action.data.damage = new GlobalData.Damage(action.data.damage, characterState);
 
+                action.chargesLeft--;
+
                 ActionInfo newActionInfo = new ActionInfo(action, characterState, currentTarget);
                 action.onCast.Invoke(newActionInfo);
                 action.ExecuteAction(newActionInfo);
@@ -624,6 +631,8 @@ public class ActionController : MonoBehaviour
                 }
 
                 HandleAnimation(action);
+
+                UpdateSpeechBubble(action);
 
                 if (action.data.cast > 0f && instantCast && instantCastEffect != null)
                 {
@@ -670,7 +679,7 @@ public class ActionController : MonoBehaviour
 
                 ActionInfo newActionInfo = new ActionInfo(action, characterState, currentTarget);
                 action.onCast.Invoke(newActionInfo);
-                StartCoroutine(Cast(castTime, () => { action.ExecuteAction(newActionInfo); if (action.data.playAnimationOnFinish) { HandleAnimation(action); } }));
+                StartCoroutine(Cast(castTime, () => { action.chargesLeft--; action.ExecuteAction(newActionInfo); if (action.data.playAnimationOnFinish) { HandleAnimation(action); } }));
                 onCast.Invoke(new CastInfo(newActionInfo, instantCast, characterState.GetEffects()));
 
                 if (!action.data.playAnimationOnFinish)
@@ -678,6 +687,7 @@ public class ActionController : MonoBehaviour
 
                 UpdateCharacterName();
                 UpdateUserInterface(newActionInfo);
+                UpdateSpeechBubble(action);
 
                 if (animator != null)
                 {
@@ -841,7 +851,7 @@ public class ActionController : MonoBehaviour
         }
         if (castNameText != null)
         {
-            castNameText.text = Utilities.InsertSpaceBeforeCapitals(actionInfo.action.data.actionName);
+            castNameText.text = actionInfo.action.data.GetActionName();
         }
         if (castBarParty != null)
         {
@@ -852,20 +862,41 @@ public class ActionController : MonoBehaviour
         {
             if (actionInfo.target != null && showCastTargetLetter)
             {
-                castNameTextParty.text = $"{Utilities.InsertSpaceBeforeCapitals(actionInfo.action.data.actionName)}<sprite=\"{actionInfo.target.letterSpriteAsset}\" name=\"{actionInfo.target.characterLetter}\">";
+                castNameTextParty.text = $"{actionInfo.action.data.GetActionName()}<sprite=\"{actionInfo.target.letterSpriteAsset}\" name=\"{actionInfo.target.characterLetter}\">";
             }
             else if (actionInfo.source != null && showCastTargetLetter)
             {
-                castNameTextParty.text = $"{Utilities.InsertSpaceBeforeCapitals(actionInfo.action.data.actionName)}<sprite=\"{actionInfo.source.letterSpriteAsset}\" name=\"{actionInfo.source.characterLetter}\">";
+                castNameTextParty.text = $"{actionInfo.action.data.GetActionName()}<sprite=\"{actionInfo.source.letterSpriteAsset}\" name=\"{actionInfo.source.characterLetter}\">";
             }
             else
             {
-                castNameTextParty.text = Utilities.InsertSpaceBeforeCapitals(actionInfo.action.data.actionName);
+                castNameTextParty.text = actionInfo.action.data.GetActionName();
             }
         }
         if (interruptText != null)
         {
             interruptText.alpha = 0f;
+        }
+    }
+
+    private void UpdateSpeechBubble(CharacterAction action)
+    {
+        if (!string.IsNullOrEmpty(action.data.speech))
+        {
+            if (speechBubbleText != null)
+            {
+                speechBubbleText.text = action.data.speech;
+            }
+            if (speechBubbleGroup != null)
+            {
+                speechBubbleGroup.LeanAlpha(1f, 0.25f);
+                Utilities.FunctionTimer.Create(this, () => speechBubbleGroup.LeanAlpha(0f, 0.25f), 2f, $"{characterState.characterName}_{this}_speech_bubble_fade_out", true);
+            }
+            if (speechBubbleAudio != null)
+            {
+                speechBubbleAudio.clip = action.data.speechAudio;
+                speechBubbleAudio.Play();
+            }
         }
     }
 
@@ -883,6 +914,11 @@ public class ActionController : MonoBehaviour
             characterState.hidePartyName = false;
         }
         characterState.UpdateCharacterName();
+    }
+
+    public void SetAnimator(Animator animator)
+    {
+        this.animator = animator;
     }
 
     void OnDestroy()

@@ -6,6 +6,7 @@ using no00ob.WaveSurvivalGame.UserInterface;
 using UnityEditor;
 #endif
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.UI;
 
 public class ConfigMenu : MonoBehaviour
@@ -13,12 +14,15 @@ public class ConfigMenu : MonoBehaviour
     CanvasGroup group;
     PlayerController playerController;
     TargetController playerTargeting;
+    UserInput userInput;
 
+    [SerializeField] private AudioMixer audioMixer;
     [SerializeField] private CanvasScaler canvasScaler;
     [SerializeField] private SliderInputLinker scaleSliderSync;
     [SerializeField] private ToggleLinker toggleMovement;
     [SerializeField] private Toggle fullscreenToggle;
     [SerializeField] private ResolutionDropdown resolutionDropdown;
+    [SerializeField] private SliderInputLinker volumeSliderSync;
     float scale;
     float newScale;
     bool legacy;
@@ -27,6 +31,8 @@ public class ConfigMenu : MonoBehaviour
     bool newFullscreen;
     int resolution;
     int newResolution;
+    float volume = 100;
+    float newVolume = 100;
     [SerializeField] private CanvasGroup applyPopup;
     public bool isOpen;
     public bool isApplyPopupOpen;
@@ -37,6 +43,7 @@ public class ConfigMenu : MonoBehaviour
 
     void Awake()
     {
+        userInput = FindObjectOfType<UserInput>();
         group = GetComponent<CanvasGroup>();
         playerController = FindObjectOfType<PlayerController>();
         if (playerController != null && playerTargeting == null)
@@ -47,6 +54,7 @@ public class ConfigMenu : MonoBehaviour
 
         scale = scaleSliderSync.Slider.value;
         legacy = toggleMovement.toggles[0].isOn;
+        volume = volumeSliderSync.Slider.value;
 
         menuVisible = false;
         group.alpha = 0f;
@@ -56,6 +64,21 @@ public class ConfigMenu : MonoBehaviour
         applyPopup.alpha = 0f;
         applyPopup.blocksRaycasts = false;
         applyPopup.interactable = false;
+    }
+
+    void Update()
+    {
+        if (userInput != null)
+        {
+            if (isOpen)
+            {
+                userInput.inputEnabled = false;
+                userInput.zoomInputEnabled = false;
+                userInput.movementInputEnabled = false;
+                userInput.rotationInputEnabled = false;
+                userInput.targetRaycastInputEnabled = false;
+            }
+        }
     }
 
     public void ToggleConfigMenu()
@@ -75,6 +98,11 @@ public class ConfigMenu : MonoBehaviour
             group.blocksRaycasts = false;
             group.interactable = false;
             isOpen = false;
+            userInput.inputEnabled = true;
+            userInput.zoomInputEnabled = true;
+            userInput.movementInputEnabled = true;
+            userInput.rotationInputEnabled = true;
+            userInput.targetRaycastInputEnabled = true;
         }
     }
 
@@ -115,13 +143,32 @@ public class ConfigMenu : MonoBehaviour
 
     public void ChangeHUDScale(int scale)
     {
-        ChangeHUDScale(scale);
+        ChangeHUDScale((float)scale);
     }
 
     public void ChangeHUDScale(float scale)
     {
         configSaved = false;
         newScale = scale;
+    }
+
+    public void ChangeAudioVolume(string volume)
+    {
+        if (float.TryParse(volume, out float result))
+        {
+            ChangeAudioVolume(result);
+        }
+    }
+
+    public void ChangeAudioVolume(int volume)
+    {
+        ChangeAudioVolume((float)volume);
+    }
+
+    public void ChangeAudioVolume(float volume)
+    {
+        configSaved = false;
+        newVolume = volume;
     }
 
     public void ChangeMovementType(bool value)
@@ -176,6 +223,12 @@ public class ConfigMenu : MonoBehaviour
             Screen.fullScreenMode = FullScreenMode.Windowed;
         resolution = newResolution;
         resolutionDropdown.SetResolution(resolution, Screen.fullScreen);
+        volume = newVolume;
+        if (volume < 1)
+        {
+            volume = 0.001f;
+        }
+        audioMixer.SetFloat("Volume", Mathf.Log10(volume / 100) * 20f);
         configSaved = true;
 #endif
     }
@@ -207,6 +260,9 @@ public class ConfigMenu : MonoBehaviour
 #else
         newFullscreen = true;
         newResolution = 0;
+        newVolume = 100f;
+        volumeSliderSync.Slider.value = newVolume;
+        volumeSliderSync.Sync(0);
         ApplySettings();
 #endif
     }
@@ -228,6 +284,9 @@ public class ConfigMenu : MonoBehaviour
         fullscreenToggle.SetIsOnWithoutNotify(newFullscreen);
         newResolution = resolution;
         resolutionDropdown.SetResolutionWithoutNotify(newResolution, newFullscreen);
+        newVolume = volume;
+        volumeSliderSync.Slider.value = newVolume;
+        volumeSliderSync.Sync(0);
         ApplySettings();
 #endif
     }

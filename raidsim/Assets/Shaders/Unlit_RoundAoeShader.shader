@@ -44,12 +44,16 @@ Shader "Custom/Unlit/RoundAoe"
         _InnerOpacity ("Inner Opacity", Range(0.0, 1.0)) = 1.0
         [HideInInspector]
         _Alpha ("Alpha", Range(0.0, 1.0)) = 1.0
+        [HideInInspector]
+        _DoubleSided ("Double Sided", Float) = 2.0
     }
-    CustomEditor "no00ob.Raidsim.Editor.RoundAoeShaderInspector"
+    CustomEditor "susy_baka.Raidsim.Editor.RoundAoeShaderInspector"
     SubShader
     {
         Tags { "Queue" = "Transparent" }
         LOD 200
+
+        Cull [_DoubleSided]
 
         CGPROGRAM
         #pragma surface surf Lambert alpha:fade

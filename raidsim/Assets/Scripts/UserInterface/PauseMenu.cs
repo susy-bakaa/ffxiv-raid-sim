@@ -47,6 +47,8 @@ public class PauseMenu : MonoBehaviour
 
     public void ExitToMainMenu()
     {
+        if (FightTimeline.Instance != null)
+            FightTimeline.Instance.ResetPauseState();
         SceneManager.LoadScene(menuScene);
     }
 

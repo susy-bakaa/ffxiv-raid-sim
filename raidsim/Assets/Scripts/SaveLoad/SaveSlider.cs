@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class SaveSlider : MonoBehaviour
 {
     Slider slider;
-    float savedValue = 0;
+    float savedValue = 100;
 
     public string group = "";
     public string key = "UnnamedSlider";
@@ -20,7 +20,7 @@ public class SaveSlider : MonoBehaviour
     void Awake()
     {
         slider = GetComponent<Slider>();
-        savedValue = 0f;
+        savedValue = 100f;
         ini = new IniStorage(GlobalVariables.configPath);
     }
 

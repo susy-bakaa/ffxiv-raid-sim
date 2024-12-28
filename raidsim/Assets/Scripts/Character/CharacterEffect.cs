@@ -11,8 +11,9 @@ public class CharacterEffect : MonoBehaviour
     public bool enableOnStart = false;
     public bool toggleObject = true;
     public float fadeTime = 0.33f;
+    public bool log = false;
 
-    private SimpleShaderFade shaderFade;
+    private SimpleShaderFade[] shaderFade;
     private bool hasShaderFade = false;
     private Coroutine disableEffect;
 
@@ -26,7 +27,7 @@ public class CharacterEffect : MonoBehaviour
 
     private void Awake()
     {
-        shaderFade = transform.GetComponentInChildren<SimpleShaderFade>();
+        shaderFade = transform.GetComponentsInChildren<SimpleShaderFade>();
         if (shaderFade != null)
             hasShaderFade = true;
     }
@@ -58,11 +59,17 @@ public class CharacterEffect : MonoBehaviour
         if (visible)
             return;
 
+        if (log)
+            Debug.Log($"[CharacterEffect ({gameObject.name})] EnableEffect was called!");
+
         if (hasShaderFade)
         {
-            if (toggleObject)
-                shaderFade.gameObject.SetActive(true);
-            shaderFade.FadeIn(fadeTime);
+            for (int i = 0; i < shaderFade.Length; i++)
+            {
+                if (toggleObject)
+                    shaderFade[i].gameObject.SetActive(true);
+                shaderFade[i].FadeIn(fadeTime);
+            }
         }
         else
         {
@@ -77,9 +84,15 @@ public class CharacterEffect : MonoBehaviour
         if (!visible)
             return;
 
+        if (log)
+            Debug.Log($"[CharacterEffect ({gameObject.name})] DisableEffect was called!");
+
         if (hasShaderFade)
         {
-            shaderFade.FadeOut(fadeTime);
+            for (int i = 0; i < shaderFade.Length; i++)
+            {
+                shaderFade[i].FadeOut(fadeTime);
+            }
             if (toggleObject && disableEffect == null)
             {
                 WaitForSeconds wait = new WaitForSeconds(fadeTime + 0.1f);
@@ -98,7 +111,12 @@ public class CharacterEffect : MonoBehaviour
     {
         yield return wait;
         if (hasShaderFade)
-            shaderFade.gameObject.SetActive(false);
+        {
+            for (int i = 0; i < shaderFade.Length; i++)
+            {
+                shaderFade[i].gameObject.SetActive(false);
+            }
+        }
         disableEffect = null;
     }
 }

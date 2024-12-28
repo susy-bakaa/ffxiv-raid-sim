@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using NaughtyAttributes;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class StateTrigger : MonoBehaviour
 {
     public bool state = false;
+    public PartyList party;
+    public bool autoFindParty = false;
     public GameObject source;
     public GameObject target;
     public string targetName = string.Empty;
@@ -16,20 +19,45 @@ public class StateTrigger : MonoBehaviour
     public bool toggleObject = true;
     public bool toggleCharacterState = false;
     public bool toggleCharacterEffect = false;
+    public bool toggleShaderEffect = false;
+    [ShowIf("toggleShaderEffect")] public float fadeTime = 0.33f;
     public bool log = false;
 
     private StatusEffect sourceStatusEffect;
     private CharacterState sourceCharacterState;
     private TargetController sourceTargetController;
     private ActionController sourceActionController;
+    private SimpleShaderFade sourceShaderFade;
 
     private CharacterState characterState;
     private CharacterEffect characterEffect;
     private TargetController targetController;
     private ActionController actionController;
+    private SimpleShaderFade shaderFade;
+
+    public void Initialize(CharacterState targetCharacter)
+    {
+        if (targetCharacter != null)
+        {
+            if (string.IsNullOrEmpty(targetName))
+            {
+                targetName = targetCharacter.characterName;
+            }
+            else if (string.IsNullOrEmpty(targetParent))
+            {
+                targetParent = targetCharacter.characterName;
+            }
+        }
+
+        Initialize();
+    }
 
     public void Initialize()
     {
+        if (autoFindParty && FightTimeline.Instance != null)
+        {
+            party = FightTimeline.Instance.partyList;
+        }
         if (source == null)
         {
             source = gameObject;
@@ -38,52 +66,92 @@ public class StateTrigger : MonoBehaviour
         sourceCharacterState = Utilities.GetComponentInParents<CharacterState>(source.transform);
         sourceTargetController = Utilities.GetComponentInParents<TargetController>(source.transform);
         sourceActionController = Utilities.GetComponentInParents<ActionController>(source.transform);
+        sourceShaderFade = Utilities.GetComponentInParents<SimpleShaderFade>(source.transform);
 
-        if (!string.IsNullOrEmpty(targetName) && string.IsNullOrEmpty(targetParent))
+        if (party == null)
         {
-            target = Utilities.FindAnyByName(targetName);
-        }
-        if (!string.IsNullOrEmpty(targetParent))
-        {
-            Transform parent;
-            if (localParent)
+            if (!string.IsNullOrEmpty(targetName) && string.IsNullOrEmpty(targetParent))
             {
-                parent = transform;
-                for (int i = 0; i < targetIndex; i++)
+                target = Utilities.FindAnyByName(targetName);
+            }
+            if (!string.IsNullOrEmpty(targetParent))
+            {
+                Transform parent;
+                if (localParent)
                 {
-                    parent = parent.parent;
+                    parent = transform;
+                    for (int i = 0; i < targetIndex; i++)
+                    {
+                        parent = parent.parent;
+                    }
+                }
+                else
+                {
+                    parent = Utilities.FindAnyByName(targetParent).transform;
+                }
+                int finalIndex = targetIndex;
+                if (useStatusEffectTagAsTargetIndex && !localParent)
+                {
+                    finalIndex = sourceStatusEffect.uniqueTag;
+                }
+                if (!localParent)
+                    target = parent.GetChild(finalIndex).gameObject;
+                else
+                    target = parent.Find(targetName).gameObject;
+            }
+        }
+        else
+        {
+            List<CharacterState> members = party.GetActiveMembers();
+
+            if (!string.IsNullOrEmpty(targetName) && string.IsNullOrEmpty(targetParent))
+            {
+                for (int i = 0; i < members.Count; i++)
+                {
+                    if (members[i].characterName == targetName)
+                    {
+                        target = members[i].gameObject;
+                    }
                 }
             }
-            else
+            else if (!string.IsNullOrEmpty(targetParent))
             {
-                parent = Utilities.FindAnyByName(targetParent).transform;
+                Transform parent = null;
+
+                for (int i = 0; i < members.Count; i++)
+                {
+                    if (members[i].characterName == targetParent)
+                    {
+                        parent = members[i].transform;
+                    }
+                }
+
+                if (parent == null)
+                    return;
+
+                if (!string.IsNullOrEmpty(targetName))
+                {
+                    target = parent.Find(targetName).gameObject;
+                }
+                else
+                {
+                    int finalIndex = targetIndex;
+                    if (useStatusEffectTagAsTargetIndex)
+                    {
+                        finalIndex = sourceStatusEffect.uniqueTag;
+                    }
+                    target = parent.GetChild(finalIndex).gameObject;
+                }
             }
-            int finalIndex = targetIndex;
-            if (useStatusEffectTagAsTargetIndex && !localParent)
-            {
-                finalIndex = sourceStatusEffect.uniqueTag;
-            }
-            if (!localParent)
-                target = parent.GetChild(finalIndex).gameObject;
-            else
-                target = parent.Find(targetName).gameObject;
         }
 
         if (target != null)
         {
             target.TryGetComponent(out characterState);
-        }
-        if (target != null)
-        {
             target.TryGetComponent(out characterEffect);
-        }
-        if (target != null)
-        {
             target.TryGetComponent(out targetController);
-        }
-        if (target != null)
-        {
             target.TryGetComponent(out actionController);
+            target.TryGetComponent(out shaderFade);
         }
     }
 
@@ -103,6 +171,13 @@ public class StateTrigger : MonoBehaviour
                 characterEffect.EnableEffect();
             else
                 characterEffect.DisableEffect();
+        }
+        if (shaderFade != null && toggleShaderEffect)
+        {
+            if (state)
+                shaderFade.FadeIn(fadeTime);
+            else
+                shaderFade.FadeOut(fadeTime);
         }
         this.state = state;
     }

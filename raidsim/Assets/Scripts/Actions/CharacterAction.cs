@@ -18,8 +18,8 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     [Header("Info")]
     public CharacterActionData data;
-    private float timer;
-    private float aTimer;
+    private float timer = 0f;
+    private float aTimer = 0f;
     public bool isAvailable { private set; get; }
     public bool isAnimationLocked { private set; get; }
     public bool isAutoAction = false;
@@ -28,7 +28,9 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public bool hasTarget = false;
     public float damageMultiplier = 1f;
     public float distanceToTarget;
+    public int chargesLeft = 0;
     public CharacterActionData lastAction;
+    public KeyBind currentKeybind;
 
     [Header("Events")]
     public UnityEvent<ActionInfo> onExecute;
@@ -46,6 +48,7 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public CanvasGroup comboOutlineGroup;
     public TextMeshProUGUI recastTimeText;
     public TextMeshProUGUI resourceCostText;
+    public TextMeshProUGUI keybindText;
     public HudElementColor[] hudElements;
     public List<Color> defaultColors;
     public List<Color> unavailableColors;
@@ -53,10 +56,14 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
     private bool pointer;
     private bool colorsFlag;
     private bool animFlag;
+    private RecastType normalRecastType;
+    private bool chargeRestored = false;
 
     void Awake()
     {
         button = GetComponent<Button>();
+
+        chargesLeft = data.charges;
 
         if (borderStandard != null)
         {
@@ -103,6 +110,8 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         {
             hudElements[i].SetColor(defaultColors);
         }
+
+        normalRecastType = recastType;
     }
 
     void Start()
@@ -127,13 +136,17 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
             if (resourceCostText != null)
             {
-                if (data.manaCost <= 0)
+                if (data.manaCost <= 0 && data.charges < 2)
                 {
                     resourceCostText.text = "X";
                 }
-                else
+                else if (data.manaCost > 0)
                 {
                     resourceCostText.text = data.manaCost.ToString();
+                }
+                else if (data.charges > 1)
+                {
+                    resourceCostText.text = chargesLeft.ToString();
                 }
             }
         }
@@ -150,13 +163,17 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
             if (resourceCostText != null)
             {
-                if (data.manaCost <= 0)
+                if (data.manaCost <= 0 && data.charges < 2)
                 {
                     resourceCostText.text = string.Empty;
                 }
-                else
+                else if (data.manaCost > 0)
                 {
                     resourceCostText.text = data.manaCost.ToString();
+                }
+                else if (data.charges > 1)
+                {
+                    resourceCostText.text = chargesLeft.ToString();
                 }
             }
         }
@@ -174,7 +191,19 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         if (timer > 0f)
         {
             timer -= FightTimeline.deltaTime;
-            isAvailable = false;
+            chargeRestored = false;
+            if (chargesLeft < 1)
+            {
+                if (chargesLeft < 0)
+                    chargesLeft = 0;
+
+                isAvailable = false;
+                recastType = normalRecastType;
+            }
+            else
+            {
+                recastType = RecastType.stackedOgcd;
+            }
             if (recastFillGroup != null)
             {
                 recastFillGroup.alpha = 1f;
@@ -187,7 +216,23 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         else
         {
             timer = 0f;
-            isAvailable = true;
+            if (!chargeRestored || chargesLeft < 1)
+            {
+                chargesLeft++;
+                chargeRestored = true;
+            }
+            if (chargesLeft < data.charges && data.charges >= 1)
+            {
+                ActivateCooldown();
+            }
+            else if (chargesLeft >= data.charges)
+            {
+                chargesLeft = data.charges;
+            }
+            if (chargesLeft > 0)
+            {
+                isAvailable = true;
+            }
             if (recastFillGroup != null)
             {
                 recastFillGroup.alpha = 0f;
@@ -224,7 +269,14 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
         if (borderStandard != null && timer > 0f)
         {
-            borderStandard.alpha = 0f;
+            if (recastType == RecastType.stackedOgcd)
+            {
+                borderStandard.alpha = 1f;
+            }
+            else
+            {
+                borderStandard.alpha = 0f;
+            }
 
             if (recastType == RecastType.longGcd && borderDark != null)
             {
@@ -235,7 +287,7 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         {
             animFlag = false;
             recastFillAnimator.Play($"ui_hotbar_recast_type{(int)recastType + 1}_fill", 0, Utilities.Map(data.recast - timer, 0f, data.recast, 0f, 1f));
-        } 
+        }
         else if (recastFillAnimator != null && !animFlag)
         {
             animFlag = true;
@@ -251,6 +303,18 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
             else
             {
                 button.interactable = false;
+            }
+        }
+
+        if (keybindText != null)
+        {
+            if (currentKeybind != null)
+            {
+                keybindText.text = currentKeybind.ToShortString();
+            }
+            else
+            {
+                keybindText.text = string.Empty;
             }
         }
     }
@@ -356,8 +420,14 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     public void ActivateCooldown()
     {
-        isAvailable = false;
-        timer = data.recast;
+        if (chargesLeft < 1)
+        {
+            isAvailable = false;
+        }
+        if (timer <= 0f)
+        {
+            timer = data.recast;
+        }
     }
 
     public void ActivateAnimationLock()
@@ -368,6 +438,11 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     public void ResetCooldown()
     {
+        chargesLeft++;
+        if (chargesLeft > data.charges)
+        {
+            chargesLeft = data.charges;
+        }
         isAvailable = true;
         timer = 0f;
     }

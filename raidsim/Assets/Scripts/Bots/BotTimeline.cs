@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UIElements;
 using static StatusEffectData;
+using static UnityEngine.GraphicsBuffer;
 
 public class BotTimeline : MonoBehaviour
 {
@@ -128,7 +130,26 @@ public class BotTimeline : MonoBehaviour
                 if (FightTimeline.Instance.log)
                     Debug.Log($"[BotTimeline] {controller.gameObject.name} perform action {events[i].action.actionName}");
             }
-            if (events[i].rotation != Vector3.zero && events[i].waitForRotation > 0)
+            if (events[i].faceTowards != null)
+            {
+                if (events[i].waitForRotation > 0)
+                {
+                    yield return new WaitForSeconds(events[i].waitForRotation);
+                }
+                bot.transform.LookAt(events[i].faceTowards);
+                bot.transform.eulerAngles = new Vector3(0, bot.transform.eulerAngles.y, 0);
+            }
+            else if (events[i].faceAway != null)
+            {
+                if (events[i].waitForRotation > 0)
+                {
+                    yield return new WaitForSeconds(events[i].waitForRotation);
+                }
+                bot.transform.LookAt(bot.transform.position - (events[i].faceAway.position - bot.transform.position));
+                //bot.transform.LookAt(events[i].faceAway);
+                bot.transform.eulerAngles = new Vector3(0, bot.transform.eulerAngles.y, 0);
+            }
+            else if (events[i].rotation != Vector3.zero && events[i].waitForRotation > 0)
             {
                 if (events[i].waitForRotation > 0f)
                 {
@@ -174,11 +195,13 @@ public class BotTimeline : MonoBehaviour
         public bool unrestrictedAction;
         public float waitForAction;
         public Vector3 rotation;
+        public Transform faceTowards;
+        public Transform faceAway;
         public float waitForRotation;
         public TargetNode target;
         public StatusEffectInfo targetStatusEffectHolder;
 
-        public BotEvent(string name, Transform node, float waitAtNode, float randomWaitVariance, CharacterActionData action, bool unrestrictedAction, float waitForAction, Vector3 rotation, float waitForRotation, TargetNode cycleTarget, StatusEffectInfo targetStatusEffectHolder)
+        public BotEvent(string name, Transform node, float waitAtNode, float randomWaitVariance, CharacterActionData action, bool unrestrictedAction, float waitForAction, Vector3 rotation, Transform faceTowards, Transform faceAway, float waitForRotation, TargetNode cycleTarget, StatusEffectInfo targetStatusEffectHolder)
         {
             this.name = name;
             this.node = node;
@@ -188,6 +211,8 @@ public class BotTimeline : MonoBehaviour
             this.unrestrictedAction = unrestrictedAction;
             this.waitForAction = waitForAction;
             this.rotation = rotation;
+            this.faceTowards = faceTowards;
+            this.faceAway = faceAway;
             this.waitForRotation = waitForRotation;
             this.target = cycleTarget;
             this.targetStatusEffectHolder = targetStatusEffectHolder;

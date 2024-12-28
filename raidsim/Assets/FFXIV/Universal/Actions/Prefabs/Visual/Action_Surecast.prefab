@@ -506,11 +506,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 6897021443510335086}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 36.66}
-  m_SizeDelta: {x: 50, y: 25}
-  m_Pivot: {x: 1, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: -10.5, y: 12.5}
+  m_SizeDelta: {x: 67, y: 25}
+  m_Pivot: {x: 0, y: 1}
 --- !u!222 &7701291613649537061
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -724,7 +724,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5588495456501443367}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -846,8 +846,21 @@ MonoBehaviour:
   hasTarget: 0
   damageMultiplier: 1
   distanceToTarget: 0
+  chargesLeft: 0
   lastAction: {fileID: 0}
+  currentKeybind:
+    keyCode: 0
+    mouseButton: 0
+    alt: 0
+    control: 0
+    shift: 0
   onExecute:
+    m_PersistentCalls:
+      m_Calls: []
+  onCast:
+    m_PersistentCalls:
+      m_Calls: []
+  onInterrupt:
     m_PersistentCalls:
       m_Calls: []
   recastType: 0
@@ -860,6 +873,7 @@ MonoBehaviour:
   comboOutlineGroup: {fileID: 446966650826909503}
   recastTimeText: {fileID: 4277942022563522879}
   resourceCostText: {fileID: 5121068704024412072}
+  keybindText: {fileID: 277201742236703299}
   hudElements:
   - {fileID: 3758994569716290409}
   - {fileID: 2078949435731068164}
@@ -886,8 +900,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
+  omitSorting: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
+  initializeOnStart: 0
+  isPartyListElement: 0
+  untargetableOverlay: {fileID: 0}
+  targetButton: {fileID: 0}
   blocksAllInput: 0
   blocksPosInput: 0
   blocksRotInput: 1
@@ -903,6 +923,10 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  dummy: 0
 --- !u!1 &6614210936976630575
 GameObject:
   m_ObjectHideFlags: 0

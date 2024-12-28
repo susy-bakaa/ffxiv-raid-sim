@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Action_GenericShield
   m_EditorClassIdentifier: 
   actionName: GenericShield
-  actionType: 2
+  actionType: 0
   damage:
     name: Generic Shield
     value: 20000
@@ -23,6 +23,8 @@ MonoBehaviour:
     elementalAspect: 1
     physicalAspect: 0
     applicationType: 0
+    source: {fileID: 0}
+  causesDirectDamage: 1
   isShield: 1
   isHeal: 1
   isTargeted: 0
@@ -37,6 +39,7 @@ MonoBehaviour:
   cast: 0
   recast: 2.5
   animationLock: 0.6
+  charges: 10
   canBeSlideCast: 1
   rollsGcd: 1
   buff: {fileID: 0}
@@ -46,4 +49,7 @@ MonoBehaviour:
   comboAction: {fileID: 0}
   animationName: 
   playAnimationDirectly: 0
+  playAnimationOnFinish: 0
   onAnimationFinishId: -1
+  speech: 
+  speechAudio: {fileID: 0}

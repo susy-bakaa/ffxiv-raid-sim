@@ -7,6 +7,8 @@ using static ActionController;
 public class KnockbackMechanic : FightMechanic
 {
     public bool canBeResisted;
+    public bool originFromSource = false;
+    public bool isDash = false;
     public Transform origin; // Reference to the knockback source
     public Vector3 direction;
     public float strength = 1f;
@@ -24,6 +26,18 @@ public class KnockbackMechanic : FightMechanic
         {
             if ((!actionInfo.source.knockbackResistant.value && canBeResisted) || !canBeResisted || !actionInfo.source.bound.value)
             {
+                if (originFromSource)
+                {
+                    if (isDash && actionInfo.source.dashKnockbackPivot != null)
+                    {
+                        origin = actionInfo.source.dashKnockbackPivot;
+                    }
+                    else
+                    {
+                        origin = actionInfo.source.transform;
+                    }
+                }
+
                 // Calculate knockback direction
                 Vector3 knockbackDirection = Vector3.zero;
 

@@ -226,11 +226,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 2956341988092827634}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 36.66}
-  m_SizeDelta: {x: 50, y: 25}
-  m_Pivot: {x: 1, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: -10.5, y: 12.5}
+  m_SizeDelta: {x: 67, y: 25}
+  m_Pivot: {x: 0, y: 1}
 --- !u!222 &4983319537269943235
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -986,7 +986,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9018771236985893479}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1108,7 +1108,14 @@ MonoBehaviour:
   hasTarget: 0
   damageMultiplier: 1
   distanceToTarget: 0
+  chargesLeft: 0
   lastAction: {fileID: 0}
+  currentKeybind:
+    keyCode: 0
+    mouseButton: 0
+    alt: 0
+    control: 0
+    shift: 0
   onExecute:
     m_PersistentCalls:
       m_Calls:
@@ -1124,6 +1131,12 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onCast:
+    m_PersistentCalls:
+      m_Calls: []
+  onInterrupt:
+    m_PersistentCalls:
+      m_Calls: []
   recastType: 0
   borderStandard: {fileID: 8517781323552356241}
   borderDark: {fileID: 5825910878501684475}
@@ -1134,6 +1147,7 @@ MonoBehaviour:
   comboOutlineGroup: {fileID: 1540867105720776091}
   recastTimeText: {fileID: 2323633435487936054}
   resourceCostText: {fileID: 2246072839651867393}
+  keybindText: {fileID: 2106905094565714095}
   hudElements:
   - {fileID: 3711198974548135379}
   - {fileID: 7108613375670633472}
@@ -1160,8 +1174,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
+  omitSorting: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
+  initializeOnStart: 0
+  isPartyListElement: 0
+  untargetableOverlay: {fileID: 0}
+  targetButton: {fileID: 0}
   blocksAllInput: 0
   blocksPosInput: 0
   blocksRotInput: 1
@@ -1177,6 +1197,10 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  dummy: 0
 --- !u!1 &9069315353467151772
 GameObject:
   m_ObjectHideFlags: 0

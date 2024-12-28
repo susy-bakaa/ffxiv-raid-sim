@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
+using static ActionController;
 
 public class TargetController : MonoBehaviour
 {
@@ -721,7 +722,7 @@ public class TargetController : MonoBehaviour
                     }
                     if (targetCastbarName != null)
                     {
-                        targetCastbarName.text = Utilities.InsertSpaceBeforeCapitals(m_actionController.LastAction.data.actionName);
+                        targetCastbarName.text = m_actionController.LastAction.data.GetActionName();
                     }
                 }
                 else

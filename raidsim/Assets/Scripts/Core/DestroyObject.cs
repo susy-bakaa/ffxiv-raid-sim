@@ -16,6 +16,8 @@ public class DestroyObject : MonoBehaviour
     private float life;
     private float triggerLife;
 
+    private bool triggered;
+
     void Awake()
     {
         if (state == null)
@@ -26,6 +28,9 @@ public class DestroyObject : MonoBehaviour
 
     void Update()
     {
+        if (triggered)
+            return;
+
         if (triggerLife != 0f)
         {
             triggerLife -= FightTimeline.deltaTime;
@@ -70,6 +75,7 @@ public class DestroyObject : MonoBehaviour
 
     public void OnDestroy()
     {
+        triggered = true;
         onDestroy.Invoke();
         if (log)
             Debug.Log($"{this} was destroyed!");
@@ -77,6 +83,7 @@ public class DestroyObject : MonoBehaviour
 
     private void DisableObject()
     {
+        triggered = true;
         onDestroy.Invoke();
         if (state == null)
             gameObject.SetActive(false);

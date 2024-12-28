@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using NaughtyAttributes;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static ActionController;
 using static CharacterState;
 using static StatusEffectData;
@@ -11,7 +13,10 @@ public class RaidwideDebuffsMechanic : FightMechanic
     public PartyList party;
     public List<StatusEffectInfo> effects = new List<StatusEffectInfo>();
     public StatusEffectInfo playerEffect;
-    public bool ignoreRoles = true;
+    [HideIf("onlySpecifiedRoles")] public bool ignoreRoles = true;
+    [HideIf("ignoreRoles")] public bool onlySpecifiedRoles = false;
+    [ShowIf("onlySpecifiedRoles")] public List<RoleSelection> specifiedRoles = new List<RoleSelection>();
+    [ShowIf("onlySpecifiedRoles")] public bool randomizeRoleGroups = false;
     public bool cleansEffects = false;
     public bool fallbackToRandom = false;
 
@@ -45,8 +50,115 @@ public class RaidwideDebuffsMechanic : FightMechanic
 
         statusEffects = new List<StatusEffectInfo>(effects); // Copy the effects list
         partyMembers = new List<CharacterState>(party.GetActiveMembers()); // Copy the party members list
-        partyMembers.Shuffle();
+
+        if (onlySpecifiedRoles && playerEffect.data == null && !playerEffect.name.Contains('!'))
+        {
+            if (specifiedRoles != null)
+            {
+                if (randomizeRoleGroups)
+                    specifiedRoles.Shuffle();
+
+                int selected = Random.Range(0, specifiedRoles.Count);
+
+                if (log)
+                    Debug.Log($"Role group {specifiedRoles[selected].name} selected out of possible {specifiedRoles.Count}!");
+
+                if (specifiedRoles.Count > 0)
+                {
+                    for (int i = 0; i < partyMembers.Count; i++)
+                    {
+                        if (log)
+                            Debug.Log($"Processing party member {partyMembers[i].gameObject.name} ({i}/{specifiedRoles.Count})");
+                        if (!specifiedRoles[selected].roles.Contains(partyMembers[i].role))
+                        {
+                            if (log)
+                                Debug.Log($"Party member does not appear in currently selected role group, removing member from available pool.");
+                            partyMembers.Remove(partyMembers[i]);
+                            i--;
+                        }
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning($"Not enough specified role groups found for {gameObject.name} to randomize selection!");
+                }
+            }
+        }
+        else if (onlySpecifiedRoles && playerEffect.data != null)
+        {
+            if (specifiedRoles != null)
+            {
+                if (randomizeRoleGroups)
+                    specifiedRoles.Shuffle();
+
+                RoleSelection playerRoleGroup = specifiedRoles.FirstOrDefault(group => group.roles.Contains(player.role));
+
+                if (playerRoleGroup.roles != null)
+                {
+                    if (log)
+                        Debug.Log($"Player's role group {playerRoleGroup.name} selected!");
+
+                    for (int i = 0; i < partyMembers.Count; i++)
+                    {
+                        if (!playerRoleGroup.roles.Contains(partyMembers[i].role))
+                        {
+                            partyMembers.Remove(partyMembers[i]);
+                            i--;
+                        }
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning($"Player's role group not found in specified roles for {gameObject.name}!");
+                }
+            }
+        } 
+        else if (onlySpecifiedRoles && playerEffect.name.Contains('!'))
+        {
+            if (specifiedRoles != null)
+            {
+                if (randomizeRoleGroups)
+                    specifiedRoles.Shuffle();
+
+                RoleSelection playerRoleGroup = specifiedRoles.FirstOrDefault(group => group.roles.Contains(player.role));
+
+                if (playerRoleGroup.roles != null)
+                {
+                    if (log)
+                        Debug.Log($"Player's role group {playerRoleGroup.name} found, selecting another group!");
+
+                    List<RoleSelection> otherGroups = specifiedRoles.Where(group => group != playerRoleGroup).ToList();
+
+                    if (otherGroups.Count > 0)
+                    {
+                        int selected = Random.Range(0, otherGroups.Count);
+
+                        if (log)
+                            Debug.Log($"Role group {otherGroups[selected].name} selected out of possible {otherGroups.Count}!");
+
+                        for (int i = 0; i < partyMembers.Count; i++)
+                        {
+                            if (!otherGroups[selected].roles.Contains(partyMembers[i].role))
+                            {
+                                partyMembers.Remove(partyMembers[i]);
+                                i--;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"No other role groups found for {gameObject.name} to select!");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning($"Player's role group not found in specified roles for {gameObject.name}!");
+                }
+            }
+        }
+
         statusEffects.Shuffle();
+        partyMembers.Shuffle();
 
         if (playerEffect.data != null && player != null)
         {
@@ -90,6 +202,9 @@ public class RaidwideDebuffsMechanic : FightMechanic
                 // Make sure target is available
                 if (target != null)
                 {
+                    if (log)
+                        Debug.Log($"Applying {statusEffects[i].data.statusName} ({from.characterName}, {statusEffects[i].tag}, {statusEffects[i].stacks}) to {target.characterName}!");
+
                     // Apply the effect to the target
                     target.AddEffect(statusEffects[i].data, from, false, statusEffects[i].tag, statusEffects[i].stacks);
 
@@ -178,5 +293,52 @@ public class RaidwideDebuffsMechanic : FightMechanic
 
         Debug.LogWarning($"No suitable candidate found for status effect {effect.name} from list of {candidates.Count} candidates!");
         return null; // No suitable candidate found
+    }
+
+    [System.Serializable]
+    public struct RoleSelection
+    {
+        public string name;
+        public List<Role> roles;
+
+        public RoleSelection(string name, List<Role> roles)
+        {
+            this.name = name;
+            this.roles = roles;
+        }
+
+        public RoleSelection(string name, Role role)
+        {
+            this.name = name;
+            this.roles = new List<Role> { role };
+        }
+
+        public static bool operator ==(RoleSelection obj1, RoleSelection obj2)
+        {
+            return obj1.Equals(obj2);
+        }
+
+        public static bool operator !=(RoleSelection obj1, RoleSelection obj2)
+        {
+            return !obj1.Equals(obj2);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is RoleSelection)
+            {
+                RoleSelection other = (RoleSelection)obj;
+                return this.name == other.name && this.roles.SequenceEqual(other.roles);
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            int hash = 17;
+            hash = hash * 23 + (name != null ? name.GetHashCode() : 0);
+            hash = hash * 23 + (roles != null ? roles.GetHashCode() : 0);
+            return hash;
+        }       
     }
 }

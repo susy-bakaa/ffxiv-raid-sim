@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace no00ob.Raidsim.Editor
+namespace susy_baka.Raidsim.Editor
 {
     public class RoundAoeShaderInspector : ShaderGUI
     {
@@ -27,6 +27,7 @@ namespace no00ob.Raidsim.Editor
             MaterialProperty outlineTintProp = FindProperty("_OutlineTintColor", properties);
             MaterialProperty innerOpacityProp = FindProperty("_InnerOpacity", properties);
             MaterialProperty alphaProp = FindProperty("_Alpha", properties);
+            MaterialProperty cullProp = FindProperty("_DoubleSided", properties);
 
             // Clamp the properties
             outerRadiusProp.floatValue = Mathf.Max(outerRadiusProp.floatValue, 0);
@@ -41,6 +42,7 @@ namespace no00ob.Raidsim.Editor
             fadeDurationProp.floatValue = Mathf.Max(fadeDurationProp.floatValue, 0);
             angleProp.floatValue = Mathf.Clamp(angleProp.floatValue, 0.0f, 360.0f);
             innerOpacityProp.floatValue = Mathf.Clamp01(innerOpacityProp.floatValue);
+            alphaProp.floatValue = Mathf.Clamp(alphaProp.floatValue, 0.0f, 2.0f);
 
             GUILayout.Label("Shape", EditorStyles.boldLabel);
 
@@ -63,7 +65,7 @@ namespace no00ob.Raidsim.Editor
             // Scale the properties for display
             float angularScaledValue = angularOutlineProp.floatValue * 1000.0f;
             float outlineScaledValue = outlineProp.floatValue * 1000.0f;
-            
+
             EditorGUI.BeginChangeCheck();
 
             GUILayout.Space(20);
@@ -89,11 +91,12 @@ namespace no00ob.Raidsim.Editor
             }
 
             GUILayout.Space(20);
-            
+
             GUILayout.Label("Other", EditorStyles.boldLabel);
 
             alphaProp.floatValue = EditorGUILayout.Slider("Opacity", alphaProp.floatValue, alphaProp.rangeLimits.x, alphaProp.rangeLimits.y);
-            
+            cullProp.floatValue = EditorGUILayout.Popup("Cull Mode", (int)cullProp.floatValue, new string[] { "Off", "Back", "Front" });
+
             GUILayout.Space(-10);
 
             // Update material properties

@@ -27,6 +27,7 @@ public class CharacterActionData : ScriptableObject
     public float cast = 2.0f;
     public float recast = 2.5f;
     public float animationLock = 0.6f;
+    public int charges = 1;
     public bool canBeSlideCast = true;
     public bool rollsGcd = true;
     public StatusEffectData buff;
@@ -38,6 +39,8 @@ public class CharacterActionData : ScriptableObject
     public bool playAnimationDirectly = false;
     public bool playAnimationOnFinish = false;
     public int onAnimationFinishId = -1;
+    public string speech = string.Empty;
+    public AudioClip speechAudio = null;
 
     private void Awake()
     {
@@ -56,4 +59,12 @@ public class CharacterActionData : ScriptableObject
         damage = new Damage(damage, null, damage.name);
     }
 #endif
+
+    public string GetActionName()
+    {
+        string finalName = Utilities.InsertSpaceBeforeCapitals(actionName.Replace(" ", ""));
+        finalName = Utilities.InsertSpaces(finalName, true);
+
+        return finalName;
+    }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using NaughtyAttributes;
 using UnityEngine;
 using static ActionController;
 using static GlobalData;
@@ -18,9 +19,11 @@ public class SpawnDamageTriggerMechanic : FightMechanic
     public bool useActionDamage = true;
     public bool usePlayerHealth = false;
     public bool useTargetControllerCurrentTargetAsLocation = false;
+    public bool faceTarget = false;
+    [ShowIf("faceTarget")] public Axis axis = new Axis();
     public bool dealDamage = true;
+    [ShowIf("dealDamage")] public float damageMultiplier = 1f;
     public bool increaseEnmity = false;
-    public float damageMultiplier = 1f;
 
     public override void TriggerMechanic(ActionInfo actionInfo)
     {
@@ -69,18 +72,68 @@ public class SpawnDamageTriggerMechanic : FightMechanic
             else
                 spawned = damageTriggerPrefab;
 
+            if (log)
+                Debug.Log($"Object was spawned at {spawned?.transform.position} using '{spawnLocation?.gameObject.name}' at {spawnLocation?.position} as target");
+
             SetupDamageTrigger(spawned, actionInfo);
         }
     }
 
     public void SetupDamageTrigger(GameObject spawned, ActionInfo actionInfo)
     {
-        if (spawned.TryGetComponent(out DamageTrigger damageTrigger))
+        DamageTrigger damageTrigger = null;
+        bool found = false;
+
+        if (spawned.TryGetComponent(out damageTrigger))
+        {
+            found = true;
+        }
+        else
+        {
+            foreach (Transform child in spawned.transform)
+            {
+                if (child.TryGetComponent(out damageTrigger))
+                {
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if (damageTrigger != null && found)
         {
             if (owner != null)
                 damageTrigger.owner = owner;
             if (actionInfo.action != null && actionInfo.action.data != null)
                 damageTrigger.data = actionInfo.action.data;
+
+            if (faceTarget)
+            {
+                if (actionInfo.target != null)
+                {
+                    // Calculate the look rotation
+                    Vector3 directionToTarget = actionInfo.target.transform.position - spawned.transform.position;
+                    Quaternion lookRotation = Quaternion.LookRotation(directionToTarget);
+
+                    // Apply axis locking
+                    Vector3 lockedEulerAngles = lookRotation.eulerAngles;
+
+                    // Lock specific axes
+                    if (!axis.x)
+                        lockedEulerAngles.x = spawned.transform.eulerAngles.x;
+                    if (!axis.y)
+                        lockedEulerAngles.y = spawned.transform.eulerAngles.y;
+                    if (!axis.z)
+                        lockedEulerAngles.z = spawned.transform.eulerAngles.z;
+
+                    // Apply the rotation
+                    spawned.transform.rotation = Quaternion.Euler(lockedEulerAngles);
+                }
+                else
+                {
+                    Debug.LogWarning($"[SpawnDamageTriggerMechanic ({gameObject.name})] has faceTarget set to true, but no available target was found!");
+                }
+            }
 
             if (delay > 0)
             {

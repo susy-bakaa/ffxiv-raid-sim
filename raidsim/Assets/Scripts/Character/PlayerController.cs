@@ -25,12 +25,16 @@ public class PlayerController : MonoBehaviour
     public bool enableInput = true;
     public bool legacyMovement = true;
     public bool freezeMovement = false;
+    public bool sliding = false;
+    public float slideDistance = 0f;
+    public float slideDuration = 0.5f;
     private bool movementFrozen = false;
     private bool knockedBack = false;
 
     private int animatorParameterDead = Animator.StringToHash("Dead");
     private int animatorParameterSpeed = Animator.StringToHash("Speed");
     private int animatorParameterDiamondback = Animator.StringToHash("Diamondback");
+    private int animatorParamterSliding = Animator.StringToHash("Slipping");
 
     void Awake()
     {
@@ -74,6 +78,7 @@ public class PlayerController : MonoBehaviour
         {
             animator.SetBool(animatorParameterDead, state.dead);
             animator.SetBool(animatorParameterDiamondback, state.HasEffect("Diamondback"));
+            animator.SetBool(animatorParamterSliding, (sliding && knockedBack));
 
             if (CanMove())
                 return;
@@ -99,6 +104,12 @@ public class PlayerController : MonoBehaviour
         if (!state.uncontrollable.value && !state.dead && !state.bound.value && enableInput)
         {
             Vector2 vector = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+
+            if (Input.GetMouseButton(0) && Input.GetMouseButton(1) && vector.y >= 0)
+            {
+                vector.y = 1;
+            }
+
             Vector2 normalized = vector.normalized;
 
             if (Time.timeScale <= 0f)
@@ -114,6 +125,13 @@ public class PlayerController : MonoBehaviour
             float target = state.currentSpeed * normalized.magnitude;
             if (normalized != Vector2.zero)
             {
+                if (sliding && slideDistance > 0f)
+                {
+                    knockedBack = true;
+                    Knockback(transform.forward * slideDistance, slideDuration);
+                    return;
+                }
+
                 currentSpeed = Mathf.SmoothDamp(currentSpeed, target, ref speedSmoothVelocity, 0.05f);
                 transform.Translate(transform.forward * currentSpeed * FightTimeline.deltaTime, Space.World);
                 ClampMovement();
@@ -138,7 +156,7 @@ public class PlayerController : MonoBehaviour
             animator.SetFloat(animatorParameterSpeed, 0f);
             transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, release);
             ClampMovement();
-        } 
+        }
         else
         {
             velocity = Vector3.zero;

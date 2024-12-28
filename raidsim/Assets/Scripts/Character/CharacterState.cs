@@ -16,14 +16,16 @@ public class CharacterState : MonoBehaviour
 {
     public enum Role { meleeDps, magicalRangedDps, physicalRangedDps, tank, healer, unassigned }
 
-    [HideInInspector]
+    [Hidden]
     public PlayerController playerController;
-    [HideInInspector]
+    [Hidden]
     public AIController aiController;
-    [HideInInspector]
+    [Hidden]
     public BossController bossController;
-    [HideInInspector]
+    [Hidden]
     public TargetController targetController;
+    [Hidden]
+    public Transform dashKnockbackPivot;
 
     #region Stat Variables
     [Header("Status")]
@@ -44,7 +46,6 @@ public class CharacterState : MonoBehaviour
 
     public float currentDamageOutputMultiplier = 1f;
     public Dictionary<string, float> damageOutputModifiers = new Dictionary<string, float>();
-
     public float currentDamageReduction = 1f;
     public Dictionary<string,float> damageReduction = new Dictionary<string, float>();
 
@@ -334,6 +335,16 @@ public class CharacterState : MonoBehaviour
         aiController = GetComponent<AIController>();
         bossController = GetComponent<BossController>();
         targetController = GetComponent<TargetController>();
+        TaggedObject[] taggedObjects = transform.Find("Pivot").GetComponentsInChildren<TaggedObject>();
+
+        foreach (TaggedObject tagged in taggedObjects)
+        {
+            if (tagged.m_tag == "dashPivot")
+            {
+                dashKnockbackPivot = tagged.transform;
+                break;
+            }
+        }
 
         if (nameplateGroup == null)
         {
@@ -843,7 +854,7 @@ public class CharacterState : MonoBehaviour
     }
     #endregion
 
-    #region Health
+        #region Health
     public void ModifyHealth(Damage damage, bool kill = false, bool noFlyText = false)
     {
         if (!gameObject.activeSelf)
@@ -2955,6 +2966,9 @@ public class CharacterState : MonoBehaviour
 
     public bool HasEffect(string name, int tag = 0)
     {
+        if (string.IsNullOrEmpty(name))
+            return false;
+
         if (tag > 0)
         {
             name = $"{name}_{tag}";
@@ -3082,7 +3096,7 @@ public class CharacterState : MonoBehaviour
             finalValue = finalDamage.value.ToString();
         }
 
-        if (invulnerable.value && finalDamage.negative)
+        if ((invulnerable.value && finalDamage.negative) || (finalDamage.value == 0))
         {
             finalValue = "DODGE";
         }
@@ -3109,7 +3123,7 @@ public class CharacterState : MonoBehaviour
             result = $"<sprite=\"damage_types\" name=\"0\">{finalValue}";
         }
 
-        if (invulnerable.value && finalDamage.negative)
+        if ((invulnerable.value && finalDamage.negative) || (finalDamage.value == 0))
         {
             color = neutralPopupColor;
         }

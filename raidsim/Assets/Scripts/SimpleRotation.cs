@@ -5,12 +5,38 @@ using UnityEngine;
 public class SimpleRotation : MonoBehaviour
 {
     public Vector3 rotation;
+    public bool setRotation = false;
+    public string faceTowardsName;
+    public Transform faceTowards;
+
+    private void Awake()
+    {
+        if (!string.IsNullOrEmpty(faceTowardsName))
+        {
+            faceTowards = Utilities.FindAnyByName(faceTowardsName).transform;
+        }
+    }
 
     void Update()
     {
-        if (rotation != Vector3.zero)
+        if (faceTowards == null)
         {
-            transform.Rotate(rotation * Time.deltaTime);
+            if (!setRotation)
+            {
+                if (rotation != Vector3.zero)
+                {
+                    transform.Rotate(rotation * Time.deltaTime);
+                }
+            }
+            else
+            {
+                transform.eulerAngles = rotation;
+            }
+        }
+        else
+        {
+            transform.LookAt(faceTowards);
+            transform.eulerAngles = new Vector3(0f, transform.eulerAngles.y, 0f);
         }
     }
 }

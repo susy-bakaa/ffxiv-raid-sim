@@ -177,6 +177,11 @@ public class BossController : MonoBehaviour
         }
     }
 
+    public void SetAnimator(Animator animator)
+    {
+        this.animator = animator;
+    }
+
     public void SetTarget()
     {
         SetTarget((Transform)null);

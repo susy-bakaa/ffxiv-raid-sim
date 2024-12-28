@@ -8,6 +8,8 @@ public class EnvironmentHandler : MonoBehaviour
     public bool disableFogForWindows = false;
     public bool disableFogForLinux = false;
 
+    public GameObject[] arenas;
+
     private void Awake()
     {
 #if UNITY_WEBPLAYER
@@ -28,5 +30,16 @@ public class EnvironmentHandler : MonoBehaviour
             RenderSettings.fog = false;
         }
 #endif
+    }
+
+    public void ChangeArenaModel(int index)
+    {
+        if (arenas == null || arenas.Length == 0)
+            return;
+
+        for (int i = 0; i < arenas.Length; i++)
+        {
+            arenas[i].SetActive(i == index);
+        }
     }
 }
