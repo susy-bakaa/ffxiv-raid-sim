@@ -5,7 +5,7 @@ using NaughtyAttributes;
 #endif
 using UnityEngine;
 using UnityEngine.Events;
-using static ActionController;
+using static GlobalData;
 
 public class RepeatMechanic : FightMechanic
 {

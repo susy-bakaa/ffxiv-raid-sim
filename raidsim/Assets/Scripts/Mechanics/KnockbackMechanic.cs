@@ -1,8 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static ActionController;
+using static GlobalData;
 
 public class KnockbackMechanic : FightMechanic
 {

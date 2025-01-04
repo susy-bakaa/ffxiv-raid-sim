@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
-using static ActionController;
+using static GlobalData;
 
 public class TimedMechanic : FightMechanic
 {

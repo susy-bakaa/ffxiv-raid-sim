@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GlobalData;
 
 [CreateAssetMenu(fileName = "New Status Effect", menuName = "FFXIV/New Status Effect")]
 public class StatusEffectData : ScriptableObject
@@ -27,7 +28,7 @@ public class StatusEffectData : ScriptableObject
     public List<Sprite> icons = new List<Sprite>();
     public List<StatusEffectData> incompatableStatusEffects = new List<StatusEffectData>();
     public List<StatusEffectData> refreshStatusEffects = new List<StatusEffectData>();
-    public List<CharacterState.Role> assignedRoles = new List<CharacterState.Role>();
+    public List<Role> assignedRoles = new List<Role>();
 
     [System.Serializable]
     public struct StatusEffectInfo

@@ -9,10 +9,13 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static ActionController;
+using static CharacterState;
 using static GlobalData;
 
 public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
+    CanvasGroup group;
+    CharacterState character;
     Button button;
     public enum RecastType { standard, longGcd, stackedOgcd }
 
@@ -25,12 +28,18 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public bool isAutoAction = false;
     public bool isDisabled;
     public bool unavailable = false;
+    public bool invisible = false;
     public bool hasTarget = false;
     public float damageMultiplier = 1f;
     public float distanceToTarget;
     public int chargesLeft = 0;
     public CharacterActionData lastAction;
     public KeyBind currentKeybind;
+    public List<Role> availableForRoles;
+    public List<CharacterAction> sharedRecasts;
+    public List<StatusEffectData> comboOutlineEffects;
+    public List<StatusEffectData> hideWhileEffects;
+    public bool showInsteadWithEffects = false;
 
     [Header("Events")]
     public UnityEvent<ActionInfo> onExecute;
@@ -58,12 +67,20 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
     private bool animFlag;
     private RecastType normalRecastType;
     private bool chargeRestored = false;
+    private bool permanentlyUnavailable = false;
+
+    public CharacterState GetCharacter()
+    {
+        return character;
+    }
 
     void Awake()
     {
         button = GetComponent<Button>();
+        group = GetComponent<CanvasGroup>();
 
         chargesLeft = data.charges;
+        permanentlyUnavailable = unavailable;
 
         if (borderStandard != null)
         {
@@ -122,7 +139,81 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     void Update()
     {
-        if (data.range > 0f && data.isTargeted && (distanceToTarget > data.range) && hasTarget)
+        if (character != null && availableForRoles != null && availableForRoles.Count > 0)
+        {
+            foreach (Role role in availableForRoles)
+            {
+                if (role == character.role)
+                {
+                    if (!permanentlyUnavailable)
+                    {
+                        unavailable = false;
+                    }
+                    break;
+                }
+                else
+                {
+                    unavailable = true;
+                }
+            }
+        }
+
+        if (unavailable)
+        {
+            if (!colorsFlag)
+            {
+                for (int i = 0; i < hudElements.Length; i++)
+                {
+                    hudElements[i].SetColor(unavailableColors);
+                }
+                colorsFlag = true;
+            }
+
+            if (resourceCostText != null)
+            {
+                resourceCostText.text = "X";
+            }
+
+            ResetAnimationLock();
+            ResetCooldown();
+            chargesLeft = data.charges;
+        }
+
+        if (hideWhileEffects != null && hideWhileEffects.Count > 0 && character != null)
+        {
+            if (!showInsteadWithEffects)
+                invisible = false;
+            else
+                invisible = true;
+            for (int i = 0; i < hideWhileEffects.Count; i++)
+            {
+                if (character.HasAnyVersionOfEffect(hideWhileEffects[i].statusName))
+                {
+                    if (!showInsteadWithEffects)
+                        invisible = true;
+                    else
+                        invisible = false;
+                }
+            }
+        }
+
+        if (group != null)
+        {
+            if (invisible)
+            {
+                group.alpha = 0f;
+                group.interactable = false;
+                group.blocksRaycasts = false;
+            }
+            else
+            {
+                group.alpha = 1f;
+                group.interactable = true;
+                group.blocksRaycasts = true;
+            }
+        }
+
+        if (data.range > 0f && data.isTargeted && (distanceToTarget > data.range) && hasTarget && !unavailable)
         {
             isAvailable = false;
             if (!colorsFlag)
@@ -150,8 +241,13 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
                 }
             }
         }
-        else
+        else if (!unavailable)
         {
+            if (data.range > 0f && data.isTargeted && (distanceToTarget <= data.range) && hasTarget && data.charges > 1 && chargesLeft > 0)
+            {
+                isAvailable = true;
+            }
+
             if (colorsFlag)
             {
                 for (int i = 0; i < hudElements.Length; i++)
@@ -251,9 +347,31 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
             }
         }
 
-        if (lastAction != null && data.comboAction != null)
+        if ((lastAction != null && data.comboAction != null) || (comboOutlineEffects != null && comboOutlineEffects.Count > 0))
         {
-            if (lastAction == data.comboAction && comboOutlineGroup != null)
+            bool showOutline = false;
+
+            if (comboOutlineEffects != null && comboOutlineEffects.Count > 0 && character != null)
+            {
+                for (int i = 0; i < comboOutlineEffects.Count; i++)
+                {
+                    if (character.HasAnyVersionOfEffect(comboOutlineEffects[i].statusName))
+                    {
+                        showOutline = true;
+                        break;
+                    }
+                }
+            }
+
+            if (lastAction != null && data.comboAction != null)
+            {
+                if (lastAction == data.comboAction && comboOutlineGroup != null)
+                {
+                    showOutline = true;
+                }
+            }
+
+            if (showOutline)
             {
                 comboOutlineGroup.alpha = 1f;
             }
@@ -329,10 +447,18 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
             //Debug.Log($"action {gameObject.name} of {controller.gameObject.name} button was linked!");
             button.onClick.AddListener(() => { controller.PerformAction(this); });
         }
+
+        if (controller != null)
+        {
+            character = controller.GetComponent<CharacterState>();
+        }
     }
 
     public void ExecuteAction(ActionInfo actionInfo)
     {
+        if (unavailable)
+            return;
+
         if (data.buff != null)
         {
             if (data.buff.toggle || data.dispelBuffInstead)
@@ -413,13 +539,31 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
                     }
                 }
             }
+        } 
+        else if (actionInfo.action.data.isTargeted && (actionInfo.target == null || !hasTarget))
+        {
+            return;
         }
 
         onExecute.Invoke(actionInfo);
     }
 
-    public void ActivateCooldown()
+    public void ActivateActionUse()
     {
+        if (unavailable || invisible || isDisabled)
+            return;
+
+        chargesLeft--;
+        ActivateCooldown();
+        ActivateAnimationLock();
+        OnPointerClick(null);
+    }
+
+    public void ActivateCooldown(bool shared = false)
+    {
+        if (unavailable)
+            return;
+
         if (chargesLeft < 1)
         {
             isAvailable = false;
@@ -428,15 +572,41 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         {
             timer = data.recast;
         }
+
+        if (!shared)
+        {
+            if (sharedRecasts != null && sharedRecasts.Count > 0)
+            {
+                foreach (CharacterAction sharedRecast in sharedRecasts)
+                {
+                    sharedRecast.chargesLeft--;
+                    sharedRecast.ActivateCooldown(true);
+                }
+            }
+        }
     }
 
-    public void ActivateAnimationLock()
+    public void ActivateAnimationLock(bool shared = false)
     {
+        if (unavailable)
+            return;
+
         isAnimationLocked = true;
         aTimer = data.animationLock;
+
+        if (!shared)
+        {
+            if (sharedRecasts != null && sharedRecasts.Count > 0)
+            {
+                foreach (CharacterAction sharedRecast in sharedRecasts)
+                {
+                    sharedRecast.ActivateAnimationLock(true);
+                }
+            }
+        }
     }
 
-    public void ResetCooldown()
+    public void ResetCooldown(bool shared = false)
     {
         chargesLeft++;
         if (chargesLeft > data.charges)
@@ -445,12 +615,34 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         }
         isAvailable = true;
         timer = 0f;
+
+        if (!shared)
+        {
+            if (sharedRecasts != null && sharedRecasts.Count > 0)
+            {
+                foreach (CharacterAction sharedRecast in sharedRecasts)
+                {
+                    sharedRecast.ResetCooldown(true);
+                }
+            }
+        }
     }
 
-    public void ResetAnimationLock()
+    public void ResetAnimationLock(bool shared = false)
     {
         isAnimationLocked = false;
         aTimer = 0f;
+
+        if (!shared)
+        {
+            if (sharedRecasts != null && sharedRecasts.Count > 0)
+            {
+                foreach (CharacterAction sharedRecast in sharedRecasts)
+                {
+                    sharedRecast.ResetAnimationLock(true);
+                }
+            }
+        }
     }
 
     public void ToggleState(bool state)
@@ -460,6 +652,9 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        if (unavailable)
+            return;
+
         pointer = true;
         if (selectionBorder != null)
             selectionBorder.LeanAlpha(1f, 0.25f);
@@ -467,6 +662,9 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        if (unavailable)
+            return;
+
         pointer = false;
         if (selectionBorder != null)
             selectionBorder.LeanAlpha(0f, 0.25f);
@@ -474,6 +672,9 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (unavailable)
+            return;
+
         if (clickHighlight == null) //(eventData == null && pointer) || 
         {
             return;

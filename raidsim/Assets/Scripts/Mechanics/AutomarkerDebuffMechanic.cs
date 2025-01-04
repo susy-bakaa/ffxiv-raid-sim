@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static PartyList;
+using static GlobalData;
 using static StatusEffectData;
+using static PartyList;
 
 public class AutomarkerDebuffMechanic : FightMechanic
 {
@@ -33,7 +34,7 @@ public class AutomarkerDebuffMechanic : FightMechanic
         }
     }
 
-    public override void TriggerMechanic(ActionController.ActionInfo actionInfo)
+    public override void TriggerMechanic(ActionInfo actionInfo)
     {
         if (!CanTrigger(actionInfo))
             return;
@@ -83,7 +84,7 @@ public class AutomarkerDebuffMechanic : FightMechanic
         }
     }
 
-    public override void InterruptMechanic(ActionController.ActionInfo actionInfo)
+    public override void InterruptMechanic(ActionInfo actionInfo)
     {
         base.InterruptMechanic(actionInfo);
 

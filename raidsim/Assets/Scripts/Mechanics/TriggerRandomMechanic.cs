@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using NaughtyAttributes;
 using UnityEngine;
+using static GlobalData;
 
 public class TriggerRandomMechanic : FightMechanic
 {
@@ -14,13 +15,12 @@ public class TriggerRandomMechanic : FightMechanic
     [HideIf("chooseListBasedOnPrevious")] public bool chooseBasedOnPreviousResult = false;
     public bool useIndexMapping = false;
     public List<IndexMapping> indexMapping = new List<IndexMapping>();
-#if UNITY_EDITOR
+
     [Header("Editor")]
     public int editorForcedRandomEventResult = -1;
     public int editorForcedPreviousRandomEventResult = -1;
-#endif
 
-    public override void TriggerMechanic(ActionController.ActionInfo actionInfo)
+    public override void TriggerMechanic(ActionInfo actionInfo)
     {
         if (!CanTrigger(actionInfo))
             return;
@@ -31,10 +31,11 @@ public class TriggerRandomMechanic : FightMechanic
         {
             r = UnityEngine.Random.Range(0, mechanics[0].fightMechanics.Count);
 
-#if UNITY_EDITOR
             if (editorForcedRandomEventResult > -1)
                 r = editorForcedRandomEventResult;
-#endif
+
+            if (log)
+                Debug.Log($"r {r}");
 
             mechanics[0].fightMechanics[r].TriggerMechanic(actionInfo);
         }
@@ -42,10 +43,8 @@ public class TriggerRandomMechanic : FightMechanic
         {
             int p = FightTimeline.Instance.GetRandomEventResult(previousRandomEventResultId);
 
-#if UNITY_EDITOR
             if (editorForcedPreviousRandomEventResult > -1)
                 p = editorForcedPreviousRandomEventResult;
-#endif
 
             if (p <= -1)
                 return;
@@ -64,12 +63,11 @@ public class TriggerRandomMechanic : FightMechanic
 
             r = UnityEngine.Random.Range(0, mechanics[p].fightMechanics.Count);
 
-#if UNITY_EDITOR
             if (editorForcedRandomEventResult > -1)
                 r = editorForcedRandomEventResult;
-#endif
 
-            Debug.Log($"r {r} p {p}");
+            if (log)
+                Debug.Log($"r {r} p {p}");
 
             if (p > -1 && p < mechanics.Count)
             {
@@ -80,10 +78,8 @@ public class TriggerRandomMechanic : FightMechanic
         {
             int b = FightTimeline.Instance.GetRandomEventResult(previousRandomEventResultId);
 
-#if UNITY_EDITOR
             if (editorForcedPreviousRandomEventResult > -1)
                 b = editorForcedPreviousRandomEventResult;
-#endif
 
             if (b <= -1)
                 return;
@@ -118,13 +114,5 @@ public class TriggerRandomMechanic : FightMechanic
     {
         public string name;
         public List<FightMechanic> fightMechanics = new List<FightMechanic>();
-    }
-
-    [System.Serializable]
-    public struct IndexMapping
-    {
-        public string name;
-        public int previousIndex;
-        public int nextIndex;
     }
 }

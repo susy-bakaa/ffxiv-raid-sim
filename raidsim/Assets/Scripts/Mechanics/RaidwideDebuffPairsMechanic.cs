@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static ActionController;
+using static GlobalData;
 using static StatusEffectData;
 
 public class RaidwideDebuffPairsMechanic : FightMechanic
@@ -116,7 +116,7 @@ public class RaidwideDebuffPairsMechanic : FightMechanic
 
     private CharacterState FindSuitableTarget(StatusEffectInfo effect, List<CharacterState> candidates)
     {
-        foreach (CharacterState.Role role in effect.data.assignedRoles)
+        foreach (Role role in effect.data.assignedRoles)
         {
             // Create a copy of the candidates list
             List<CharacterState> candidatesCopy = new List<CharacterState>(candidates);

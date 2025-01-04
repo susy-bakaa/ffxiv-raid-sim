@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class SimpleFreecam : MonoBehaviour
 {
+    UserInput userInput;
+
     public bool active;
     public float normalMovementSpeed = 5f; // Base speed of camera movement
     public float speedAdjustmentStep = 0.5f; // Speed adjustment step for each mouse wheel scroll
@@ -20,6 +22,15 @@ public class SimpleFreecam : MonoBehaviour
     private Vector2 cursorPosition;
     private bool cursorPositionSet;
 
+    private void Awake()
+    {
+        userInput = FindObjectOfType<UserInput>();
+        if (userInput == null)
+        {
+            Debug.LogError("SimpleFreecam: No UserInput script found in the scene!");
+        }
+    }
+
     void Start()
     {
         currentMovementSpeed = normalMovementSpeed; // Initialize the current movement speed
@@ -29,7 +40,7 @@ public class SimpleFreecam : MonoBehaviour
     void Update()
     {
         // Toggle active state
-        if (Input.GetKeyDown(KeyCode.Tilde) || Input.GetKeyDown(KeyCode.BackQuote) || Input.GetKeyDown(KeyCode.ScrollLock))
+        if (userInput.GetButtonDown("ToggleFreecam"))//if (Input.GetKeyDown(KeyCode.Tilde) || Input.GetKeyDown(KeyCode.BackQuote) || Input.GetKeyDown(KeyCode.ScrollLock))
         {
             active = !active;
         }
@@ -84,7 +95,7 @@ public class SimpleFreecam : MonoBehaviour
         }
 
         // Reset movement speed to default when Control key is pressed
-        if (Input.GetButtonDown("ResetSpeed"))
+        if (userInput.GetButtonDown("ResetSpeed"))//Input.GetButtonDown("ResetSpeed"))
         {
             currentMovementSpeed = defaultMovementSpeed;
         }
@@ -100,9 +111,12 @@ public class SimpleFreecam : MonoBehaviour
         // Camera movement
         if (enableMovement)
         {
-            float horizontalMovement = Input.GetAxisRaw("Horizontal");
-            float verticalMovement = Input.GetAxisRaw("Vertical");
-            float flyMovement = Input.GetAxisRaw("Fly"); // Ensure "Fly" axis is defined in Input Manager
+            //float horizontalMovement = Input.GetAxisRaw("HorizontalLegacy");
+            //float verticalMovement = Input.GetAxisRaw("VerticalLegacy");
+            float horizontalMovement = userInput.GetAxis("Horizontal");
+            float verticalMovement = userInput.GetAxis("Vertical");
+            //float flyMovement = Input.GetAxisRaw("Fly"); // Ensure "Fly" axis is defined in Input Manager
+            float flyMovement = userInput.GetAxis("Fly");
 
             //Debug.Log($"Movement Input: Horizontal {horizontalMovement}, Vertical {verticalMovement}, Fly {flyMovement}");
 

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using NaughtyAttributes;
 using UnityEngine;
+using static GlobalData;
 
 public class MoveObjectMechanic : FightMechanic
 {
@@ -31,7 +32,7 @@ public class MoveObjectMechanic : FightMechanic
             targetAnimator = target.GetComponentInChildren<Animator>();
     }
 
-    public override void TriggerMechanic(ActionController.ActionInfo actionInfo)
+    public override void TriggerMechanic(ActionInfo actionInfo)
     {
         if (!CanTrigger(actionInfo))
             return;

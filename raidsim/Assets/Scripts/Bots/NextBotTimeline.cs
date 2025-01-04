@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using NaughtyAttributes;
 using UnityEngine;
+using static GlobalData;
 using static PartyList;
 using static StatusEffectData;
-using static TriggerRandomMechanic;
 
 public class NextBotTimeline : MonoBehaviour
 {

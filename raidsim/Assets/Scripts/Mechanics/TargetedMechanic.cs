@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NaughtyAttributes;
 using UnityEngine;
-using static ActionController;
+using static GlobalData;
 using static StatusEffectData;
 
 public class TargetedMechanic : FightMechanic

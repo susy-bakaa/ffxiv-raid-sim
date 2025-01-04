@@ -1,12 +1,18 @@
 using System;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Events;
+using static GlobalData;
+using static KeepCameraRotation;
 
 public class ThirdPersonCamera : MonoBehaviour
 {
     public SimpleFreecam freecam;
 
     public float mouseSensitivity = 1.5f;
+    public float controllerSensitivity = 1.5f;
+    public bool invertX = false;
+    public bool invertY = false;
     public Transform target;
     public float dstFromTarget = 13f;
     public Vector3 offsetFromTarget = new Vector3(0f, 2f, 0f);
@@ -24,10 +30,13 @@ public class ThirdPersonCamera : MonoBehaviour
     private float yaw;
     private float pitch;
     private float scrollInput;
+    //private bool externalControl = false;
 
     public bool enableZooming = true;
     public bool enableRotation = true;
     public bool enableMovement = true;
+
+    public Axis autoAdjustAxis = new Axis(false, true, false);
 
     public UnityEvent<float> onCameraOffsetUpdated;
 
@@ -61,10 +70,23 @@ public class ThirdPersonCamera : MonoBehaviour
         }
     }
 
+    public void SetCameraTransform(CameraSaveData data)
+    {
+        currentRotation = data.rotation.eulerAngles;
+        yaw = data.rotation.eulerAngles.y;
+        pitch = data.rotation.eulerAngles.x;
+    }
+
     void HandleCameraRotation()
     {
-        if (target == null)
+        if (target == null) // || externalControl
             return;
+
+        // Synchronize yaw and pitch with the current camera rotation
+        yaw = transform.eulerAngles.y;
+        // Convert transform.eulerAngles.x to the correct pitch range
+        float rawPitch = transform.eulerAngles.x;
+        pitch = (rawPitch > 180) ? rawPitch - 360 : rawPitch;
 
         if (Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(0))
         {
@@ -121,10 +143,30 @@ public class ThirdPersonCamera : MonoBehaviour
                 heldTime += Time.unscaledDeltaTime;
             }
 #endif
-            yaw += Input.GetAxis("Mouse X") * mouseSensitivity;
-            pitch -= Input.GetAxis("Mouse Y") * mouseSensitivity;
+            if (!invertX)
+                yaw += Input.GetAxis("Mouse X") * mouseSensitivity;
+            else
+                yaw -= Input.GetAxis("Mouse X") * mouseSensitivity;
+            if (!invertY)
+                pitch -= Input.GetAxis("Mouse Y") * mouseSensitivity;
+            else
+                pitch += Input.GetAxis("Mouse Y") * mouseSensitivity;
             pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
-            currentRotation = Vector3.SmoothDamp(currentRotation, new Vector3(pitch, yaw), ref rotationSmoothVelocity, rotationSmoothTime, float.PositiveInfinity, Time.unscaledDeltaTime);
+            currentRotation = Vector3.SmoothDamp(currentRotation, new Vector3(pitch, yaw, 0f), ref rotationSmoothVelocity, rotationSmoothTime, float.PositiveInfinity, Time.unscaledDeltaTime);
+            transform.eulerAngles = currentRotation;
+        } 
+        else if (Input.GetAxis("Controller X") != 0 || Input.GetAxis("Controller Y") != 0)
+        {
+            if (!invertX)
+                yaw -= Input.GetAxis("Controller X") * controllerSensitivity;
+            else
+                yaw += Input.GetAxis("Controller X") * controllerSensitivity;
+            if (!invertY)
+                pitch -= Input.GetAxis("Controller Y") * controllerSensitivity;
+            else
+                pitch += Input.GetAxis("Controller Y") * controllerSensitivity;
+            pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
+            currentRotation = Vector3.SmoothDamp(currentRotation, new Vector3(pitch, yaw, 0f), ref rotationSmoothVelocity, rotationSmoothTime, float.PositiveInfinity, Time.unscaledDeltaTime);
             transform.eulerAngles = currentRotation;
         }
     }
@@ -132,7 +174,7 @@ public class ThirdPersonCamera : MonoBehaviour
     void HandleCameraZoom()
     {
         scrollInput = Input.GetAxis("Mouse ScrollWheel");
-        dstFromTarget -= scrollInput * mouseSensitivity * 5f; // Adjust the zoom sensitivity as needed
+        dstFromTarget -= scrollInput * mouseSensitivity * 5f;
         dstFromTarget = Mathf.Clamp(dstFromTarget, dstMinMax.x, dstMinMax.y);
     }
 
@@ -153,6 +195,39 @@ public class ThirdPersonCamera : MonoBehaviour
             offsetFromTarget = defaultOffset;
         }
         onCameraOffsetUpdated.Invoke(offsetFromTarget.y);
+    }
+
+    public void AutoAdjustCamera(float smoothing)
+    {
+        if (autoAdjustAxis.None())
+            return;
+
+        // Store the original rotation for axes that should not be adjusted
+        Vector3 original = transform.eulerAngles;
+
+        // Compute the target rotation based on the target's forward direction
+        Quaternion targetRotation = Quaternion.LookRotation(target.forward, Vector3.up);
+        Vector3 targetEulerAngles = targetRotation.eulerAngles;
+
+        // Apply auto-adjust based on enabled axes
+        currentRotation = transform.eulerAngles; // Start with the current rotation
+        if (autoAdjustAxis.x)
+            currentRotation.x = Mathf.LerpAngle(currentRotation.x, targetEulerAngles.x, Time.deltaTime * smoothing);
+        else
+            currentRotation.x = original.x;
+
+        if (autoAdjustAxis.y)
+            currentRotation.y = Mathf.LerpAngle(currentRotation.y, targetEulerAngles.y, Time.deltaTime * smoothing);
+        else
+            currentRotation.y = original.y;
+
+        if (autoAdjustAxis.z)
+            currentRotation.z = Mathf.LerpAngle(currentRotation.z, targetEulerAngles.z, Time.deltaTime * smoothing);
+        else
+            currentRotation.z = original.z;
+
+        // Apply the calculated rotation to the camera
+        transform.eulerAngles = currentRotation;
     }
 
     public void RandomRotate()

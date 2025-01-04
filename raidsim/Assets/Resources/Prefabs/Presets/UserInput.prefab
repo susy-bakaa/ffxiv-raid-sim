@@ -1,0 +1,806 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &438834431876270507
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4067488628862239983}
+  - component: {fileID: 4396527695087248383}
+  m_Layer: 0
+  m_Name: UserInput
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4067488628862239983
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 438834431876270507}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4396527695087248383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 438834431876270507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75656efce3b280243a6a27e1a860f369, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterController: {fileID: 0}
+  characterAction: {fileID: 0}
+  characterState: {fileID: 0}
+  freecam: {fileID: 0}
+  cam: {fileID: 0}
+  targetController: {fileID: 0}
+  inputEnabled: 1
+  movementInputEnabled: 1
+  rotationInputEnabled: 1
+  zoomInputEnabled: 1
+  targetRaycastInputEnabled: 1
+  keys:
+  - name: SprintKey
+    bind:
+      keyCode: 49
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: SwiftcastKey
+    bind:
+      keyCode: 50
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: SurecastKey
+    bind:
+      keyCode: 51
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: DiamondbackKey
+    bind:
+      keyCode: 52
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: MightyGuardKey
+    bind:
+      keyCode: 53
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: WhiteWindKey
+    bind:
+      keyCode: 54
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: GobskinKey
+    bind:
+      keyCode: 55
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: TargetKey
+    bind:
+      keyCode: 9
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: CancelKey
+    bind:
+      keyCode: 27
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: TargetSelfKey
+    bind:
+      keyCode: 282
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: DevourKey
+    bind:
+      keyCode: 52
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: MightyGuardDispelKey
+    bind:
+      keyCode: 53
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: ResetKey
+    bind:
+      keyCode: 284
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: ReloadKey
+    bind:
+      keyCode: 285
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: ToggleUserInterfaceEditMode
+    bind:
+      keyCode: 283
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: EnAvantKey
+    bind:
+      keyCode: 50
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: OffsetIncreaseKey
+    bind:
+      keyCode: 273
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: OffsetDecreaseKey
+    bind:
+      keyCode: 274
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: OffsetResetKey
+    bind:
+      keyCode: 276
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: FrogLegsKey
+    bind:
+      keyCode: 51
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: SonicBoomKey
+    bind:
+      keyCode: 56
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: ResetSpeed
+    bind:
+      keyCode: 304
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: ToggleFreecam
+    bind:
+      keyCode: 96
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: Jump
+    bind:
+      keyCode: 32
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: OnslaughtKey
+    bind:
+      keyCode: 50
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: SmudgeKey
+    bind:
+      keyCode: 50
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: AetherialManipulationKey
+    bind:
+      keyCode: 51
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: RepellingShotKey
+    bind:
+      keyCode: 51
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: AetherialShiftKey
+    bind:
+      keyCode: 50
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: IcarusKey
+    bind:
+      keyCode: 51
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: Corps-a-corpsKey
+    bind:
+      keyCode: 52
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: DisplacementKey
+    bind:
+      keyCode: 53
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: ElusiveJumpKey
+    bind:
+      keyCode: 51
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: ThunderclapKey
+    bind:
+      keyCode: 50
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: HissatsuGyotenKey
+    bind:
+      keyCode: 52
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: HissatsuYatenKey
+    bind:
+      keyCode: 53
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: HellsIngressKey
+    bind:
+      keyCode: 54
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: HellsEgressKey
+    bind:
+      keyCode: 55
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: RegressIngressKey
+    bind:
+      keyCode: 54
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: RegressEgressKey
+    bind:
+      keyCode: 55
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  - name: ShukuchiKey
+    bind:
+      keyCode: 56
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+  axes:
+  - name: Horizontal
+    positive:
+      name: Horizontal_Positive
+      bind:
+        keyCode: 100
+        mouseButton: -1
+        alt: 0
+        control: 0
+        shift: 0
+      action: {fileID: 0}
+      statusEffect: {fileID: 0}
+      onInput:
+        m_PersistentCalls:
+          m_Calls: []
+      onHeld:
+        m_PersistentCalls:
+          m_Calls: []
+    negative:
+      name: Horizontal_Negative
+      bind:
+        keyCode: 97
+        mouseButton: -1
+        alt: 0
+        control: 0
+        shift: 0
+      action: {fileID: 0}
+      statusEffect: {fileID: 0}
+      onInput:
+        m_PersistentCalls:
+          m_Calls: []
+      onHeld:
+        m_PersistentCalls:
+          m_Calls: []
+  - name: Vertical
+    positive:
+      name: Vertical_Positive
+      bind:
+        keyCode: 119
+        mouseButton: -1
+        alt: 0
+        control: 0
+        shift: 0
+      action: {fileID: 0}
+      statusEffect: {fileID: 0}
+      onInput:
+        m_PersistentCalls:
+          m_Calls: []
+      onHeld:
+        m_PersistentCalls:
+          m_Calls: []
+    negative:
+      name: Vertical_Negative
+      bind:
+        keyCode: 115
+        mouseButton: -1
+        alt: 0
+        control: 0
+        shift: 0
+      action: {fileID: 0}
+      statusEffect: {fileID: 0}
+      onInput:
+        m_PersistentCalls:
+          m_Calls: []
+      onHeld:
+        m_PersistentCalls:
+          m_Calls: []
+  - name: Strafe
+    positive:
+      name: Strafe_Positive
+      bind:
+        keyCode: 101
+        mouseButton: -1
+        alt: 0
+        control: 0
+        shift: 0
+      action: {fileID: 0}
+      statusEffect: {fileID: 0}
+      onInput:
+        m_PersistentCalls:
+          m_Calls: []
+      onHeld:
+        m_PersistentCalls:
+          m_Calls: []
+    negative:
+      name: Strafe_Negative
+      bind:
+        keyCode: 113
+        mouseButton: -1
+        alt: 0
+        control: 0
+        shift: 0
+      action: {fileID: 0}
+      statusEffect: {fileID: 0}
+      onInput:
+        m_PersistentCalls:
+          m_Calls: []
+      onHeld:
+        m_PersistentCalls:
+          m_Calls: []
+  - name: Fly
+    positive:
+      name: Fly_Positive
+      bind:
+        keyCode: 32
+        mouseButton: -1
+        alt: 0
+        control: 0
+        shift: 0
+      action: {fileID: 0}
+      statusEffect: {fileID: 0}
+      onInput:
+        m_PersistentCalls:
+          m_Calls: []
+      onHeld:
+        m_PersistentCalls:
+          m_Calls: []
+    negative:
+      name: Fly_Negative
+      bind:
+        keyCode: 306
+        mouseButton: -1
+        alt: 0
+        control: 0
+        shift: 0
+      action: {fileID: 0}
+      statusEffect: {fileID: 0}
+      onInput:
+        m_PersistentCalls:
+          m_Calls: []
+      onHeld:
+        m_PersistentCalls:
+          m_Calls: []

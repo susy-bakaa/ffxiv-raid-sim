@@ -1,13 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GlobalData;
 
 public class ChangeArenaMechanic : FightMechanic
 {
     public Vector3 newBounds;
     public SN<bool> isCircle;
 
-    public override void TriggerMechanic(ActionController.ActionInfo actionInfo)
+    public override void TriggerMechanic(ActionInfo actionInfo)
     {
         if (!CanTrigger(actionInfo))
             return;
@@ -22,7 +23,7 @@ public class ChangeArenaMechanic : FightMechanic
         }
     }
 
-    public override void InterruptMechanic(ActionController.ActionInfo actionInfo)
+    public override void InterruptMechanic(ActionInfo actionInfo)
     {
         base.InterruptMechanic(actionInfo);
 

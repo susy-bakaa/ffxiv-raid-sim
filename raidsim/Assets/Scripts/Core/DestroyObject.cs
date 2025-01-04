@@ -31,9 +31,16 @@ public class DestroyObject : MonoBehaviour
         if (triggered)
             return;
 
+        float deltaTime;
+
+        if (FightTimeline.Instance != null)
+            deltaTime = FightTimeline.deltaTime;
+        else
+            deltaTime = Time.deltaTime;
+
         if (triggerLife != 0f)
         {
-            triggerLife -= FightTimeline.deltaTime;
+            triggerLife -= deltaTime;
 
             if (triggerLife <= 0f)
             {
@@ -51,7 +58,7 @@ public class DestroyObject : MonoBehaviour
 
         if (lifetime > 0f)
         {
-            life -= FightTimeline.deltaTime;
+            life -= deltaTime;
 
             if (life <= 0f)
             {

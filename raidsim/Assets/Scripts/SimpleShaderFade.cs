@@ -72,7 +72,7 @@ public class SimpleShaderFade : MonoBehaviour
             // Add the materials to the list for later modification
             foreach (var mat in renderer.sharedMaterials)
             {
-                if (!materials.Contains(mat))
+                if (!materials.Contains(mat) && mat.HasFloat(shaderAlphaPropertyHash))
                 {
                     materials.Add(mat);
                 }

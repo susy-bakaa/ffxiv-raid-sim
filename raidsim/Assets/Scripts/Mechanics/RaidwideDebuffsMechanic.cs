@@ -4,8 +4,7 @@ using System.Linq;
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static ActionController;
-using static CharacterState;
+using static GlobalData;
 using static StatusEffectData;
 
 public class RaidwideDebuffsMechanic : FightMechanic

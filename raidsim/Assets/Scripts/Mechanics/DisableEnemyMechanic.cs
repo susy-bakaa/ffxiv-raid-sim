@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GlobalData;
 
 public class DisableEnemyMechanic : FightMechanic
 {
@@ -8,7 +9,7 @@ public class DisableEnemyMechanic : FightMechanic
     public bool inverted = false;
     public bool destroyInstead = false;
 
-    public override void TriggerMechanic(ActionController.ActionInfo actionInfo)
+    public override void TriggerMechanic(ActionInfo actionInfo)
     {
         if (!CanTrigger(actionInfo))
             return;

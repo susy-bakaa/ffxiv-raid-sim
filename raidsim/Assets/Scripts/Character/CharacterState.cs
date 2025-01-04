@@ -14,8 +14,6 @@ using static PartyList;
 
 public class CharacterState : MonoBehaviour
 {
-    public enum Role { meleeDps, magicalRangedDps, physicalRangedDps, tank, healer, unassigned }
-
     [Hidden]
     public PlayerController playerController;
     [Hidden]
@@ -335,14 +333,17 @@ public class CharacterState : MonoBehaviour
         aiController = GetComponent<AIController>();
         bossController = GetComponent<BossController>();
         targetController = GetComponent<TargetController>();
-        TaggedObject[] taggedObjects = transform.Find("Pivot").GetComponentsInChildren<TaggedObject>();
+        TaggedObject[] taggedObjects = transform.Find("Pivot")?.GetComponentsInChildren<TaggedObject>();
 
-        foreach (TaggedObject tagged in taggedObjects)
+        if (taggedObjects != null && taggedObjects.Length > 0)
         {
-            if (tagged.m_tag == "dashPivot")
+            foreach (TaggedObject tagged in taggedObjects)
             {
-                dashKnockbackPivot = tagged.transform;
-                break;
+                if (tagged.m_tag == "dashPivot")
+                {
+                    dashKnockbackPivot = tagged.transform;
+                    break;
+                }
             }
         }
 
@@ -2997,9 +2998,18 @@ public class CharacterState : MonoBehaviour
     {
         return effectsArray;
     }
+
+    public StatusEffect GetEffect(string name)
+    {
+        if (effects.ContainsKey(name))
+        {
+            return effects[name];
+        }
+        return null;
+    }
     #endregion
 
-    #region FlyTexts
+        #region FlyTexts
     public void ShowStatusEffectFlyText(StatusEffect statusEffect, int stacks, string prefix, CharacterState character = null)
     {
         ShowStatusEffectFlyText(statusEffect.data, stacks, prefix, character);

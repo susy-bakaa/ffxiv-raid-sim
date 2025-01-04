@@ -11,6 +11,7 @@ public class PauseMenu : MonoBehaviour
 
     public HudEditor hudEditor;
     public TargetController playerTargeting;
+    public ActionController playerActions;
     public string menuScene = "menu";
     public bool isOpen = false;
     //public bool pauseOnOpen = false;
@@ -22,6 +23,8 @@ public class PauseMenu : MonoBehaviour
         group = GetComponent<CanvasGroup>();
         if (playerTargeting == null)
             playerTargeting = GameObject.Find("Player")?.GetComponent<TargetController>();
+        if (playerActions == null)
+            playerActions = GameObject.Find("Player")?.GetComponent<ActionController>();
         if (hudEditor == null)
             hudEditor = FindObjectOfType<HudEditor>();
         if (playerTargeting != null)
@@ -76,6 +79,8 @@ public class PauseMenu : MonoBehaviour
         if (hudEditor != null && hudEditor.isEditorOpen)
             return;
         if (hudEditor != null && hudEditor.isMenuOpen)
+            return;
+        if (playerActions.isGroundTargeting)
             return;
 
         group.alpha = 1f;

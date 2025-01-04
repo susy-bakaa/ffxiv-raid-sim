@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using NaughtyAttributes;
 using TMPro;
 using UnityEngine;
-using static CharacterState;
+using static GlobalData;
 using static PartyList;
 
 public class SpotSelector : MonoBehaviour
@@ -17,6 +17,7 @@ public class SpotSelector : MonoBehaviour
     public BotNode[] spots;
     public bool changePlayerRole = false;
     [ShowIf("changePlayerRole")] public Role[] spotRoles;
+    public int defaultSpot = 4;
 
 #if UNITY_EDITOR
     void OnValidate()
@@ -39,7 +40,7 @@ public class SpotSelector : MonoBehaviour
     void Start()
     {
         dropdown = GetComponentInChildren<TMP_Dropdown>();
-        Select(0);
+        Select(defaultSpot);
     }
 
     void Update()

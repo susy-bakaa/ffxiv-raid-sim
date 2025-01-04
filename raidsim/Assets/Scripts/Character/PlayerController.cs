@@ -1,12 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using NaughtyAttributes;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static UnityEngine.GraphicsBuffer;
 
 public class PlayerController : MonoBehaviour
 {
+    public enum CameraAdjustMode {  Moving, Always, Never }
     CharacterState state;
+    ThirdPersonCamera cameraScript;
+    UserInput userInput;
 
     public float ySpawnOffset = 1.25f;
     public float turnSmoothTime;
@@ -17,24 +22,37 @@ public class PlayerController : MonoBehaviour
     public Transform cameraT;
     public Vector3 targetPosition;
     public Vector3 velocity;
+    public Vector3 jump;
     private float currentSpeed;
     private float speedSmoothVelocity;
+    private Vector2 storedInput;
+    private Vector2 storedInputR;
 
-    public GameObject bubbleShield;
+    public Transform model;
     public BotNode clockSpot;
     public bool enableInput = true;
     public bool legacyMovement = true;
+    [HideIf("legacyMovement")] public float backpedalSpeed = 0.5f;
+    [HideIf("legacyMovement")] public float turnSpeed = 90f;
+    [HideIf("legacyMovement")] public CameraAdjustMode autoAdjustCamera = CameraAdjustMode.Moving;
+    [HideIf("legacyMovement")] public float cameraAutoAdjustSpeed = 5f;
+    [HideIf("legacyMovement")] public float cameraRotationSpeed = 180f;
+    [ShowIf("legacyMovement")] public bool disableCameraPivot = true;
+    [ShowIf("legacyMovement")] public bool maintainCameraDistance = true;
     public bool freezeMovement = false;
     public bool sliding = false;
     public float slideDistance = 0f;
     public float slideDuration = 0.5f;
     private bool movementFrozen = false;
     private bool knockedBack = false;
+    private bool jumping = false;
 
     private int animatorParameterDead = Animator.StringToHash("Dead");
     private int animatorParameterSpeed = Animator.StringToHash("Speed");
     private int animatorParameterDiamondback = Animator.StringToHash("Diamondback");
     private int animatorParamterSliding = Animator.StringToHash("Slipping");
+    private int animatorParameterTurning = Animator.StringToHash("Turning");
+    private int animatorParameterJumping = Animator.StringToHash("Jump");
 
     void Awake()
     {
@@ -46,7 +64,30 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                Debug.LogError($"CharacterState script not found for PlayerController ({this})!");
+                Debug.LogError($"CharacterState script not found for PlayerController ({gameObject.name})!");
+            }
+        }
+        if (cameraT == null)
+        {
+            Debug.LogError($"Camera Transform not set for PlayerController ({gameObject.name})!");
+        }
+        if (cameraScript == null)
+        {
+            if (cameraT.TryGetComponent(out ThirdPersonCamera cameraScript))
+            {
+                this.cameraScript = cameraScript;
+            }
+            else
+            {
+                Debug.LogError($"ThirdPersonCamera script not found for PlayerController ({gameObject.name}) from Camera Transform ({cameraT.gameObject.name})!");
+            }
+        }
+        if (userInput == null)
+        {
+            userInput = FindObjectOfType<UserInput>();
+            if (userInput == null)
+            {
+                Debug.LogError($"UserInput script not found for PlayerController ({gameObject.name})!");
             }
         }
 
@@ -59,18 +100,6 @@ public class PlayerController : MonoBehaviour
         movementFrozen = false;
         Init();
     }
-
-    /*void Start()
-    {
-        sp_on = true;
-        kb_on = true;
-        sprint = false;
-        knockback = false;
-        sp_timer = 0f;
-        kb_timer = 0f;
-        stack = 0;
-        controllable = true;
-    }*/
 
     void Update()
     {
@@ -103,53 +132,208 @@ public class PlayerController : MonoBehaviour
         }
         if (!state.uncontrollable.value && !state.dead && !state.bound.value && enableInput)
         {
-            Vector2 vector = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+            Vector2 input = Vector2.zero;
+            Vector2 inputR = Vector2.zero;
 
-            if (Input.GetMouseButton(0) && Input.GetMouseButton(1) && vector.y >= 0)
+            if (userInput.GetButtonDown("Jump") && !jumping)
             {
-                vector.y = 1;
+                jumping = true;
+                model.LeanMoveLocal(jump, 0.25f).setEase(LeanTweenType.easeOutQuad).setOnComplete(() => Utilities.FunctionTimer.Create(this, () => model.LeanMoveLocal(Vector3.zero, 0.2f).setEase(LeanTweenType.easeInQuad).setOnComplete(() => jumping = false), 0.15f, "player_jump_fall_delay", false, true));
+                animator.SetTrigger(animatorParameterJumping);
             }
 
-            Vector2 normalized = vector.normalized;
+            // Input handling
+            if (legacyMovement && !jumping)
+            {
+                //input = new Vector2(Input.GetAxisRaw("HorizontalLegacy"), Input.GetAxisRaw("VerticalLegacy"));
+                input = new Vector2(userInput.GetAxis("Strafe"), userInput.GetAxis("Vertical"));
+                inputR = new Vector2(userInput.GetAxis("Horizontal"), 0f);
+                storedInput = input;
+                storedInputR = inputR;
+            }
+            else if (!jumping)
+            {
+                //input = new Vector2(Input.GetAxisRaw("HorizontalStandard"), Input.GetAxisRaw("VerticalStandard"));
+                input = new Vector2(userInput.GetAxis("Strafe"), userInput.GetAxis("Vertical"));
+                //inputR = new Vector2(Input.GetAxisRaw("HorizontalLegacy"), 0f);
+                inputR = new Vector2(userInput.GetAxis("Horizontal"), 0f);
+                storedInput = input;
+                storedInputR = inputR;
+            }
+            else if (jumping)
+            {
+                input = storedInput;
+                inputR = storedInputR;
+            }
+
+            // Handle combined mouse button movement
+            if (Input.GetMouseButton(0) && Input.GetMouseButton(1) && input.y >= 0)
+            {
+                input.y = 1;
+            }
+            // Turn character rotation input into strafing when rotating with the camera
+            if (Input.GetMouseButton(1) && !legacyMovement)
+            {
+                input = new Vector2(input.x + inputR.x, input.y);
+                inputR = Vector2.zero;
+            }
+
+            if (disableCameraPivot)
+            {
+                input = new Vector2(inputR.x + input.x, input.y);
+            }
+
+            Vector2 normalizedInput = input.normalized;
+            Vector2 normalizedInputR = inputR.normalized;
 
             if (Time.timeScale <= 0f)
             {
-                normalized = Vector2.zero;
+                normalizedInput = Vector2.zero;
             }
 
-            if (normalized != Vector2.zero)
+            // Smooth speed adjustment
+            float targetSpeed = state.currentSpeed * normalizedInput.magnitude;
+            if (normalizedInputR != Vector2.zero)
             {
-                float d = Mathf.Atan2(normalized.x, normalized.y) * 57.29578f + cameraT.eulerAngles.y;
-                transform.eulerAngles = Vector3.up * d;
+                targetSpeed = state.currentSpeed * normalizedInputR.magnitude;
             }
-            float target = state.currentSpeed * normalized.magnitude;
-            if (normalized != Vector2.zero)
+            currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, 0.05f);
+
+            // Movement handling
+            if (legacyMovement)
             {
-                if (sliding && slideDistance > 0f)
+                model.localEulerAngles = new Vector3(0f, 0f, 0f);
+
+                float speedModifier = 1f;
+
+                // "Legacy" movement
+                if (normalizedInput.y < 0 && userInput.GetAxisButton("Strafe") && !disableCameraPivot)
                 {
-                    knockedBack = true;
-                    Knockback(transform.forward * slideDistance, slideDuration);
-                    return;
+                    // Move backwards with reduced speed if disable camera pivot is not true
+                    speedModifier = backpedalSpeed;
+                    model.localEulerAngles = new Vector3(0, -180f, 0);
                 }
 
-                currentSpeed = Mathf.SmoothDamp(currentSpeed, target, ref speedSmoothVelocity, 0.05f);
-                transform.Translate(transform.forward * currentSpeed * FightTimeline.deltaTime, Space.World);
-                ClampMovement();
+                if (normalizedInput != Vector2.zero || normalizedInputR != Vector2.zero)
+                {
+                    float d = 0f;
+                    if (disableCameraPivot || userInput.GetAxisButton("Strafe"))
+                        d = Mathf.Atan2(normalizedInput.x, normalizedInput.y) * Mathf.Rad2Deg + cameraT.eulerAngles.y;
+                    else
+                        d = Mathf.Atan2(normalizedInputR.x, normalizedInput.y) * Mathf.Rad2Deg + cameraT.eulerAngles.y;
+
+                    transform.eulerAngles = Vector3.up * d;
+                }
+
+                if (normalizedInput != Vector2.zero || normalizedInputR != Vector2.zero)
+                {
+                    if (ShouldSlide())
+                    {
+                        return;
+                    }
+
+                    currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, 0.05f);
+                    transform.Translate(transform.forward * currentSpeed * speedModifier * FightTimeline.deltaTime, Space.World);
+                    ClampMovement();
+                }
+                else
+                {
+                    currentSpeed = 0f;
+                    transform.Translate(transform.forward * currentSpeed * FightTimeline.deltaTime, Space.World);
+                    ClampMovement();
+                }
+
+                animator.SetFloat(animatorParameterTurning, 0f);
             }
             else
             {
-                currentSpeed = 0f;
-                transform.Translate(transform.forward * currentSpeed * FightTimeline.deltaTime, Space.World);
-                ClampMovement();
+                model.eulerAngles = new Vector3(0f, 0f, 0f);
+
+                float speedModifier = 1f;
+                bool turning = false;
+
+                // "Standard" movement
+                if (normalizedInput.y < 0)
+                {
+                    // Move backwards with reduced speed
+                    speedModifier = backpedalSpeed;
+                }
+
+                if (normalizedInput != Vector2.zero)
+                {
+                    if (ShouldSlide())
+                    {
+                        return;
+                    }
+                    
+                    Vector3 moveDirection = (transform.forward * normalizedInput.y * speedModifier) + (transform.right * normalizedInput.x);
+                    transform.Translate(moveDirection * currentSpeed * FightTimeline.deltaTime, Space.World);
+                    ClampMovement();
+
+                    if (input.x != 0f && !turning)
+                    {
+                        float animationRotation = input.x;
+
+                        if (input.y > 0)
+                            animationRotation *= 0.5f;
+
+                        animator.SetFloat(animatorParameterTurning, animationRotation);
+                        turning = true;
+                    }
+                }
+                
+                // Mouse-based rotation
+                if (Input.GetMouseButton(1))
+                {
+                    // Rotate character to face the same way as the camera on the y-axis
+                    Vector3 cameraForward = cameraT.forward;
+                    cameraForward.y = 0; // Keep only the horizontal direction
+                    transform.forward = cameraForward;
+                }
+                else if (Mathf.Abs(inputR.x) > 0.01f) // Character rotation with inputR.x
+                {
+                    transform.Rotate(0, inputR.x * turnSpeed * FightTimeline.deltaTime, 0);
+                    if (!turning)
+                    {
+                        float animationRotation = inputR.x * 0.5f;
+                        animator.SetFloat(animatorParameterTurning, animationRotation);
+                        turning = true;
+                    }
+                }
+                else if (!turning)
+                {
+                    animator.SetFloat(animatorParameterTurning, 0f);
+                }
+
+                // Auto camera adjustment
+                if (!Input.GetMouseButton(0) && !Input.GetMouseButton(1))
+                {
+                    if (autoAdjustCamera == CameraAdjustMode.Always || (autoAdjustCamera == CameraAdjustMode.Moving && normalizedInput != Vector2.zero))
+                    {
+                        cameraScript.AutoAdjustCamera(cameraAutoAdjustSpeed);
+                    }
+                }
             }
-            float value = (state.HasEffect("Sprint") ? 1f : 0.5f) * normalized.magnitude;
+
+            // Animation updates
+            float animationValue = (state.HasEffect("Sprint") ? 1f : 0.5f) * normalizedInput.magnitude;
+            if (normalizedInputR != Vector2.zero)
+            {
+                animationValue = (state.HasEffect("Sprint") ? 1f : 0.5f) * normalizedInputR.magnitude;
+            }
+
+            if ((legacyMovement && !disableCameraPivot && userInput.GetAxisButton("Strafe")) || !legacyMovement)
+            {
+                if (normalizedInput.y < 0)
+                    animationValue *= -1f;
+            }
 
             if (FightTimeline.deltaTime <= 0f)
             {
-                value = 0f;
+                animationValue = 0f;
             }
 
-            animator.SetFloat(animatorParameterSpeed, value);
+            animator.SetFloat(animatorParameterSpeed, animationValue);
         }
         else if (!state.dead && !state.bound.value && enableInput && knockedBack)
         {
@@ -257,6 +441,18 @@ public class PlayerController : MonoBehaviour
         return false;
     }
 
+    private bool ShouldSlide()
+    {
+        if (sliding && slideDistance > 0f)
+        {
+            knockedBack = true;
+            Knockback(transform.forward * slideDistance, slideDuration);
+            return true;
+        }
+
+        return false;
+    }
+
     public void Knockback(Vector3 tp, float duration)
     {
         if (!state.HasEffect("Surecast"))
@@ -274,6 +470,6 @@ public class PlayerController : MonoBehaviour
     {
         transform.position = new Vector3(0f, ySpawnOffset, 0f);
         transform.eulerAngles = new Vector3(0f, Random.Range(0, 360), 0f);
-        cameraT.gameObject.GetComponent<ThirdPersonCamera>().RandomRotate();
+        //cameraT.gameObject.GetComponent<ThirdPersonCamera>().RandomRotate();
     }
 }

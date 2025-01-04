@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using static CharacterState;
+using static GlobalData;
 using static PartyList;
 
 public class RoleSelector : MonoBehaviour

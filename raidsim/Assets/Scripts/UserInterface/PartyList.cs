@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using static CharacterState;
+using static GlobalData;
 
 public class PartyList : MonoBehaviour
 {
@@ -345,7 +345,7 @@ public class PartyList : MonoBehaviour
         public TargetController targetController;
         public HudElement hudElement;
         public int letter;
-        public CharacterState.Role role;
+        public Role role;
 
         public PartyMember(string name, PlayerController playerController, AIController aiController, BossController bossController, CharacterState characterState, ActionController actionController, TargetController targetController, HudElement hudElement, int letter)
         {
@@ -361,7 +361,7 @@ public class PartyList : MonoBehaviour
             if (characterState != null)
                 role = characterState.role;
             else
-                role = CharacterState.Role.unassigned;
+                role = Role.unassigned;
         }
     }
 

@@ -2,11 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class ToggleAutoAttacks : MonoBehaviour
 {
     [SerializeField] private ActionController actionController;
     [SerializeField] private TextMeshProUGUI statusText;
+    public UnityEvent<bool> onToggle;
 
     bool state = false;
 
@@ -53,5 +55,6 @@ public class ToggleAutoAttacks : MonoBehaviour
         {
             statusText.text = this.state ? "<color=green>ON</color>" : "<color=red>OFF</color>";
         }
+        onToggle.Invoke(this.state);
     }
 }

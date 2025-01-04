@@ -215,6 +215,11 @@ public class KeyBind
         {
             return text + keyNames[keyCode];
         }
-        return text + "M" + (1 + mouseButton);
+        else if (mouseButton > -1)
+        {
+            return text + "M" + (1 + mouseButton);
+        }
+
+        return text;
     }
 }

@@ -6,6 +6,7 @@ using static GlobalData;
 
 public class FightMechanic : MonoBehaviour
 {
+    [Header("Basic Settings")]
     public bool mechanicEnabled = true;
     public string mechanicName = string.Empty;
     public bool onlyTriggerOnce = false;

@@ -16,7 +16,9 @@ public class CharacterActionData : ScriptableObject
     public bool isShield = false;
     public bool isHeal = false;
     public bool isTargeted = false;
+    public bool isGroundTargeted = false;
     public bool topEnmity = false;
+    public bool hasMovement = false;
     public int[] targetGroups = new int[1] { 100 };
     public int maxTargets = 1;
     public float range = 25f;
@@ -41,6 +43,7 @@ public class CharacterActionData : ScriptableObject
     public int onAnimationFinishId = -1;
     public string speech = string.Empty;
     public AudioClip speechAudio = null;
+    public AudioClip jonSpeechAudio = null;
 
     private void Awake()
     {

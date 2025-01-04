@@ -1,10 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UIElements;
-using static ActionController;
-using static PartyList;
+using static GlobalData;
 
 public class SpawnEnemyMechanic : FightMechanic
 {

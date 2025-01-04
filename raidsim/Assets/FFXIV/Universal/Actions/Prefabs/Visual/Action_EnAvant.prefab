@@ -299,6 +299,7 @@ GameObject:
   - component: {fileID: 3151062494556055727}
   - component: {fileID: 4214800734610489904}
   - component: {fileID: 1464024292454270179}
+  - component: {fileID: 9192966444978070791}
   - component: {fileID: 232118202373449235}
   m_Layer: 5
   m_Name: Action_EnAvant
@@ -439,20 +440,45 @@ MonoBehaviour:
   chargesLeft: 0
   lastAction: {fileID: 0}
   currentKeybind:
-    keyCode: 0
-    mouseButton: 0
+    keyCode: 50
+    mouseButton: -1
     alt: 0
     control: 0
     shift: 0
+  availableForRoles: 02000000
   onExecute:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 9192966444978070791}
+        m_TargetAssemblyTypeName: DashMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onCast:
     m_PersistentCalls:
       m_Calls: []
   onInterrupt:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 9192966444978070791}
+        m_TargetAssemblyTypeName: FightMechanic, Assembly-CSharp
+        m_MethodName: InterruptMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   recastType: 0
   borderStandard: {fileID: 7902703016073469634}
   borderDark: {fileID: 1679318015095466148}
@@ -477,6 +503,36 @@ MonoBehaviour:
   - {r: 0.801, g: 0.317997, b: 0.317997, a: 1}
   - {r: 0.8, g: 0.31764707, b: 0.31764707, a: 1}
   - {r: 0.8, g: 0.31764707, b: 0.31764707, a: 1}
+--- !u!114 &9192966444978070791
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 866590297341102490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8657138b821026d4cb38011b4367e75d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: EnAvant
+  onlyTriggerOnce: 0
+  log: 0
+  lockActions: 1
+  lockMovement: 1
+  dashToTarget: 0
+  delay: 0
+  duration: 0.5
+  overrideTargetPosition: {x: 0, y: 0, z: 0}
+  overrideTarget: {fileID: 0}
+  dashDirection: {x: 0, y: 0, z: 1}
+  dashDistance: 10
+  ease: 4
+  moveAxis:
+    x: 1
+    y: 0
+    z: 1
 --- !u!114 &232118202373449235
 MonoBehaviour:
   m_ObjectHideFlags: 0

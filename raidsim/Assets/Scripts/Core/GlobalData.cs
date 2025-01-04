@@ -6,6 +6,35 @@ using UnityEngine;
 
 public static class GlobalData
 {
+    public enum Role { meleeDps, magicalRangedDps, physicalRangedDps, tank, healer, unassigned }
+
+    public struct ActionInfo
+    {
+        public CharacterAction action;
+        public CharacterState source;
+        public CharacterState target;
+        public bool sourceIsPlayer;
+        public bool targetIsPlayer;
+
+        public ActionInfo(CharacterAction action, CharacterState source, CharacterState target)
+        {
+            this.action = action;
+            this.source = source;
+            this.target = target;
+            sourceIsPlayer = false;
+            targetIsPlayer = false;
+
+            if (source != null && source == FightTimeline.Instance.player)
+            {
+                sourceIsPlayer = true;
+            }
+            if (target != null && target == FightTimeline.Instance.player)
+            {
+                targetIsPlayer = true;
+            }
+        }
+    }
+
     [System.Serializable]
     public struct Damage
     {
@@ -421,5 +450,28 @@ public static class GlobalData
             this.y = y;
             this.z = z;
         }
+
+        public bool All()
+        {
+            return x && y && z;
+        }
+
+        public bool Any()
+        {
+            return x || y || z;
+        }
+
+        public bool None()
+        {
+            return !x && !y && !z;
+        }
+    }
+
+    [System.Serializable]
+    public struct IndexMapping
+    {
+        public string name;
+        public int previousIndex;
+        public int nextIndex;
     }
 }

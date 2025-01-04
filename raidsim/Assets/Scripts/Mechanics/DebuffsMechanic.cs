@@ -2,10 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static StatusEffectData;
-using static ActionController;
+using static GlobalData;
 using static TriggerRandomMechanic;
-using UnityEngine.UIElements;
-using static CharacterState;
 
 public class DebuffsMechanic : FightMechanic
 {

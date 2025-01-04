@@ -2,18 +2,22 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using no00ob.WaveSurvivalGame.UserInterface;
+using TMPro;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
+using static PlayerController;
 
 public class ConfigMenu : MonoBehaviour
 {
     CanvasGroup group;
     PlayerController playerController;
     TargetController playerTargeting;
+    ThirdPersonCamera thirdPersonCamera;
     UserInput userInput;
 
     [SerializeField] private AudioMixer audioMixer;
@@ -23,16 +27,25 @@ public class ConfigMenu : MonoBehaviour
     [SerializeField] private Toggle fullscreenToggle;
     [SerializeField] private ResolutionDropdown resolutionDropdown;
     [SerializeField] private SliderInputLinker volumeSliderSync;
-    float scale;
-    float newScale;
-    bool legacy;
-    bool newLegacy;
-    bool fullscreen;
-    bool newFullscreen;
-    int resolution;
-    int newResolution;
+    [SerializeField] private Toggle invertVerticalCameraToggle;
+    [SerializeField] private Toggle invertHorizontalCameraToggle;
+    [SerializeField] private TMP_Dropdown cameraAdjustmentDropdown;
+    float scale = 50;
+    float newScale = 50;
+    bool legacy = true;
+    bool newLegacy = true;
+    bool fullscreen = true;
+    bool newFullscreen = true;
+    int resolution = 0;
+    int newResolution = 0;
     float volume = 100;
     float newVolume = 100;
+    bool invertCameraVertical = false;
+    bool newInvertCameraVertical = false;
+    bool invertCameraHorizontal = false;
+    bool newInvertCameraHorizontal = false;
+    int cameraAdjustment = 0;
+    int newCameraAdjustment = 0;
     [SerializeField] private CanvasGroup applyPopup;
     public bool isOpen;
     public bool isApplyPopupOpen;
@@ -46,6 +59,7 @@ public class ConfigMenu : MonoBehaviour
         userInput = FindObjectOfType<UserInput>();
         group = GetComponent<CanvasGroup>();
         playerController = FindObjectOfType<PlayerController>();
+        thirdPersonCamera = FindObjectOfType<ThirdPersonCamera>();
         if (playerController != null && playerTargeting == null)
             playerTargeting = playerController.gameObject.GetComponent<TargetController>();
 
@@ -197,6 +211,24 @@ public class ConfigMenu : MonoBehaviour
 #endif
     }
 
+    public void ChangeInvertVerticalCamera(bool value)
+    {
+        configSaved = false;
+        newInvertCameraVertical = value;
+    }
+
+    public void ChangeInvertHorizontalCamera(bool value)
+    {
+        configSaved = false;
+        newInvertCameraHorizontal = value;
+    }
+
+    public void ChangeCameraAutoAdjustment(int value)
+    {
+        configSaved = false;
+        newCameraAdjustment = value;
+    }
+
     public void ApplySettings()
     {
         if (Mathf.Approximately(newScale, 50f))
@@ -229,6 +261,16 @@ public class ConfigMenu : MonoBehaviour
             volume = 0.001f;
         }
         audioMixer.SetFloat("Volume", Mathf.Log10(volume / 100) * 20f);
+        invertCameraVertical = newInvertCameraVertical;
+        invertCameraHorizontal = newInvertCameraHorizontal;
+        if (thirdPersonCamera != null)
+        {
+            thirdPersonCamera.invertY = invertCameraVertical;
+            thirdPersonCamera.invertX = invertCameraHorizontal;
+        }
+        cameraAdjustment = newCameraAdjustment;
+        if (playerController != null)
+            playerController.autoAdjustCamera = (CameraAdjustMode)cameraAdjustment;
         configSaved = true;
 #endif
     }
@@ -263,6 +305,13 @@ public class ConfigMenu : MonoBehaviour
         newVolume = 100f;
         volumeSliderSync.Slider.value = newVolume;
         volumeSliderSync.Sync(0);
+        newInvertCameraVertical = false;
+        newInvertCameraHorizontal = false;
+        thirdPersonCamera.invertY = newInvertCameraVertical;
+        thirdPersonCamera.invertX = newInvertCameraHorizontal;
+        newCameraAdjustment = 0;
+        if (playerController != null)
+            playerController.autoAdjustCamera = CameraAdjustMode.Moving;
         ApplySettings();
 #endif
     }
@@ -273,7 +322,7 @@ public class ConfigMenu : MonoBehaviour
         scaleSliderSync.Slider.value = newScale;
         scaleSliderSync.Sync(0);
         newLegacy = legacy;
-        Debug.Log($"newLegacy {newLegacy} legacy {legacy}");
+        //Debug.Log($"newLegacy {newLegacy} legacy {legacy}");
         toggleMovement.toggles[0].SetIsOnWithoutNotify(newLegacy);
         toggleMovement.toggles[1].SetIsOnWithoutNotify(!newLegacy);
 #if UNITY_WEBPLAYER
@@ -287,6 +336,12 @@ public class ConfigMenu : MonoBehaviour
         newVolume = volume;
         volumeSliderSync.Slider.value = newVolume;
         volumeSliderSync.Sync(0);
+        newInvertCameraVertical = invertCameraVertical;
+        newInvertCameraHorizontal = invertCameraHorizontal;
+        invertVerticalCameraToggle.SetIsOnWithoutNotify(newInvertCameraVertical);
+        invertHorizontalCameraToggle.SetIsOnWithoutNotify(newInvertCameraHorizontal);
+        newCameraAdjustment = cameraAdjustment;
+        cameraAdjustmentDropdown.SetValueWithoutNotify(newCameraAdjustment);
         ApplySettings();
 #endif
     }

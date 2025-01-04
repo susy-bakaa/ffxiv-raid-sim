@@ -148,6 +148,7 @@ GameObject:
   - component: {fileID: 3159088723046217818}
   - component: {fileID: 6232083174866432530}
   - component: {fileID: 8750420971945133212}
+  - component: {fileID: 2071712794444242034}
   - component: {fileID: 1428423449543535941}
   m_Layer: 5
   m_Name: Action_DebugToggleAutoAttacks
@@ -289,7 +290,7 @@ MonoBehaviour:
   lastAction: {fileID: 0}
   currentKeybind:
     keyCode: 0
-    mouseButton: 0
+    mouseButton: -1
     alt: 0
     control: 0
     shift: 0
@@ -352,6 +353,50 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionController: {fileID: 0}
   statusText: {fileID: 5221195984282085292}
+  onToggle:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2071712794444242034}
+        m_TargetAssemblyTypeName: SaveButton, Assembly-CSharp
+        m_MethodName: SaveValue
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &2071712794444242034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2435484772034627275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5880e1e686aac8f4c86dfa433a88c938, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  group: Global
+  key: AutoAttackEnabled
+  onStart:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8750420971945133212}
+        m_TargetAssemblyTypeName: ToggleAutoAttacks, Assembly-CSharp
+        m_MethodName: ToggleStatus
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1428423449543535941
 MonoBehaviour:
   m_ObjectHideFlags: 0

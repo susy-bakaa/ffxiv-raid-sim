@@ -7,22 +7,30 @@ using System.Runtime.InteropServices;
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
     [Scene]
     public string simSceneName = "demo";
+    public CanvasGroup fadeOut;
+    public Button[] disableOnLoad;
 
 #if UNITY_WEBPLAYER
     public const string webplayerQuitURL = "https://susy-bakaa.github.io/tools.html";
     [DllImport("__Internal")]
-    private static extern void closewindow();
+    private static extern void ReplaceURL(string url);
 #endif
     Coroutine ie_exitApp;
 
 #if UNITY_STANDALONE_WIN
     private void Start()
     {
+        fadeOut.interactable = false;
+        fadeOut.blocksRaycasts = true;
+        fadeOut.alpha = 1f;
+        fadeOut.LeanAlpha(0f, 0.5f).setOnComplete(() => { fadeOut.blocksRaycasts = false; fadeOut.gameObject.SetActive(false); });
+
         KeyBind.SetupKeyNames();
 
         if (Application.isEditor)
@@ -51,13 +59,31 @@ public class MainMenu : MonoBehaviour
 
     public void LoadSimScene()
     {
-        //Utilities.FunctionTimer.CleanUp();
-        SceneManager.LoadScene(simSceneName);
+        if (disableOnLoad != null && disableOnLoad.Length > 0)
+        {
+            foreach (Button button in disableOnLoad)
+            {
+                button.interactable = false;
+            }
+        }
+        fadeOut.gameObject.SetActive(true);
+        fadeOut.blocksRaycasts = true;
+        fadeOut.LeanAlpha(1f, 0.5f).setOnComplete(() => SceneManager.LoadScene(simSceneName));
         StopAllCoroutines();
     }
 
     public void Quit()
     {
+        if (disableOnLoad != null && disableOnLoad.Length > 0)
+        {
+            foreach (Button button in disableOnLoad)
+            {
+                button.interactable = false;
+            }
+        }
+        fadeOut.gameObject.SetActive(true);
+        fadeOut.blocksRaycasts = true;
+        fadeOut.LeanAlpha(1f, 0.5f);
         if (ie_exitApp == null)
             ie_exitApp = StartCoroutine(IE_ExitApp());
     }
@@ -68,9 +94,7 @@ public class MainMenu : MonoBehaviour
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #elif UNITY_WEBPLAYER
-        Application.OpenURL(webplayerQuitURL);
-        Application.Quit();
-        closewindow();
+        ReplaceURL(webplayerQuitURL);
 #else
         Application.Quit();
 #endif

@@ -8,6 +8,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using static GlobalData;
 
 public class ActionController : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class ActionController : MonoBehaviour
     public bool instantCast = false;
     public bool isAnimationLocked = false;
     public bool isCasting = false;
+    public bool isGroundTargeting = false;
     public bool waitInterruptedCasts = false;
     public bool lockActionsWhenCasting = true;
     public bool faceTargetWhenCasting = false;
@@ -185,6 +187,7 @@ public class ActionController : MonoBehaviour
                     if (hasTarget)
                         actions[i].distanceToTarget = distanceToTarget;
                     actions[i].hasTarget = hasTarget;
+                    actions[i].lastAction = lastAction?.data;
                 }
             }
             if (autoActions != null && autoActions.Count > 1)
@@ -194,6 +197,7 @@ public class ActionController : MonoBehaviour
                     if (hasTarget)
                         autoActions[i].distanceToTarget = distanceToTarget;
                     autoActions[i].hasTarget = hasTarget;
+                    autoActions[i].lastAction = lastAction?.data;
                 }
             } 
             else if (autoActions.Count == 1 && autoAttack != null)
@@ -201,6 +205,7 @@ public class ActionController : MonoBehaviour
                 if (hasTarget)
                     autoAttack.distanceToTarget = distanceToTarget;
                 autoAttack.hasTarget = hasTarget;
+                autoAttack.lastAction = lastAction?.data;
             }
         }
 
@@ -429,12 +434,27 @@ public class ActionController : MonoBehaviour
         if (autoAction == null)
             return false;
 
+        if (autoAction.unavailable)
+            return false;
+
         autoAction.OnPointerClick(null);
 
         if (lockActionsWhenCasting && isCasting)
             return false;
 
         if (autoAction.data.range > 0f && autoAction.data.isTargeted && (distanceToTarget > autoAction.data.range))
+            return false;
+
+        if (autoAction.data.isTargeted && !autoAction.hasTarget)
+            return false;
+
+        if (autoAction.data.isTargeted && targetController.currentTarget != null && !autoAction.data.targetGroups.Contains(targetController.currentTarget.Group))
+            return false;
+
+        if (autoAction.data.charges > 1 && autoAction.chargesLeft < 1)
+            return false;
+
+        if (autoAction.data.hasMovement && (characterState.bound.value || characterState.uncontrollable.value))
             return false;
 
         if (autoAction.isAvailable && !autoAction.isDisabled && !autoAction.isAnimationLocked && !autoAction.unavailable && !animator.GetBool(animatorParameterActionLocked))
@@ -579,12 +599,27 @@ public class ActionController : MonoBehaviour
         if (action == null)
             return;
 
+        if (action.unavailable)
+            return;
+
         action.OnPointerClick(null);
 
         if (lockActionsWhenCasting && isCasting && !hidden)
             return;
 
         if (action.data.range > 0f && action.data.isTargeted && (distanceToTarget > action.data.range) && !hidden)
+            return;
+
+        if (action.data.isTargeted && !action.hasTarget && !hidden)
+            return;
+
+        if (action.data.isTargeted && targetController.currentTarget != null && !action.data.targetGroups.Contains(targetController.currentTarget.Group) && !hidden)
+            return;
+
+        if (action.data.charges > 1 && action.chargesLeft < 1 && !hidden)
+            return;
+
+        if (action.data.hasMovement && (characterState.bound.value || characterState.uncontrollable.value))
             return;
 
         interrupted = false;
@@ -611,16 +646,17 @@ public class ActionController : MonoBehaviour
                 }
 
                 action.data.damage = new GlobalData.Damage(action.data.damage, characterState);
-
-                action.chargesLeft--;
+                if (!action.data.isGroundTargeted)
+                    action.chargesLeft--;
+                lastAction = action;
 
                 ActionInfo newActionInfo = new ActionInfo(action, characterState, currentTarget);
                 action.onCast.Invoke(newActionInfo);
                 action.ExecuteAction(newActionInfo);
 
-                if (action.data.animationLock > 0f)
+                if (action.data.animationLock > 0f && !action.data.isGroundTargeted)
                     action.ActivateAnimationLock();
-                if (action.data.rollsGcd && action.data.recast > 0f)
+                if (action.data.rollsGcd && action.data.recast > 0f && !action.data.isGroundTargeted)
                     action.ActivateCooldown();
 
                 onCast.Invoke(new CastInfo(newActionInfo, instantCast, characterState.GetEffects()));
@@ -630,17 +666,38 @@ public class ActionController : MonoBehaviour
                     animator.SetBool(animatorParameterCasting, false);
                 }
 
-                HandleAnimation(action);
+                if (!action.data.isGroundTargeted)
+                    HandleAnimation(action);
 
                 UpdateSpeechBubble(action);
 
-                if (action.data.cast > 0f && instantCast && instantCastEffect != null)
+                if (action.data.cast > 0f && instantCast && instantCastEffect != null && !action.data.isGroundTargeted)
                 {
                     characterState.RemoveEffect(instantCastEffect, false, characterState, instantCastEffect.uniqueTag, 1);
                 }
-                else if (action.data.cast > 0f && instantCast && instantCastEffect == null)
+                else if (action.data.cast > 0f && instantCast && instantCastEffect == null && !action.data.isGroundTargeted)
                 {
                     instantCast = false;
+                }
+
+                // Handle rotation when casting
+                if (faceTargetWhenCasting && action.data.isTargeted && targetController.currentTarget != null && !action.data.isGroundTargeted)
+                {
+                    // Get the direction to the target but ignore the vertical component (Y-axis)
+                    Vector3 directionToTarget = targetController.currentTarget.transform.position - transform.position;
+                    directionToTarget.y = 0; // Ensure we only rotate on the Y-axis
+
+                    // If there's some direction (the target is not directly above or below)
+                    if (directionToTarget != Vector3.zero)
+                    {
+                        Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+                        transform.rotation = targetRotation;//Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * castingRotationSpeed); // Smooth rotation, optional
+                    }
+                }
+
+                if (action.data.isGroundTargeted)
+                {
+                    isGroundTargeting = true;
                 }
             }
             else
@@ -659,9 +716,9 @@ public class ActionController : MonoBehaviour
                 castTime = action.data.cast;
                 lastCastTime = castTime;
 
-                if (action.data.animationLock > 0f)
+                if (action.data.animationLock > 0f && !action.data.isGroundTargeted)
                     action.ActivateAnimationLock();
-                if (action.data.rollsGcd && action.data.recast > 0f)
+                if (action.data.rollsGcd && action.data.recast > 0f && !action.data.isGroundTargeted)
                     action.ActivateCooldown();
 
                 CharacterState currentTarget = null;
@@ -679,19 +736,24 @@ public class ActionController : MonoBehaviour
 
                 ActionInfo newActionInfo = new ActionInfo(action, characterState, currentTarget);
                 action.onCast.Invoke(newActionInfo);
-                StartCoroutine(Cast(castTime, () => { action.chargesLeft--; action.ExecuteAction(newActionInfo); if (action.data.playAnimationOnFinish) { HandleAnimation(action); } }));
+                StartCoroutine(Cast(castTime, () => { if (!action.data.isGroundTargeted) { action.chargesLeft--; } action.ExecuteAction(newActionInfo); if (action.data.playAnimationOnFinish) { HandleAnimation(action); } }));
                 onCast.Invoke(new CastInfo(newActionInfo, instantCast, characterState.GetEffects()));
 
-                if (!action.data.playAnimationOnFinish)
+                if (!action.data.playAnimationOnFinish && !action.data.isGroundTargeted)
                     HandleAnimation(action);
 
                 UpdateCharacterName();
                 UpdateUserInterface(newActionInfo);
                 UpdateSpeechBubble(action);
 
-                if (animator != null)
+                if (animator != null && !action.data.isGroundTargeted)
                 {
                     animator.SetBool(animatorParameterCasting, true);
+                }
+
+                if (action.data.isGroundTargeted)
+                {
+                    isGroundTargeting = true;
                 }
             }
         }
@@ -737,6 +799,7 @@ public class ActionController : MonoBehaviour
 
         interrupted = true;
         isCasting = false;
+        isGroundTargeting = false;
         if (interruptText != null)
         {
             interruptText.LeanAlpha(1f, 0.5f);
@@ -894,8 +957,16 @@ public class ActionController : MonoBehaviour
             }
             if (speechBubbleAudio != null)
             {
-                speechBubbleAudio.clip = action.data.speechAudio;
-                speechBubbleAudio.Play();
+                if (FightTimeline.Instance != null && FightTimeline.Instance.jon && action.data.jonSpeechAudio != null)
+                {
+                    speechBubbleAudio.clip = action.data.jonSpeechAudio;
+                }
+                else if (action.data.speechAudio != null)
+                {
+                    speechBubbleAudio.clip = action.data.speechAudio;
+                }
+                if (speechBubbleAudio.clip != null)
+                    speechBubbleAudio.Play();
             }
         }
     }
@@ -925,33 +996,6 @@ public class ActionController : MonoBehaviour
     {
         if (characterState != null)
             characterState.onInstantCastsChanged.RemoveListener(UpdateInstantCasts);
-    }
-
-    public struct ActionInfo
-    {
-        public CharacterAction action;
-        public CharacterState source;
-        public CharacterState target;
-        public bool sourceIsPlayer;
-        public bool targetIsPlayer;
-
-        public ActionInfo(CharacterAction action, CharacterState source, CharacterState target)
-        {
-            this.action = action;
-            this.source = source;
-            this.target = target;
-            sourceIsPlayer = false;
-            targetIsPlayer = false;
-
-            if (source != null && source == FightTimeline.Instance.player)
-            {
-                sourceIsPlayer = true;
-            }
-            if (target != null && target == FightTimeline.Instance.player)
-            {
-                targetIsPlayer = true;
-            }
-        }
     }
 
     public struct CastInfo

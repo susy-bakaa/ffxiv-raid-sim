@@ -43,6 +43,7 @@ public class FightTimeline : MonoBehaviour
     public List<BotTimeline> botTimelines = new List<BotTimeline>();
     public List<TimelineEvent> events = new List<TimelineEvent>();
     public List<RandomEventResult> m_randomEventResults = new List<RandomEventResult>();
+    public bool jon = false;
     public bool log = false;
 
     [Header("User Interface")]
@@ -79,6 +80,42 @@ public class FightTimeline : MonoBehaviour
         return -1;
     }
 
+    public bool TryGetRandomEventResult(int id, out int value)
+    {
+        if (randomEventResults.TryGetValue(id, out int v))
+        {
+            Debug.Log("fart 1");
+            value = v;
+            return true;
+        }
+        Debug.Log("fart 2");
+        value = -1;
+        return false;
+    }
+
+    public void SetRandomEventResult(int id, int result)
+    {
+        if (randomEventResults.ContainsKey(id))
+        {
+            randomEventResults[id] = result;
+            for (int i = 0; i < m_randomEventResults.Count; i++)
+            {
+                if (m_randomEventResults[i].id == id)
+                {
+                    RandomEventResult rer = m_randomEventResults[i];
+                    rer.value = result;
+                    m_randomEventResults[i] = rer;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            randomEventResults.Add(id, result);
+            m_randomEventResults.Add(new RandomEventResult(id, result));
+        }
+    }
+
     public void AddRandomEventResult(int id, int result)
     {
         int newId = id;
@@ -91,8 +128,29 @@ public class FightTimeline : MonoBehaviour
         m_randomEventResults.Add(new RandomEventResult(newId, result));
     }
 
+    public void ClearRandomEventResult(int id)
+    {
+        if (randomEventResults.ContainsKey(id))
+        {
+            randomEventResults.Remove(id);
+            for (int i = 0; i < m_randomEventResults.Count; i++)
+            {
+                if (m_randomEventResults[i].id == id)
+                {
+                    m_randomEventResults.RemoveAt(i);
+                    break;
+                }
+            }
+        }
+    }
+
+    public void ToggleJonVoiceLines(bool value)
+    {
+        jon = value;
+    }
+
 #if UNITY_EDITOR
-    [Header("Editor")]
+        [Header("Editor")]
     [SerializeField] private float m_wipeDelay;
     [Button("Load All Status Effects")]
     public void LoadEffectsButton()
@@ -298,9 +356,9 @@ public class FightTimeline : MonoBehaviour
                         for (int m = 0; m < cEvents[e].triggerMechanics.Length; m++)
                         {
                             if (cEvents[e].character != null)
-                                cEvents[e].triggerMechanics[m].TriggerMechanic(new ActionController.ActionInfo(null, cEvents[e].character, null));
+                                cEvents[e].triggerMechanics[m].TriggerMechanic(new ActionInfo(null, cEvents[e].character, null));
                             else
-                                cEvents[e].triggerMechanics[m].TriggerMechanic(new ActionController.ActionInfo(null, null, null));
+                                cEvents[e].triggerMechanics[m].TriggerMechanic(new ActionInfo(null, null, null));
                         }
                     }
                     // Check for CharacterEvent targets to be set for this events character
@@ -407,9 +465,22 @@ public class FightTimeline : MonoBehaviour
                                 else
                                 {
                                     int r = UnityEngine.Random.Range(0, cEvents[e].performCharacterActions.Length);
+                                    bool exist = false;
+
+                                    if (TryGetRandomEventResult(cEvents[e].id, out int rr))
+                                    {
+                                        r = rr;
+                                        exist = true;
+                                        Debug.Log($"Exists! r {r}");
+                                    }
+
                                     cEvents[e].actions.PerformAction(cEvents[e].performCharacterActions[r]);
-                                    randomEventResults.Add(cEvents[e].id, r);
-                                    m_randomEventResults.Add(new RandomEventResult(cEvents[e].id, r));
+
+                                    if (!exist)
+                                    {
+                                        randomEventResults.Add(cEvents[e].id, r);
+                                        m_randomEventResults.Add(new RandomEventResult(cEvents[e].id, r));
+                                    }
                                 }
                             }
                         }
