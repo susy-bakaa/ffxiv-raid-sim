@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1721374328923807295}
   - component: {fileID: 1386734774629818834}
+  - component: {fileID: 2828706057490686182}
   m_Layer: 5
   m_Name: Ac_Surecast
   m_TagString: Untagged
@@ -51,17 +52,47 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 801af055657c9654c94b43ada9206ccd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  input: {fileID: 0}
   priority: 8
+  hidden: 0
+  omitSorting: 0
+  characterState: {fileID: 0}
+  destroyIfMissing: 0
+  initializeOnStart: 0
+  isPartyListElement: 0
+  untargetableOverlay: {fileID: 0}
+  targetButton: {fileID: 0}
   blocksAllInput: 0
   blocksPosInput: 0
-  blocksRotInput: 0
+  blocksRotInput: 1
   blocksScrInput: 0
+  blocksTargetRaycasts: 1
+  doMovement: 0
+  movement: {x: 0, y: 0}
+  fadeOutTime: -1
+  fadeOutDelay: 0
+  lifeTime: -1
   images: []
   texts: []
   outlines: []
   defaultColors: []
   alternativeColors: []
+  onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  dummy: 0
+--- !u!114 &2828706057490686182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2287955757171077410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fa0a408cf929d14eb9448b30c5aa513, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  effect: {fileID: 0}
 --- !u!1 &2786566541058178106
 GameObject:
   m_ObjectHideFlags: 0

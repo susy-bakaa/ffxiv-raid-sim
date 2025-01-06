@@ -1,14 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using NaughtyAttributes;
 using static GlobalData;
 using static GlobalData.Damage;
-using static ActionController;
-using NaughtyAttributes;
+using static StatusEffectData;
 
 public class GazeMechanic : FightMechanic
 {
     public Damage damage = new Damage(100, true, true, DamageType.unique, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.percentageFromMax, "Unnamed Gaze");
+    public List<StatusEffectInfo> inflictsEffects = new List<StatusEffectInfo>();
     public bool lethalGaze = true;
     public Transform origin;
     public float threshold = 45f;
@@ -54,13 +55,28 @@ public class GazeMechanic : FightMechanic
 
         if (angle < threshold)
         {
-            target.ModifyHealth(damage, lethalGaze);
+            bool damageDealt = false;
+            if (damage.value != 0 || lethalGaze)
+            {
+                damageDealt = true;
+                target.ModifyHealth(damage, lethalGaze);
+            }
+            if (inflictsEffects != null && inflictsEffects.Count > 0)
+            {
+                if (!damageDealt)
+                    target.ShowDamageFlyText(new Damage(-1, true, true, DamageType.unique, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal, damage.source, damage.name), false);
+
+                for (int i = 0; i < inflictsEffects.Count; i++)
+                {
+                    target.AddEffect(inflictsEffects[i].data, sourceCharacter, false, inflictsEffects[i].tag, inflictsEffects[i].stacks);
+                }
+            }
             if (log)
                 Debug.Log($"Angle was under threshold!");
         }
         else
         {
-            target.ShowDamageFlyText(new Damage(0, true, true, DamageType.unique, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal, damage.source, damage.name));
+            target.ShowDamageFlyText(new Damage(0, true, true, DamageType.none, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal, damage.source, damage.name));
             if (log)
                 Debug.Log($"Angle was over threshold!");
         }

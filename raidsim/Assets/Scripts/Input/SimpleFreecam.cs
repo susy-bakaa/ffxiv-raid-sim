@@ -95,7 +95,7 @@ public class SimpleFreecam : MonoBehaviour
         }
 
         // Reset movement speed to default when Control key is pressed
-        if (userInput.GetButtonDown("ResetSpeed"))//Input.GetButtonDown("ResetSpeed"))
+        if (userInput.GetButtonDown("ResetSpeed") && active)//Input.GetButtonDown("ResetSpeed"))
         {
             currentMovementSpeed = defaultMovementSpeed;
         }

@@ -200,6 +200,7 @@ MonoBehaviour:
     elementalAspect: 7
     physicalAspect: 0
     applicationType: 0
+    source: {fileID: 0}
   damageFalloff:
     serializedVersion: 2
     m_Curve:
@@ -241,8 +242,10 @@ MonoBehaviour:
   updateLive: 0
   shared: 0
   enumeration: 0
+  requireOwner: 0
   visualDelay: 0
   triggerDelay: 4.6
+  triggerDelayVariance: 0
   damageApplicationDelay: 0.25
   cooldown: 10
   playersRequired: 0
@@ -308,9 +311,13 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
   onTrigger:
     m_PersistentCalls:
       m_Calls: []
+  dummy: 0
 --- !u!114 &8651429181594454617
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -389,10 +396,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75a787e99245c054bbfc8f322d52e672, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  materials:
-  - {fileID: 2100000, guid: fbb052d93818a274295c26150f6c422c, type: 2}
   outValue: 0
   inValue: 1
+  outOnStart: 0
+  log: 0
+  fadeTime: 0.5
 --- !u!114 &6186089661044557751
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -419,9 +427,14 @@ MonoBehaviour:
   useActionDamage: 0
   usePlayerHealth: 0
   useTargetControllerCurrentTargetAsLocation: 0
+  faceTarget: 0
+  axis:
+    x: 0
+    y: 0
+    z: 0
   dealDamage: 1
-  increaseEnmity: 0
   damageMultiplier: 1
+  increaseEnmity: 0
 --- !u!114 &7572873188957248240
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -436,7 +449,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: -1
   disableInstead: 0
-  log: 1
+  log: 0
   onDestroy:
     m_PersistentCalls:
       m_Calls: []

@@ -6,6 +6,7 @@ using static GlobalData;
 
 public class TriggerRandomMechanic : FightMechanic
 {
+    [Header("Trigger Random Mechanic Settings")]
     public List<FightMechanicList> mechanics = new List<FightMechanicList>();
     [MinValue(-1)]
     public int thisRandomEventResultId = -1;

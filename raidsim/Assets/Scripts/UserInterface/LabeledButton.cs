@@ -52,4 +52,9 @@ public class LabeledButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
             }
         }
     }
+
+    public void ResetLabel()
+    {
+        label.text = originalText;
+    }
 }

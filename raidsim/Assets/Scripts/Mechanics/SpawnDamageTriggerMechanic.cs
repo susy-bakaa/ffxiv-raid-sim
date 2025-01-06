@@ -9,6 +9,7 @@ using static GlobalData.Damage;
 
 public class SpawnDamageTriggerMechanic : FightMechanic
 {
+    [Header("Spawn Damage Trigger Settings")]
     public CharacterState owner;
     public TargetController targetController;
     public GameObject damageTriggerPrefab;

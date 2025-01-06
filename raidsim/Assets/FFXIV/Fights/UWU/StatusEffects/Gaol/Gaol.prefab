@@ -61,6 +61,7 @@ MonoBehaviour:
     elementalAspect: 0
     physicalAspect: 0
     applicationType: 0
+    source: {fileID: 0}
   onApplication:
     m_PersistentCalls:
       m_Calls:
@@ -167,6 +168,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state: 0
+  party: {fileID: 0}
+  autoFindParty: 0
   source: {fileID: 0}
   target: {fileID: 0}
   targetName: VisualEffects/GraniteGaol_Effect
@@ -174,9 +177,12 @@ MonoBehaviour:
   targetIndex: 2
   useStatusEffectTagAsTargetIndex: 0
   localParent: 1
+  hiddenActions: 0
   toggleObject: 0
   toggleCharacterState: 0
   toggleCharacterEffect: 1
+  toggleShaderEffect: 0
+  fadeTime: 0.33
   log: 0
 --- !u!114 &6623078097055607342
 MonoBehaviour:
@@ -192,6 +198,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mechanicEnabled: 1
   mechanicName: 
+  onlyTriggerOnce: 0
   log: 0
   startAutomatically: 0
   delay: 5.4
@@ -283,6 +290,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state: 0
+  party: {fileID: 0}
+  autoFindParty: 0
   source: {fileID: 0}
   target: {fileID: 0}
   targetName: 
@@ -290,7 +299,10 @@ MonoBehaviour:
   targetIndex: 0
   useStatusEffectTagAsTargetIndex: 1
   localParent: 0
+  hiddenActions: 1
   toggleObject: 1
   toggleCharacterState: 1
   toggleCharacterEffect: 0
+  toggleShaderEffect: 0
+  fadeTime: 0.33
   log: 1

@@ -308,16 +308,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   priority: 0
   hidden: 0
+  omitSorting: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
+  initializeOnStart: 0
   isPartyListElement: 0
   untargetableOverlay: {fileID: 0}
   targetButton: {fileID: 0}
   blocksAllInput: 0
   blocksPosInput: 0
-  blocksRotInput: 0
+  blocksRotInput: 1
   blocksScrInput: 0
-  blocksTargetRaycasts: 0
+  blocksTargetRaycasts: 1
   doMovement: 0
   movement: {x: 0, y: 0}
   fadeOutTime: -1
@@ -328,6 +330,10 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  dummy: 0
 --- !u!1 &2950028322613814395
 GameObject:
   m_ObjectHideFlags: 0

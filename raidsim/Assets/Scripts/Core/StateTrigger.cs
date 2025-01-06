@@ -16,6 +16,7 @@ public class StateTrigger : MonoBehaviour
     public int targetIndex = 0;
     public bool useStatusEffectTagAsTargetIndex = false;
     public bool localParent = false;
+    public bool hiddenActions = false;
     public bool toggleObject = true;
     public bool toggleCharacterState = false;
     public bool toggleCharacterEffect = false;
@@ -237,14 +238,20 @@ public class StateTrigger : MonoBehaviour
         {
             if (actionController != null)
             {
-                actionController.PerformAction(data.actionName);
+                if (!hiddenActions)
+                    actionController.PerformAction(data.actionName);
+                else
+                    actionController.PerformActionHidden(data.actionName);
             }
         }
         else
         {
             if (sourceActionController != null)
             {
-                sourceActionController.PerformAction(data.actionName);
+                if (!hiddenActions)
+                    sourceActionController.PerformAction(data.actionName);
+                else
+                    sourceActionController.PerformActionHidden(data.actionName);
             }
         }
     }

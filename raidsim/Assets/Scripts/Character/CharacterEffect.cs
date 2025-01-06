@@ -16,6 +16,7 @@ public class CharacterEffect : MonoBehaviour
     private SimpleShaderFade[] shaderFade;
     private bool hasShaderFade = false;
     private Coroutine disableEffect;
+    private GameObject targetObject;
 
 #if UNITY_EDITOR
     [Button("Toggle Effect")]
@@ -28,8 +29,11 @@ public class CharacterEffect : MonoBehaviour
     private void Awake()
     {
         shaderFade = transform.GetComponentsInChildren<SimpleShaderFade>();
-        if (shaderFade != null)
+        targetObject = transform.GetChild(0).gameObject;
+        if (shaderFade != null && shaderFade.Length > 0)
             hasShaderFade = true;
+        else
+            hasShaderFade = false;
     }
 
     private void Start()
@@ -74,7 +78,7 @@ public class CharacterEffect : MonoBehaviour
         else
         {
             if (toggleObject)
-                transform.GetChild(0).gameObject.SetActive(true);
+                targetObject.SetActive(true);
         }
         visible = true;
     }
@@ -102,7 +106,7 @@ public class CharacterEffect : MonoBehaviour
         else
         {
             if (toggleObject)
-                transform.GetChild(0).gameObject.SetActive(false);
+                targetObject.SetActive(false);
         }
         visible = false;
     }
@@ -116,6 +120,10 @@ public class CharacterEffect : MonoBehaviour
             {
                 shaderFade[i].gameObject.SetActive(false);
             }
+        }
+        else
+        {
+            targetObject.SetActive(false);
         }
         disableEffect = null;
     }

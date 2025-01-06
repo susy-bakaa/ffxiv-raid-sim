@@ -340,6 +340,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6097202371190336077}
   - component: {fileID: 2303068326225941930}
+  - component: {fileID: 4163536241970334946}
   m_Layer: 5
   m_Name: Ac_Smudge
   m_TagString: Untagged
@@ -392,9 +393,9 @@ MonoBehaviour:
   targetButton: {fileID: 0}
   blocksAllInput: 0
   blocksPosInput: 0
-  blocksRotInput: 0
+  blocksRotInput: 1
   blocksScrInput: 0
-  blocksTargetRaycasts: 0
+  blocksTargetRaycasts: 1
   doMovement: 0
   movement: {x: 0, y: 0}
   fadeOutTime: -1
@@ -409,6 +410,19 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   dummy: 0
+--- !u!114 &4163536241970334946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2325660202321503450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fa0a408cf929d14eb9448b30c5aa513, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  effect: {fileID: 0}
 --- !u!1 &3623326833725424604
 GameObject:
   m_ObjectHideFlags: 0

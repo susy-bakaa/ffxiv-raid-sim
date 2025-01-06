@@ -40,6 +40,7 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public List<StatusEffectData> comboOutlineEffects;
     public List<StatusEffectData> hideWhileEffects;
     public bool showInsteadWithEffects = false;
+    public bool invisibilityAlsoDisables = false;
 
     [Header("Events")]
     public UnityEvent<ActionInfo> onExecute;
@@ -68,6 +69,7 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
     private RecastType normalRecastType;
     private bool chargeRestored = false;
     private bool permanentlyUnavailable = false;
+    private float lastRecast = 0f;
 
     public CharacterState GetCharacter()
     {
@@ -201,12 +203,20 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         {
             if (invisible)
             {
+                if (invisibilityAlsoDisables)
+                {
+                    isDisabled = true;
+                }
                 group.alpha = 0f;
                 group.interactable = false;
                 group.blocksRaycasts = false;
             }
             else
             {
+                if (invisibilityAlsoDisables)
+                {
+                    isDisabled = false;
+                }
                 group.alpha = 1f;
                 group.interactable = true;
                 group.blocksRaycasts = true;
@@ -296,7 +306,7 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
                 isAvailable = false;
                 recastType = normalRecastType;
             }
-            else
+            else if (data.charges > 1)
             {
                 recastType = RecastType.stackedOgcd;
             }
@@ -304,7 +314,7 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
             {
                 recastFillGroup.alpha = 1f;
             }
-            if (recastTimeText != null && data.recast > 2.5f)
+            if (recastTimeText != null && lastRecast > 2.5f)
             {
                 recastTimeText.text = timer.ToString("F0");
             }
@@ -404,7 +414,7 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         if (recastFillAnimator != null && timer > 0f)
         {
             animFlag = false;
-            recastFillAnimator.Play($"ui_hotbar_recast_type{(int)recastType + 1}_fill", 0, Utilities.Map(data.recast - timer, 0f, data.recast, 0f, 1f));
+            recastFillAnimator.Play($"ui_hotbar_recast_type{(int)recastType + 1}_fill", 0, Utilities.Map(lastRecast - timer, 0f, lastRecast, 0f, 1f));
         }
         else if (recastFillAnimator != null && !animFlag)
         {
@@ -570,6 +580,7 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         }
         if (timer <= 0f)
         {
+            lastRecast = data.recast;
             timer = data.recast;
         }
 
@@ -583,6 +594,24 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
                     sharedRecast.ActivateCooldown(true);
                 }
             }
+        }
+    }
+
+    public void ActivateCooldown(float recast)
+    {
+        if (unavailable)
+            return;
+
+        chargesLeft--;
+
+        if (chargesLeft < 1)
+        {
+            isAvailable = false;
+        }
+        if (timer <= 0f)
+        {
+            lastRecast = recast;
+            timer = recast;
         }
     }
 
@@ -604,6 +633,15 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
                 }
             }
         }
+    }
+
+    public void ActivateAnimationLock(float duration)
+    {
+        if (unavailable)
+            return;
+
+        isAnimationLocked = true;  
+        aTimer = duration;
     }
 
     public void ResetCooldown(bool shared = false)

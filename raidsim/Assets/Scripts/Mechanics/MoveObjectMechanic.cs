@@ -8,6 +8,7 @@ public class MoveObjectMechanic : FightMechanic
 {
     private Animator targetAnimator;
 
+    [Header("Move Object Settings")]
     public Transform target;
     public Transform destination;
     public bool relative = false;

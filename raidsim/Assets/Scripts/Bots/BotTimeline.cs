@@ -23,6 +23,7 @@ public class BotTimeline : MonoBehaviour
     public UnityEvent<BotTimeline> onFinish;
 
     private int index;
+    public bool TeleportAfterClose { get; private set; }
 
     void Awake()
     {
@@ -117,6 +118,14 @@ public class BotTimeline : MonoBehaviour
             {
                 currentTarget = null;
             }
+            if (events[i].teleportAfterCloseEnough)
+            {
+                TeleportAfterClose = true;
+            }
+            else
+            {
+                TeleportAfterClose = false;
+            }
             if (events[i].action != null)
             {
                 if (events[i].waitForAction > 0f)
@@ -126,7 +135,7 @@ public class BotTimeline : MonoBehaviour
                 if (!events[i].unrestrictedAction)
                     controller.PerformAction(events[i].action.actionName);
                 else
-                    controller.PerformActionUnrestricted(events[i].action.actionName);
+                    controller.PerformActionHidden(events[i].action.actionName);
                 if (FightTimeline.Instance.log)
                     Debug.Log($"[BotTimeline] {controller.gameObject.name} perform action {events[i].action.actionName}");
             }
@@ -191,6 +200,7 @@ public class BotTimeline : MonoBehaviour
         [HideIf("clockSpot")] public Transform node;
         public float waitAtNode;
         public float randomWaitVariance;
+        public bool teleportAfterCloseEnough;
         public CharacterActionData action;
         public bool unrestrictedAction;
         public float waitForAction;
@@ -201,12 +211,13 @@ public class BotTimeline : MonoBehaviour
         public TargetNode target;
         public StatusEffectInfo targetStatusEffectHolder;
 
-        public BotEvent(string name, Transform node, float waitAtNode, float randomWaitVariance, CharacterActionData action, bool unrestrictedAction, float waitForAction, Vector3 rotation, Transform faceTowards, Transform faceAway, float waitForRotation, TargetNode cycleTarget, StatusEffectInfo targetStatusEffectHolder)
+        public BotEvent(string name, Transform node, float waitAtNode, float randomWaitVariance, bool teleportAfterCloseEnough, CharacterActionData action, bool unrestrictedAction, float waitForAction, Vector3 rotation, Transform faceTowards, Transform faceAway, float waitForRotation, TargetNode cycleTarget, StatusEffectInfo targetStatusEffectHolder)
         {
             this.name = name;
             this.node = node;
             this.waitAtNode = waitAtNode;
             this.randomWaitVariance = randomWaitVariance;
+            this.teleportAfterCloseEnough = teleportAfterCloseEnough;
             this.action = action;
             this.unrestrictedAction = unrestrictedAction;
             this.waitForAction = waitForAction;

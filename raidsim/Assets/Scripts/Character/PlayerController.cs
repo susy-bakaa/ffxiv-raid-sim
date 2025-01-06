@@ -123,7 +123,7 @@ public class PlayerController : MonoBehaviour
         }
 
         tm += FightTimeline.deltaTime;
-        if (tm > release || state.dead)
+        if (tm > release || (state.dead && !sliding))
         {
             tm = release + 1f;
             state.uncontrollable.RemoveFlag("knockback");
@@ -178,7 +178,7 @@ public class PlayerController : MonoBehaviour
                 inputR = Vector2.zero;
             }
 
-            if (disableCameraPivot)
+            if (disableCameraPivot && legacyMovement)
             {
                 input = new Vector2(inputR.x + input.x, input.y);
             }
@@ -247,7 +247,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                model.eulerAngles = new Vector3(0f, 0f, 0f);
+                model.localEulerAngles = new Vector3(0f, 0f, 0f);
 
                 float speedModifier = 1f;
                 bool turning = false;
@@ -316,10 +316,10 @@ public class PlayerController : MonoBehaviour
             }
 
             // Animation updates
-            float animationValue = (state.HasEffect("Sprint") ? 1f : 0.5f) * normalizedInput.magnitude;
-            if (normalizedInputR != Vector2.zero)
+            float animationValue = ((state.HasEffect("Sprint") || state.HasEffect("Smudge")) ? 1f : 0.5f) * normalizedInput.magnitude;
+            if (normalizedInputR != Vector2.zero && normalizedInput.y >= 0f && legacyMovement)
             {
-                animationValue = (state.HasEffect("Sprint") ? 1f : 0.5f) * normalizedInputR.magnitude;
+                animationValue = ((state.HasEffect("Sprint") || state.HasEffect("Smudge")) ? 1f : 0.5f) * normalizedInputR.magnitude;
             }
 
             if ((legacyMovement && !disableCameraPivot && userInput.GetAxisButton("Strafe")) || !legacyMovement)
@@ -335,7 +335,7 @@ public class PlayerController : MonoBehaviour
 
             animator.SetFloat(animatorParameterSpeed, animationValue);
         }
-        else if (!state.dead && !state.bound.value && enableInput && knockedBack)
+        else if ((!state.dead || sliding) && !state.bound.value && enableInput && knockedBack)
         {
             animator.SetFloat(animatorParameterSpeed, 0f);
             transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, release);

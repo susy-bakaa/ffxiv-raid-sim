@@ -6,6 +6,7 @@ using static GlobalData;
 
 public class CombinedFightMechanic : FightMechanic
 {
+    [Header("Combined Fight Mechanic Settings")]
     public UnityEvent<ActionInfo> onTriggerMechanic;
 
     public override void TriggerMechanic(ActionInfo actionInfo)

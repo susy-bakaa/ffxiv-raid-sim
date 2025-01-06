@@ -16,7 +16,7 @@ MonoBehaviour:
   actionType: 2
   damage:
     name: Set Health
-    value: -2000000
+    value: -4000000
     negative: 1
     ignoreDamageReductions: 1
     type: 3
@@ -28,7 +28,9 @@ MonoBehaviour:
   isShield: 0
   isHeal: 0
   isTargeted: 0
+  isGroundTargeted: 0
   topEnmity: 0
+  hasMovement: 0
   targetGroups: 64000000
   maxTargets: 1
   range: 0
@@ -39,6 +41,7 @@ MonoBehaviour:
   cast: 0
   recast: 0
   animationLock: 0
+  charges: 1
   canBeSlideCast: 0
   rollsGcd: 0
   buff: {fileID: 0}
@@ -50,3 +53,6 @@ MonoBehaviour:
   playAnimationDirectly: 0
   playAnimationOnFinish: 0
   onAnimationFinishId: -1
+  speech: 
+  speechAudio: {fileID: 0}
+  jonSpeechAudio: {fileID: 0}

@@ -60,4 +60,31 @@ public class MovementSpeedBuff : StatusEffect
         }
         base.OnExpire(state);
     }
+
+    public override void OnCleanse(CharacterState state)
+    {
+        if (uniqueTag != 0)
+        {
+            if (newMovementSpeed >= 0f)
+            {
+                state.RemoveMovementSpeed($"{data.statusName}_{uniqueTag}");
+            }
+            if (newMovementSpeedModifier >= 0f)
+            {
+                state.RemoveMovementSpeedModifier($"{data.statusName}_{uniqueTag}");
+            }
+        }
+        else
+        {
+            if (newMovementSpeed >= 0f)
+            {
+                state.RemoveMovementSpeed(data.statusName);
+            }
+            if (newMovementSpeedModifier >= 0f)
+            {
+                state.RemoveMovementSpeedModifier(data.statusName);
+            }
+        }
+        base.OnCleanse(state);
+    }
 }

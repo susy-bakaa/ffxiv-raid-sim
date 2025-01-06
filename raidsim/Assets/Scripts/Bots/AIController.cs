@@ -102,7 +102,7 @@ public class AIController : MonoBehaviour
                 }
             }
 
-            float stoppingDistance = 0.1f; // Adjust as needed
+            float stoppingDistance = 0.05f; // Adjust as needed
             if (distanceToTarget > stoppingDistance)
             {
                 if (sliding && slideDistance > 0f && botTimeline != null && botTimeline.currentTarget != null)
@@ -123,6 +123,8 @@ public class AIController : MonoBehaviour
             }
             else
             {
+                if (botTimeline.TeleportAfterClose)
+                    transform.position = botTimeline.currentTarget.position;
                 currentSpeed = 0;
             }
 

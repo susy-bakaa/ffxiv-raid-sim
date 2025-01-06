@@ -706,7 +706,7 @@ public class CharacterState : MonoBehaviour
                     effectsArray[i].duration -= FightTimeline.deltaTime;
                 }
                 effectsArray[i].onUpdate.Invoke(this);
-                if (effectsArray[i].duration <= 0f)
+                if (effectsArray[i]?.duration <= 0f)
                 {
                     RemoveEffect(effectsArray[i], true, this, effectsArray[i].uniqueTag, effectsArray[i].stacks);
                 }
@@ -3030,14 +3030,21 @@ public class CharacterState : MonoBehaviour
         ShowStatusEffectFlyTextInternal(data, stacks, prefix, false, character);
     }
 
-    private void ShowStatusEffectFlyTextInternal(StatusEffectData data, int stacks, string prefix, bool feed, CharacterState character)
+    public void ShowStatusEffectFlyTextInternal(StatusEffectData data, int stacks, string prefix, bool feed, CharacterState character)
     {
         if (data.hidden)
             return;
 
         // Hard coded the Short (@s) and Long (@l) that are used to distinguish between few of the same debuffs,
         // also the '#' character which is used for non capitalised letter sequences. This needs a better implementation.
-        string result = $"{prefix}{Utilities.InsertSpaceBeforeCapitals(data.statusName).Replace("@s", "").Replace("@l", "").Replace("#", " ").Replace("@gd", "").Replace("@gs", "")}";
+        string result = $"{prefix}{Utilities.InsertSpaceBeforeCapitals(data.statusName).Replace("#", " ")}";
+
+        // Remove anything after the '@' symbol
+        int atIndex = result.IndexOf('@');
+        if (atIndex >= 0)
+        {
+            result = result.Substring(0, atIndex);
+        }
 
         Color color = neutralPopupColor;
 
@@ -3083,7 +3090,7 @@ public class CharacterState : MonoBehaviour
             ShowFlyTextWorldspace(new FlyText(result, color, icon, string.Empty, character));
     }
 
-    public void ShowDamageFlyText(Damage damage)
+    public void ShowDamageFlyText(Damage damage, bool showValue = true)
     {
         string result = string.Empty;
 
@@ -3097,13 +3104,20 @@ public class CharacterState : MonoBehaviour
 
         string finalValue = string.Empty;
 
-        if (finalDamage.value < 0 || finalDamage.value > 0)
+        if (showValue)
         {
-            finalValue = Mathf.Abs(finalDamage.value).ToString();
+            if (finalDamage.value < 0 || finalDamage.value > 0)
+            {
+                finalValue = Mathf.Abs(finalDamage.value).ToString();
+            }
+            else
+            {
+                finalValue = finalDamage.value.ToString();
+            }
         }
         else
         {
-            finalValue = finalDamage.value.ToString();
+            finalValue = string.Empty;
         }
 
         if ((invulnerable.value && finalDamage.negative) || (finalDamage.value == 0))

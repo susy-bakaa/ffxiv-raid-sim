@@ -42,6 +42,7 @@ public class StatusEffect : MonoBehaviour
     private GameObject targetHudElement;
     private TextMeshProUGUI targetHudTimer;
     private Image targetHudIcon;
+    private StatusEffectIcon icon;
 
     public void Initialize(CharacterState holder, Transform hudElementParent, Transform partyHudElementParent, Transform targetHudElementParent, Color labelColor)
     {
@@ -58,6 +59,10 @@ public class StatusEffect : MonoBehaviour
             hasHudElement = true;
             hudElement = Instantiate(data.hudElement, hudElementParent);
             hudElementGroup = hudElement.GetComponent<CanvasGroup>();
+            if (hudElement.TryGetComponent(out icon))
+            {
+                icon.Initialize(character, this);
+            }
             if (hudElementGroup != null)
             {
                 if (data.hidden)

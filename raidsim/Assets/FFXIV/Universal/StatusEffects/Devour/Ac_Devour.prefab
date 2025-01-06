@@ -121,6 +121,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5428940382671076404}
   - component: {fileID: 3378848707414830647}
+  - component: {fileID: 7742213117816272780}
   m_Layer: 5
   m_Name: Ac_Devour
   m_TagString: Untagged
@@ -163,13 +164,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 10
+  hidden: 0
+  omitSorting: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
+  initializeOnStart: 0
+  isPartyListElement: 0
+  untargetableOverlay: {fileID: 0}
+  targetButton: {fileID: 0}
   blocksAllInput: 0
   blocksPosInput: 0
-  blocksRotInput: 0
+  blocksRotInput: 1
   blocksScrInput: 0
-  blocksTargetRaycasts: 0
+  blocksTargetRaycasts: 1
   doMovement: 0
   movement: {x: 0, y: 0}
   fadeOutTime: -1
@@ -180,6 +187,23 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  dummy: 0
+--- !u!114 &7742213117816272780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3119692314766952333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fa0a408cf929d14eb9448b30c5aa513, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  effect: {fileID: 0}
 --- !u!1 &4018385242678441456
 GameObject:
   m_ObjectHideFlags: 0

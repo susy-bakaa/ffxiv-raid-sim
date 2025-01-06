@@ -5,6 +5,7 @@ using static GlobalData;
 
 public class SpawnPrefabMechanic : FightMechanic
 {
+    [Header("Spawn Prefab Settings")]
     public GameObject objectPrefab;
     public Transform spawnLocation;
     public string spawnEnemyName = string.Empty;

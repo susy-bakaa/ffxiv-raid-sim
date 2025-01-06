@@ -14,4 +14,10 @@ public class SurecastBuff : StatusEffect
         state.knockbackResistant.SetFlag(data.statusName, false);
         base.OnExpire(state);
     }
+
+    public override void OnCleanse(CharacterState state)
+    {
+        state.knockbackResistant.SetFlag(data.statusName, false);
+        base.OnCleanse(state);
+    }
 }

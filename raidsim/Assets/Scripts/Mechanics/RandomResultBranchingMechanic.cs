@@ -8,8 +8,8 @@ public class RandomResultBranchingMechanic : FightMechanic
 {
     FightTimeline fight;
 
+    [Header("Random Result Branching Settings")]
     public List<RandomResultBranchedEvent> events = new List<RandomResultBranchedEvent>();
-
     public int randomEventId = 0;
     public bool useResultAsListIndex = true;
 

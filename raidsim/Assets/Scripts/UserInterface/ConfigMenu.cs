@@ -53,6 +53,7 @@ public class ConfigMenu : MonoBehaviour
     bool menuVisible = false;
     bool applyPopupVisible = false;
     bool configSaved = true;
+    bool start = false;
 
     void Awake()
     {
@@ -65,10 +66,6 @@ public class ConfigMenu : MonoBehaviour
 
         if (playerTargeting != null)
             playerTargeting.SetConfigMenu(this);
-
-        scale = scaleSliderSync.Slider.value;
-        legacy = toggleMovement.toggles[0].isOn;
-        volume = volumeSliderSync.Slider.value;
 
         menuVisible = false;
         group.alpha = 0f;
@@ -92,6 +89,16 @@ public class ConfigMenu : MonoBehaviour
                 userInput.rotationInputEnabled = false;
                 userInput.targetRaycastInputEnabled = false;
             }
+        }
+
+        if (!start)
+        {
+            start = true;
+            scale = scaleSliderSync.Slider.value;
+            legacy = toggleMovement.toggles[0].isOn;
+            newLegacy = legacy;
+            playerController.legacyMovement = legacy;
+            volume = volumeSliderSync.Slider.value;
         }
     }
 

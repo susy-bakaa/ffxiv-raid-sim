@@ -78,7 +78,7 @@ public class ActionController : MonoBehaviour
     public float LastCastTime { get { return lastCastTime; } }
     private bool interrupted;
     public bool Interrupted { get { return interrupted; } }
-
+    private bool hasTarget;
     private int rateLimit;
     private float autoAttackTimer;
     private Queue<CharacterAction> queuedAutoActions = new Queue<CharacterAction>();
@@ -156,7 +156,7 @@ public class ActionController : MonoBehaviour
         if (Time.timeScale <= 0f)
             return;
 
-        bool hasTarget = false;
+        hasTarget = false;
 
         if (targetController != null)
         {
@@ -445,7 +445,7 @@ public class ActionController : MonoBehaviour
         if (autoAction.data.range > 0f && autoAction.data.isTargeted && (distanceToTarget > autoAction.data.range))
             return false;
 
-        if (autoAction.data.isTargeted && !autoAction.hasTarget)
+        if (autoAction.data.isTargeted && !hasTarget)
             return false;
 
         if (autoAction.data.isTargeted && targetController.currentTarget != null && !autoAction.data.targetGroups.Contains(targetController.currentTarget.Group))
@@ -596,11 +596,15 @@ public class ActionController : MonoBehaviour
 
     private void PerformActionInternal(CharacterAction action, bool hidden)
     {
+        //Debug.Log($"[ActionController ({gameObject.name})] Performing action {action.data.actionName} ({action}), hidden {hidden}");
+
         if (action == null)
             return;
 
         if (action.unavailable)
             return;
+
+        //Debug.Log($"[ActionController ({gameObject.name})] Action {action.data.actionName} passed 1. checks");
 
         action.OnPointerClick(null);
 
@@ -610,17 +614,23 @@ public class ActionController : MonoBehaviour
         if (action.data.range > 0f && action.data.isTargeted && (distanceToTarget > action.data.range) && !hidden)
             return;
 
-        if (action.data.isTargeted && !action.hasTarget && !hidden)
+        //Debug.Log($"[ActionController ({gameObject.name})] Action {action.data.actionName} passed 2. checks");
+
+        if (action.data.isTargeted && !hasTarget && !hidden)
             return;
 
         if (action.data.isTargeted && targetController.currentTarget != null && !action.data.targetGroups.Contains(targetController.currentTarget.Group) && !hidden)
             return;
 
+        //Debug.Log($"[ActionController ({gameObject.name})] Action {action.data.actionName} passed 3. checks");
+
         if (action.data.charges > 1 && action.chargesLeft < 1 && !hidden)
             return;
 
-        if (action.data.hasMovement && (characterState.bound.value || characterState.uncontrollable.value))
+        if (action.data.hasMovement && (characterState.bound.value || characterState.uncontrollable.value) && !hidden)
             return;
+
+        //Debug.Log($"[ActionController ({gameObject.name})] Action {action.data.actionName} passed 4. checks");
 
         interrupted = false;
         if (castBarElement != null)
@@ -646,7 +656,7 @@ public class ActionController : MonoBehaviour
                 }
 
                 action.data.damage = new GlobalData.Damage(action.data.damage, characterState);
-                if (!action.data.isGroundTargeted)
+                if (!action.data.isGroundTargeted && action.data.recast > 0f && !hidden)
                     action.chargesLeft--;
                 lastAction = action;
 
@@ -736,7 +746,7 @@ public class ActionController : MonoBehaviour
 
                 ActionInfo newActionInfo = new ActionInfo(action, characterState, currentTarget);
                 action.onCast.Invoke(newActionInfo);
-                StartCoroutine(Cast(castTime, () => { if (!action.data.isGroundTargeted) { action.chargesLeft--; } action.ExecuteAction(newActionInfo); if (action.data.playAnimationOnFinish) { HandleAnimation(action); } }));
+                StartCoroutine(Cast(castTime, () => { if (!action.data.isGroundTargeted && action.data.recast > 0f && !hidden) { action.chargesLeft--; } action.ExecuteAction(newActionInfo); if (action.data.playAnimationOnFinish) { HandleAnimation(action); } }));
                 onCast.Invoke(new CastInfo(newActionInfo, instantCast, characterState.GetEffects()));
 
                 if (!action.data.playAnimationOnFinish && !action.data.isGroundTargeted)

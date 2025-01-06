@@ -116,6 +116,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1037119554763655413}
   - component: {fileID: 6525470952588985252}
+  - component: {fileID: 358446447009830351}
   - component: {fileID: 2542824331216278269}
   - component: {fileID: 2304559900691213885}
   - component: {fileID: 7530273735502726599}
@@ -163,6 +164,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1533076116268844848}
   m_CullTransparentMesh: 1
+--- !u!225 &358446447009830351
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1533076116268844848}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 1
 --- !u!114 &2542824331216278269
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -253,6 +266,7 @@ MonoBehaviour:
   isAutoAction: 0
   isDisabled: 0
   unavailable: 0
+  invisible: 0
   hasTarget: 0
   damageMultiplier: 1
   distanceToTarget: 0
@@ -264,93 +278,16 @@ MonoBehaviour:
     alt: 0
     control: 0
     shift: 0
+  availableForRoles: 
+  sharedRecasts: []
+  comboOutlineEffects: []
+  hideWhileEffects:
+  - {fileID: 11400000, guid: f1b27e2dcaffc474a8a7c78be2a5b63d, type: 2}
+  showInsteadWithEffects: 1
+  invisibilityAlsoDisables: 1
   onExecute:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7530273735502726599}
-        m_TargetAssemblyTypeName: CharacterAction, Assembly-CSharp
-        m_MethodName: ToggleState
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1533076116268844848}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 2339496773631589332}
-        m_TargetAssemblyTypeName: UnityEngine.CanvasGroup, UnityEngine
-        m_MethodName: set_alpha
-        m_Mode: 4
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 7530273735502726599}
-        m_TargetAssemblyTypeName: CharacterAction, Assembly-CSharp
-        m_MethodName: ResetCooldown
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 7530273735502726599}
-        m_TargetAssemblyTypeName: CharacterAction, Assembly-CSharp
-        m_MethodName: ResetAnimationLock
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: CharacterAction, Assembly-CSharp
-        m_MethodName: ToggleState
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+      m_Calls: []
   onCast:
     m_PersistentCalls:
       m_Calls: []

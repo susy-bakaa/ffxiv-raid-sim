@@ -105,13 +105,13 @@ MonoBehaviour:
   ableToHitTag: Player
   damage:
     name: Sinbound Holy
-    value: 100
+    value: 0
     negative: 1
-    ignoreDamageReductions: 1
-    type: 3
+    ignoreDamageReductions: 0
+    type: 1
     elementalAspect: 9
     physicalAspect: 0
-    applicationType: 2
+    applicationType: 0
     source: {fileID: 0}
   damageFalloff:
     serializedVersion: 2
@@ -162,7 +162,8 @@ MonoBehaviour:
   cooldown: 0
   playersRequired: 0
   currentPlayers: []
-  appliedEffects: []
+  appliedEffects:
+  - {fileID: 11400000, guid: 005a252f9360ad342ba4a96e4b6ee322, type: 2}
   onHit:
     m_PersistentCalls:
       m_Calls: []

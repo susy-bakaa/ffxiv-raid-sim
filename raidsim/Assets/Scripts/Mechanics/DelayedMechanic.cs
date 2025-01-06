@@ -6,6 +6,7 @@ using static GlobalData;
 
 public class DelayedMechanic : FightMechanic
 {
+    [Header("Delayed Mechanic Settings")]
     public bool startAutomatically = false;
     public float delay = 1f;
     public UnityEvent<ActionInfo> onDelayedTrigger;

@@ -14,6 +14,7 @@ public class GameObjectSync : MonoBehaviour
         else
         {
             target.SetActive(false);
+            gameObject.SetActive(false);
         }
     }
 

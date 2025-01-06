@@ -459,7 +459,10 @@ public class FightTimeline : MonoBehaviour
                                 {
                                     for (int a = 0; a < cEvents[e].performCharacterActions.Length; a++)
                                     {
-                                        cEvents[e].actions.PerformAction(cEvents[e].performCharacterActions[a]);
+                                        if (!cEvents[e].performHiddenAction)
+                                            cEvents[e].actions.PerformAction(cEvents[e].performCharacterActions[a]);
+                                        else
+                                            cEvents[e].actions.PerformActionHidden(cEvents[e].performCharacterActions[a]);
                                     }
                                 }
                                 else
@@ -474,7 +477,10 @@ public class FightTimeline : MonoBehaviour
                                         Debug.Log($"Exists! r {r}");
                                     }
 
-                                    cEvents[e].actions.PerformAction(cEvents[e].performCharacterActions[r]);
+                                    if (!cEvents[e].performHiddenAction)
+                                        cEvents[e].actions.PerformAction(cEvents[e].performCharacterActions[r]);
+                                    else
+                                        cEvents[e].actions.PerformActionHidden(cEvents[e].performCharacterActions[r]);
 
                                     if (!exist)
                                     {
@@ -715,6 +721,7 @@ public class FightTimeline : MonoBehaviour
         public bool teleport;
         public bool pickRandomCharacterAction;
         public bool pickRandomTarget;
+        public bool performHiddenAction;
         public int randomEventPoolId;
         public FightMechanic[] triggerMechanics;
         public UnityEvent onEvent;

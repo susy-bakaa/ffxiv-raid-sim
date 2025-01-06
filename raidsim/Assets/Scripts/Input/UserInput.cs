@@ -196,10 +196,20 @@ public class UserInput : MonoBehaviour
         float axis = 0;
         if (m_axes.TryGetValue(name, out InputAxis inputAxis))
         {
-            if (inputAxis.positive.bind != null && BindedKey(inputAxis.positive.bind))
-                axis += 1;
-            if (inputAxis.negative.bind != null && BindedKey(inputAxis.negative.bind))
-                axis -= 1;
+            if (inputAxis.weakModifierKeys)
+            {
+                if (inputAxis.positive.bind != null && AnyBindedKey(inputAxis.positive.bind))
+                    axis += 1;
+                if (inputAxis.negative.bind != null && AnyBindedKey(inputAxis.negative.bind))
+                    axis -= 1;
+            }
+            else
+            {
+                if (inputAxis.positive.bind != null && BindedKey(inputAxis.positive.bind))
+                    axis += 1;
+                if (inputAxis.negative.bind != null && BindedKey(inputAxis.negative.bind))
+                    axis -= 1;
+            }
         }
         return axis;
     }
@@ -218,10 +228,20 @@ public class UserInput : MonoBehaviour
 
         if (m_axes.TryGetValue(name, out InputAxis inputAxis))
         {
-            if (inputAxis.positive.bind != null && BindedKeyHeld(inputAxis.positive.bind))
-                axis += 1;
-            if (inputAxis.negative.bind != null && BindedKeyHeld(inputAxis.negative.bind))
-                axis -= 1;
+            if (inputAxis.weakModifierKeys)
+            {
+                if (inputAxis.positive.bind != null && AnyBindedKeyHeld(inputAxis.positive.bind))
+                    axis += 1;
+                if (inputAxis.negative.bind != null && AnyBindedKeyHeld(inputAxis.negative.bind))
+                    axis -= 1;
+            }
+            else
+            {
+                if (inputAxis.positive.bind != null && BindedKeyHeld(inputAxis.positive.bind))
+                    axis += 1;
+                if (inputAxis.negative.bind != null && BindedKeyHeld(inputAxis.negative.bind))
+                    axis -= 1;
+            }
         }
         return axis;
     }
@@ -230,10 +250,20 @@ public class UserInput : MonoBehaviour
     {
         if (m_axes.TryGetValue(name, out InputAxis inputAxis))
         {
-            if (inputAxis.positive.bind != null && BindedKeyHeld(inputAxis.positive.bind))
-                return true;
-            else if (inputAxis.negative.bind != null && BindedKeyHeld(inputAxis.negative.bind))
-                return true;
+            if (inputAxis.weakModifierKeys)
+            {
+                if (inputAxis.positive.bind != null && AnyBindedKeyHeld(inputAxis.positive.bind))
+                    return true;
+                else if (inputAxis.negative.bind != null && AnyBindedKeyHeld(inputAxis.negative.bind))
+                    return true;
+            }
+            else
+            {
+                if (inputAxis.positive.bind != null && BindedKeyHeld(inputAxis.positive.bind))
+                    return true;
+                else if (inputAxis.negative.bind != null && BindedKeyHeld(inputAxis.negative.bind))
+                    return true;
+            }
         }
         return false;
     }
@@ -242,10 +272,20 @@ public class UserInput : MonoBehaviour
     {
         if (m_axes.TryGetValue(name, out InputAxis inputAxis))
         {
-            if (inputAxis.positive.bind != null && BindedKey(inputAxis.positive.bind))
-                return true;
-            else if (inputAxis.negative.bind != null && BindedKey(inputAxis.negative.bind))
-                return true;
+            if (inputAxis.weakModifierKeys)
+            {
+                if (inputAxis.positive.bind != null && AnyBindedKey(inputAxis.positive.bind))
+                    return true;
+                else if (inputAxis.negative.bind != null && AnyBindedKey(inputAxis.negative.bind))
+                    return true;
+            }
+            else
+            {
+                if (inputAxis.positive.bind != null && BindedKey(inputAxis.positive.bind))
+                    return true;
+                else if (inputAxis.negative.bind != null && BindedKey(inputAxis.negative.bind))
+                    return true;
+            }
         }
         return false;
     }
@@ -275,9 +315,19 @@ public class UserInput : MonoBehaviour
         return (keyBind.keyCode != KeyCode.None && (Input.GetKeyDown(keyBind.keyCode) & Input.GetKey(KeyCode.LeftShift) == keyBind.shift & Input.GetKey(KeyCode.LeftAlt) == keyBind.alt & Input.GetKey(KeyCode.LeftControl) == keyBind.control)) || (keyBind.mouseButton != -1 && (Input.GetMouseButton(keyBind.mouseButton) & Input.GetKey(KeyCode.LeftShift) == keyBind.shift & Input.GetKey(KeyCode.LeftAlt) == keyBind.alt & Input.GetKey(KeyCode.LeftControl) == keyBind.control));
     }
 
+    public bool AnyBindedKey(KeyBind keyBind)
+    {
+        return (keyBind.keyCode != KeyCode.None && Input.GetKeyDown(keyBind.keyCode)) || (keyBind.mouseButton > -1 && Input.GetMouseButtonDown(keyBind.mouseButton));
+    }
+
     public bool BindedKeyHeld(KeyBind keyBind)
     {
         return (keyBind.keyCode != KeyCode.None && (Input.GetKey(keyBind.keyCode) & Input.GetKey(KeyCode.LeftShift) == keyBind.shift & Input.GetKey(KeyCode.LeftAlt) == keyBind.alt & Input.GetKey(KeyCode.LeftControl) == keyBind.control)) || (keyBind.mouseButton != -1 && (Input.GetMouseButton(keyBind.mouseButton) & Input.GetKey(KeyCode.LeftShift) == keyBind.shift & Input.GetKey(KeyCode.LeftAlt) == keyBind.alt & Input.GetKey(KeyCode.LeftControl) == keyBind.control));
+    }
+
+    public bool AnyBindedKeyHeld(KeyBind keyBind)
+    {
+        return (keyBind.keyCode != KeyCode.None && Input.GetKey(keyBind.keyCode)) || (keyBind.mouseButton > -1 && Input.GetMouseButton(keyBind.mouseButton));
     }
 
     public void Remap(string name, KeyBind bind)
@@ -345,8 +395,9 @@ public class UserInput : MonoBehaviour
         public string name;
         public InputBinding positive;
         public InputBinding negative;
+        public bool weakModifierKeys;
 
-        public InputAxis(string name, InputBinding positive, InputBinding negative)
+        public InputAxis(string name, InputBinding positive, InputBinding negative, bool weakModifierKeys)
         {
             this.name = name;
             this.positive = positive;
@@ -357,6 +408,7 @@ public class UserInput : MonoBehaviour
             InputBinding n = this.negative;
             n.name = $"{name}_Negative";
             this.negative = n;
+            this.weakModifierKeys = weakModifierKeys;
         }
 
         public void Rebind(KeyBind bindPositive, KeyBind bindNegative)
