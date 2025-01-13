@@ -165,8 +165,8 @@ public class TargetController : MonoBehaviour
         }
         else
         {
-            if (eventsEnabled)
-                onTarget.Invoke(null);
+            //if (eventsEnabled)
+                //onTarget.Invoke(null);
         }
     }
 

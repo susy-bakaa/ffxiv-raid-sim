@@ -11,6 +11,7 @@ public class SaveButton : MonoBehaviour
 
     public string group = "";
     public string key = "UnnamedButton";
+    public bool defaultValue = false;
 
     public UnityEvent<bool> onStart;
 
@@ -43,7 +44,7 @@ public class SaveButton : MonoBehaviour
         }
         else
         {
-            onStart.Invoke(false);
+            onStart.Invoke(defaultValue);
         }
     }
 

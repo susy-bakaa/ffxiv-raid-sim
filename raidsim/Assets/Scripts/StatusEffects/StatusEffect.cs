@@ -25,6 +25,7 @@ public class StatusEffect : MonoBehaviour
     public UnityEvent<CharacterState> onExpire;
     public UnityEvent<CharacterState> onCleanse;
     public UnityEvent<CharacterState> onReduce;
+    public UnityAction<CharacterState> onAddStack;
     public UnityEvent<CharacterState> onMaxStacks;
 
     private bool hasHudElement = false;
@@ -190,6 +191,8 @@ public class StatusEffect : MonoBehaviour
                 prefix = " - ";
 
             character.ShowStatusEffectFlyTextWorldspace(data, stacks, prefix);
+            if (character.showStatusPopups)
+                character.ShowStatusEffectFlyText(data, stacks, prefix);
         }
 
         if (stacks > data.maxStacks)
@@ -199,6 +202,8 @@ public class StatusEffect : MonoBehaviour
         {
             hudIcon.sprite = data.icons[stacks - 1];
         }
+
+        onAddStack.Invoke(character);
     }
 
     public void Refresh(int appliedStacks = 0, int tag = 0, float duration = 0)
@@ -224,6 +229,17 @@ public class StatusEffect : MonoBehaviour
             stacks += data.appliedStacks;
         else if (appliedStacks > 0)
             stacks += stacks;
+
+        if (character != null && data.maxStacks > 1)
+        {
+            string prefix = " + ";
+            if (appliedStacks < 0)
+                prefix = " - ";
+
+            character.ShowStatusEffectFlyTextWorldspace(data, stacks, prefix);
+            if (character.showDamagePopups)
+                character.ShowStatusEffectFlyText(data, stacks, prefix);
+        }
 
         if (stacks > data.maxStacks)
             stacks = data.maxStacks;

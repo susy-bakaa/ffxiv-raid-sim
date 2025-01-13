@@ -2084,6 +2084,221 @@ public class CharacterState : MonoBehaviour
         RecalculateCurrentDamageModifiers(damageType, elementalAspect, physicalAspect);
     }
 
+    public void ModifyDamageModifier(float value, string identifier, DamageType damageType, ElementalAspect elementalAspect = ElementalAspect.none, PhysicalAspect physicalAspect = PhysicalAspect.none)
+    {
+        bool update = false;
+
+        switch (damageType)
+        {
+            case DamageType.magical:
+            {
+                if (magicalTypeDamageModifiers.ContainsKey(identifier))
+                {
+                    magicalTypeDamageModifiers[identifier] = value;
+                }
+                else
+                {
+                    magicalTypeDamageModifiers.Add(identifier, value);
+                }
+                update = true;
+                break;
+            }
+            case DamageType.physical:
+            {
+                if (physicalTypeDamageModifiers.ContainsKey(identifier))
+                {
+                    physicalTypeDamageModifiers[identifier] = value;
+                }
+                else
+                {
+                    physicalTypeDamageModifiers.Add(identifier, value);
+                }
+                update = true;
+                break;
+            }
+            case DamageType.unique:
+            {
+                if (uniqueTypeDamageModifiers.ContainsKey(identifier))
+                {
+                    uniqueTypeDamageModifiers[identifier] = value;
+                }
+                else
+                {
+                    uniqueTypeDamageModifiers.Add(identifier, value);
+                }
+                update = true;
+                break;
+            }
+        }
+        switch (elementalAspect)
+        {
+            case ElementalAspect.unaspected:
+            {
+                if (unaspectedElementDamageModifiers.ContainsKey(identifier))
+                {
+                    unaspectedElementDamageModifiers[identifier] = value;
+                }
+                else
+                {
+                    unaspectedElementDamageModifiers.Add(identifier, value);
+                }
+                update = true;
+                break;
+            }
+            case ElementalAspect.fire:
+            {
+                if (fireElementDamageModifiers.ContainsKey(identifier))
+                {
+                    fireElementDamageModifiers[identifier] = value;
+                }
+                else
+                {
+                    fireElementDamageModifiers.Add(identifier, value);
+                }
+                update = true;
+                break;
+            }
+            case ElementalAspect.ice:
+            {
+                if (iceElementDamageModifiers.ContainsKey(identifier))
+                {
+                    iceElementDamageModifiers[identifier] = value;
+                }
+                else
+                {
+                    iceElementDamageModifiers.Add(identifier, value);
+                }
+                update = true;
+                break;
+            }
+            case ElementalAspect.lightning:
+            {
+                if (lightningElementDamageModifiers.ContainsKey(identifier))
+                {
+                    lightningElementDamageModifiers[identifier] = value;
+                }
+                else
+                {
+                    lightningElementDamageModifiers.Add(identifier, value);
+                }
+                update = true;
+                break;
+            }
+            case ElementalAspect.water:
+            {
+                if (waterElementDamageModifiers.ContainsKey(identifier))
+                {
+                    waterElementDamageModifiers[identifier] = value;
+                }
+                else
+                {
+                    waterElementDamageModifiers.Add(identifier, value);
+                }
+                update = true;
+                break;
+            }
+            case ElementalAspect.wind:
+            {
+                if (windElementDamageModifiers.ContainsKey(identifier))
+                {
+                    windElementDamageModifiers[identifier] = value;
+                }
+                else
+                {
+                    windElementDamageModifiers.Add(identifier, value);
+                }
+                update = true;
+                break;
+            }
+            case ElementalAspect.earth:
+            {
+                if (earthElementDamageModifiers.ContainsKey(identifier))
+                {
+                    earthElementDamageModifiers[identifier] = value;
+                }
+                else
+                {
+                    earthElementDamageModifiers.Add(identifier, value);
+                }
+                update = true;
+                break;
+            }
+            case ElementalAspect.dark:
+            {
+                if (darkElementDamageModifiers.ContainsKey(identifier))
+                {
+                    darkElementDamageModifiers[identifier] = value;
+                }
+                else
+                {
+                    darkElementDamageModifiers.Add(identifier, value);
+                }
+                update = true;
+                break;
+            }
+            case ElementalAspect.light:
+            {
+                if (lightElementDamageModifiers.ContainsKey(identifier))
+                {
+                    lightElementDamageModifiers[identifier] = value;
+                }
+                else
+                {
+                    lightElementDamageModifiers.Add(identifier, value);
+                }
+                update = true;
+                break;
+            }
+        }
+        switch (physicalAspect)
+        {
+            case PhysicalAspect.slashing:
+            {
+                if (slashingElementDamageModifiers.ContainsKey(identifier))
+                {
+                    slashingElementDamageModifiers[identifier] = value;
+                }
+                else
+                {
+                    slashingElementDamageModifiers.Add(identifier, value);
+                }
+                update = true;
+                break;
+            }
+            case PhysicalAspect.piercing:
+            {
+                if (piercingElementDamageModifiers.ContainsKey(identifier))
+                {
+                    piercingElementDamageModifiers[identifier] = value;
+                }
+                else
+                {
+                    piercingElementDamageModifiers.Add(identifier, value);
+                }
+                update = true;
+                break;
+            }
+            case PhysicalAspect.blunt:
+            {
+                if (bluntElementDamageModifiers.ContainsKey(identifier))
+                {
+                    bluntElementDamageModifiers[identifier] = value;
+                }
+                else
+                {
+                    bluntElementDamageModifiers.Add(identifier, value);
+                }
+                update = true;
+                break;
+            }
+        }
+
+        if (update)
+        {
+            RecalculateCurrentDamageModifiers(damageType, elementalAspect, physicalAspect);
+        }
+    }
+
     private void RecalculateCurrentDamageModifiers(DamageType damageType, ElementalAspect elementalAspect, PhysicalAspect physicalAspect)
     {
         switch (damageType)

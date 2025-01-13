@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using static PartyList;
+using static UnityEngine.GraphicsBuffer;
 
 public class TetherTrigger : MonoBehaviour
 {
     LineRenderer lineRenderer;
-    public enum TetherType { nearest, furthest }
+    public enum TetherType { nearest, furthest, preDefined }
 
     public PartyList partyList;
     public TetherType tetherType = TetherType.nearest;
@@ -159,6 +160,18 @@ public class TetherTrigger : MonoBehaviour
                 FormTether(furthestMember);
                 break;
             }
+            case TetherType.preDefined:
+            {
+                if (startPoint != null && endPoint != null)
+                {
+                    FormTether(startPoint, endPoint);
+                }
+                else
+                {
+                    SolveTether();
+                }
+                break;
+            }
         }
     }
 
@@ -169,6 +182,9 @@ public class TetherTrigger : MonoBehaviour
 
     public void FormTether(Transform start, Transform end)
     {
+        if (start.gameObject.activeInHierarchy == false || end.gameObject.activeInHierarchy == false)
+            Destroy(gameObject);
+
         lineRenderer.gameObject.SetActive(true);
         startPoint = start;
         endPoint = end;

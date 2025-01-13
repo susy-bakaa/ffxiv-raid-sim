@@ -257,4 +257,19 @@ public class BossController : MonoBehaviour
     {
         stoppingDistance = distance;
     }
+
+    public void SetLookRotation(TargetNode targetNode)
+    {
+        if (targetNode != null)
+        {
+            SetLookRotation(targetNode.transform);
+        }
+    }
+
+    public void SetLookRotation(Transform target)
+    {
+        Vector3 eulers = transform.eulerAngles;
+        transform.LookAt(target);
+        transform.eulerAngles = new Vector3(eulers.x, transform.eulerAngles.y, eulers.z);
+    }
 }

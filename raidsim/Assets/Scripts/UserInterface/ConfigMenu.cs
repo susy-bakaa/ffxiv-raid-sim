@@ -97,7 +97,8 @@ public class ConfigMenu : MonoBehaviour
             scale = scaleSliderSync.Slider.value;
             legacy = toggleMovement.toggles[0].isOn;
             newLegacy = legacy;
-            playerController.legacyMovement = legacy;
+            if (playerController != null)
+                playerController.legacyMovement = legacy;
             volume = volumeSliderSync.Slider.value;
         }
     }

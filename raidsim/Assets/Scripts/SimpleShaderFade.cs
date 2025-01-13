@@ -33,6 +33,17 @@ public class SimpleShaderFade : MonoBehaviour
     }
 #endif
 
+    public Material GetMaterial(int index)
+    {
+        if (materials != null && materials.Count > 0)
+            return materials[index];
+        else
+        {
+            CreateLocalSharedMaterials();
+            return GetMaterial(index);
+        }
+    }
+
     private void Awake()
     {
         CreateLocalSharedMaterials();

@@ -15,6 +15,8 @@ public class StateTrigger : MonoBehaviour
     public string targetParent = string.Empty;
     public int targetIndex = 0;
     public bool useStatusEffectTagAsTargetIndex = false;
+    public string moveToTargetName = string.Empty;
+    public string moveToSourceName = string.Empty;
     public bool localParent = false;
     public bool hiddenActions = false;
     public bool toggleObject = true;
@@ -29,12 +31,14 @@ public class StateTrigger : MonoBehaviour
     private TargetController sourceTargetController;
     private ActionController sourceActionController;
     private SimpleShaderFade sourceShaderFade;
+    private Transform moveToSource;
 
     private CharacterState characterState;
     private CharacterEffect characterEffect;
     private TargetController targetController;
     private ActionController actionController;
     private SimpleShaderFade shaderFade;
+    private Transform moveToTarget;
 
     public void Initialize(CharacterState targetCharacter)
     {
@@ -53,6 +57,15 @@ public class StateTrigger : MonoBehaviour
         Initialize();
     }
 
+    public void InitializeSelf(CharacterState sourceCharacter)
+    {
+        if (sourceCharacter != null)
+        {
+            source = sourceCharacter.gameObject;
+        }
+        Initialize();
+    }
+
     public void Initialize()
     {
         if (autoFindParty && FightTimeline.Instance != null)
@@ -68,6 +81,15 @@ public class StateTrigger : MonoBehaviour
         sourceTargetController = Utilities.GetComponentInParents<TargetController>(source.transform);
         sourceActionController = Utilities.GetComponentInParents<ActionController>(source.transform);
         sourceShaderFade = Utilities.GetComponentInParents<SimpleShaderFade>(source.transform);
+
+        if (sourceCharacterState == null)
+            sourceCharacterState = source.GetComponent<CharacterState>();
+        if (sourceTargetController == null)
+            sourceTargetController = source.GetComponent<TargetController>();
+        if (sourceActionController == null)
+            sourceActionController = source.GetComponent<ActionController>();
+        if (sourceShaderFade == null)
+            sourceShaderFade = source.GetComponent<SimpleShaderFade>();
 
         if (party == null)
         {
@@ -153,6 +175,23 @@ public class StateTrigger : MonoBehaviour
             target.TryGetComponent(out targetController);
             target.TryGetComponent(out actionController);
             target.TryGetComponent(out shaderFade);
+            if (!string.IsNullOrEmpty(moveToTargetName))
+            {
+                moveToTarget = target.transform.Find(moveToTargetName);
+            }
+            else
+            {
+                moveToTarget = target.transform;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(moveToSourceName))
+        {
+            moveToSource = source.transform.Find(moveToSourceName);
+        }
+        else
+        {
+            moveToSource = source.transform;
         }
     }
 
@@ -195,7 +234,26 @@ public class StateTrigger : MonoBehaviour
     {
         if (target != null && source != null)
         {
-            target.transform.position = source.transform.position;
+            target.transform.position = moveToSource.position;
+        }
+    }
+
+    public void MoveSourceToTarget()
+    {
+        if (source != null && target != null)
+        {
+            source.transform.position = moveToTarget.position;
+        }
+    }
+
+    public void FaceTargetToSource()
+    {
+        if (target != null && source != null)
+        {
+            if (target.TryGetComponent(out BossController bc))
+            {
+                bc.SetLookRotation(source.transform);
+            }
         }
     }
 

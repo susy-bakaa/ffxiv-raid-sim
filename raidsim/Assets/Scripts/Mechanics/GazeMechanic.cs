@@ -63,7 +63,7 @@ public class GazeMechanic : FightMechanic
             }
             if (inflictsEffects != null && inflictsEffects.Count > 0)
             {
-                if (!damageDealt)
+                if (!damageDealt && !target.dead)
                     target.ShowDamageFlyText(new Damage(-1, true, true, DamageType.unique, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal, damage.source, damage.name), false);
 
                 for (int i = 0; i < inflictsEffects.Count; i++)
@@ -76,7 +76,8 @@ public class GazeMechanic : FightMechanic
         }
         else
         {
-            target.ShowDamageFlyText(new Damage(0, true, true, DamageType.none, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal, damage.source, damage.name));
+            if (!target.dead)
+                target.ShowDamageFlyText(new Damage(0, true, true, DamageType.none, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal, damage.source, damage.name));
             if (log)
                 Debug.Log($"Angle was over threshold!");
         }

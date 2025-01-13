@@ -8,10 +8,12 @@ public class RaidwideDebuffMechanic : FightMechanic
 {
     public PartyList party;
     public bool autoFindParty = false;
+    public bool randomizeParty = true;
     public StatusEffectInfo effect;
     public bool ignoreRoles = true;
     public bool cleansEffect = false;
     public bool killsEffect = false;
+    public bool incrementalTag = false;
 
     List<CharacterState> partyMembers;
 
@@ -40,12 +42,17 @@ public class RaidwideDebuffMechanic : FightMechanic
         {
             partyMembers = new List<CharacterState>(); // Copy the party members list
 
-            for (int i = 0; i < party.members.Count; i++)
+            /*for (int i = 0; i < party.members.Count; i++)
             {
                 partyMembers.Add(party.members[i].characterState);
-            }
+            }*/
 
-            partyMembers.Shuffle();
+            partyMembers = party.GetActiveMembers();
+
+            if (randomizeParty)
+                partyMembers.Shuffle();
+
+            int currentTag = effect.tag;
 
             // Iterate through each status effect
             for (int i = 0; i < partyMembers.Count; i++)
@@ -64,7 +71,7 @@ public class RaidwideDebuffMechanic : FightMechanic
 
                 if (killsEffect)
                 {
-                    if (target.HasEffect(effect.data.statusName, effect.tag))
+                    if (target.HasEffect(effect.data.statusName, currentTag))
                     {
                         target.ModifyHealth(new GlobalData.Damage(100, true, true, GlobalData.Damage.DamageType.unique, GlobalData.Damage.ElementalAspect.unaspected, GlobalData.Damage.PhysicalAspect.none, GlobalData.Damage.DamageApplicationType.percentageFromMax, Utilities.InsertSpaceBeforeCapitals(effect.data.statusName)), true);
                     }
@@ -73,13 +80,16 @@ public class RaidwideDebuffMechanic : FightMechanic
                 if (!cleansEffect && !killsEffect)
                 {
                     // Apply the effect to the target
-                    target.AddEffect(effect.data, from, false, effect.tag, effect.stacks);
+                    target.AddEffect(effect.data, from, false, currentTag, effect.stacks);
                 }
                 else if (cleansEffect && !killsEffect)
                 {
                     // Remove the effect to the target
-                    target.RemoveEffect(effect.data, false, from, effect.tag, effect.stacks);
+                    target.RemoveEffect(effect.data, false, from, currentTag, effect.stacks);
                 }
+
+                if (incrementalTag)
+                    currentTag++;
 
                 // Remove the effect and player from the possible options
                 partyMembers.Remove(target);

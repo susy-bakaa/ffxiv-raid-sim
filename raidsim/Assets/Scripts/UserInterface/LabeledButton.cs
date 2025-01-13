@@ -23,6 +23,7 @@ public class LabeledButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         label = GetComponentInChildren<TextMeshProUGUI>();
         originalText = label.text;
         button.onClick.AddListener(UpdateLabel);
+        Utilities.FunctionTimer.Create(this, () => ResetLabel(), 0.5f, $"{toggleImage.gameObject.name}_LabeledButton_ResetLabel", true, false);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -50,6 +51,10 @@ public class LabeledButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
             {
                 label.text = states[1];
             }
+        }
+        else
+        {
+            label.text = originalText;
         }
     }
 

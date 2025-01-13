@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using NaughtyAttributes;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using static GlobalData;
 
 public class PartyList : MonoBehaviour
@@ -16,6 +18,27 @@ public class PartyList : MonoBehaviour
     private HudElementPriority hudPriority;
 
 #if UNITY_EDITOR
+    [Button("Relink Party Member Hud Variables")]
+    public void RefreshPartyMemberVariables()
+    {
+        for (int i = 0; i < members.Count; i++)
+        {
+            if (members[i].characterState != null && members[i].hudElement != null && members[i].actionController != null)
+            {
+                members[i].characterState.characterNameTextParty = members[i].hudElement.transform.Find("Name").GetComponentInChildren<TextMeshProUGUI>();
+                members[i].characterState.healthBarParty = members[i].hudElement.transform.Find("Health").GetComponentInChildren<Slider>();
+                members[i].actionController.castBarParty = members[i].hudElement.transform.Find("CastBar").GetComponentInChildren<Slider>();
+                members[i].actionController.castNameTextParty = members[i].hudElement.transform.Find("CastBar").GetComponentInChildren<TextMeshProUGUI>();
+                TargetNode node = members[i].characterState.GetComponentInChildren<TargetNode>();
+                if (node != null)
+                {
+                    node.highlightGroups = new CanvasGroup[1];
+                    node.highlightGroups[0] = members[i].hudElement.transform.GetChild(0).Find("Highlight").GetComponent<CanvasGroup>();
+                }
+            }
+        }
+    }
+
     void OnValidate()
     {
         for (int i = 0; i < members.Count; i++)

@@ -126,6 +126,9 @@ public class ResolutionDropdown : MonoBehaviour
 #else
         currentResolutionIndex = resolutionIndex;
 
+        if (filteredResolutions == null || filteredResolutions.Count <= 0)
+            return;
+
         Resolution resolution = filteredResolutions[resolutionIndex];
 
         //Debug.Log($"[SetResolution] resolution: 'x:{resolution.width}, y:{resolution.height}' resolutionIndex: '{resolutionIndex}'");
@@ -151,6 +154,9 @@ public class ResolutionDropdown : MonoBehaviour
         return;
 #else
         currentResolutionIndex = resolutionIndex;
+
+        if (filteredResolutions == null || filteredResolutions.Count <= 0)
+            return;
 
         Resolution resolution = filteredResolutions[resolutionIndex];
 

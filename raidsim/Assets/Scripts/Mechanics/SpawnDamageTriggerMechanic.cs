@@ -21,6 +21,7 @@ public class SpawnDamageTriggerMechanic : FightMechanic
     public bool usePlayerHealth = false;
     public bool useTargetControllerCurrentTargetAsLocation = false;
     public bool faceTarget = false;
+    public bool rotateSource = false;
     [ShowIf("faceTarget")] public Axis axis = new Axis();
     public bool dealDamage = true;
     [ShowIf("dealDamage")] public float damageMultiplier = 1f;
@@ -129,6 +130,21 @@ public class SpawnDamageTriggerMechanic : FightMechanic
 
                     // Apply the rotation
                     spawned.transform.rotation = Quaternion.Euler(lockedEulerAngles);
+
+                    if (rotateSource && actionInfo.source != null)
+                    {
+                        Vector3 sourceEuler = actionInfo.source.transform.eulerAngles;
+                        actionInfo.source.transform.LookAt(actionInfo.target.transform);
+                        Vector3 newSourceEuler = actionInfo.source.transform.eulerAngles;
+                        // Lock specific axes
+                        if (!axis.x)
+                            newSourceEuler.x = sourceEuler.x;
+                        if (!axis.y)
+                            newSourceEuler.y = sourceEuler.y;
+                        if (!axis.z)
+                            newSourceEuler.z = sourceEuler.z;
+                        actionInfo.source.transform.eulerAngles = newSourceEuler;
+                    }
                 }
                 else
                 {

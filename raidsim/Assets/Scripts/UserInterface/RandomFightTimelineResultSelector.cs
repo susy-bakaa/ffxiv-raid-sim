@@ -38,9 +38,15 @@ public class RandomFightTimelineResultSelector : MonoBehaviour
             if (FightTimeline.Instance != null)
             {
                 if (results[value] > -1)
+                {
+                    Debug.Log("Set");
                     FightTimeline.Instance.SetRandomEventResult(id, results[value]);
+                }
                 else
+                {
+                    Debug.Log("Clear");
                     FightTimeline.Instance.ClearRandomEventResult(id);
+                }
             }
             else
             {

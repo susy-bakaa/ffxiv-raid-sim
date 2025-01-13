@@ -10,12 +10,25 @@ using static GlobalVariables;
 public class FightSelector : MonoBehaviour
 {
     TMP_Dropdown dropdown;
-    public Button loadButton;
+    Button loadButton;
+    [SerializeField] private string loadButtonName = "LoadFight";
     public float loadDelay = 2f;
     public List<string> scenes = new List<string>();
     public string currentScene;
 
     private Coroutine ieLoadSceneDelayed;
+
+    private void Awake()
+    {
+        foreach (Transform child in transform.parent)
+        {
+            if (child.gameObject.name == loadButtonName)
+            {
+                loadButton = child.GetComponentInChildren<Button>();
+                break;
+            }
+        }
+    }
 
     void Start()
     {

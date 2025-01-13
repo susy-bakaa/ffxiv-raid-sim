@@ -45,6 +45,9 @@ public class FightTimeline : MonoBehaviour
     public List<RandomEventResult> m_randomEventResults = new List<RandomEventResult>();
     public bool jon = false;
     public bool log = false;
+    public bool clearRandomEventResultsOnStart = true;
+    public bool noNewSeedOnStart = false;
+    public UnityEvent<bool> onNoNewSeedOnStartChanged;
 
     [Header("User Interface")]
     public Button[] disableDuringPlayback;
@@ -84,11 +87,9 @@ public class FightTimeline : MonoBehaviour
     {
         if (randomEventResults.TryGetValue(id, out int v))
         {
-            Debug.Log("fart 1");
             value = v;
             return true;
         }
-        Debug.Log("fart 2");
         value = -1;
         return false;
     }
@@ -111,6 +112,10 @@ public class FightTimeline : MonoBehaviour
         }
         else
         {
+            if (randomEventResults.Count < 1)
+            {
+                randomEventResults = new Dictionary<int, int>();
+            }
             randomEventResults.Add(id, result);
             m_randomEventResults.Add(new RandomEventResult(id, result));
         }
@@ -147,6 +152,17 @@ public class FightTimeline : MonoBehaviour
     public void ToggleJonVoiceLines(bool value)
     {
         jon = value;
+    }
+
+    public void ToggleNoNewRandomSeed()
+    {
+        ToggleNoNewRandomSeed(!noNewSeedOnStart);
+    }
+
+    public void ToggleNoNewRandomSeed(bool value)
+    {
+        noNewSeedOnStart = value;
+        onNoNewSeedOnStartChanged.Invoke(value);
     }
 
 #if UNITY_EDITOR
@@ -262,6 +278,8 @@ public class FightTimeline : MonoBehaviour
 
         originalArenaBounds = arenaBounds;
         originalIsCircle = isCircle;
+
+        onNoNewSeedOnStartChanged.Invoke(noNewSeedOnStart);
     }
 
     void Update()
@@ -313,11 +331,17 @@ public class FightTimeline : MonoBehaviour
             seed += Mathf.Abs(seed) / 2;
         }
 
-        Random.InitState(seed);
-        Debug.Log($"New random seed: {seed}");
+        if (!noNewSeedOnStart)
+        {
+            Random.InitState(seed);
+            Debug.Log($"New random seed: {seed}");
+        }
 
-        randomEventResults.Clear();
-        m_randomEventResults.Clear();
+        if (clearRandomEventResultsOnStart)
+        {
+            randomEventResults.Clear();
+            m_randomEventResults.Clear();
+        }
 
         for (int i = 0; i < disableDuringPlayback.Length; i++)
         {
