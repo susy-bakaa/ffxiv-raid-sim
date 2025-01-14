@@ -22,6 +22,9 @@ A singleplayer raid and fight mechanic simulator with bots, made in the Unity ga
 - Futures Rewritten (Ultimate) (FRU)
 	- Phase 2 (Usurper of Frost)
 		- Diamond Dust ([Early LPDU](https://raidplan.io/plan/NzZWtqr5SbDehlgb))
+- Cloud of Darkness (Chaotic) (CODC)
+	- Phase 1
+		- Grim Embrace ([Debuff](https://raidplan.io/plan/NyvLFhk2tDTGzE43))
 
 # In development fights
 
