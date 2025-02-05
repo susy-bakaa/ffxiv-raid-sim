@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class UserInput : MonoBehaviour
 {
@@ -18,6 +21,8 @@ public class UserInput : MonoBehaviour
     public bool rotationInputEnabled = true;
     public bool zoomInputEnabled = true;
     public bool targetRaycastInputEnabled = true;
+    public bool usingController = false;
+    public List<InputActionReference> controllerModifierKeys;
     public List<InputBinding> keys = new List<InputBinding>();
     private Dictionary<string, InputBinding> m_keys;
     public List<InputAxis> axes = new List<InputAxis>();
@@ -39,6 +44,16 @@ public class UserInput : MonoBehaviour
         }
     }
 #endif
+
+    private void OnEnable()
+    {
+        LinkControllerBinds();
+    }
+
+    private void OnDisable()
+    {
+        UnlinkControllerBinds();
+    }
 
     void Awake()
     {
@@ -170,9 +185,26 @@ public class UserInput : MonoBehaviour
 
         if (BindedKey(KeyBind.Keys["ResetKey"]))
         {
-            if (FightTimeline.Instance != null)
-                FightTimeline.Instance.ResetPauseState();
-            SceneManager.LoadScene("menu");
+            ResetKey();
+        }
+    }
+
+    public void ResetKey()
+    {
+        if (FightTimeline.Instance != null)
+            FightTimeline.Instance.ResetPauseState();
+        SceneManager.LoadScene("menu");
+    }
+
+    public void VirtualKeyPress(int index)
+    {
+        if (keys.Count > index)
+        {
+            if (keys[index].action != null && characterAction != null)
+                characterAction.PerformAction(keys[index].action);
+            if (keys[index].statusEffect != null && characterState != null)
+                characterState.AddEffect(keys[index].statusEffect, characterState);
+            keys[index].onInput.Invoke();
         }
     }
 
@@ -191,24 +223,133 @@ public class UserInput : MonoBehaviour
         }
     }
 
+    public void LinkControllerBinds()
+    {
+        for (int i = 0; i < controllerModifierKeys.Count; i++)
+        {
+            controllerModifierKeys[i].action.Enable();
+        }
+
+        for (int i = 0; i < keys.Count; i++)
+        {
+            if (keys[i].hasControllerBinding && keys[i].controllerBind != null)
+            {
+                keys[i].controllerBind.action.Enable();
+
+                // Capture the index inside a separate variable
+                int capturedIndex = i;
+                keys[i].controllerBind.action.performed += (ctx) =>
+                {
+                    // Check if at least one modifier key is pressed
+                    if (keys[capturedIndex].requiresModifier && IsAnyModifierPressed())
+                    {
+                        VirtualKeyPress(capturedIndex);
+                    }
+                    else if (!keys[capturedIndex].requiresModifier && !IsAnyModifierPressed())
+                    {
+                        VirtualKeyPress(capturedIndex);
+                    }
+                };
+            }
+        }
+    }
+
+    public void UnlinkControllerBinds()
+    {
+        for (int i = 0; i < controllerModifierKeys.Count; i++)
+        {
+            controllerModifierKeys[i].action.Disable();
+        }
+
+        for (int i = 0; i < keys.Count; i++)
+        {
+            if (keys[i].hasControllerBinding && keys[i].controllerBind != null)
+            {
+                keys[i].controllerBind.action.Enable();
+
+                // Capture the index inside a separate variable
+                int capturedIndex = i;
+                keys[i].controllerBind.action.performed -= (ctx) =>
+                {
+                    // Check if at least one modifier key is pressed
+                    if (keys[capturedIndex].requiresModifier && IsAnyModifierPressed())
+                    {
+                        VirtualKeyPress(capturedIndex);
+                    } 
+                    else if (!keys[capturedIndex].requiresModifier && !IsAnyModifierPressed())
+                    {
+                        VirtualKeyPress(capturedIndex);
+                    }
+                };
+            }
+        }
+    }
+
+    // Helper function to check if ANY modifier key is currently pressed
+    private bool IsAnyModifierPressed()
+    {
+        foreach (var modifier in controllerModifierKeys)
+        {
+            if (modifier != null && modifier.action.IsPressed())
+            {
+                return true; // At least one modifier key is held
+            }
+        }
+        return false; // No modifier keys are held
+    }
+
     public float GetAxisDown(string name)
     {
         float axis = 0;
         if (m_axes.TryGetValue(name, out InputAxis inputAxis))
         {
+            if (inputAxis.hasControllerBinding && inputAxis.controllerBind != null)
+            {
+                Vector2 controllerVector = inputAxis.controllerBind.action.ReadValue<Vector2>();
+
+                if (controllerVector != Vector2.zero)
+                {
+                    switch (inputAxis.controllerBindUseAxis)
+                    {
+                        case NewInputAxis.x:
+                            axis = controllerVector.x;
+                            break;
+                        case NewInputAxis.y:
+                            axis = controllerVector.y;
+                            break;
+                        case NewInputAxis.z:
+                            axis = 0;
+                            break;
+                    }
+                    usingController = true;
+                }
+            }
+
             if (inputAxis.weakModifierKeys)
             {
                 if (inputAxis.positive.bind != null && AnyBindedKey(inputAxis.positive.bind))
+                {
+                    usingController = false;
                     axis += 1;
+                }
                 if (inputAxis.negative.bind != null && AnyBindedKey(inputAxis.negative.bind))
+                {
+                    usingController = false;
                     axis -= 1;
+                }
             }
             else
             {
                 if (inputAxis.positive.bind != null && BindedKey(inputAxis.positive.bind))
+                {
+                    usingController = false;
                     axis += 1;
+                }
                 if (inputAxis.negative.bind != null && BindedKey(inputAxis.negative.bind))
+                {
+                    usingController = false;
                     axis -= 1;
+                }
             }
         }
         return axis;
@@ -218,29 +359,57 @@ public class UserInput : MonoBehaviour
     {
         float axis = 0;
 
-        if (Input.GetAxis(name) != 0)
-        {
-            if (name == "VerticalLegacy")
-                return -Input.GetAxis(name);
-            else
-                return Input.GetAxis(name);
-        }
-
         if (m_axes.TryGetValue(name, out InputAxis inputAxis))
         {
+            if (inputAxis.hasControllerBinding && inputAxis.controllerBind != null)
+            {
+                Vector2 controllerVector = inputAxis.controllerBind.action.ReadValue<Vector2>();
+
+                //Debug.Log($"controllerVector {controllerVector}");
+
+                if (controllerVector != Vector2.zero)
+                {
+                    switch (inputAxis.controllerBindUseAxis)
+                    {
+                        case NewInputAxis.x:
+                            axis = controllerVector.x;
+                            break;
+                        case NewInputAxis.y:
+                            axis = controllerVector.y;
+                            break;
+                        case NewInputAxis.z:
+                            axis = 0;
+                            break;
+                    }
+                    usingController = true;
+                }
+            }
+
             if (inputAxis.weakModifierKeys)
             {
                 if (inputAxis.positive.bind != null && AnyBindedKeyHeld(inputAxis.positive.bind))
+                {
+                    usingController = false;
                     axis += 1;
+                }
                 if (inputAxis.negative.bind != null && AnyBindedKeyHeld(inputAxis.negative.bind))
+                {
+                    usingController = false;
                     axis -= 1;
+                }
             }
             else
             {
                 if (inputAxis.positive.bind != null && BindedKeyHeld(inputAxis.positive.bind))
+                {
+                    usingController = false;
                     axis += 1;
+                }
                 if (inputAxis.negative.bind != null && BindedKeyHeld(inputAxis.negative.bind))
+                {
+                    usingController = false;
                     axis -= 1;
+                }
             }
         }
         return axis;
@@ -250,19 +419,52 @@ public class UserInput : MonoBehaviour
     {
         if (m_axes.TryGetValue(name, out InputAxis inputAxis))
         {
+            if (inputAxis.hasControllerBinding && inputAxis.controllerBind != null)
+            {
+                Vector2 controllerVector = inputAxis.controllerBind.action.ReadValue<Vector2>();
+
+                if (controllerVector != Vector2.zero)
+                {
+                    switch (inputAxis.controllerBindUseAxis)
+                    {
+                        case NewInputAxis.x:
+                            if (controllerVector.x != 0)
+                                return true;
+                            break;
+                        case NewInputAxis.y:
+                            if (controllerVector.y != 0)
+                                return true;
+                            break;
+                    }
+                    usingController = true;
+                }
+            }
+
             if (inputAxis.weakModifierKeys)
             {
                 if (inputAxis.positive.bind != null && AnyBindedKeyHeld(inputAxis.positive.bind))
+                {
+                    usingController = false;
                     return true;
+                }
                 else if (inputAxis.negative.bind != null && AnyBindedKeyHeld(inputAxis.negative.bind))
+                {
+                    usingController = false;
                     return true;
+                }
             }
             else
             {
                 if (inputAxis.positive.bind != null && BindedKeyHeld(inputAxis.positive.bind))
+                {
+                    usingController = false;
                     return true;
+                }
                 else if (inputAxis.negative.bind != null && BindedKeyHeld(inputAxis.negative.bind))
+                {
+                    usingController = false;
                     return true;
+                }
             }
         }
         return false;
@@ -272,19 +474,52 @@ public class UserInput : MonoBehaviour
     {
         if (m_axes.TryGetValue(name, out InputAxis inputAxis))
         {
+            if (inputAxis.hasControllerBinding && inputAxis.controllerBind != null)
+            {
+                Vector2 controllerVector = inputAxis.controllerBind.action.ReadValue<Vector2>();
+
+                if (controllerVector != Vector2.zero)
+                {
+                    switch (inputAxis.controllerBindUseAxis)
+                    {
+                        case NewInputAxis.x:
+                            if (controllerVector.x != 0)
+                                return true;
+                            break;
+                        case NewInputAxis.y:
+                            if (controllerVector.y != 0)
+                                return true;
+                            break;
+                    }
+                    usingController = true;
+                }
+            }
+
             if (inputAxis.weakModifierKeys)
             {
                 if (inputAxis.positive.bind != null && AnyBindedKey(inputAxis.positive.bind))
+                {
+                    usingController = false;
                     return true;
+                }
                 else if (inputAxis.negative.bind != null && AnyBindedKey(inputAxis.negative.bind))
+                {
+                    usingController = false;
                     return true;
+                }
             }
             else
             {
                 if (inputAxis.positive.bind != null && BindedKey(inputAxis.positive.bind))
+                {
+                    usingController = false;
                     return true;
+                }
                 else if (inputAxis.negative.bind != null && BindedKey(inputAxis.negative.bind))
+                {
+                    usingController = false;
                     return true;
+                }
             }
         }
         return false;
@@ -294,8 +529,41 @@ public class UserInput : MonoBehaviour
     {
         if (m_keys.TryGetValue(name, out InputBinding key))
         {
+            //Debug.Log($"key {name} key.hasControllerBinding {key.hasControllerBinding} key.controllerBind {key.controllerBind}");
+
+            if (key.hasControllerBinding && key.controllerBind != null)
+            {
+
+                if (key.requiresModifier)
+                {
+                    for (int i = 0; i < controllerModifierKeys.Count; i++)
+                    {
+                        if (controllerModifierKeys[i].action.IsPressed() && key.controllerBind.action.WasPressedThisFrame())
+                        {
+                            usingController = true;
+                            return true;
+                        }
+                    }
+                }
+                else
+                {
+                    if (key.controllerBind.action.WasPressedThisFrame())
+                    {
+                        usingController = true;
+                        return true;
+                    }
+                }
+            }
+
             if (key.bind != null)
-                return BindedKey(key.bind);
+            {
+                bool result = BindedKey(key.bind);
+
+                if (result)
+                    usingController = false;
+
+                return result;
+            }
         }
         return false;
     }
@@ -304,8 +572,42 @@ public class UserInput : MonoBehaviour
     {
         if (m_keys.TryGetValue(name, out InputBinding key))
         {
+            //Debug.Log($"key {name} key.hasControllerBinding {key.hasControllerBinding} key.controllerBind {key.controllerBind}");
+
+            if (key.hasControllerBinding && key.controllerBind != null)
+            {
+                Debug.Log($"button {name}");
+
+                if (key.requiresModifier)
+                {
+                    for (int i = 0; i < controllerModifierKeys.Count; i++)
+                    {
+                        if (controllerModifierKeys[i].action.IsPressed() && key.controllerBind.action.IsPressed())
+                        {
+                            usingController = true;
+                            return true;
+                        }
+                    }
+                }
+                else
+                {
+                    if (key.controllerBind.action.IsPressed())
+                    {
+                        usingController = true;
+                        return true;
+                    }
+                }
+            }
+
             if (key.bind != null)
-                return BindedKeyHeld(key.bind);
+            {
+                bool result = BindedKeyHeld(key.bind);
+
+                if (result)
+                    usingController = false;
+
+                return result;
+            }
         }
         return false;
     }
@@ -370,8 +672,11 @@ public class UserInput : MonoBehaviour
         public StatusEffectData statusEffect;
         public UnityEvent onInput;
         public UnityEvent onHeld;
+        public bool hasControllerBinding;
+        public bool requiresModifier;
+        public InputActionReference controllerBind;
 
-        public InputBinding(string name, KeyBind bind, CharacterAction action, StatusEffectData statusEffect, UnityEvent onInput, UnityEvent onHeld)
+        public InputBinding(string name, KeyBind bind, CharacterAction action, StatusEffectData statusEffect, UnityEvent onInput, UnityEvent onHeld, bool hasControllerBinding, bool requiresModifier, InputActionReference controllerBind)
         {
             this.name = name;
             this.bind = bind;
@@ -379,6 +684,9 @@ public class UserInput : MonoBehaviour
             this.statusEffect = statusEffect;
             this.onInput = onInput;
             this.onHeld = onHeld;
+            this.hasControllerBinding = hasControllerBinding;
+            this.requiresModifier = requiresModifier;
+            this.controllerBind = controllerBind;
         }
 
         public void Rebind(KeyBind bind)
@@ -389,6 +697,8 @@ public class UserInput : MonoBehaviour
         }
     }
 
+    public enum NewInputAxis { x, y, z }
+
     [System.Serializable]
     public struct InputAxis
     {
@@ -396,8 +706,11 @@ public class UserInput : MonoBehaviour
         public InputBinding positive;
         public InputBinding negative;
         public bool weakModifierKeys;
+        public bool hasControllerBinding;
+        public InputActionReference controllerBind;
+        public NewInputAxis controllerBindUseAxis;
 
-        public InputAxis(string name, InputBinding positive, InputBinding negative, bool weakModifierKeys)
+        public InputAxis(string name, InputBinding positive, InputBinding negative, bool weakModifierKeys, bool hasControllerBinding, InputActionReference controllerBind, NewInputAxis controllerBindUseAxis)
         {
             this.name = name;
             this.positive = positive;
@@ -409,6 +722,9 @@ public class UserInput : MonoBehaviour
             n.name = $"{name}_Negative";
             this.negative = n;
             this.weakModifierKeys = weakModifierKeys;
+            this.hasControllerBinding = hasControllerBinding;
+            this.controllerBind = controllerBind;
+            this.controllerBindUseAxis = controllerBindUseAxis;
         }
 
         public void Rebind(KeyBind bindPositive, KeyBind bindNegative)

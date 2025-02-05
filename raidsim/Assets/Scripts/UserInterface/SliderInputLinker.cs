@@ -18,14 +18,11 @@ namespace no00ob.WaveSurvivalGame.UserInterface
         public void Sync(int bias)
         {
             string str = targetInputField.text;
-            //Debug.Log("1. " + str);
 
             char[] arr = str.ToCharArray();
 
             arr = Array.FindAll(arr, (c => (char.IsNumber(c))));
             str = new string(arr);
-
-            //Debug.Log("2. "+str);
 
             if (int.TryParse(str, out int result))
             {
@@ -50,10 +47,6 @@ namespace no00ob.WaveSurvivalGame.UserInterface
                     targetSlider.value = final;
                 }
             }
-
-            //Debug.Log("3. " + string.Format(inputFieldFormat, str));
-
-            //Debug.LogError("BREAK");
 
             targetInputField.text = string.Format(inputFieldFormat, str);
         }

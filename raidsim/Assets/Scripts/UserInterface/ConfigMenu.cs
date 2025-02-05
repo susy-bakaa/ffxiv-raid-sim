@@ -30,6 +30,7 @@ public class ConfigMenu : MonoBehaviour
     [SerializeField] private Toggle invertVerticalCameraToggle;
     [SerializeField] private Toggle invertHorizontalCameraToggle;
     [SerializeField] private TMP_Dropdown cameraAdjustmentDropdown;
+    [SerializeField] private SliderInputLinker cameraSensitivitySync;
     float scale = 50;
     float newScale = 50;
     bool legacy = true;
@@ -46,6 +47,8 @@ public class ConfigMenu : MonoBehaviour
     bool newInvertCameraHorizontal = false;
     int cameraAdjustment = 0;
     int newCameraAdjustment = 0;
+    float cameraSensitivity = 10f;
+    float newCameraSensitivity = 10f;
     [SerializeField] private CanvasGroup applyPopup;
     public bool isOpen;
     public bool isApplyPopupOpen;
@@ -54,6 +57,9 @@ public class ConfigMenu : MonoBehaviour
     bool applyPopupVisible = false;
     bool configSaved = true;
     bool start = false;
+    float originalMouseSensitivity;
+    float originalControllerSensitivity;
+    float originalRotationSpeed;
 
     void Awake()
     {
@@ -75,6 +81,13 @@ public class ConfigMenu : MonoBehaviour
         applyPopup.alpha = 0f;
         applyPopup.blocksRaycasts = false;
         applyPopup.interactable = false;
+
+        if (thirdPersonCamera != null && thirdPersonCamera.freecam != null)
+        {
+            originalMouseSensitivity = thirdPersonCamera.mouseSensitivity;
+            originalControllerSensitivity = thirdPersonCamera.controllerSensitivity;
+            originalRotationSpeed = thirdPersonCamera.freecam.rotationSpeed;
+        }
     }
 
     void Update()
@@ -237,6 +250,25 @@ public class ConfigMenu : MonoBehaviour
         newCameraAdjustment = value;
     }
 
+    public void ChangeCameraSensitivity(string value)
+    {
+        if (float.TryParse(value, out float result))
+        {
+            ChangeCameraSensitivity(result);
+        }
+    }
+
+    public void ChangeCameraSensitivity(int value)
+    {
+        ChangeCameraSensitivity((float)value);
+    }
+
+    public void ChangeCameraSensitivity(float value)
+    {
+        configSaved = false;
+        newCameraSensitivity = value;
+    }
+
     public void ApplySettings()
     {
         if (Mathf.Approximately(newScale, 50f))
@@ -279,6 +311,15 @@ public class ConfigMenu : MonoBehaviour
         cameraAdjustment = newCameraAdjustment;
         if (playerController != null)
             playerController.autoAdjustCamera = (CameraAdjustMode)cameraAdjustment;
+        cameraSensitivity = newCameraSensitivity;
+        if (thirdPersonCamera != null)
+        {
+            float finalSensitivity = Utilities.Map(cameraSensitivity, 1, 30, 0.1f, 3f);
+            Debug.Log($"Final sensitivity {finalSensitivity}");
+            thirdPersonCamera.mouseSensitivity = originalMouseSensitivity * finalSensitivity;
+            thirdPersonCamera.controllerSensitivity = originalControllerSensitivity * finalSensitivity;
+            thirdPersonCamera.freecam.rotationSpeed = originalRotationSpeed * finalSensitivity;
+        }
         configSaved = true;
 #endif
     }
@@ -315,11 +356,23 @@ public class ConfigMenu : MonoBehaviour
         volumeSliderSync.Sync(0);
         newInvertCameraVertical = false;
         newInvertCameraHorizontal = false;
-        thirdPersonCamera.invertY = newInvertCameraVertical;
-        thirdPersonCamera.invertX = newInvertCameraHorizontal;
+        newCameraSensitivity = 10f;
+        cameraSensitivitySync.Slider.value = newCameraSensitivity;
+        cameraSensitivitySync.Sync(0);
+        if (thirdPersonCamera != null)
+        {
+            thirdPersonCamera.invertY = newInvertCameraVertical;
+            thirdPersonCamera.invertX = newInvertCameraHorizontal;
+        }
         newCameraAdjustment = 0;
         if (playerController != null)
             playerController.autoAdjustCamera = CameraAdjustMode.Moving;
+        if (thirdPersonCamera != null)
+        {
+            thirdPersonCamera.mouseSensitivity = originalMouseSensitivity;
+            thirdPersonCamera.controllerSensitivity = originalControllerSensitivity;
+            thirdPersonCamera.freecam.rotationSpeed = originalRotationSpeed;
+        }
         ApplySettings();
 #endif
     }
@@ -350,6 +403,9 @@ public class ConfigMenu : MonoBehaviour
         invertHorizontalCameraToggle.SetIsOnWithoutNotify(newInvertCameraHorizontal);
         newCameraAdjustment = cameraAdjustment;
         cameraAdjustmentDropdown.SetValueWithoutNotify(newCameraAdjustment);
+        newCameraSensitivity = cameraSensitivity;
+        cameraSensitivitySync.Slider.value = newCameraSensitivity;
+        cameraSensitivitySync.Sync(0);
         ApplySettings();
 #endif
     }

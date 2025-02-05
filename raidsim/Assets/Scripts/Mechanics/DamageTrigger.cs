@@ -23,6 +23,7 @@ public class DamageTrigger : MonoBehaviour
     public bool autoAssignOwner = false;
     [Tag]
     public string ableToHitTag = "Player";
+    public string canHitCharacterName = string.Empty;
     public Damage damage;
     public AnimationCurve damageFalloff = new AnimationCurve(
         new Keyframe(0f, 1f),
@@ -52,6 +53,7 @@ public class DamageTrigger : MonoBehaviour
     public float damageApplicationDelay = 0.25f;
     public float cooldown = 10f;
     public int playersRequired = 0;
+    public float damageMultiplierPerMissingPlayer = 1f;
     public List<CharacterState> currentPlayers = new List<CharacterState>();
     public List<StatusEffectData> appliedEffects = new List<StatusEffectData>();
     public UnityEvent<CharacterState> onHit;
@@ -156,6 +158,11 @@ public class DamageTrigger : MonoBehaviour
             {
                 if (other.transform.parent.TryGetComponent(out CharacterState playerState))
                 {
+                    if (!string.IsNullOrEmpty(canHitCharacterName))
+                    {
+                        if (!playerState.characterName.ToLower().Contains(canHitCharacterName.ToLower()))
+                            return;
+                    }
                     if (currentPlayers.Contains(playerState))
                         return;
                     if (playerState == owner && ignoresOwner)
@@ -178,6 +185,11 @@ public class DamageTrigger : MonoBehaviour
             {
                 if (other.transform.parent.TryGetComponent(out CharacterState playerState))
                 {
+                    if (!string.IsNullOrEmpty(canHitCharacterName))
+                    {
+                        if (!playerState.characterName.ToLower().Contains(canHitCharacterName.ToLower()))
+                            return;
+                    }
                     if (!currentPlayers.Contains(playerState))
                         return;
                     if (playerState == owner && ignoresOwner)
@@ -203,6 +215,11 @@ public class DamageTrigger : MonoBehaviour
                 {
                     if (other.transform.parent.TryGetComponent(out CharacterState playerState))
                     {
+                        if (!string.IsNullOrEmpty(canHitCharacterName))
+                        {
+                            if (!playerState.characterName.ToLower().Contains(canHitCharacterName.ToLower()))
+                                return;
+                        }
                         if (currentPlayers.Contains(playerState))
                             return;
                         if (playerState == owner && ignoresOwner)
@@ -225,6 +242,11 @@ public class DamageTrigger : MonoBehaviour
                     {
                         if (other.transform.parent.TryGetComponent(out CharacterState playerState))
                         {
+                            if (!string.IsNullOrEmpty(canHitCharacterName))
+                            {
+                                if (!playerState.characterName.ToLower().Contains(canHitCharacterName.ToLower()))
+                                    return;
+                            }
                             if (!currentPlayers.Contains(playerState))
                                 return;
                             if (playerState == owner && ignoresOwner)
@@ -251,6 +273,11 @@ public class DamageTrigger : MonoBehaviour
             {
                 if (other.transform.parent.TryGetComponent(out CharacterState playerState))
                 {
+                    if (!string.IsNullOrEmpty(canHitCharacterName))
+                    {
+                        if (!playerState.characterName.ToLower().Contains(canHitCharacterName.ToLower()))
+                            return;
+                    }
                     if (!currentPlayers.Contains(playerState))
                         return;
                     if (playerState == owner && ignoresOwner)
@@ -270,6 +297,11 @@ public class DamageTrigger : MonoBehaviour
             {
                 if (other.transform.parent.TryGetComponent(out CharacterState playerState))
                 {
+                    if (!string.IsNullOrEmpty(canHitCharacterName))
+                    {
+                        if (!playerState.characterName.ToLower().Contains(canHitCharacterName.ToLower()))
+                            return;
+                    }
                     if (currentPlayers.Contains(playerState))
                         return;
                     if (playerState == owner && ignoresOwner)
@@ -368,6 +400,11 @@ public class DamageTrigger : MonoBehaviour
             newName = damageName;
         }
 
+        // Kinda hacky way to remove the hidden healer from damage triggers, because enumerations kept getting messed up if they were sometimes hit
+        players = players.Where(p => !p.characterName.ToLower().Contains("hidden") &&
+                                     (string.IsNullOrEmpty(canHitCharacterName) ||
+                                      p.characterName.ToLower().Contains(canHitCharacterName.ToLower()))).ToArray();
+
         Damage damagePerPlayer;
 
         if (damage.value == 0 || !dealsDamage)
@@ -397,20 +434,20 @@ public class DamageTrigger : MonoBehaviour
             {
                 if (players.Length < playersRequired)
                 {
-                    //Debug.Log("DamageTrigger failed");
                     failed = true;
-                    //if (damagePerPlayer.value < 0)
-                    //{
-                        //damagePerPlayer = new Damage(damagePerPlayer, -999999);
-                        //kill = true;
-                    //}
+
+                    if (damageMultiplierPerMissingPlayer != 1f)
+                    {
+                        float damageMultiplier = damageMultiplierPerMissingPlayer - 1.0f;
+                        damagePerPlayer = new Damage(damagePerPlayer, (long)Math.Round(damagePerPlayer.value * (1.0f + (damageMultiplier * (playersRequired - players.Length)))));
+                    }
                 }
             }
         }
 
-        if (damage.value <= -999999)
+        if (damage.value <= -GlobalVariables.maximumDamage)
         {
-            damagePerPlayer = new Damage(damagePerPlayer, -999999);
+            damagePerPlayer = new Damage(damagePerPlayer, -1);
             kill = true;
         }
 

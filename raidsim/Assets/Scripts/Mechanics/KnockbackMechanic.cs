@@ -5,6 +5,7 @@ using static GlobalData;
 
 public class KnockbackMechanic : FightMechanic
 {
+    [Header("Knockback Settings")]
     public bool canBeResisted;
     public bool originFromSource = false;
     public bool isDash = false;

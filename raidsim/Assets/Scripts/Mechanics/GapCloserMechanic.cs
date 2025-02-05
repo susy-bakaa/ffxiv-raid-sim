@@ -13,6 +13,7 @@ public class GapCloserMechanic : FightMechanic
     public float maxMelee = 1.5f;
     public LeanTweenType ease = LeanTweenType.easeInOutQuad;
     public Axis moveAxis = new Axis(true, false, true);
+    public Transform overrideTarget;
 
     Coroutine ieDelayedMovement;
     LTDescr tween;
@@ -23,11 +24,11 @@ public class GapCloserMechanic : FightMechanic
         if (!CanTrigger(actionInfo))
             return;
 
-        if (actionInfo.source != null && actionInfo.target != null)
+        if (actionInfo.source != null && (actionInfo.target != null || overrideTarget != null))
         {
             startPosition = actionInfo.source.transform.position;
 
-            if (actionInfo.target.targetController != null && actionInfo.target.targetController.self != null)
+            if ((actionInfo.target?.targetController != null && actionInfo.target?.targetController?.self != null) || overrideTarget != null)
             {
                 if (lockMovement)
                     actionInfo.source.uncontrollable.SetFlag($"{mechanicName}_GapCloser", true);
@@ -66,8 +67,13 @@ public class GapCloserMechanic : FightMechanic
 
     private void MoveToTarget(ActionInfo actionInfo)
     {
-        Vector3 direction = (actionInfo.target.targetController.self.transform.position - actionInfo.source.transform.position).normalized;
-        Vector3 targetPosition = actionInfo.target.targetController.self.transform.position - direction * (actionInfo.target.targetController.self.hitboxRadius + maxMelee);
+        Transform target = overrideTarget != null ? overrideTarget : actionInfo.target?.targetController?.self?.transform;
+        float hitboxRadius = 0f;
+        if (actionInfo.target != null && actionInfo.target.targetController != null && actionInfo.target.targetController.self != null)
+            hitboxRadius = actionInfo.target.targetController.self.hitboxRadius;
+
+        Vector3 direction = (target.position - actionInfo.source.transform.position).normalized;
+        Vector3 targetPosition = target.position - direction * (hitboxRadius + maxMelee);
         if (!moveAxis.x)
             targetPosition.x = 0f;
         if (!moveAxis.y)

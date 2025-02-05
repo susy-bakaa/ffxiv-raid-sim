@@ -45,8 +45,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75a787e99245c054bbfc8f322d52e672, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  materials:
-  - {fileID: 2100000, guid: 28470ea558d869147a2d5c72931256a5, type: 2}
   outValue: 0
   inValue: 1
   outOnStart: 0
@@ -215,7 +213,8 @@ MonoBehaviour:
   triggerDelayVariance: 0.025
   damageApplicationDelay: 0.25
   cooldown: 10
-  playersRequired: 0
+  playersRequired: 4
+  damageMultiplierPerMissingPlayer: 1.2
   currentPlayers: []
   appliedEffects:
   - {fileID: 11400000, guid: 8aef8e685d034a247a6434b7819a6718, type: 2}
@@ -440,6 +439,7 @@ MonoBehaviour:
   usePlayerHealth: 0
   useTargetControllerCurrentTargetAsLocation: 0
   faceTarget: 0
+  rotateSource: 0
   axis:
     x: 0
     y: 0

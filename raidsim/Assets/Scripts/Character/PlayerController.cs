@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NaughtyAttributes;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using static UnityEngine.GraphicsBuffer;
 
@@ -46,6 +47,9 @@ public class PlayerController : MonoBehaviour
     private bool movementFrozen = false;
     private bool knockedBack = false;
     private bool jumping = false;
+    private bool jumpInput = false;
+    public bool jumpInputAvailable = true;
+    private InputActionReference jumpControllerBind;
 
     private int animatorParameterDead = Animator.StringToHash("Dead");
     private int animatorParameterSpeed = Animator.StringToHash("Speed");
@@ -98,7 +102,48 @@ public class PlayerController : MonoBehaviour
     {
         freezeMovement = false;
         movementFrozen = false;
+
+        if (userInput == null)
+        {
+            userInput = FindObjectOfType<UserInput>();
+            if (userInput == null)
+            {
+                Debug.LogError($"UserInput script not found for PlayerController ({gameObject.name})!");
+            }
+        }
+
+        if (jumpControllerBind == null)
+        {
+            if (userInput != null)
+            {
+                for (int i = 0; i < userInput.keys.Count; i++)
+                {
+                    if (userInput.keys[i].name == "Jump" && userInput.keys[i].controllerBind != null)
+                    {
+                        jumpControllerBind = userInput.keys[i].controllerBind;
+                    }
+                }
+            }
+        }
+
+        if (jumpControllerBind != null)
+        {
+            jumpControllerBind.action.Enable();
+            jumpControllerBind.action.performed += ctx => { if (jumpInputAvailable) { jumpInput = true; } else { jumpInput = false; } };
+            jumpControllerBind.action.canceled += ctx => jumpInput = false;
+        }
+
         Init();
+    }
+
+    void OnDisable()
+    {
+        if (jumpControllerBind != null)
+        {
+            jumpControllerBind.action.Disable();
+            jumpControllerBind.action.performed -= ctx => { if (jumpInputAvailable) { jumpInput = true; } else { jumpInput = false; } };
+            jumpControllerBind.action.canceled -= ctx => jumpInput = false;
+        }
     }
 
     void Update()
@@ -120,6 +165,12 @@ public class PlayerController : MonoBehaviour
             {
                 state.still = true;
             }
+
+            if (jumpInput)
+            {
+                jumpInputAvailable = false;
+                Utilities.FunctionTimer.Create(this, () => jumpInputAvailable = true, 1f, "jump_input_delay", false, true);
+            }
         }
 
         tm += FightTimeline.deltaTime;
@@ -135,32 +186,24 @@ public class PlayerController : MonoBehaviour
             Vector2 input = Vector2.zero;
             Vector2 inputR = Vector2.zero;
 
-            if (userInput.GetButtonDown("Jump") && !jumping)
+            if ((userInput.GetButtonDown("Jump") || jumpInput) && !jumping)
             {
+                jumpInput = false;
                 jumping = true;
                 model.LeanMoveLocal(jump, 0.25f).setEase(LeanTweenType.easeOutQuad).setOnComplete(() => Utilities.FunctionTimer.Create(this, () => model.LeanMoveLocal(Vector3.zero, 0.2f).setEase(LeanTweenType.easeInQuad).setOnComplete(() => jumping = false), 0.15f, "player_jump_fall_delay", false, true));
                 animator.SetTrigger(animatorParameterJumping);
             }
 
             // Input handling
-            if (legacyMovement && !jumping)
+            if (!jumping)
             {
-                //input = new Vector2(Input.GetAxisRaw("HorizontalLegacy"), Input.GetAxisRaw("VerticalLegacy"));
                 input = new Vector2(userInput.GetAxis("Strafe"), userInput.GetAxis("Vertical"));
                 inputR = new Vector2(userInput.GetAxis("Horizontal"), 0f);
+
                 storedInput = input;
                 storedInputR = inputR;
             }
-            else if (!jumping)
-            {
-                //input = new Vector2(Input.GetAxisRaw("HorizontalStandard"), Input.GetAxisRaw("VerticalStandard"));
-                input = new Vector2(userInput.GetAxis("Strafe"), userInput.GetAxis("Vertical"));
-                //inputR = new Vector2(Input.GetAxisRaw("HorizontalLegacy"), 0f);
-                inputR = new Vector2(userInput.GetAxis("Horizontal"), 0f);
-                storedInput = input;
-                storedInputR = inputR;
-            }
-            else if (jumping)
+            else
             {
                 input = storedInput;
                 inputR = storedInputR;
@@ -207,7 +250,7 @@ public class PlayerController : MonoBehaviour
                 float speedModifier = 1f;
 
                 // "Legacy" movement
-                if (normalizedInput.y < 0 && userInput.GetAxisButton("Strafe") && !disableCameraPivot)
+                if (normalizedInput.y < 0 && (userInput.GetAxisButton("Strafe") && !userInput.usingController) && !disableCameraPivot)
                 {
                     // Move backwards with reduced speed if disable camera pivot is not true
                     speedModifier = backpedalSpeed;
@@ -317,12 +360,12 @@ public class PlayerController : MonoBehaviour
 
             // Animation updates
             float animationValue = ((state.HasEffect("Sprint") || state.HasEffect("Smudge")) ? 1f : 0.5f) * normalizedInput.magnitude;
-            if (normalizedInputR != Vector2.zero && normalizedInput.y >= 0f && legacyMovement)
+            if (normalizedInputR != Vector2.zero && normalizedInput.y >= 0f && legacyMovement && !userInput.usingController)
             {
                 animationValue = ((state.HasEffect("Sprint") || state.HasEffect("Smudge")) ? 1f : 0.5f) * normalizedInputR.magnitude;
             }
 
-            if ((legacyMovement && !disableCameraPivot && userInput.GetAxisButton("Strafe")) || !legacyMovement)
+            if ((legacyMovement && !disableCameraPivot && (userInput.GetAxisButton("Strafe") && !userInput.usingController)) || !legacyMovement)
             {
                 if (normalizedInput.y < 0)
                     animationValue *= -1f;

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class SimpleFreecam : MonoBehaviour
 {
@@ -11,7 +12,9 @@ public class SimpleFreecam : MonoBehaviour
     public float maxMovementSpeed = 20f; // Maximum movement speed
     public float minMovementSpeed = 1f; // Minimum movement speed
     public float rotationSpeed = 2f; // Speed of camera rotation
+    public InputActionReference controllerCameraBind;
 
+    private Vector2 controllerInput;
     private float currentMovementSpeed;
     private float defaultMovementSpeed;
 
@@ -50,6 +53,9 @@ public class SimpleFreecam : MonoBehaviour
         {
             return;
         }
+
+        if (controllerCameraBind != null)
+            controllerInput = controllerCameraBind.action.ReadValue<Vector2>();
 
         // Handle cursor visibility and locking with mouse buttons
         if (enableRotation)
@@ -136,6 +142,13 @@ public class SimpleFreecam : MonoBehaviour
                 float mouseY = Input.GetAxis("Mouse Y");
 
                 Vector3 rotation = new Vector3(-mouseY, mouseX, 0f) * rotationSpeed;
+                transform.eulerAngles += rotation;
+            }
+            if (controllerInput != Vector2.zero)
+            {
+                float controllerX = controllerInput.x;
+                float controllerY = controllerInput.y;
+                Vector3 rotation = new Vector3(-controllerY, controllerX, 0f) * rotationSpeed;
                 transform.eulerAngles += rotation;
             }
         }

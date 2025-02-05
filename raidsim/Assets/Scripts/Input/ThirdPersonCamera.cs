@@ -2,6 +2,7 @@ using System;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 using static GlobalData;
 using static KeepCameraRotation;
 
@@ -22,7 +23,10 @@ public class ThirdPersonCamera : MonoBehaviour
     public Vector2 pitchMinMax = new Vector2(-40f, 85f);
 
     public float rotationSmoothTime;
+    public InputActionReference controllerCameraBind;
+    public InputActionReference controllerCameraZoomBind;
 
+    private Vector2 controllerInput;
     private Vector3 rotationSmoothVelocity;
     private Vector3 currentRotation;
     private Vector3 defaultOffset;
@@ -54,10 +58,27 @@ public class ThirdPersonCamera : MonoBehaviour
         defaultOffset = offsetFromTarget;
     }
 
+    private void OnEnable()
+    {
+        controllerCameraBind.action.Enable();
+        controllerCameraZoomBind.action.Enable();
+    }
+
+    private void OnDisable()
+    {
+        controllerCameraBind.action.Disable();
+        controllerCameraZoomBind.action.Disable();
+    }
+
     void Update()
     {
         if (target == null)
             return;
+
+        if (controllerInput != null)
+        {
+            controllerInput = controllerCameraBind.action.ReadValue<Vector2>();
+        }
 
         if (!freecam.active)
         {
@@ -155,16 +176,31 @@ public class ThirdPersonCamera : MonoBehaviour
             currentRotation = Vector3.SmoothDamp(currentRotation, new Vector3(pitch, yaw, 0f), ref rotationSmoothVelocity, rotationSmoothTime, float.PositiveInfinity, Time.unscaledDeltaTime);
             transform.eulerAngles = currentRotation;
         } 
-        else if (Input.GetAxis("Controller X") != 0 || Input.GetAxis("Controller Y") != 0)
+        else if (controllerInput != Vector2.zero)
         {
             if (!invertX)
-                yaw -= Input.GetAxis("Controller X") * controllerSensitivity;
+                yaw -= controllerInput.x * controllerSensitivity;
             else
-                yaw += Input.GetAxis("Controller X") * controllerSensitivity;
-            if (!invertY)
-                pitch -= Input.GetAxis("Controller Y") * controllerSensitivity;
+                yaw += controllerInput.x * controllerSensitivity;
+
+            if (controllerCameraZoomBind != null)
+            {
+                if (!controllerCameraZoomBind.action.IsPressed())
+                {
+                    if (!invertY)
+                        pitch += controllerInput.y * controllerSensitivity;
+                    else
+                        pitch -= controllerInput.y * controllerSensitivity;
+                }
+            }
             else
-                pitch += Input.GetAxis("Controller Y") * controllerSensitivity;
+            {
+                if (!invertY)
+                    pitch += controllerInput.y * controllerSensitivity;
+                else
+                    pitch -= controllerInput.y * controllerSensitivity;
+            }
+
             pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
             currentRotation = Vector3.SmoothDamp(currentRotation, new Vector3(pitch, yaw, 0f), ref rotationSmoothVelocity, rotationSmoothTime, float.PositiveInfinity, Time.unscaledDeltaTime);
             transform.eulerAngles = currentRotation;
@@ -174,7 +210,21 @@ public class ThirdPersonCamera : MonoBehaviour
     void HandleCameraZoom()
     {
         scrollInput = Input.GetAxis("Mouse ScrollWheel");
-        dstFromTarget -= scrollInput * mouseSensitivity * 5f;
+        bool usedController = false;
+
+        if (controllerCameraZoomBind != null)
+        {
+            if (controllerCameraZoomBind.action.IsPressed())
+            {
+                scrollInput += controllerInput.y;
+                usedController = true;
+            }
+        }
+
+        if (!usedController)
+            dstFromTarget -= scrollInput * mouseSensitivity * 5f;
+        else
+            dstFromTarget -= (scrollInput * 0.04f) * mouseSensitivity * 5f;
         dstFromTarget = Mathf.Clamp(dstFromTarget, dstMinMax.x, dstMinMax.y);
     }
 

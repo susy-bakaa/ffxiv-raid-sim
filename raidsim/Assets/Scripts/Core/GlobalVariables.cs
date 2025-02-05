@@ -26,4 +26,5 @@ public static class GlobalVariables
     public static bool muteBgm = false;
     public static Vector3 worldBounds = new Vector3(1000, 1000, 1000);
     public static Resolution currentGameResolution; // Cached resolution for comparison
+    public const long maximumDamage = 999999999999999999;
 }

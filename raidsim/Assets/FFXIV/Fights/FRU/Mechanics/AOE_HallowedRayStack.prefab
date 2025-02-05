@@ -238,7 +238,7 @@ MonoBehaviour:
   ableToHitTag: Player
   damage:
     name: Hallowed Ray
-    value: -950000
+    value: -1000000
     negative: 0
     ignoreDamageReductions: 0
     type: 1
@@ -293,7 +293,8 @@ MonoBehaviour:
   triggerDelayVariance: 0.025
   damageApplicationDelay: 0.25
   cooldown: 10
-  playersRequired: 0
+  playersRequired: 8
+  damageMultiplierPerMissingPlayer: 1.2
   currentPlayers: []
   appliedEffects: []
   onHit:

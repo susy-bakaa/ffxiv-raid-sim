@@ -855,7 +855,7 @@ public class CharacterState : MonoBehaviour
     }
     #endregion
 
-        #region Health
+    #region Health
     public void ModifyHealth(Damage damage, bool kill = false, bool noFlyText = false)
     {
         if (!gameObject.activeSelf)
@@ -1063,9 +1063,9 @@ public class CharacterState : MonoBehaviour
         bool ignoreDamageReduction = m_damage.ignoreDamageReductions;
         Damage flyTextDamage = new Damage(m_damage);
 
-        if (m_damage.value > 9999999)
+        if (m_damage.value > GlobalVariables.maximumDamage)
         {
-            m_damage = new Damage(m_damage, 9999999);
+            m_damage = new Damage(m_damage, 1);
         }
 
         switch (m_damage.applicationType)

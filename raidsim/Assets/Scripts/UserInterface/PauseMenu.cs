@@ -92,6 +92,8 @@ public class PauseMenu : MonoBehaviour
 
     public void ClickButton(Button button)
     {
+        if (button == null || button.interactable == false) 
+            return;
         button.onClick.Invoke();
     }
 }

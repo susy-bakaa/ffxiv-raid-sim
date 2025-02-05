@@ -59,6 +59,7 @@ public class FightTimeline : MonoBehaviour
     private Dictionary<int, List<CharacterActionData>> randomEventCharacterActions = new Dictionary<int, List<CharacterActionData>>();
     private Dictionary<int, int> randomEventResults = new Dictionary<int, int>();
     private bool wasPaused;
+    private bool hasBeenPlayed = false;
 
     [System.Serializable]
     public struct RandomEventResult
@@ -278,6 +279,7 @@ public class FightTimeline : MonoBehaviour
 
         originalArenaBounds = arenaBounds;
         originalIsCircle = isCircle;
+        hasBeenPlayed = false;
 
         onNoNewSeedOnStartChanged.Invoke(noNewSeedOnStart);
     }
@@ -310,6 +312,11 @@ public class FightTimeline : MonoBehaviour
 
     public void StartTimeline()
     {
+        if (hasBeenPlayed)
+            return;
+
+        hasBeenPlayed = true;
+
         int seed = ((int)System.DateTime.Now.Ticks + Mathf.RoundToInt(Time.time) + System.DateTime.Now.DayOfYear + (int)System.TimeZoneInfo.Local.BaseUtcOffset.Ticks + Mathf.RoundToInt(SystemInfo.batteryLevel) + SystemInfo.graphicsDeviceID + SystemInfo.graphicsDeviceVendorID + SystemInfo.graphicsMemorySize + SystemInfo.processorCount + SystemInfo.processorFrequency + SystemInfo.systemMemorySize) / 6;
 
         seed = Mathf.RoundToInt(seed);
@@ -365,6 +372,12 @@ public class FightTimeline : MonoBehaviour
 
     private IEnumerator PlayTimeline()
     {
+        if (hasBeenPlayed)
+        {
+            yield return null;
+            StopCoroutine(PlayTimeline());
+        }
+
         for (int i = 0; i < events.Count; i++)
         {
             Debug.Log(events[i].name);
