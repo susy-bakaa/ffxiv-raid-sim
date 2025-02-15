@@ -1,8 +1,10 @@
 # ffxiv-raid-sim
 
-A singleplayer raid and fight mechanic simulator with bots, made in the Unity game engine from scratch, for the critically acclaimed MMORPG Final Fantasy XIV: Online by Square Enix. This program will get more timelines and fights added to it as I develop it further. I will also accept any external thirdparty contributions possibly developed by others. Current main focus is Blue Mage specific fights and mechanics with the odd ultimate mechanic thrown in to the mix.
+A singleplayer raid and fight mechanic simulator with bots, made in the Unity game engine from scratch, for the critically acclaimed MMORPG Final Fantasy XIV: Online by Square Enix. This program will get more timelines and fights added to it as I develop it further. I will also accept any external thirdparty contributions possibly developed by others. Current main focus is Blue Mage specific plans for older fights and mechanics with various ultimate mechanics missing from other simulators thrown in to the mix, with maybe an occasional savage mechanic if I feel like it.
 
 # Supported fights
+
+This simulator is mainly being built with European raiding strats from LPDU or whatever is popular in EU PF, as I personally play in the EU data center. If anyone wants to contribute NA or JP equivalent strats for this, you're free to do so and I encourage you to contact me for additional info regarding that through Discord (@no00ob).
 
 - Omega: Alphascape
 	- Alphascape 4.0 (Savage) (O12S)
@@ -30,9 +32,13 @@ A singleplayer raid and fight mechanic simulator with bots, made in the Unity ga
 
 Timelines don't work yet for these or the bots are not finished and will die to mechanics.
 
-- None currently
+- Dragonsong's Reprise (Ultimate) (DSR)
+	- Phase 2
+		- Meteors (Second half of Sanctity of the Ward) ([LPDU](https://www.youtube.com/watch?v=A-P1eXE18ko))
 
 # Planned fights
+
+These fights are not being worked on yet and are not guranteed to be added, but I have a special interest in working on them eventually and they are actively being considered.
 
 - Omega: Alphascape
 	- Alphascape 4.0 (Savage) (O12S)
@@ -55,9 +61,25 @@ Timelines don't work yet for these or the bots are not finished and will die to 
 		- Ultimate Suppression
 		- Ultimate Annihilation
 
+(These ones are not guranteed and more of a MAYBE, because [another sim with bots](https://github.com/WCGH/FRU-Sim) already exists and [XIVSim](https://www.xivsim.com/game/) has support for them.)
+
+- Futures Rewritten (Ultimate) (FRU)
+	- Phase 1
+		- Fall of Faith ([Early LPDU](https://raidplan.io/plan/V0swEBYmpTP22HnK))
+	- Phase 2
+		- Light Rampant ([Early LPDU](https://raidplan.io/plan/FG4cE9SQY4h5ryOT))
+	- Phase 3
+		- Ultimate Relativity ([Early LPDU](https://docs.google.com/presentation/d/1gvAR5l6ZaKIR1DAgs9N-5mgNY28ii_jLZJDQvTk1iMU))
+- Dragonsong's Reprise (Ultimate) (DSR)
+	- Anything that does not have a proper [solo simulator by WCGH](https://github.com/WCGH/Dragonsong-Sim) yet. Suggestions and requests are welcome.
+- The Omega Protocol (Ultimate) (TOP)
+	- Anything that does not have a proper solo simulator by [XIVSim](https://www.xivsim.com/game/) or other sources. Suggestions and requests are welcome.
+
 # Installation
 
-To use this program, either open the [web version](https://susy-bakaa.github.io/unityweb/raidsim/index.html) or just head over to the releases section and download the latest archive file for your respective operating system. If you wish to try out the program before downloading you may do so with the web version, but be warned though, as the web version is currently not properly tested and might run into sever issues. For the standalone version, you need to extract said archive with some tool such as 7zip and then open up the raidsim.exe or raidsim.x86_64 to launch the program. The build available for Linux is not well tested so it might have some issues. If you instead want to download the source code or expand upon this program, check the git instructions down below.
+Download Latest Build: [Windows x64](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.4.5/raidsim_v.0.4.5_win64.zip) [Linux x64](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.4.5/raidsim_v.0.4.5_linux64.zip)
+
+To use this program, either open the [web version](https://susy-bakaa.github.io/unityweb/raidsim/index.html) or just head over to the [releases section](https://github.com/susy-bakaa/ffxiv-raid-sim/releases) and download the latest archive file for your respective operating system. If you wish to try out the program before downloading you may do so with the web version, but be warned though, as the web version is slightly worse in terms of features. For the standalone version, you need to extract said archive with some tool such as 7zip and then open up the raidsim.exe or raidsim.x86_64 to launch the program. The build available for Linux is not well tested so it might have some issues. If you instead want to download the source code or expand upon this program, check the git instructions down below and/or contact me on Discord @no00ob or Twitter [@susyy_bakaa](https://x.com/susyy_bakaa) and I will get back to you.
 
 # Git Usage Instructions
 
