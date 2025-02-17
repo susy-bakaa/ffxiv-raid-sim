@@ -7,6 +7,9 @@ using UnityEngine;
 public static class GlobalData
 {
     public enum Role { meleeDps, magicalRangedDps, physicalRangedDps, tank, healer, unassigned }
+    public enum Sector { N, E, S, W }
+    public enum SubSector { NE, SE, SW, NW }
+
 
     public struct ActionInfo
     {

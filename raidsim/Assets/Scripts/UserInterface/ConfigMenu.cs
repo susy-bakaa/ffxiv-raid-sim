@@ -315,7 +315,6 @@ public class ConfigMenu : MonoBehaviour
         if (thirdPersonCamera != null)
         {
             float finalSensitivity = Utilities.Map(cameraSensitivity, 1, 30, 0.1f, 3f);
-            Debug.Log($"Final sensitivity {finalSensitivity}");
             thirdPersonCamera.mouseSensitivity = originalMouseSensitivity * finalSensitivity;
             thirdPersonCamera.controllerSensitivity = originalControllerSensitivity * finalSensitivity;
             thirdPersonCamera.freecam.rotationSpeed = originalRotationSpeed * finalSensitivity;

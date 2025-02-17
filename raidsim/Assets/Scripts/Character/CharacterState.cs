@@ -144,6 +144,7 @@ public class CharacterState : MonoBehaviour
     [Header("Events")]
     public UnityEvent onDeath;
     public UnityEvent onSpawn;
+    public UnityEvent<CharacterState> onModifyHealth;
 
     [Header("Config")]
     public PartyList partyList;
@@ -1129,6 +1130,11 @@ public class CharacterState : MonoBehaviour
 
         if (!noFlyText && m_damage.value != 0)
             ShowDamageFlyText(flyTextDamage);
+
+        if (m_damage.source != null)
+        {
+            onModifyHealth.Invoke(m_damage.source);
+        }
     }
 
     private void SetHealth(long value, bool negative, bool kill = false, bool ignoreDamageReduction = false, bool ignoreShields = false)
@@ -2755,12 +2761,12 @@ public class CharacterState : MonoBehaviour
     #endregion
 
     #region Status Effects
-    public void AddEffect(StatusEffectData data, CharacterState character, bool self = false, int tag = 0, int stacks = 0)
+    public void AddEffect(StatusEffectData data, CharacterState character, bool self = false, int tag = 0, int stacks = 0, float duration = -1)
     {
-        AddEffect(data, null, character, self, tag, stacks);
+        AddEffect(data, null, character, self, tag, stacks, duration);
     }
 
-    public void AddEffect(StatusEffectData data, Damage? damage, CharacterState character, bool self = false, int tag = 0, int stacks = 0)
+    public void AddEffect(StatusEffectData data, Damage? damage, CharacterState character, bool self = false, int tag = 0, int stacks = 0, float duration = -1)
     {
         if (data.statusEffect == null)
             return;
@@ -2786,7 +2792,7 @@ public class CharacterState : MonoBehaviour
                 if (effects.ContainsKey(name))
                 {
                     if (!data.refreshStatusEffects[i].unique)
-                        effects[name].Refresh(stacks, 0, -1);
+                        effects[name].Refresh(stacks, 0, duration);
                     refreshed = true;
                 }
             }
@@ -2801,8 +2807,12 @@ public class CharacterState : MonoBehaviour
 
         if (effects.ContainsKey(name))
         {
+            float val = duration;
+            if (duration < 0)
+                val = 0;
+
             if (!data.unique)
-                effects[name].Refresh(stacks);
+                effects[name].Refresh(stacks, 0, val);
             refreshed = true;
         }
 
@@ -2832,10 +2842,10 @@ public class CharacterState : MonoBehaviour
             effect.damage = new Damage((Damage)damage);
         }
 
-        AddEffect(effect, damage, character, self, tag, stacks);
+        AddEffect(effect, damage, character, self, tag, stacks, duration);
     }
 
-    public void AddEffect(string name, CharacterState character, bool self = false, int tag = 0, int stacks = 0)
+    /*public void AddEffect(string name, CharacterState character, bool self = false, int tag = 0, int stacks = 0)
     {
         AddEffect(name, null, character, self, tag);
     }
@@ -2911,14 +2921,14 @@ public class CharacterState : MonoBehaviour
                 AddEffect(effect, damage, character, self, tag);
             }
         }
-    }
+    }*/
 
-    public void AddEffect(StatusEffect effect, CharacterState character, bool self = false, int tag = 0, int stacks = 0)
+    public void AddEffect(StatusEffect effect, CharacterState character, bool self = false, int tag = 0, int stacks = 0, float duration = -1)
     {
-        AddEffect(effect, null, character, self, tag);
+        AddEffect(effect, null, character, self, tag, stacks, duration);
     }
 
-    public void AddEffect(StatusEffect effect, Damage? damage, CharacterState character, bool self = false, int tag = 0, int stacks = 0)
+    public void AddEffect(StatusEffect effect, Damage? damage, CharacterState character, bool self = false, int tag = 0, int stacks = 0, float duration = -1)
     {
         //if (effect.data.name.Contains("Cleaned"))
         //    Debug.LogError("Cleaned detected");
@@ -2946,7 +2956,7 @@ public class CharacterState : MonoBehaviour
                 if (effects.ContainsKey(name))
                 {
                     if (!effect.data.refreshStatusEffects[i].unique)
-                        effects[name].Refresh(stacks, 0, -1);
+                        effects[name].Refresh(stacks, 0, duration);
                     refreshed = true;
                 }
             }
@@ -2961,8 +2971,11 @@ public class CharacterState : MonoBehaviour
 
         if (effects.ContainsKey(name))
         {
+            float val = duration;
+            if (duration < 0)
+                val = 0;
             if (!effect.data.unique)
-                effects[name].Refresh(stacks);
+                effects[name].Refresh(stacks, 0, val);
             refreshed = true;
         }
 
@@ -2995,7 +3008,7 @@ public class CharacterState : MonoBehaviour
         {
             return;
         }
-
+        
         effect.uniqueTag = tag;
         effect.stacks = stacks;
         effects.Add(name, effect);
@@ -3055,6 +3068,10 @@ public class CharacterState : MonoBehaviour
             {
                 effect.Initialize(this, statusEffectPositiveIconParent, statusEffectIconParentParty, targetStatusEffectIconParent, otherStatusEffectColor);
             }
+        }
+        if (duration > 0)
+        {
+            effect.duration = duration;
         }
         effect.onApplication.Invoke(this);
 

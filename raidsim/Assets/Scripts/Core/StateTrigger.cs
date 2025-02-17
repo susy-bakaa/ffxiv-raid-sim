@@ -90,6 +90,8 @@ public class StateTrigger : MonoBehaviour
             sourceActionController = source.GetComponent<ActionController>();
         if (sourceShaderFade == null)
             sourceShaderFade = source.GetComponent<SimpleShaderFade>();
+        if (sourceShaderFade != null)
+            sourceShaderFade.defaultFadeTime = fadeTime;
 
         if (party == null)
         {
@@ -174,7 +176,10 @@ public class StateTrigger : MonoBehaviour
             target.TryGetComponent(out characterEffect);
             target.TryGetComponent(out targetController);
             target.TryGetComponent(out actionController);
-            target.TryGetComponent(out shaderFade);
+            if (target.TryGetComponent(out shaderFade))
+            {
+                shaderFade.defaultFadeTime = fadeTime;
+            }
             if (!string.IsNullOrEmpty(moveToTargetName))
             {
                 moveToTarget = target.transform.Find(moveToTargetName);

@@ -6,6 +6,7 @@ public class SimpleMovement : MonoBehaviour
 {
     public Vector3 target = Vector3.zero;
     public float speed = 0.1f;
+    public bool loop = true;
     private Vector3 originalPosition;
     private bool movingToTarget = true;
 
@@ -24,7 +25,7 @@ public class SimpleMovement : MonoBehaviour
                 movingToTarget = false;
             }
         }
-        else
+        else if (loop)
         {
             transform.localPosition = Vector3.MoveTowards(transform.localPosition, originalPosition, speed * Time.deltaTime);
             if (transform.localPosition == originalPosition)

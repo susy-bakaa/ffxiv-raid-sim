@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using NaughtyAttributes;
 using UnityEngine;
+using UnityEngine.Events;
 using static ActionController;
 using static GlobalData;
 using static GlobalData.Damage;
@@ -17,6 +18,7 @@ public class SpawnDamageTriggerMechanic : FightMechanic
     public Transform spawnLocation;
     public float delay = 0f;
     public bool autoAssignOwner = false;
+    public bool autoAssignLocation = false;
     public bool useActionDamage = true;
     public bool usePlayerHealth = false;
     public bool useTargetControllerCurrentTargetAsLocation = false;
@@ -26,6 +28,21 @@ public class SpawnDamageTriggerMechanic : FightMechanic
     public bool dealDamage = true;
     [ShowIf("dealDamage")] public float damageMultiplier = 1f;
     public bool increaseEnmity = false;
+    public UnityEvent<GameObject> onSpawn;
+
+    public override void TriggerMechanic(MechanicNode node)
+    {
+        if (!CanTrigger())
+            return;
+
+        if (node == null)
+            return;
+
+        if (autoAssignLocation)
+            spawnLocation = node.transform;
+
+        TriggerMechanic(new ActionInfo(null, null, null));
+    }
 
     public override void TriggerMechanic(ActionInfo actionInfo)
     {
@@ -83,6 +100,9 @@ public class SpawnDamageTriggerMechanic : FightMechanic
 
     public void SetupDamageTrigger(GameObject spawned, ActionInfo actionInfo)
     {
+        if (!spawned.activeSelf && enableInstead)
+            spawned.SetActive(true);
+
         DamageTrigger damageTrigger = null;
         bool found = false;
 
@@ -189,5 +209,7 @@ public class SpawnDamageTriggerMechanic : FightMechanic
                 }
             }
         }
+
+        onSpawn.Invoke(spawned);
     }
 }

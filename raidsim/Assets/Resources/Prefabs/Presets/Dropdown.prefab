@@ -762,8 +762,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
+  omitSorting: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
+  initializeOnStart: 0
+  isPartyListElement: 0
+  untargetableOverlay: {fileID: 0}
+  targetButton: {fileID: 0}
   blocksAllInput: 0
   blocksPosInput: 0
   blocksRotInput: 1
@@ -779,6 +785,10 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  dummy: 0
 --- !u!114 &2546054844726190931
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -793,6 +803,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   standard: {fileID: 1917606522072458641}
   expanded: {fileID: 2963672032729924158}
+  userInput: {fileID: 0}
 --- !u!1 &2589689795550572021
 GameObject:
   m_ObjectHideFlags: 0
@@ -1248,8 +1259,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   priority: 1
+  hidden: 0
+  omitSorting: 0
   characterState: {fileID: 0}
   destroyIfMissing: 0
+  initializeOnStart: 0
+  isPartyListElement: 0
+  untargetableOverlay: {fileID: 0}
+  targetButton: {fileID: 0}
   blocksAllInput: 0
   blocksPosInput: 0
   blocksRotInput: 1
@@ -1265,6 +1282,10 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  dummy: 0
 --- !u!114 &3948131774496776287
 MonoBehaviour:
   m_ObjectHideFlags: 0

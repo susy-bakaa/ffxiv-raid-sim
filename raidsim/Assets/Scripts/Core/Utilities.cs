@@ -494,6 +494,132 @@ public static class Utilities
     }
 
     /// <summary>
+    /// Tries to get a component of type T from the specified GameObject and it's chain of parents.
+    /// </summary>
+    /// <param name="child">The GameObject we are starting the search from.</param>
+    /// <param name="result">The resulting Component if we found one or null.</param>
+    /// <returns>True if the specified Component was found and False if it was not found.</returns>
+    public static bool TryGetComponentInParents<T>(this GameObject child, out T result) where T : Component
+    {
+        return child.transform.TryGetComponentInParents(false, out result);
+    }
+
+    /// <summary>
+    /// Tries to get a component of type T from the specified GameObject and it's chain of parents.
+    /// </summary>
+    /// <param name="child">The GameObject we are starting the search from.</param>
+    /// <param name="includeSelf">Whether or not we include the child parameter in the search. False by default.</param>
+    /// <param name="result">The resulting Component if we found one or null.</param>
+    /// <returns>True if the specified Component was found and False if it was not found.</returns>
+    public static bool TryGetComponentInParents<T>(this GameObject child, bool includeSelf, out T result) where T : Component
+    {
+        return child.transform.TryGetComponentInParents(includeSelf, out result);
+    }
+
+    /// <summary>
+    /// Tries to get a component of type T from the specified Transform and it's chain of parents.
+    /// </summary>
+    /// <param name="child">The Transform we are starting the search from.</param>
+    /// <param name="result">The resulting Component if we found one or null.</param>
+    /// <returns>True if the specified Component was found and False if it was not found.</returns>
+    public static bool TryGetComponentInParents<T>(this Transform child, out T result) where T : Component
+    {
+        return child.TryGetComponentInParents(false, out result);
+    }
+
+    /// <summary>
+    /// Tries to get a component of type T from the specified Transform and it's chain of parents.
+    /// </summary>
+    /// <param name="child">The Transform we are starting the search from.</param>
+    /// <param name="includeSelf">Whether or not we include the child parameter in the search. False by default.</param>
+    /// <param name="result">The resulting Component if we found one or null.</param>
+    /// <returns>True if the specified Component was found and False if it was not found.</returns>
+    public static bool TryGetComponentInParents<T>(this Transform child, bool includeSelf, out T result) where T : Component
+    {
+        if (includeSelf && child.TryGetComponent(out result))
+        {
+            return true;
+        }
+
+        Transform currentParent = child.parent;
+        while (currentParent != null)
+        {
+            if (currentParent.TryGetComponent(out result))
+            {
+                return true;
+            }
+            currentParent = currentParent.parent;
+        }
+
+        result = null;
+        return false;
+    }
+    
+    /// <summary>
+    /// Tries to get a component of type T from the specified GameObject and it's chain of children.
+    /// </summary>
+    /// <param name="parent">The GameObject we are starting the search from.</param>
+    /// <param name="result">The resulting Component if we found one or null.</param>
+    /// <returns>True if the specified Component was found and False if it was not found.</returns>
+    public static bool TryGetComponentInChildren<T>(this GameObject parent, out T result) where T : Component
+    {
+        return parent.transform.TryGetComponentInChildren(false, out result);
+    }
+
+    /// <summary>
+    /// Tries to get a component of type T from the specified GameObject and it's chain of children.
+    /// </summary>
+    /// <param name="parent">The GameObject we are starting the search from.</param>
+    /// <param name="includeSelf">Whether or not we include the child parameter in the search.</param>
+    /// <param name="result">The resulting Component if we found one or null.</param>
+    /// <returns>True if the specified Component was found and False if it was not found.</returns>
+    public static bool TryGetComponentInChildren<T>(this GameObject parent, bool includeSelf, out T result) where T : Component
+    {
+        return parent.transform.TryGetComponentInChildren(includeSelf, out result);
+    }
+
+    /// <summary>
+    /// Tries to get a component of type T from the specified Transform and it's chain of children.
+    /// </summary>
+    /// <param name="parent">The Transform we are starting the search from.</param>
+    /// <param name="result">The resulting Component if we found one or null.</param>
+    /// <returns>True if the specified Component was found and False if it was not found.</returns>
+    public static bool TryGetComponentInChildren<T>(this Transform parent, out T result) where T : Component
+    {
+        return parent.TryGetComponentInChildren(false, out result);
+    }
+
+    /// <summary>
+    /// Tries to get a component of type T from the specified Transform and it's chain of children.
+    /// </summary>
+    /// <param name="parent">The Transform we are starting the search from.</param>
+    /// <param name="includeSelf">Whether or not we include the parent parameter in the search.</param>
+    /// <param name="result">The resulting Component if we found one or null.</param>
+    /// <returns>True if the specified Component was found and False if it was not found.</returns>
+    public static bool TryGetComponentInChildren<T>(this Transform parent, bool includeSelf, out T result) where T : Component
+    {
+        if (includeSelf && parent.TryGetComponent(out result))
+        {
+            return true;
+        }
+
+        foreach (Transform child in parent)
+        {
+            if (child.TryGetComponent(out result))
+            {
+                return true;
+            }
+            if (TryGetComponentInChildren(child, false, out result))
+            {
+                return true;
+            }
+        }
+
+        result = null;
+        return false;
+    }
+    
+    /// <summary>
     /// Finds and returns the first GameObject in the scene with the specified name.
     /// This method searches through all loaded objects, including inactive ones by type of Transform and checks their names for a match.
     /// Only objects with HideFlags set to None are considered.

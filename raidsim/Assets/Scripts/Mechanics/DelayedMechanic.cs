@@ -11,6 +11,8 @@ public class DelayedMechanic : FightMechanic
     public float delay = 1f;
     public UnityEvent<ActionInfo> onDelayedTrigger;
 
+    private Coroutine ieTriggerMechanicDelayed = null;
+
     private void Start()
     {
         if (startAutomatically)
@@ -24,8 +26,10 @@ public class DelayedMechanic : FightMechanic
 
         if (delay > 0f)
         {
-            StopAllCoroutines();
-            StartCoroutine(TriggerMechanicDelayed(actionInfo));
+            if (ieTriggerMechanicDelayed != null)
+                StopCoroutine(ieTriggerMechanicDelayed);
+
+            ieTriggerMechanicDelayed = StartCoroutine(IE_TriggerMechanicDelayed(actionInfo, new WaitForSeconds(delay)));
         }
         else
         {
@@ -33,9 +37,10 @@ public class DelayedMechanic : FightMechanic
         }
     }
 
-    private IEnumerator TriggerMechanicDelayed(ActionInfo actionInfo)
+    private IEnumerator IE_TriggerMechanicDelayed(ActionInfo actionInfo, WaitForSeconds wait)
     {
-        yield return new WaitForSeconds(delay);
+        yield return wait;
         onDelayedTrigger.Invoke(actionInfo);
+        ieTriggerMechanicDelayed = null;
     }
 }

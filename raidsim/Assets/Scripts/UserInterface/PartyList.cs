@@ -12,10 +12,13 @@ public class PartyList : MonoBehaviour
     public string spriteAsset = "letters_1";
     public int maxLetters = 7;
     public bool assignLetters = false;
+    public bool assignRandomOrder = false;
     public List<Role> priorityOrder = new List<Role>();
 
     private List<TextMeshProUGUI> names = new List<TextMeshProUGUI>();
     private HudElementPriority hudPriority;
+    private bool originalMembersSet = false;
+    private List<PartyMember> originalMembers;
 
 #if UNITY_EDITOR
     [Button("Relink Party Member Hud Variables")]
@@ -70,13 +73,27 @@ public class PartyList : MonoBehaviour
     {
         if (assignLetters)
         {
+            int assignedLetter = 0;
             for (int i = 0;i < members.Count; i++)
             {
                 if (members[i].characterState == null)
                     continue;
 
-                members[i].characterState.characterLetter = members[i].letter;
+                PartyMember member = members[i];
+                member.letter = assignedLetter;
+                member.characterState.characterLetter = assignedLetter;
+                member.characterState.letterSpriteAsset = spriteAsset;
+                members[i] = member;
+                assignedLetter++;
+                if (assignedLetter > maxLetters)
+                    assignedLetter = maxLetters;
+
+                //Debug.Log($"member {member.name} index {i} letter {member.letter} char.letter {member.characterState.characterLetter} assignedLetter {assignedLetter}");
             }
+        }
+        if (assignRandomOrder)
+        {
+            RandomizePartyListOrder();
         }
     }
 
@@ -318,17 +335,15 @@ public class PartyList : MonoBehaviour
 
     public void UpdatePartyList()
     {
-        int i_active = 0;
+        int letterIndex = 0;
         for (int i = 0; i < members.Count; i++)
         {
-            PartyMember member = members[i];
-
-            if (member.characterState == null)
+            if (members[i].characterState == null)
                 continue;
 
-            //Debug.Log($"update partylist {gameObject.name}");
+            PartyMember member = members[i];
 
-            int letter = i_active;
+            int letter = letterIndex;
             if (letter > maxLetters)
                 letter = maxLetters;
             else if (letter < 0)
@@ -336,14 +351,16 @@ public class PartyList : MonoBehaviour
             members[i].characterState.characterLetter = letter;
             member.letter = members[i].characterState.characterLetter;
             member.role = member.characterState.role;
+            if (assignLetters)
+                member.hudElement.priority = letter;
             members[i].hudElement.gameObject.SetActive(members[i].characterState.gameObject.activeSelf);
-            members[i] = member;
             if (members[i].hudElement != null)
                 members[i].hudElement.characterState = members[i].characterState;
+            members[i] = member;
 
             if (members[i].characterState.gameObject.activeSelf)
             {
-                i_active++;
+                letterIndex++;
             }
         }
 
@@ -354,6 +371,54 @@ public class PartyList : MonoBehaviour
     {
         if (hudPriority != null)
             hudPriority.UpdateSorting();
+    }
+
+    public void RandomizePartyListOrder()
+    {
+        List<int> availableLetters = new List<int>();
+        
+        if (!originalMembersSet)
+        {
+            originalMembers = new List<PartyMember>(members);
+            originalMembersSet = true;
+        }
+
+        for (int i = 0; i < maxLetters; i++)
+        {
+            availableLetters.Add(i);
+        }
+
+        for (int i = 0; i < members.Count; i++)
+        {
+            PartyMember member = members[i];
+
+            if (availableLetters.Count > 0)
+            {
+                int randomIndex = Random.Range(0, availableLetters.Count);
+                member.letter = availableLetters[randomIndex];
+                availableLetters.RemoveAt(randomIndex);
+            }
+            else
+            {
+                member.letter = maxLetters;
+            }
+
+            members[i] = member;
+        }
+
+        // Sort members based on their letter
+        members.Sort((a, b) => a.letter.CompareTo(b.letter));
+
+        UpdatePartyList();
+    }
+
+    public void ResetPartyListOrder()
+    {
+        if (originalMembersSet && originalMembers != null && originalMembers.Count > 0)
+        {
+            members = new List<PartyMember>(originalMembers);
+            UpdatePartyList();
+        }
     }
 
     [System.Serializable]

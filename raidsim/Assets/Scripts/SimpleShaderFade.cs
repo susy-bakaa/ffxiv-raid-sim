@@ -11,6 +11,7 @@ public class SimpleShaderFade : MonoBehaviour
     private List<Material> materials;
     public float outValue = 0f;
     public float inValue = 1f;
+    public float defaultFadeTime = 0.33f;
     public bool outOnStart = false;
     public bool log = false;
 
@@ -91,6 +92,11 @@ public class SimpleShaderFade : MonoBehaviour
         }
     }
 
+    public void FadeOut()
+    {
+        FadeOut(defaultFadeTime);
+    }
+
     public void FadeOut(float time)
     {
         if (log)
@@ -110,6 +116,11 @@ public class SimpleShaderFade : MonoBehaviour
             else
                 materials[i].SetFloat(shaderAlphaPropertyHash, outValue);
         }
+    }
+
+    public void FadeIn()
+    {
+        FadeIn(defaultFadeTime);
     }
 
     public void FadeIn(float time)

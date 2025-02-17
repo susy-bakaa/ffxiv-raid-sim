@@ -6,6 +6,8 @@ using UnityEngine.Events;
 using static GlobalData;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Linq;
+
 
 
 #if UNITY_EDITOR
@@ -16,7 +18,7 @@ public class FightTimeline : MonoBehaviour
 {
     public static FightTimeline Instance;
 
-    public List<StatusEffectData> allAvailableStatusEffects = new List<StatusEffectData>();
+    //public List<StatusEffectData> allAvailableStatusEffects = new List<StatusEffectData>();
     public UserInput input;
     public CharacterState player;
     public PartyList partyList;
@@ -43,6 +45,9 @@ public class FightTimeline : MonoBehaviour
     public List<BotTimeline> botTimelines = new List<BotTimeline>();
     public List<TimelineEvent> events = new List<TimelineEvent>();
     public List<RandomEventResult> m_randomEventResults = new List<RandomEventResult>();
+#if UNITY_EDITOR
+    public List<SectorMechanicResult> m_sectorMechanicResults = new List<SectorMechanicResult>();
+#endif
     public bool jon = false;
     public bool log = false;
     public bool clearRandomEventResultsOnStart = true;
@@ -58,6 +63,7 @@ public class FightTimeline : MonoBehaviour
 
     private Dictionary<int, List<CharacterActionData>> randomEventCharacterActions = new Dictionary<int, List<CharacterActionData>>();
     private Dictionary<int, int> randomEventResults = new Dictionary<int, int>();
+    private Dictionary<int, SectorMechanicResult> sectorMechanicResults = new Dictionary<int, SectorMechanicResult>();
     private bool wasPaused;
     private bool hasBeenPlayed = false;
 
@@ -150,6 +156,50 @@ public class FightTimeline : MonoBehaviour
         }
     }
 
+    public Dictionary<Sector, List<MechanicNode>> GetSectorMechanicResult(int id)
+    {
+        if (sectorMechanicResults.TryGetValue(id, out SectorMechanicResult result))
+        {
+            return result.nodeAssignmentsBySector;
+        }
+
+        return null;
+    }
+
+    public void AddSectorMechanicResult(int id, Dictionary<Sector, List<MechanicNode>> resultDictionary)
+    {
+        if (sectorMechanicResults == null)
+        {
+            sectorMechanicResults = new Dictionary<int, SectorMechanicResult>();
+        }
+        if (sectorMechanicResults.ContainsKey(id))
+        {
+            SectorMechanicResult result = sectorMechanicResults[id];
+            result.nodeAssignmentsBySector = resultDictionary;
+            sectorMechanicResults[id] = result;
+        }
+        else
+        {
+            sectorMechanicResults.Add(id, new SectorMechanicResult(id, resultDictionary));
+        }
+
+#if UNITY_EDITOR
+        m_sectorMechanicResults = sectorMechanicResults.Values.ToList();
+#endif
+    }
+
+    public void RemoveSectorMechanicResult(int id)
+    {
+        if (sectorMechanicResults.ContainsKey(id))
+        {
+            sectorMechanicResults.Remove(id);
+        }
+
+#if UNITY_EDITOR
+        m_sectorMechanicResults = sectorMechanicResults.Values.ToList();
+#endif
+    }
+
     public void ToggleJonVoiceLines(bool value)
     {
         jon = value;
@@ -167,9 +217,9 @@ public class FightTimeline : MonoBehaviour
     }
 
 #if UNITY_EDITOR
-        [Header("Editor")]
+    [Header("Editor")]
     [SerializeField] private float m_wipeDelay;
-    [Button("Load All Status Effects")]
+    /*[Button("Load All Status Effects")]
     public void LoadEffectsButton()
     {
         allAvailableStatusEffects.Clear();
@@ -191,7 +241,7 @@ public class FightTimeline : MonoBehaviour
 
         // Optionally, log the count of loaded assets
         Debug.Log($"Loaded {allAvailableStatusEffects.Count} status effects.");
-    }
+    }*/
 
     [Button("Wipe Party")]
     public void WipePartyButton()
@@ -208,7 +258,7 @@ public class FightTimeline : MonoBehaviour
 
     private void Reset()
     {
-        LoadEffectsButton();
+        //LoadEffectsButton();
         mechanicParent = GameObject.Find("Mechanics").transform;
         input = GetComponentInChildren<UserInput>();
         player = GameObject.Find("Player").GetComponent<CharacterState>();
@@ -798,5 +848,24 @@ public class FightTimeline : MonoBehaviour
         [MinValue(0)] public int positiveResult;
         [MinValue(0)] public int negativeResult;
         public bool matchFromTarget;
+    }
+
+    [System.Serializable]
+    public struct SectorMechanicResult
+    {
+        public int id;
+        public Dictionary<Sector, List<MechanicNode>> nodeAssignmentsBySector;
+
+        public SectorMechanicResult(int id)
+        {
+            this.id = id;
+            nodeAssignmentsBySector = new Dictionary<Sector, List<MechanicNode>>();
+        }
+
+        public SectorMechanicResult(int id, Dictionary<Sector, List<MechanicNode>> nodeAssignmentsBySector)
+        {
+            this.id = id;
+            this.nodeAssignmentsBySector = nodeAssignmentsBySector;
+        }
     }
 }

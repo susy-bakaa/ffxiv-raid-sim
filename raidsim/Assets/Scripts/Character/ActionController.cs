@@ -126,9 +126,27 @@ public class ActionController : MonoBehaviour
 
         if (characterState != null)
         {
+            List<CharacterAction> invalidActions = new List<CharacterAction>();
+
             for (int i = 0; i < actions.Count; i++)
             {
-                actions[i].Initialize(this);
+                if (actions[i] != null)
+                {
+                    actions[i].Initialize(this);
+                }
+                else
+                {
+                    invalidActions.Add(actions[i]);
+                    Debug.LogWarning($"Found an invalid (null) CharacterAction (Index {i}) from the Character {characterState.characterName} ({gameObject.name})!\nIt has been automatically removed from the list of available actions for now, but to get rid of this warning permanently please remove it manually from the list in the editor!");
+                }
+            }
+
+            if (invalidActions.Count > 0)
+            {
+                for (int i = 0; i < invalidActions.Count; i++)
+                {
+                    actions.Remove(invalidActions[i]);
+                }
             }
         }
         if (characterState != null)

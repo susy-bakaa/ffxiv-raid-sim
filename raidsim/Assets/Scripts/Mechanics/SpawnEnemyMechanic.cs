@@ -8,6 +8,10 @@ public class SpawnEnemyMechanic : FightMechanic
     public string enemyObjectName = string.Empty;
     public GameObject enemyObject;
     public bool activateInstead = true;
+    public bool despawnInstead = false;
+    public bool toggleNameplate = false;
+    public bool togglePartylistEntry = false;
+    public bool toggleTargetable = false;
     public Transform spawnLocation;
 
     public void Awake()
@@ -33,19 +37,12 @@ public class SpawnEnemyMechanic : FightMechanic
 
         if (activateInstead && enemyObject != null)
         {
-            //Debug.Log($"Trying to activate {enemyObject.name}");
+            enemyObject.SetActive(true);
+
             if (enemyObject.TryGetComponent(out CharacterState state))
             {
-                state.disabled = false;
-                //Debug.Log($"Found CharacterState from {enemyObject.name} and setting disabled to {state.disabled}");
+                ToggleCharacterState(state);
             }
-            //else
-            //{
-                //Debug.Log($"Did not find CharacterState from {enemyObject.name} and disabled was not changed!");
-            //}
-            //Debug.Log($"Before SetActive {enemyObject.name} is active {enemyObject.activeSelf}");
-            enemyObject.SetActive(true);
-            //Debug.Log($"After SetActive {enemyObject.name} is active {enemyObject.activeSelf}");
         }
         else if (enemyObject != null)
         {
@@ -56,7 +53,7 @@ public class SpawnEnemyMechanic : FightMechanic
                     GameObject spawned = Instantiate(enemyObject, actionInfo.target.transform.position, actionInfo.target.transform.rotation, GameObject.Find("Enemies").transform);
                     if (spawned.TryGetComponent(out CharacterState state))
                     {
-                        state.disabled = false;
+                        ToggleCharacterState(state, true);
                     }
                 }
                 else if (actionInfo.source != null && actionInfo.action != null)
@@ -64,7 +61,7 @@ public class SpawnEnemyMechanic : FightMechanic
                     GameObject spawned = Instantiate(enemyObject, actionInfo.source.transform.position, actionInfo.source.transform.rotation, GameObject.Find("Enemies").transform);
                     if (spawned.TryGetComponent(out CharacterState state))
                     {
-                        state.disabled = false;
+                        ToggleCharacterState(state, true);
                     }
                 }
             }
@@ -73,9 +70,31 @@ public class SpawnEnemyMechanic : FightMechanic
                 GameObject spawned = Instantiate(enemyObject, spawnLocation.position, spawnLocation.rotation, GameObject.Find("Enemies").transform);
                 if (spawned.TryGetComponent(out CharacterState state))
                 {
-                    state.disabled = false;
+                    ToggleCharacterState(state, true);
                 }
             }
         }
+    }
+
+    private void ToggleCharacterState(CharacterState state, bool overrideState = false)
+    {
+        if (state == null)
+            return;
+
+        if (!overrideState)
+        {
+            state.ToggleState(!despawnInstead);
+        }
+        else
+        {
+            state.ToggleState(true);
+        }
+
+        if (toggleNameplate)
+            state.ToggleNameplate(!state.hideNameplate);
+        if (togglePartylistEntry)
+            state.TogglePartyListEntry(!state.hidePartyListEntry);
+        if (toggleTargetable)
+            state.ToggleTargetable(!state.untargetable.value);
     }
 }

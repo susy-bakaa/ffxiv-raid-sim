@@ -56,9 +56,11 @@ public class DamageTrigger : MonoBehaviour
     public float damageMultiplierPerMissingPlayer = 1f;
     public List<CharacterState> currentPlayers = new List<CharacterState>();
     public List<StatusEffectData> appliedEffects = new List<StatusEffectData>();
+    public List<StatusEffectData> appliedEffectsOnFail = new List<StatusEffectData>();
     public UnityEvent<CharacterState> onHit;
     public UnityEvent<CharacterState> onFail;
     public UnityEvent<CharacterState> onFinish;
+    public UnityEvent onStart;
     public UnityEvent onSpawn;
     public UnityEvent<CharacterState> onInitialize;
     public UnityEvent<CharacterCollection> onTrigger;
@@ -156,13 +158,14 @@ public class DamageTrigger : MonoBehaviour
         {
             if (other.CompareTag(ableToHitTag))
             {
-                if (other.transform.parent.TryGetComponent(out CharacterState playerState))
+                if (other.transform.TryGetComponentInParents(true, out CharacterState playerState))
                 {
                     if (!string.IsNullOrEmpty(canHitCharacterName))
                     {
                         if (!playerState.characterName.ToLower().Contains(canHitCharacterName.ToLower()))
                             return;
                     }
+
                     if (currentPlayers.Contains(playerState))
                         return;
                     if (playerState == owner && ignoresOwner)
@@ -183,7 +186,7 @@ public class DamageTrigger : MonoBehaviour
         {
             if (other.CompareTag(ableToHitTag))
             {
-                if (other.transform.parent.TryGetComponent(out CharacterState playerState))
+                if (other.transform.TryGetComponentInParents(true, out CharacterState playerState))
                 {
                     if (!string.IsNullOrEmpty(canHitCharacterName))
                     {
@@ -209,18 +212,22 @@ public class DamageTrigger : MonoBehaviour
     {
         if (updateLive)
         {
+            if (other == null)
+                return;
+
             if (!inverted)
             {
                 if (other.CompareTag(ableToHitTag) && !inProgress && initialized)
                 {
-                    if (other.transform.parent.TryGetComponent(out CharacterState playerState))
+                    if (other.transform.TryGetComponentInParents(true, out CharacterState playerState))
                     {
                         if (!string.IsNullOrEmpty(canHitCharacterName))
                         {
                             if (!playerState.characterName.ToLower().Contains(canHitCharacterName.ToLower()))
                                 return;
                         }
-                        if (currentPlayers.Contains(playerState))
+
+                        if (!updateLive && currentPlayers.Contains(playerState))
                             return;
                         if (playerState == owner && ignoresOwner)
                             return;
@@ -240,14 +247,14 @@ public class DamageTrigger : MonoBehaviour
                 {
                     if (other.CompareTag(ableToHitTag))
                     {
-                        if (other.transform.parent.TryGetComponent(out CharacterState playerState))
+                        if (other.transform.TryGetComponentInParents(true, out CharacterState playerState))
                         {
                             if (!string.IsNullOrEmpty(canHitCharacterName))
                             {
                                 if (!playerState.characterName.ToLower().Contains(canHitCharacterName.ToLower()))
                                     return;
                             }
-                            if (!currentPlayers.Contains(playerState))
+                            if (!updateLive && !currentPlayers.Contains(playerState))
                                 return;
                             if (playerState == owner && ignoresOwner)
                                 return;
@@ -271,13 +278,14 @@ public class DamageTrigger : MonoBehaviour
         {
             if (other.CompareTag(ableToHitTag))
             {
-                if (other.transform.parent.TryGetComponent(out CharacterState playerState))
+                if (other.transform.TryGetComponentInParents(true, out CharacterState playerState))
                 {
                     if (!string.IsNullOrEmpty(canHitCharacterName))
                     {
                         if (!playerState.characterName.ToLower().Contains(canHitCharacterName.ToLower()))
                             return;
                     }
+
                     if (!currentPlayers.Contains(playerState))
                         return;
                     if (playerState == owner && ignoresOwner)
@@ -295,7 +303,7 @@ public class DamageTrigger : MonoBehaviour
         {
             if (other.CompareTag(ableToHitTag))
             {
-                if (other.transform.parent.TryGetComponent(out CharacterState playerState))
+                if (other.transform.TryGetComponentInParents(true, out CharacterState playerState))
                 {
                     if (!string.IsNullOrEmpty(canHitCharacterName))
                     {
@@ -355,6 +363,7 @@ public class DamageTrigger : MonoBehaviour
                 Utilities.FunctionTimer.Create(this, () => inProgress = false, cooldown, $"{id}_{damageName}_{gameObject}_{GetHashCode()}_trigger_cooldown", false, true);
             }
         }
+        onStart.Invoke();
     }
 
     private IEnumerator IE_StartDamageTrigger(CharacterState[] players)
@@ -618,6 +627,20 @@ public class DamageTrigger : MonoBehaviour
                         else
                         {
                             players[i].AddEffect(appliedEffects[k], damage.source, self);
+                        }
+                    }
+                }
+                if (failed && appliedEffectsOnFail.Count > 0)
+                {
+                    for (int k = 0; k < appliedEffectsOnFail.Count; k++)
+                    {
+                        if (passDamage)
+                        {
+                            players[i].AddEffect(appliedEffectsOnFail[k], damage, damage.source, self);
+                        }
+                        else
+                        {
+                            players[i].AddEffect(appliedEffectsOnFail[k], damage.source, self);
                         }
                     }
                 }

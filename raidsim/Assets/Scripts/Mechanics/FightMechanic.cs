@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static ActionController;
 using static GlobalData;
 
 public class FightMechanic : MonoBehaviour
@@ -58,6 +57,11 @@ public class FightMechanic : MonoBehaviour
 
     }
 
+    public virtual void TriggerMechanic(MechanicNode node)
+    {
+
+    }
+
     public void InterruptMechanic(CharacterCollection characterCollection)
     {
         for (int i = 0; i < characterCollection.values.Count; i++)
@@ -89,6 +93,11 @@ public class FightMechanic : MonoBehaviour
             string nameToLog = string.IsNullOrEmpty(mechanicName) ? "Unnamed mechanic" : mechanicName;
             Debug.Log($"[FightMechanic] '{nameToLog}' ({gameObject.name}) was interrupted with ActionInfo (action: '{actionInfo.action?.gameObject}', source: '{actionInfo.source?.characterName}', target: '{actionInfo.target?.characterName}', targetIsPlayer: '{actionInfo.targetIsPlayer}')");
         }
+    }
+
+    protected bool CanTrigger()
+    {
+        return CanTrigger(new ActionInfo(null, null, null));
     }
 
     protected bool CanTrigger(ActionInfo actionInfo)

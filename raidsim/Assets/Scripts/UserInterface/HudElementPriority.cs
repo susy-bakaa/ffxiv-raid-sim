@@ -8,8 +8,17 @@ public class HudElementPriority : MonoBehaviour
 {
     public List<HudElement> hudElements = new List<HudElement>();
     public bool autoUpdate = true;
+    public bool fetchOnStart = false;
 
     private int childCount = 0;
+
+    void Start()
+    {
+        if (fetchOnStart)
+        {
+            hudElements = GetComponentsInChildren<HudElement>(true).ToList();
+        }
+    }
 
     void Update()
     {
