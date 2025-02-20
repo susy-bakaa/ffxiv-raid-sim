@@ -42,6 +42,7 @@ public class ActionController : MonoBehaviour
     public CanvasGroup interruptText;
     public HudElement castBarElement;
     public CanvasGroup speechBubbleGroup;
+    public float speechBubbleDuration = 2f;
     public TextMeshProUGUI speechBubbleText;
     public AudioSource speechBubbleAudio;
 
@@ -981,7 +982,7 @@ public class ActionController : MonoBehaviour
             if (speechBubbleGroup != null)
             {
                 speechBubbleGroup.LeanAlpha(1f, 0.25f);
-                Utilities.FunctionTimer.Create(this, () => speechBubbleGroup.LeanAlpha(0f, 0.25f), 2f, $"{characterState.characterName}_{this}_speech_bubble_fade_out", true);
+                Utilities.FunctionTimer.Create(this, () => speechBubbleGroup.LeanAlpha(0f, 0.25f), speechBubbleDuration, $"{characterState.characterName}_{this}_speech_bubble_fade_out", true);
             }
             if (speechBubbleAudio != null)
             {

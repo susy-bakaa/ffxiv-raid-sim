@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using NaughtyAttributes;
+using Unity.VisualScripting;
 using UnityEngine;
 using static GlobalData;
 
@@ -8,6 +10,8 @@ public class GapCloserMechanic : FightMechanic
     [Header("Gap Closer Settings")]
     public bool lockMovement = true;
     public bool lockActions = true;
+    public bool fakeKnockback = false;
+    [ShowIf("fakeKnockback")] public bool canBeResisted = false;
     public float duration = 0.5f;
     public float delay = 0.25f;
     public float maxMelee = 1.5f;
@@ -23,6 +27,14 @@ public class GapCloserMechanic : FightMechanic
     {
         if (!CanTrigger(actionInfo))
             return;
+
+        if (fakeKnockback)
+        {
+            bool resisted = (actionInfo.source.knockbackResistant.value && canBeResisted) || actionInfo.source.bound.value || actionInfo.source.dead;
+
+            if (resisted)
+                return;
+        }
 
         if (actionInfo.source != null && (actionInfo.target != null || overrideTarget != null))
         {
@@ -72,6 +84,7 @@ public class GapCloserMechanic : FightMechanic
         if (actionInfo.target != null && actionInfo.target.targetController != null && actionInfo.target.targetController.self != null)
             hitboxRadius = actionInfo.target.targetController.self.hitboxRadius;
 
+        Vector3 originalPosition = actionInfo.source.transform.position;
         Vector3 direction = (target.position - actionInfo.source.transform.position).normalized;
         Vector3 targetPosition = target.position - direction * (hitboxRadius + maxMelee);
         if (!moveAxis.x)
@@ -80,7 +93,7 @@ public class GapCloserMechanic : FightMechanic
             targetPosition.y = 0f;
         if (!moveAxis.z)
             targetPosition.z = 0f;
-        tween = actionInfo.source.transform.LeanMove(targetPosition, duration).setEase(ease).setOnComplete(() => ResetState(actionInfo));
+        tween = actionInfo.source.transform.LeanMove(targetPosition, duration).setEase(ease).setOnUpdate((float _) => { if (actionInfo.source.dead) { LeanTween.cancel(tween.id); actionInfo.source.transform.position = originalPosition; } }).setOnComplete(() => ResetState(actionInfo));
     }
 
     private void ResetState(ActionInfo actionInfo)

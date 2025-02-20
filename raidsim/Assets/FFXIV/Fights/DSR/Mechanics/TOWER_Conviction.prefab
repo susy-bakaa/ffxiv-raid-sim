@@ -133,10 +133,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outValue: 0
   inValue: 1
-  defaultFadeTime: 0.33
+  defaultFadeTime: 0.25
   outOnStart: 1
   log: 0
-  fadeTime: 0.33
+  fadeTime: 0.25
 --- !u!114 &640710239714848968
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -164,6 +164,7 @@ GameObject:
   - component: {fileID: 761142827917624316}
   - component: {fileID: 6091801296420247196}
   - component: {fileID: 5837800095300547518}
+  - component: {fileID: 9000717759947584550}
   - component: {fileID: 4601576393457610143}
   - component: {fileID: 1504056594553812525}
   - component: {fileID: 3550219794243078869}
@@ -185,7 +186,7 @@ Transform:
   m_GameObject: {fileID: 8304549818765777907}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -15.67, y: 0.020742416, z: -0.59}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -232,8 +233,8 @@ CapsuleCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
+    m_Bits: 1024
+  m_LayerOverridePriority: 1
   m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
@@ -298,7 +299,7 @@ MonoBehaviour:
   enmity: 0
   increaseEnmity: 0
   topEnmity: 0
-  initializeOnStart: 1
+  initializeOnStart: 0
   self: 0
   dealsDamage: 1
   passDamage: 0
@@ -337,7 +338,19 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 0.75
+          m_FloatArgument: 1.75
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 9000717759947584550}
+        m_TargetAssemblyTypeName: FightMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
@@ -345,42 +358,6 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: StateTrigger, Assembly-CSharp
         m_MethodName: ToggleTarget
         m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 4601576393457610143}
-        m_TargetAssemblyTypeName: FightMechanic, Assembly-CSharp
-        m_MethodName: TriggerMechanic
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1504056594553812525}
-        m_TargetAssemblyTypeName: FightMechanic, Assembly-CSharp
-        m_MethodName: TriggerMechanic
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 3550219794243078869}
-        m_TargetAssemblyTypeName: FightMechanic, Assembly-CSharp
-        m_MethodName: TriggerMechanic
-        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -400,7 +377,7 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 1
+          m_FloatArgument: 2
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
@@ -465,6 +442,64 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   dummy: 0
+--- !u!114 &9000717759947584550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8304549818765777907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c11d13ba36149154fb548fc96274895b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: ConvictionTowerWipe
+  onlyTriggerOnce: 1
+  global: 1
+  log: 0
+  startAutomatically: 0
+  delay: 1.25
+  onDelayedTrigger:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4601576393457610143}
+        m_TargetAssemblyTypeName: RaidwideDebuffMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1504056594553812525}
+        m_TargetAssemblyTypeName: RaidwideDebuffMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 3550219794243078869}
+        m_TargetAssemblyTypeName: RaidwideDamageMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &4601576393457610143
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -480,6 +515,7 @@ MonoBehaviour:
   mechanicEnabled: 1
   mechanicName: Eternal Conviction
   onlyTriggerOnce: 0
+  global: 0
   log: 0
   party: {fileID: 0}
   autoFindParty: 1
@@ -508,6 +544,7 @@ MonoBehaviour:
   mechanicEnabled: 1
   mechanicName: Eternal Conviction
   onlyTriggerOnce: 0
+  global: 0
   log: 0
   party: {fileID: 0}
   autoFindParty: 1
@@ -536,6 +573,7 @@ MonoBehaviour:
   mechanicEnabled: 1
   mechanicName: Eternal Conviction
   onlyTriggerOnce: 0
+  global: 0
   log: 0
   party: {fileID: 0}
   autoFindParty: 1
@@ -579,7 +617,7 @@ MonoBehaviour:
   toggleCharacterState: 0
   toggleCharacterEffect: 0
   toggleShaderEffect: 1
-  fadeTime: 0.33
+  fadeTime: 0.25
   log: 0
 --- !u!114 &6908272959526625814
 MonoBehaviour:

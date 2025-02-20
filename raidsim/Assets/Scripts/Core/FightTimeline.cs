@@ -48,6 +48,7 @@ public class FightTimeline : MonoBehaviour
 #if UNITY_EDITOR
     public List<SectorMechanicResult> m_sectorMechanicResults = new List<SectorMechanicResult>();
 #endif
+    public List<string> executedMechanics = new List<string>();
     public bool jon = false;
     public bool log = false;
     public bool clearRandomEventResultsOnStart = true;

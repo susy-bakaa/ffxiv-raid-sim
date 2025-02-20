@@ -2,13 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static GlobalData;
+using static GlobalData.Damage;
+using static UnityEngine.GraphicsBuffer;
 
 public class KnockbackMechanic : FightMechanic
 {
     [Header("Knockback Settings")]
+    public string knockbackName = "Knockback";
+    public bool showDamagePopup = false;
     public bool canBeResisted;
     public bool originFromSource = false;
     public bool isDash = false;
+    public CharacterState source;
     public Transform origin; // Reference to the knockback source
     public Vector3 direction;
     public float strength = 1f;
@@ -24,7 +29,9 @@ public class KnockbackMechanic : FightMechanic
 
         if (actionInfo.source != null)
         {
-            if ((!actionInfo.source.knockbackResistant.value && canBeResisted) || !canBeResisted || !actionInfo.source.bound.value)
+            bool resisted = (actionInfo.source.knockbackResistant.value && canBeResisted) || actionInfo.source.bound.value;
+
+            if (!resisted)
             {
                 if (originFromSource)
                 {
@@ -64,7 +71,7 @@ public class KnockbackMechanic : FightMechanic
                 if (actionInfo.source.playerController != null)
                 {
                     actionInfo.source.playerController.Knockback(knockbackForce, duration);
-                } 
+                }
                 else if (actionInfo.source.aiController != null)
                 {
                     actionInfo.source.aiController.Knockback(knockbackForce, duration);
@@ -73,6 +80,13 @@ public class KnockbackMechanic : FightMechanic
                 {
                     // Implement
                 }
+            }
+            else
+            {
+                if (!actionInfo.source.dead && showDamagePopup)
+                    actionInfo.source.ShowDamageFlyText(new Damage(0, true, true, DamageType.none, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal, source, knockbackName));
+                if (log)
+                    Debug.Log($"[KnockbackMechanic ({gameObject.name})] {actionInfo.source.characterName} ({actionInfo.source.gameObject.name}) resisted the knockback!");
             }
         }
     }

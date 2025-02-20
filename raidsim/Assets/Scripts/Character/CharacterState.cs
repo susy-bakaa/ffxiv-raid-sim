@@ -147,6 +147,7 @@ public class CharacterState : MonoBehaviour
     public UnityEvent<CharacterState> onModifyHealth;
 
     [Header("Config")]
+    public CharacterState mirror;
     public PartyList partyList;
     private PartyMember? partyMember;
     public Transform statusEffectParent;
@@ -157,6 +158,7 @@ public class CharacterState : MonoBehaviour
     public int characterLetter = 0;
     public string letterSpriteAsset = "letters_1";
     public Role role = Role.unassigned;
+    public Sector sector = Sector.N;
     public bool isAggressive = true;
     public bool hideNameplate = false;
     public bool hidePartyName = false;
@@ -682,34 +684,106 @@ public class CharacterState : MonoBehaviour
             transform.position = new Vector3(0f, 1f, 0f);
         }
 
+        if (mirror != null)
+        {
+            health = mirror.health;
+            defaultMaxHealth = mirror.defaultMaxHealth;
+            currentMaxHealth = mirror.currentMaxHealth;
+            maxHealthModifiers = mirror.maxHealthModifiers;
+            currentShields = mirror.currentShields;
+            shield = mirror.shield;
+            //currentSpeed = mirror.currentSpeed;
+            //speedModifiers = mirror.speedModifiers;
+            //speed = mirror.speed;
+            currentDamageOutputMultiplier = mirror.currentDamageOutputMultiplier;
+            damageOutputModifiers = mirror.damageOutputModifiers;
+            currentDamageReduction = mirror.currentDamageReduction;
+            damageReduction = mirror.damageReduction;
+            magicalTypeDamageModifiers = mirror.magicalTypeDamageModifiers;
+            magicalTypeDamageModifier = mirror.magicalTypeDamageModifier;
+            physicalTypeDamageModifiers = mirror.physicalTypeDamageModifiers;
+            physicalTypeDamageModifier = mirror.physicalTypeDamageModifier;
+            uniqueTypeDamageModifiers = mirror.uniqueTypeDamageModifiers;
+            uniqueTypeDamageModifier = mirror.uniqueTypeDamageModifier;
+            unaspectedElementDamageModifiers = mirror.unaspectedElementDamageModifiers;
+            unaspectedElementDamageModifier = mirror.unaspectedElementDamageModifier;
+            fireElementDamageModifiers = mirror.fireElementDamageModifiers;
+            fireElementDamageModifier = mirror.fireElementDamageModifier;
+            iceElementDamageModifiers = mirror.iceElementDamageModifiers;
+            iceElementDamageModifier = mirror.iceElementDamageModifier;
+            lightningElementDamageModifiers = mirror.lightningElementDamageModifiers;
+            lightningElementDamageModifier = mirror.lightningElementDamageModifier;
+            waterElementDamageModifiers = mirror.waterElementDamageModifiers;
+            waterElementDamageModifier = mirror.waterElementDamageModifier;
+            windElementDamageModifiers = mirror.windElementDamageModifiers;
+            windElementDamageModifier = mirror.windElementDamageModifier;
+            earthElementDamageModifiers = mirror.earthElementDamageModifiers;
+            earthElementDamageModifier = mirror.earthElementDamageModifier;
+            darkElementDamageModifiers = mirror.darkElementDamageModifiers;
+            darkElementDamageModifier = mirror.darkElementDamageModifier;
+            lightElementDamageModifiers = mirror.lightElementDamageModifiers;
+            lightElementDamageModifier = mirror.lightElementDamageModifier;
+            slashingElementDamageModifiers = mirror.slashingElementDamageModifiers;
+            slashingElementDamageModifier = mirror.slashingElementDamageModifier;
+            piercingElementDamageModifiers = mirror.piercingElementDamageModifiers;
+            piercingElementDamageModifier = mirror.piercingElementDamageModifier;
+            bluntElementDamageModifiers = mirror.bluntElementDamageModifiers;
+            bluntElementDamageModifier = mirror.bluntElementDamageModifier;
+            poisonDamageModifiers = mirror.poisonDamageModifiers;
+            poisonDamageModifier = mirror.poisonDamageModifier;
+            enmityGenerationModifiers = mirror.enmityGenerationModifiers;
+            enmityGenerationModifier = mirror.enmityGenerationModifier;
+            enmity = mirror.enmity;
+            m_enmity = mirror.m_enmity;
+            effects = mirror.effects;
+            m_effects = mirror.m_effects;
+            effectsArray = mirror.effectsArray;
+            instantCasts = mirror.instantCasts;
+            if (canDie.value && !invulnerable.value)
+                dead = mirror.dead;
+            else
+                dead = false;
+            disabled = mirror.disabled;
+            mirror.sector = sector;
+        }
+
         statusEffectUpdateTimer += Time.deltaTime;
 
-        if (effects.Count > 0 && effectsArray != null)
+        if (mirror == null)
         {
-            // Simulate FFXIV server ticks by updating status effects every 3 seconds (By default).
-            if (statusEffectUpdateTimer >= statusEffectUpdateInterval)
+            if (effects.Count > 0 && effectsArray != null)
             {
-                statusEffectUpdateTimer = 0f;
-                for (int i = 0; i < effectsArray.Length; i++)
+                // Simulate FFXIV server ticks by updating status effects every 3 seconds (By default).
+                if (statusEffectUpdateTimer >= statusEffectUpdateInterval)
                 {
-                    effectsArray[i].onTick.Invoke(this);
+                    statusEffectUpdateTimer = 0f;
+                    for (int i = 0; i < effectsArray.Length; i++)
+                    {
+                        if (effectsArray[i] == null)
+                            continue;
+
+                        effectsArray[i].onTick.Invoke(this);
+                    }
                 }
-            }
-            // Update the status effect durations every frame.
-            for (int i = effectsArray.Length - 1; i >= 0; i--)
-            {
-                if (effectsArray[i].data.unaffectedByTimeScale)
+                // Update the status effect durations every frame.
+                for (int i = effectsArray.Length - 1; i >= 0; i--)
                 {
-                    effectsArray[i].duration -= Time.deltaTime;
-                }
-                else
-                {
-                    effectsArray[i].duration -= FightTimeline.deltaTime;
-                }
-                effectsArray[i].onUpdate.Invoke(this);
-                if (effectsArray[i]?.duration <= 0f)
-                {
-                    RemoveEffect(effectsArray[i], true, this, effectsArray[i].uniqueTag, effectsArray[i].stacks);
+                    if (i >= effectsArray.Length)
+                        continue;
+
+                    if (effectsArray[i].data.unaffectedByTimeScale)
+                    {
+                        effectsArray[i].duration -= Time.deltaTime;
+                    }
+                    else
+                    {
+                        effectsArray[i].duration -= FightTimeline.deltaTime;
+                    }
+                    effectsArray[i].onUpdate.Invoke(this);
+                    if (effectsArray[i]?.duration <= 0f)
+                    {
+                        RemoveEffect(effectsArray[i], true, this, effectsArray[i].uniqueTag, effectsArray[i].stacks);
+                    }
                 }
             }
         }
@@ -2780,6 +2854,9 @@ public class CharacterState : MonoBehaviour
         if (data.negative && invulnerable.value)
             return;
 
+        if (mirror != null)
+            return;
+
         string name = string.Empty;
         bool refreshed = false;
 
@@ -2939,6 +3016,9 @@ public class CharacterState : MonoBehaviour
         if (health <= 0 || dead)
             return;
 
+        if (mirror != null)
+            return;
+
         if (damage != null)
         {
             effect.damage = new Damage((Damage)damage);
@@ -3092,6 +3172,9 @@ public class CharacterState : MonoBehaviour
     public void RemoveEffect(string name, bool expired, CharacterState character, int tag = 0, int stacks = 0)
     {
         if (!gameObject.activeSelf)
+            return;
+
+        if (mirror != null)
             return;
 
         if (tag > 0)
@@ -3267,6 +3350,9 @@ public class CharacterState : MonoBehaviour
         if (data.hidden)
             return;
 
+        if (mirror != null)
+            return;
+
         // Hard coded the Short (@s) and Long (@l) that are used to distinguish between few of the same debuffs,
         // also the '#' character which is used for non capitalised letter sequences. This needs a better implementation.
         string result = $"{prefix}{Utilities.InsertSpaceBeforeCapitals(data.statusName).Replace("#", " ")}";
@@ -3324,6 +3410,9 @@ public class CharacterState : MonoBehaviour
 
     public void ShowDamageFlyText(Damage damage, bool showValue = true)
     {
+        if (mirror != null)
+            return;
+
         string result = string.Empty;
 
         Damage finalDamage = new Damage(damage);
@@ -3406,6 +3495,9 @@ public class CharacterState : MonoBehaviour
         if (!gameObject.activeSelf)
             return;
 
+        if (mirror != null)
+            return;
+
         if ((damagePopupPrefab == null && targetDamagePopupPrefab == null) || (damagePopupParent == null && targetDamagePopupParent == null))
             return;
 
@@ -3423,6 +3515,9 @@ public class CharacterState : MonoBehaviour
     public void ShowFlyTextWorldspace(FlyText text)
     {
         if (!gameObject.activeSelf)
+            return;
+
+        if (mirror != null)
             return;
 
         if (statusPopupPrefab == null || statusPopupParent == null)

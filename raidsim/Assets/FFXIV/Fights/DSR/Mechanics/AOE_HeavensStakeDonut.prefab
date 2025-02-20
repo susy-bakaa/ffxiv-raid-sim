@@ -47,6 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outValue: 0
   inValue: 1
+  defaultFadeTime: 0.33
   outOnStart: 1
   log: 0
   fadeTime: 0.5
@@ -301,6 +302,7 @@ MonoBehaviour:
   damageMultiplierPerMissingPlayer: 1
   currentPlayers: []
   appliedEffects: []
+  appliedEffectsOnFail: []
   onHit:
     m_PersistentCalls:
       m_Calls: []
@@ -318,7 +320,7 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 0.75
+          m_FloatArgument: 1
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
@@ -346,6 +348,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onStart:
+    m_PersistentCalls:
+      m_Calls: []
   onSpawn:
     m_PersistentCalls:
       m_Calls: []
@@ -388,18 +393,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-      - m_Target: {fileID: 1225188698021580110}
-        m_TargetAssemblyTypeName: StateTrigger, Assembly-CSharp
-        m_MethodName: ToggleTarget
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
   onTrigger:
     m_PersistentCalls:
       m_Calls: []
@@ -437,6 +430,7 @@ MonoBehaviour:
   mechanicEnabled: 1
   mechanicName: HitEffect
   onlyTriggerOnce: 0
+  global: 0
   log: 0
   startAutomatically: 0
   delay: 0.25
@@ -564,6 +558,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outValue: 0
   inValue: 1
+  defaultFadeTime: 0.33
   outOnStart: 1
   log: 0
   fadeTime: 0.5

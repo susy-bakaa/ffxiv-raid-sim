@@ -189,7 +189,7 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 0.75
+          m_FloatArgument: 1
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
@@ -217,6 +217,21 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+  onStart:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: -3640222493354050035}
+        m_TargetAssemblyTypeName: FightMechanic, Assembly-CSharp
+        m_MethodName: InterruptMechanic
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onSpawn:
     m_PersistentCalls:
       m_Calls: []
@@ -234,18 +249,6 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 711504925385046224}
-        m_TargetAssemblyTypeName: StateTrigger, Assembly-CSharp
-        m_MethodName: ToggleTarget
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: -3640222493354050035}
         m_TargetAssemblyTypeName: FightMechanic, Assembly-CSharp
@@ -296,6 +299,7 @@ MonoBehaviour:
   mechanicEnabled: 1
   mechanicName: HitEffect
   onlyTriggerOnce: 0
+  global: 0
   log: 0
   startAutomatically: 0
   delay: 0.25
@@ -326,7 +330,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4e614f0643db6c4682d46d7fc562556, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  state: 1
+  state: 0
   party: {fileID: 0}
   autoFindParty: 0
   source: {fileID: 0}
@@ -360,6 +364,7 @@ MonoBehaviour:
   mechanicEnabled: 1
   mechanicName: 
   onlyTriggerOnce: 0
+  global: 0
   log: 0
   objectPrefab: {fileID: 7223107739074392820, guid: 32ab219b6cc709346b2984a20c5c52c9, type: 3}
   spawnLocation: {fileID: 7665407583167466207}
@@ -398,6 +403,7 @@ MonoBehaviour:
   mechanicEnabled: 1
   mechanicName: 
   onlyTriggerOnce: 1
+  global: 0
   log: 0
   party: {fileID: 0}
   autoFindParty: 1
@@ -451,6 +457,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outValue: 0
   inValue: 1
+  defaultFadeTime: 0.33
   outOnStart: 1
   log: 0
   fadeTime: 0.33

@@ -4,8 +4,8 @@ using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UIElements;
+using static GlobalData;
 using static StatusEffectData;
-using static UnityEngine.GraphicsBuffer;
 
 public class BotTimeline : MonoBehaviour
 {
@@ -16,6 +16,10 @@ public class BotTimeline : MonoBehaviour
 
     [Header("Timeline")]
     public Transform currentTarget;
+    public Sector sector;
+    public bool updateSector = false;
+    public bool skipExtraDelay = false;
+    public bool paused = false;
     public List<BotEvent> events;
 
     [Header("Events")]
@@ -33,6 +37,10 @@ public class BotTimeline : MonoBehaviour
 
     public void StartTimeline()
     {
+        if (bot != null && updateSector)
+        {
+            bot.state.sector = sector;
+        }
         if (controller == null)
         {
             if (bot.TryGetComponent(out ActionController botAC))
@@ -62,6 +70,8 @@ public class BotTimeline : MonoBehaviour
             if (bot.TryGetComponent(out CharacterState botCS))
             {
                 party = botCS.partyList;
+                if (updateSector && party != null)
+                    party.UpdatePartyList();
             }
             else
             {
@@ -72,13 +82,16 @@ public class BotTimeline : MonoBehaviour
 
         if (events != null && events.Count > 0)
         {
-            StartCoroutine(PlayTimeline());
             onBegin.Invoke(this);
+            StartCoroutine(PlayTimeline());
         }
         else if (events != null)
         {
             onBegin.Invoke(this);
-            Utilities.FunctionTimer.Create(this, () => TriggerOnFinish(), 0.1f, $"{index}_botTimeline_no_events_onFinish_delay", true, true);
+            if (!skipExtraDelay)
+                Utilities.FunctionTimer.Create(this, () => TriggerOnFinish(), 0.1f, $"{index}_botTimeline_no_events_onFinish_delay", true, true);
+            else
+                TriggerOnFinish();
         }
     }
 
@@ -91,6 +104,10 @@ public class BotTimeline : MonoBehaviour
     {
         for (int i = 0; i < events.Count; i++)
         {
+            if (paused)
+            {
+                yield return new WaitUntil(() => !paused);
+            }
             if (!string.IsNullOrEmpty(events[i].targetStatusEffectHolder.name) && events[i].targetStatusEffectHolder.data != null && party != null)
             {
                 foreach (PartyList.PartyMember member in party.members)
@@ -198,6 +215,7 @@ public class BotTimeline : MonoBehaviour
     {
         public string name;
         [HideIf("clockSpot")] public Transform node;
+        public bool dynamic;
         public float waitAtNode;
         public float randomWaitVariance;
         public bool teleportAfterCloseEnough;
@@ -211,10 +229,11 @@ public class BotTimeline : MonoBehaviour
         public TargetNode target;
         public StatusEffectInfo targetStatusEffectHolder;
 
-        public BotEvent(string name, Transform node, float waitAtNode, float randomWaitVariance, bool teleportAfterCloseEnough, CharacterActionData action, bool unrestrictedAction, float waitForAction, Vector3 rotation, Transform faceTowards, Transform faceAway, float waitForRotation, TargetNode cycleTarget, StatusEffectInfo targetStatusEffectHolder)
+        public BotEvent(string name, Transform node, bool dynamic, float waitAtNode, float randomWaitVariance, bool teleportAfterCloseEnough, CharacterActionData action, bool unrestrictedAction, float waitForAction, Vector3 rotation, Transform faceTowards, Transform faceAway, float waitForRotation, TargetNode cycleTarget, StatusEffectInfo targetStatusEffectHolder)
         {
             this.name = name;
             this.node = node;
+            this.dynamic = dynamic;
             this.waitAtNode = waitAtNode;
             this.randomWaitVariance = randomWaitVariance;
             this.teleportAfterCloseEnough = teleportAfterCloseEnough;

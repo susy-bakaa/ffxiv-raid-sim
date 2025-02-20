@@ -9,6 +9,7 @@ public class FightMechanic : MonoBehaviour
     public bool mechanicEnabled = true;
     public string mechanicName = string.Empty;
     public bool onlyTriggerOnce = false;
+    public bool global = false;
     public bool log;
 
     private bool triggered = false;
@@ -102,6 +103,19 @@ public class FightMechanic : MonoBehaviour
 
     protected bool CanTrigger(ActionInfo actionInfo)
     {
+        if (global && onlyTriggerOnce)
+        {
+            if (FightTimeline.Instance != null && !string.IsNullOrEmpty(mechanicName))
+            {
+                if (FightTimeline.Instance.executedMechanics.Contains(mechanicName))
+                {
+                    if (log)
+                        Debug.Log($"[DelayedMechanic ({gameObject.name})] Global mechanic {mechanicName} already triggered");
+                    return false;
+                }
+                FightTimeline.Instance.executedMechanics.Add(mechanicName);
+            }
+        }
         if (!mechanicEnabled && log)
         {
             string nameToLog = string.IsNullOrEmpty(mechanicName) ? "Unnamed mechanic" : mechanicName;

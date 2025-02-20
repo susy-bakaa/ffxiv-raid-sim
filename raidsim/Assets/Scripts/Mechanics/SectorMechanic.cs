@@ -80,9 +80,22 @@ public class SectorMechanic : FightMechanic
     private void AssignMiddleNodes(int minMiddle)
     {
         List<MechanicNode> availableMiddleNodes = new List<MechanicNode>();
+        List<ArenaSector> availableSectors = new List<ArenaSector>();
+
+        availableSectors = arenaSectors;
+
+        availableSectors.Shuffle();
+
+        for (int i = 0; i < availableSectors.Count; i++)
+        {
+            int randomIndex = Random.Range(0, availableSectors.Count);
+            ArenaSector temp = availableSectors[i];
+            availableSectors[i] = availableSectors[randomIndex];
+            availableSectors[randomIndex] = temp;
+        }
 
         // Collect all available middle nodes from all sectors
-        foreach (ArenaSector sector in arenaSectors)
+        foreach (ArenaSector sector in availableSectors)
         {
             foreach (MechanicNode node in sector.nodes)
             {
@@ -93,9 +106,18 @@ public class SectorMechanic : FightMechanic
             }
         }
 
-        availableMiddleNodes = availableMiddleNodes.OrderBy(x => Random.value).ToList();
+        availableMiddleNodes.Shuffle();
 
-        Debug.Log($"Available middle nodes: {availableMiddleNodes.Count}");
+        for (int i = 0; i < availableMiddleNodes.Count; i++)
+        {
+            int randomIndex = Random.Range(0, availableMiddleNodes.Count);
+            MechanicNode temp = availableMiddleNodes[i];
+            availableMiddleNodes[i] = availableMiddleNodes[randomIndex];
+            availableMiddleNodes[randomIndex] = temp;
+        }
+
+        if (log)
+            Debug.Log($"Available middle nodes: {availableMiddleNodes.Count}");
 
         // Continue looping until we reach the minimum required middle nodes
         while (middleNodesUsed < minMiddle)
@@ -105,9 +127,9 @@ public class SectorMechanic : FightMechanic
             bool nodeAssigned = false;
 
             // Attempt to assign the node to its corresponding sectors
-            for (int s = 0; s < arenaSectors.Count; s++)
+            for (int s = 0; s < availableSectors.Count; s++)
             {
-                ArenaSector sector = arenaSectors[s];
+                ArenaSector sector = availableSectors[s];
 
                 if (sector.nodes.Contains(picked))
                 {
@@ -124,7 +146,8 @@ public class SectorMechanic : FightMechanic
                     totalNodesUsed++;
                     middleNodesUsed++;
 
-                    Debug.Log($"Assigning {picked.gameObject.name} to {sector.name} as the {totalNodesUsed}. node (mid)");
+                    if (log)
+                        Debug.Log($"Assigning {picked.gameObject.name} to {sector.name} as the {totalNodesUsed}. node (mid)");
 
                     if (!nodeAssignmentsBySector.ContainsKey(sector.sector))
                         nodeAssignmentsBySector[sector.sector] = new List<MechanicNode>();
@@ -132,7 +155,7 @@ public class SectorMechanic : FightMechanic
                     nodeAssignmentsBySector[sector.sector].Add(picked);
                     sector.current++;
 
-                    arenaSectors[s] = sector;
+                    availableSectors[s] = sector;
                 }
             }
 
@@ -140,10 +163,25 @@ public class SectorMechanic : FightMechanic
                 onNodeUsed.Invoke(picked);
         }
     }
-
-
+    
     private void AssignRemainingNodes()
     {
+        List<ArenaSector> availableSectors = new List<ArenaSector>();
+
+        availableSectors = arenaSectors;
+
+        availableSectors.Shuffle();
+
+        for (int i = 0; i < availableSectors.Count; i++)
+        {
+            int randomIndex = Random.Range(0, availableSectors.Count);
+            ArenaSector temp = availableSectors[i];
+            availableSectors[i] = availableSectors[randomIndex];
+            availableSectors[randomIndex] = temp;
+        }
+
+        arenaSectors = availableSectors;
+
         for (int i = 0; i < arenaSectors.Count; i++)
         {
             ArenaSector sector = arenaSectors[i];
@@ -171,7 +209,8 @@ public class SectorMechanic : FightMechanic
                 if (picked.isMiddle)
                     middleNodesUsed++;
 
-                Debug.Log($"Assigning {picked.gameObject.name} to {sector.name} as the {totalNodesUsed}. node (standard)");
+                if (log)
+                    Debug.Log($"Assigning {picked.gameObject.name} to {sector.name} as the {totalNodesUsed}. node (standard)");
 
                 if (!nodeAssignmentsBySector.ContainsKey(sector.sector))
                     nodeAssignmentsBySector[sector.sector] = new List<MechanicNode>();

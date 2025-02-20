@@ -19,6 +19,8 @@ public class PartyList : MonoBehaviour
     private HudElementPriority hudPriority;
     private bool originalMembersSet = false;
     private List<PartyMember> originalMembers;
+    private CharacterState playerState;
+    private PartyMember player;
 
 #if UNITY_EDITOR
     [Button("Relink Party Member Hud Variables")]
@@ -51,6 +53,7 @@ public class PartyList : MonoBehaviour
                 PartyMember temp = members[i];
 
                 temp.name = temp.characterState.characterName;
+                temp.sector = temp.characterState.sector;
 
                 members[i] = temp;
             }
@@ -62,6 +65,9 @@ public class PartyList : MonoBehaviour
     {
         hudPriority = GetComponent<HudElementPriority>();
 
+        if (playerState == null)
+            playerState = Utilities.FindAnyByName("Player").GetComponent<CharacterState>();
+
         names.Clear();
         for (int i = 0; i < members.Count; i++)
         {
@@ -71,6 +77,18 @@ public class PartyList : MonoBehaviour
 
     void Start()
     {
+        if (members != null && members.Count > 0 && playerState != null)
+        {
+            for (int i = 0; i < members.Count; i++)
+            {
+                if (members[i].characterState == playerState)
+                {
+                    player = members[i];
+                    break;
+                }
+            }
+        }
+
         if (assignLetters)
         {
             int assignedLetter = 0;
@@ -351,6 +369,7 @@ public class PartyList : MonoBehaviour
             members[i].characterState.characterLetter = letter;
             member.letter = members[i].characterState.characterLetter;
             member.role = member.characterState.role;
+            member.sector = member.characterState.sector;
             if (assignLetters)
                 member.hudElement.priority = letter;
             members[i].hudElement.gameObject.SetActive(members[i].characterState.gameObject.activeSelf);
@@ -361,6 +380,13 @@ public class PartyList : MonoBehaviour
             if (members[i].characterState.gameObject.activeSelf)
             {
                 letterIndex++;
+            }
+            else if (playerState != null && !string.IsNullOrEmpty(player.name))
+            {
+                playerState.sector = members[i].sector;
+                PartyMember p = player;
+                p.sector = members[i].sector;
+                player = p;
             }
         }
 
@@ -434,6 +460,7 @@ public class PartyList : MonoBehaviour
         public HudElement hudElement;
         public int letter;
         public Role role;
+        public Sector sector;
 
         public PartyMember(string name, PlayerController playerController, AIController aiController, BossController bossController, CharacterState characterState, ActionController actionController, TargetController targetController, HudElement hudElement, int letter)
         {
@@ -450,6 +477,10 @@ public class PartyList : MonoBehaviour
                 role = characterState.role;
             else
                 role = Role.unassigned;
+            if (characterState != null)
+                sector = characterState.sector;
+            else
+                sector = Sector.N;
         }
     }
 

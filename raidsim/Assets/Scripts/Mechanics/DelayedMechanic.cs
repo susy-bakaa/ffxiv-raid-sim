@@ -24,6 +24,9 @@ public class DelayedMechanic : FightMechanic
         if (!CanTrigger(actionInfo))
             return;
 
+        if (log)
+            Debug.Log($"[DelayedMechanic ({gameObject.name})] Triggered delayed mechanic");
+
         if (delay > 0f)
         {
             if (ieTriggerMechanicDelayed != null)
@@ -42,5 +45,7 @@ public class DelayedMechanic : FightMechanic
         yield return wait;
         onDelayedTrigger.Invoke(actionInfo);
         ieTriggerMechanicDelayed = null;
+        if (log)
+            Debug.Log($"[DelayedMechanic ({gameObject.name})] onDelayedTrigger.Invoke()");
     }
 }

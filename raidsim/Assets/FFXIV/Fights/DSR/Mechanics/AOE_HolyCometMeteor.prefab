@@ -419,7 +419,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 1
+  m_Radius: 0.1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &2379375092330887339
 MonoBehaviour:
@@ -596,6 +596,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  mirror: {fileID: 0}
   partyList: {fileID: 0}
   statusEffectParent: {fileID: 826100032969746756}
   statusEffectUpdateInterval: 3
@@ -604,6 +605,7 @@ MonoBehaviour:
   characterLetter: 0
   letterSpriteAsset: letters_1_new
   role: 5
+  sector: 0
   isAggressive: 0
   hideNameplate: 1
   hidePartyName: 1
@@ -924,7 +926,7 @@ Transform:
   m_GameObject: {fileID: 5042625723236455201}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.25, y: 0.020739555, z: 15.15}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1270,6 +1272,7 @@ MonoBehaviour:
   spawnLocation: {fileID: 2299690586870813772}
   delay: 0
   autoAssignOwner: 0
+  autoAssignLocation: 0
   useActionDamage: 0
   usePlayerHealth: 0
   useTargetControllerCurrentTargetAsLocation: 0
