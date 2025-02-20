@@ -27,14 +27,13 @@ This simulator is mainly being built with European raiding strats from LPDU or w
 - Cloud of Darkness (Chaotic) (CODC)
 	- Phase 1
 		- Grim Embrace ([Debuff](https://raidplan.io/plan/NyvLFhk2tDTGzE43))
+- Dragonsong's Reprise (Ultimate) (DSR)
+	- Phase 2
+		- Meteors (Second half of Sanctity of the Ward) ([LPDU](https://ff14.toolboxgaming.space/?id=454690614288171&preview=1#20))
 
 # In development fights
 
 Timelines don't work yet for these or the bots are not finished and will die to mechanics.
-
-- Dragonsong's Reprise (Ultimate) (DSR)
-	- Phase 2
-		- Meteors (Second half of Sanctity of the Ward) ([LPDU](https://www.youtube.com/watch?v=A-P1eXE18ko))
 
 # Planned fights
 
