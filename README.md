@@ -76,7 +76,7 @@ These fights are not being worked on yet and are not guranteed to be added, but 
 
 # Installation
 
-Download Latest Build: [Windows x64](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.4.5/raidsim_v.0.4.5_win64.zip) [Linux x64](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.4.5/raidsim_v.0.4.5_linux64.zip)
+Download Latest Build: [Windows x64](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.4.6/raidsim_v0.4.6_win64.zip) [Linux x64 (Outdated)](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.4.5/raidsim_v.0.4.5_linux64.zip)
 
 To use this program, either open the [web version](https://susy-bakaa.github.io/unityweb/raidsim/index.html) or just head over to the [releases section](https://github.com/susy-bakaa/ffxiv-raid-sim/releases) and download the latest archive file for your respective operating system. If you wish to try out the program before downloading you may do so with the web version, but be warned though, as the web version is slightly worse in terms of features. For the standalone version, you need to extract said archive with some tool such as 7zip and then open up the raidsim.exe or raidsim.x86_64 to launch the program. The build available for Linux is not well tested so it might have some issues. If you instead want to download the source code or expand upon this program, check the git instructions down below and/or contact me on Discord @no00ob or Twitter [@susyy_bakaa](https://x.com/susyy_bakaa) and I will get back to you.
 
