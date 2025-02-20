@@ -734,10 +734,12 @@ public class CharacterState : MonoBehaviour
             enmityGenerationModifiers = mirror.enmityGenerationModifiers;
             enmityGenerationModifier = mirror.enmityGenerationModifier;
             enmity = mirror.enmity;
-            m_enmity = mirror.m_enmity;
             effects = mirror.effects;
-            m_effects = mirror.m_effects;
             effectsArray = mirror.effectsArray;
+#if UNITY_EDITOR
+            m_enmity = mirror.m_enmity;
+            m_effects = mirror.m_effects;
+#endif
             instantCasts = mirror.instantCasts;
             if (canDie.value && !invulnerable.value)
                 dead = mirror.dead;

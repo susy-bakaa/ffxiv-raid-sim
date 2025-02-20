@@ -290,7 +290,10 @@ public class TargetController : MonoBehaviour
                 if (m_characterState.showTargetDamagePopups && targetDamagePopupParent != null)
                     m_characterState.targetDamagePopupParent = null;
             }
-            currentTarget.UpdateUserInterface(0f, fadeDuration);
+            if (!FightTimeline.Instance.paused)
+                currentTarget.UpdateUserInterface(0f, fadeDuration);
+            else
+                currentTarget.UpdateUserInterface(0f, 0f);
         }
 
         if (currentTarget == target && enableAutoAttacksOnDoubleMouseRaycast && wasMouseClick && self != null)
@@ -586,7 +589,10 @@ public class TargetController : MonoBehaviour
                     targetColoredHudElements[i].SetColor(targetColor.colors);
                 }
 
-                currentTarget.UpdateUserInterface(1f, fadeDuration);
+                if (!FightTimeline.Instance.paused)
+                    currentTarget.UpdateUserInterface(1f, fadeDuration);
+                else
+                    currentTarget.UpdateUserInterface(1f, 0f);
 
                 targetColorsUpdated = true;
             }

@@ -70,7 +70,7 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
     private bool chargeRestored = false;
     private bool permanentlyUnavailable = false;
     private float lastRecast = 0f;
-
+    private int id = 0;
     public CharacterState GetCharacter()
     {
         return character;
@@ -131,12 +131,14 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         }
 
         normalRecastType = recastType;
+
+        id = UnityEngine.Random.Range(0, 10000);
     }
 
     void Start()
     {
         if (unavailable)
-            Utilities.FunctionTimer.Create(this, () => gameObject.SetActive(false), 0.2f, $"{data.actionName}_{this}_start_disable_delay");
+            Utilities.FunctionTimer.Create(this, () => gameObject.SetActive(false), 0.2f, $"{data.actionName}_{gameObject.name}_{id}_start_disable_delay");
     }
 
     void Update()

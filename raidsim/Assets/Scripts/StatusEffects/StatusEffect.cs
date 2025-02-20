@@ -25,7 +25,7 @@ public class StatusEffect : MonoBehaviour
     public UnityEvent<CharacterState> onExpire;
     public UnityEvent<CharacterState> onCleanse;
     public UnityEvent<CharacterState> onReduce;
-    public UnityAction<CharacterState> onAddStack;
+    public UnityEvent<CharacterState> onAddStack;
     public UnityEvent<CharacterState> onMaxStacks;
 
     private bool hasHudElement = false;
@@ -203,6 +203,7 @@ public class StatusEffect : MonoBehaviour
             hudIcon.sprite = data.icons[stacks - 1];
         }
 
+        Debug.Log($"AddStack {character}");
         onAddStack.Invoke(character);
     }
 
@@ -270,7 +271,7 @@ public class StatusEffect : MonoBehaviour
     {
         // I think this is being used incorrectly/broken, but infinite effects work as intended so don't touch it I guess?
         if (data.infinite)
-            Refresh(-1);
+            Refresh(0);
 
         if (stacks >= data.maxStacks)
         {

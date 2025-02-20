@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2501224079310314634}
   - component: {fileID: 121873110210099425}
   - component: {fileID: 2489165239545681871}
+  - component: {fileID: 5760716906182359726}
   - component: {fileID: 7223710153571439562}
   m_Layer: 0
   m_Name: AOE_SinboundHolyPuddle
@@ -34,7 +35,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 6868819611270425957}
+  - {fileID: 8779503225780662684}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &8882955573886985289
@@ -103,6 +104,7 @@ MonoBehaviour:
   owner: {fileID: 0}
   autoAssignOwner: 0
   ableToHitTag: Player
+  canHitCharacterName: 
   damage:
     name: Sinbound Holy
     value: 0
@@ -161,9 +163,11 @@ MonoBehaviour:
   damageApplicationDelay: 0.25
   cooldown: 0
   playersRequired: 0
+  damageMultiplierPerMissingPlayer: 1
   currentPlayers: []
   appliedEffects:
   - {fileID: 11400000, guid: 005a252f9360ad342ba4a96e4b6ee322, type: 2}
+  appliedEffectsOnFail: []
   onHit:
     m_PersistentCalls:
       m_Calls: []
@@ -173,10 +177,37 @@ MonoBehaviour:
   onFinish:
     m_PersistentCalls:
       m_Calls: []
+  onStart:
+    m_PersistentCalls:
+      m_Calls: []
   onSpawn:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2489165239545681871}
+        m_TargetAssemblyTypeName: FightMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 5760716906182359726}
+        m_TargetAssemblyTypeName: FightMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 5642700660258544832}
         m_TargetAssemblyTypeName: FightMechanic, Assembly-CSharp
         m_MethodName: TriggerMechanic
         m_Mode: 1
@@ -210,6 +241,7 @@ MonoBehaviour:
   mechanicEnabled: 1
   mechanicName: Activate
   onlyTriggerOnce: 0
+  global: 0
   log: 0
   startAutomatically: 0
   delay: 1.5
@@ -228,6 +260,52 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+--- !u!114 &5760716906182359726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7223107739074392820}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c11d13ba36149154fb548fc96274895b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: 
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  startAutomatically: 0
+  delay: 10
+  onDelayedTrigger:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8766363590675502380}
+        m_TargetAssemblyTypeName: SimpleShaderFade, Assembly-CSharp
+        m_MethodName: FadeOut
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 7223710153571439562}
+        m_TargetAssemblyTypeName: DestroyObject, Assembly-CSharp
+        m_MethodName: TriggerDestruction
+        m_Mode: 4
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0.5
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &7223710153571439562
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -240,19 +318,105 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 978fd0b79b45324438a8cccb67660064, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lifetime: 9
+  lifetime: 0
   disableInstead: 0
   log: 0
   onDestroy:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &7597508428883509509
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8779503225780662684}
+  - component: {fileID: 8766363590675502380}
+  - component: {fileID: 5642700660258544832}
+  m_Layer: 0
+  m_Name: Shader
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8779503225780662684
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7597508428883509509}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 6868819611270425957}
+  m_Father: {fileID: 8192150129019705601}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8766363590675502380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7597508428883509509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75a787e99245c054bbfc8f322d52e672, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outValue: 0
+  inValue: 1
+  defaultFadeTime: 0.25
+  outOnStart: 1
+  log: 0
+  fadeTime: 0.25
+--- !u!114 &5642700660258544832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7597508428883509509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c11d13ba36149154fb548fc96274895b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: 
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  startAutomatically: 0
+  delay: 0.25
+  onDelayedTrigger:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8766363590675502380}
+        m_TargetAssemblyTypeName: SimpleShaderFade, Assembly-CSharp
+        m_MethodName: FadeIn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1001 &6401948742093621902
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8192150129019705601}
+    m_TransformParent: {fileID: 8779503225780662684}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: d14962111b86dc940ac928c5ed23a037, type: 3}
       propertyPath: m_LocalScale.x
@@ -288,11 +452,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d14962111b86dc940ac928c5ed23a037, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d14962111b86dc940ac928c5ed23a037, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d14962111b86dc940ac928c5ed23a037, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -317,7 +481,7 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: d14962111b86dc940ac928c5ed23a037, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: cb79a50b0bb773343acb258502c8b296, type: 2}
+      objectReference: {fileID: 2100000, guid: 8fcba8a8aebea92439a6b2dfc4c2c7d2, type: 2}
     - target: {fileID: 919132149155446097, guid: d14962111b86dc940ac928c5ed23a037, type: 3}
       propertyPath: m_Name
       value: aoe_circle_thick

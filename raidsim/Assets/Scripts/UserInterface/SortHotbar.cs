@@ -8,6 +8,7 @@ public class SortHotbar : MonoBehaviour
     private CharacterState character;
     private List<CharacterAction> actions = new List<CharacterAction>();
     private Coroutine ieUpdateSortingDelayed;
+    [SerializeField] private float updateSortingOnStartDelay = 0f;
 
     void Start()
     {
@@ -24,7 +25,10 @@ public class SortHotbar : MonoBehaviour
         if (actions != null && actions.Count > 0)
             character = actions[0].GetCharacter();
 
-        UpdateSorting();
+        if (updateSortingOnStartDelay <= 0f)
+            UpdateSorting();
+        else
+            Utilities.FunctionTimer.Create(this, () => UpdateSorting(), updateSortingOnStartDelay, "SortHotbar_UpdateSorting_DelayOnStart", false, true);
     }
 
     public void UpdateSorting()

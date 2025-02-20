@@ -133,7 +133,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outValue: 0
   inValue: 1
-  outOnStart: 0
+  defaultFadeTime: 0.33
+  outOnStart: 1
   log: 0
   fadeTime: 0.5
 --- !u!1 &2131412203951158817
@@ -236,6 +237,7 @@ MonoBehaviour:
   owner: {fileID: 0}
   autoAssignOwner: 0
   ableToHitTag: Player
+  canHitCharacterName: 
   damage:
     name: Frigid Needle
     value: -100000
@@ -294,9 +296,11 @@ MonoBehaviour:
   damageApplicationDelay: 0.25
   cooldown: 10
   playersRequired: 0
+  damageMultiplierPerMissingPlayer: 1
   currentPlayers: []
   appliedEffects:
   - {fileID: 11400000, guid: 2a3e3d675b546d74a935d7bc2da9e031, type: 2}
+  appliedEffectsOnFail: []
   onHit:
     m_PersistentCalls:
       m_Calls: []
@@ -304,6 +308,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   onFinish:
+    m_PersistentCalls:
+      m_Calls: []
+  onStart:
     m_PersistentCalls:
       m_Calls: []
   onSpawn:
@@ -416,6 +423,7 @@ MonoBehaviour:
   owner: {fileID: 0}
   autoAssignOwner: 0
   ableToHitTag: Player
+  canHitCharacterName: 
   damage:
     name: Frigid Needle
     value: -100000
@@ -474,9 +482,11 @@ MonoBehaviour:
   damageApplicationDelay: 0.25
   cooldown: 10
   playersRequired: 0
+  damageMultiplierPerMissingPlayer: 1
   currentPlayers: []
   appliedEffects:
   - {fileID: 11400000, guid: 2a3e3d675b546d74a935d7bc2da9e031, type: 2}
+  appliedEffectsOnFail: []
   onHit:
     m_PersistentCalls:
       m_Calls: []
@@ -484,6 +494,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   onFinish:
+    m_PersistentCalls:
+      m_Calls: []
+  onStart:
     m_PersistentCalls:
       m_Calls: []
   onSpawn:
@@ -550,6 +563,7 @@ MonoBehaviour:
   mechanicEnabled: 1
   mechanicName: FrigidNeedle
   onlyTriggerOnce: 0
+  global: 0
   log: 0
   onStart: 1
   onEnable: 0
@@ -557,30 +571,6 @@ MonoBehaviour:
   onTrigger:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1554934116188708596}
-        m_TargetAssemblyTypeName: SimpleShaderFade, Assembly-CSharp
-        m_MethodName: FadeOut
-        m_Mode: 4
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 5321481326025741570}
-        m_TargetAssemblyTypeName: SimpleShaderFade, Assembly-CSharp
-        m_MethodName: FadeOut
-        m_Mode: 4
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 3259011099763040467}
         m_TargetAssemblyTypeName: DelayedMechanic, Assembly-CSharp
         m_MethodName: TriggerMechanic
@@ -608,6 +598,7 @@ MonoBehaviour:
   mechanicEnabled: 1
   mechanicName: FrigidNeedleCastDelayed
   onlyTriggerOnce: 0
+  global: 0
   log: 0
   startAutomatically: 0
   delay: 1
@@ -653,6 +644,7 @@ MonoBehaviour:
   mechanicEnabled: 1
   mechanicName: FrigidNeedleDelayed
   onlyTriggerOnce: 0
+  global: 0
   log: 0
   startAutomatically: 0
   delay: 2
@@ -727,6 +719,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rotation: {x: 0, y: 0, z: 0}
   setRotation: 1
+  faceTowardsName: 
+  faceTowards: {fileID: 0}
 --- !u!1 &4892206233570005091
 GameObject:
   m_ObjectHideFlags: 0
@@ -780,7 +774,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outValue: 0
   inValue: 1
-  outOnStart: 0
+  defaultFadeTime: 0.33
+  outOnStart: 1
   log: 0
   fadeTime: 0.5
 --- !u!1 &5831330431242141492
@@ -1084,6 +1079,7 @@ MonoBehaviour:
   owner: {fileID: 0}
   autoAssignOwner: 0
   ableToHitTag: Player
+  canHitCharacterName: 
   damage:
     name: Frigid Needle
     value: -100000
@@ -1142,9 +1138,11 @@ MonoBehaviour:
   damageApplicationDelay: 0.25
   cooldown: 10
   playersRequired: 0
+  damageMultiplierPerMissingPlayer: 1
   currentPlayers: []
   appliedEffects:
   - {fileID: 11400000, guid: 2a3e3d675b546d74a935d7bc2da9e031, type: 2}
+  appliedEffectsOnFail: []
   onHit:
     m_PersistentCalls:
       m_Calls: []
@@ -1152,6 +1150,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   onFinish:
+    m_PersistentCalls:
+      m_Calls: []
+  onStart:
     m_PersistentCalls:
       m_Calls: []
   onSpawn:
@@ -1347,6 +1348,7 @@ MonoBehaviour:
   owner: {fileID: 0}
   autoAssignOwner: 0
   ableToHitTag: Player
+  canHitCharacterName: 
   damage:
     name: Frigid Needle
     value: -100000
@@ -1405,9 +1407,11 @@ MonoBehaviour:
   damageApplicationDelay: 0.25
   cooldown: 10
   playersRequired: 0
+  damageMultiplierPerMissingPlayer: 1
   currentPlayers: []
   appliedEffects:
   - {fileID: 11400000, guid: 2a3e3d675b546d74a935d7bc2da9e031, type: 2}
+  appliedEffectsOnFail: []
   onHit:
     m_PersistentCalls:
       m_Calls: []
@@ -1415,6 +1419,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   onFinish:
+    m_PersistentCalls:
+      m_Calls: []
+  onStart:
     m_PersistentCalls:
       m_Calls: []
   onSpawn:

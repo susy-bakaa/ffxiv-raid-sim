@@ -271,4 +271,21 @@ public class BossController : MonoBehaviour
         transform.LookAt(target);
         transform.eulerAngles = new Vector3(eulers.x, transform.eulerAngles.y, eulers.z);
     }
+
+    public void SetLookRotation()
+    {
+        if (lookTarget != null || target != null)
+        {
+            Transform lookAt = null;
+
+            if (lookTarget != null)
+                lookAt = lookTarget;
+            else if (target != null)
+                lookAt = target;
+
+            Vector3 eulers = transform.eulerAngles;
+            transform.LookAt(lookAt);
+            transform.eulerAngles = new Vector3(eulers.x, transform.eulerAngles.y, eulers.z);
+        }
+    }
 }

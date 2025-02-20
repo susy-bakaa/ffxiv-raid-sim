@@ -196,7 +196,13 @@ public class TargetNode : MonoBehaviour
         {
             for (int i = 0; i < highlightGroups.Length; i++)
             {
-                highlightGroups[i].LeanAlpha(alpha, duration);
+                if (highlightGroups[i].alpha <= 0f || highlightGroups[i].alpha >= 1f)
+                {
+                    if (!FightTimeline.Instance.paused)
+                        highlightGroups[i].LeanAlpha(alpha, duration);
+                    else
+                        highlightGroups[i].alpha = alpha;
+                }
             }
         }
     }
