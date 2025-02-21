@@ -27,6 +27,21 @@ public class GameObjectTracker : MonoBehaviour
 #endif
     }
 
+    public bool HasTrackedObject(GameObject gameObject)
+    {
+        return tracked.ContainsKey(gameObject);
+    }
+
+    public bool HasTrackedObject(string name)
+    {
+        return tracked.Values.Any(goi => goi.name == name);
+    }
+
+    public GameObject GetTrackedObject(string name)
+    {
+        return tracked.Values.FirstOrDefault(goi => goi.name == name).gameObject;
+    }
+
     public void AddTrackedObject(GameObject gameObject)
     {
         if (tracked.ContainsKey(gameObject))

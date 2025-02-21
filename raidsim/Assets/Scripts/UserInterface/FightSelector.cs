@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using NaughtyAttributes;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -13,8 +15,11 @@ public class FightSelector : MonoBehaviour
     Button loadButton;
     [SerializeField] private string loadButtonName = "LoadFight";
     public float loadDelay = 2f;
-    public List<string> scenes = new List<string>();
-    public string currentScene;
+    public List<TimelineScene> scenes = new List<TimelineScene>();
+    public int currentSceneIndex = 0;
+    private TimelineScene currentScene;
+    public TimelineScene CurrentScene => currentScene;
+    private TimelineScene originalScene;
 
     private Coroutine ieLoadSceneDelayed;
 
@@ -28,6 +33,9 @@ public class FightSelector : MonoBehaviour
                 break;
             }
         }
+
+        currentScene = scenes[currentSceneIndex];
+        originalScene = currentScene;
     }
 
     void Start()
@@ -79,11 +87,11 @@ public class FightSelector : MonoBehaviour
         currentScene = scenes[value];
     }
 
-    public void Reload(string scene)
+    public void Reload()
     {
         if (ieLoadSceneDelayed == null)
         {
-            ieLoadSceneDelayed = StartCoroutine(IE_LoadSceneDelayed(scene, new WaitForSeconds(loadDelay)));
+            ieLoadSceneDelayed = StartCoroutine(IE_LoadSceneDelayed(originalScene, new WaitForSeconds(loadDelay)));
         }
     }
 
@@ -95,10 +103,18 @@ public class FightSelector : MonoBehaviour
         }
     }
 
-    private void OnLoad(string scene)
+    private void OnLoad(TimelineScene scene)
     {
-        //Utilities.FunctionTimer.CleanUp();
-        SceneManager.LoadScene(scene);
+        // Clear the cache before loading a new scene, since otherwise scenes sharing a bundle will cause issues
+        if (SceneManager.GetActiveScene().path != scene.scene && SceneManager.GetActiveScene().name != scene.scene)
+        {
+            AssetHandler.Instance.ClearCache();
+        }
+
+        // Load next scene’s AssetBundle
+        AssetHandler.Instance.LoadSceneAssetBundle(scene.assetBundle);
+
+        SceneManager.LoadScene(scene.scene);
     }
 
     private string GetFightName()
@@ -106,10 +122,30 @@ public class FightSelector : MonoBehaviour
         return FightTimeline.Instance.timelineName;
     }
 
-    private IEnumerator IE_LoadSceneDelayed(string scene, WaitForSeconds wait)
+    private IEnumerator IE_LoadSceneDelayed(TimelineScene scene, WaitForSeconds wait)
     {
         yield return wait;
         ieLoadSceneDelayed = null;
         OnLoad(scene);
+    }
+
+    [System.Serializable]
+    public struct TimelineScene
+    {
+        [Scene]
+        public string scene;
+        public string assetBundle;
+
+        public TimelineScene(string scene, string assetBundle)
+        {
+            this.scene = scene;
+            this.assetBundle = assetBundle;
+        }
+
+        public TimelineScene(string scene)
+        {
+            this.scene = scene;
+            this.assetBundle = string.Empty;
+        }
     }
 }

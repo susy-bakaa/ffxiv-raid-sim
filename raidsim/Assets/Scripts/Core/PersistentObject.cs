@@ -45,7 +45,7 @@ public class PersistentObject : MonoBehaviour
 
     private void HandleMusicLoader()
     {
-        MusicLoader loader = GetComponent<MusicLoader>();
+        MusicLoader loader = GetComponentInChildren<MusicLoader>();
         loader?.Load();
     }
 

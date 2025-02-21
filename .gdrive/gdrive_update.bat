@@ -20,7 +20,7 @@ echo [1] Delete local archive and exit
 echo [2] Exit
 echo.
 
-choice /c 12 /d 2 /n /t 60
+choice /c 12 /d 2 /n /t 300
 
 if errorlevel 2 goto end
 if errorlevel 1 goto delarc

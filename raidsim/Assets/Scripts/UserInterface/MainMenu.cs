@@ -13,6 +13,7 @@ public class MainMenu : MonoBehaviour
 {
     [Scene]
     public string simSceneName = "demo";
+    public string simSceneBundle = string.Empty;
     public CanvasGroup fadeOut;
     public Button[] disableOnLoad;
 
@@ -66,6 +67,10 @@ public class MainMenu : MonoBehaviour
                 button.interactable = false;
             }
         }
+
+        // Load next scene’s AssetBundle
+        AssetHandler.Instance.LoadSceneAssetBundle(simSceneBundle);
+
         fadeOut.gameObject.SetActive(true);
         fadeOut.blocksRaycasts = true;
         fadeOut.LeanAlpha(1f, 0.5f).setOnComplete(() => SceneManager.LoadScene(simSceneName));
