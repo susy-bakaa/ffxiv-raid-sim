@@ -27,6 +27,12 @@ public class GameObjectTracker : MonoBehaviour
 #endif
     }
 
+    private void Start()
+    {
+        if (FightTimeline.Instance != null)
+            FightTimeline.Instance.onReset.AddListener(DestroyAllTrackedObjectsInstantly);
+    }
+
     public bool HasTrackedObject(GameObject gameObject)
     {
         return tracked.ContainsKey(gameObject);
@@ -177,6 +183,13 @@ public class GameObjectTracker : MonoBehaviour
         for (int i = 0; i < gameObjectInfos.Length; i++)
         {
             DestroyObjectInstantly(gameObjectInfos[i].gameObject);
+            if (gameObjectInfos[i].relatedObjects != null && gameObjectInfos[i].relatedObjects.Count > 0)
+            {
+                for (int j = 0; j < gameObjectInfos[i].relatedObjects.Count; j++)
+                {
+                    DestroyObjectInstantly(gameObjectInfos[i].relatedObjects[j]);
+                }
+            }
         }
         tracked.Clear();
 #if UNITY_EDITOR
@@ -190,6 +203,13 @@ public class GameObjectTracker : MonoBehaviour
         for (int i = 0; i < gameObjectInfos.Length; i++)
         {
             DestroyObject(gameObjectInfos[i].gameObject);
+            if (gameObjectInfos[i].relatedObjects != null && gameObjectInfos[i].relatedObjects.Count > 0)
+            {
+                for (int j = 0; j < gameObjectInfos[i].relatedObjects.Count; j++)
+                {
+                    DestroyObject(gameObjectInfos[i].relatedObjects[j]);
+                }
+            }
         }
         tracked.Clear();
 #if UNITY_EDITOR

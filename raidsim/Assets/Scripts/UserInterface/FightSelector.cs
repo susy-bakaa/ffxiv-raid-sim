@@ -105,14 +105,17 @@ public class FightSelector : MonoBehaviour
 
     private void OnLoad(TimelineScene scene)
     {
-        // Clear the cache before loading a new scene, since otherwise scenes sharing a bundle will cause issues
-        if (SceneManager.GetActiveScene().path != scene.scene && SceneManager.GetActiveScene().name != scene.scene)
+        if (AssetHandler.Instance != null)
         {
-            AssetHandler.Instance.ClearCache();
-        }
+            // Clear the cache before loading a new scene, since otherwise scenes sharing a bundle will cause issues
+            if (SceneManager.GetActiveScene().path != scene.scene && SceneManager.GetActiveScene().name != scene.scene)
+            {
+                AssetHandler.Instance.ClearCache();
+            }
 
-        // Load next scene’s AssetBundle
-        AssetHandler.Instance.LoadSceneAssetBundle(scene.assetBundle);
+            // Load next scene’s AssetBundle
+            AssetHandler.Instance.LoadSceneAssetBundle(scene.assetBundle);
+        }
 
         SceneManager.LoadScene(scene.scene);
     }

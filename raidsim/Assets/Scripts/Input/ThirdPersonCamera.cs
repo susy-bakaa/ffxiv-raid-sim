@@ -46,10 +46,9 @@ public class ThirdPersonCamera : MonoBehaviour
 
     private Vector2 cursorPosition;
     private bool cursorPositionSet;
-#if UNITY_STANDALONE_LINUX
     private float heldTime;
     private float heldTimeThreshold = 0.2f;
-#endif
+
     void Awake()
     {
         if (freecam == null)
@@ -117,14 +116,14 @@ public class ThirdPersonCamera : MonoBehaviour
                 cursorPosition = CursorControl.GetPosition();
                 cursorPositionSet = true;
             }
+            Cursor.lockState = CursorLockMode.Confined;
 #elif UNITY_EDITOR_WIN
             if (!cursorPositionSet)
             {
                 cursorPosition = CursorControl.GetPosition();
                 cursorPositionSet = true;
             }
-//#elif UNITY_STANDALONE_LINUX
-//            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.lockState = CursorLockMode.Confined;
 #else
             Cursor.lockState = CursorLockMode.Confined;
 #endif
@@ -145,15 +144,13 @@ public class ThirdPersonCamera : MonoBehaviour
                 CursorControl.SetPosition(cursorPosition);
                 cursorPositionSet = false;
             }
-#elif UNITY_STANDALONE_LINUX
-            heldTime = 0;
 #endif
+            heldTime = 0;
+
             Cursor.visible = true;
         }
         if (Input.GetMouseButton(1) || Input.GetMouseButton(0))
         {
-#if UNITY_STANDALONE_LINUX
-            
             if (heldTime >= heldTimeThreshold)
             {
                 heldTime = heldTimeThreshold;
@@ -163,7 +160,7 @@ public class ThirdPersonCamera : MonoBehaviour
             {
                 heldTime += Time.unscaledDeltaTime;
             }
-#endif
+
             if (!invertX)
                 yaw += Input.GetAxis("Mouse X") * mouseSensitivity;
             else
@@ -179,26 +176,26 @@ public class ThirdPersonCamera : MonoBehaviour
         else if (controllerInput != Vector2.zero)
         {
             if (!invertX)
-                yaw -= controllerInput.x * controllerSensitivity;
-            else
                 yaw += controllerInput.x * controllerSensitivity;
+            else
+                yaw -= controllerInput.x * controllerSensitivity;
 
             if (controllerCameraZoomBind != null)
             {
                 if (!controllerCameraZoomBind.action.IsPressed())
                 {
                     if (!invertY)
-                        pitch += controllerInput.y * controllerSensitivity;
-                    else
                         pitch -= controllerInput.y * controllerSensitivity;
+                    else
+                        pitch += controllerInput.y * controllerSensitivity;
                 }
             }
             else
             {
                 if (!invertY)
-                    pitch += controllerInput.y * controllerSensitivity;
-                else
                     pitch -= controllerInput.y * controllerSensitivity;
+                else
+                    pitch += controllerInput.y * controllerSensitivity;
             }
 
             pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);

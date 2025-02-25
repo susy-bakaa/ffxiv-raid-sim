@@ -7,6 +7,7 @@ public class FadeOnStart : MonoBehaviour
     CanvasGroup group;
 
     public float delay = 1f;
+    private float wasDelay = -1;
     public float duration = 1f;
 
     private int id = 0;
@@ -32,6 +33,21 @@ public class FadeOnStart : MonoBehaviour
         {
             group.LeanAlpha(0f, duration);
         }
+
+        if (wasDelay < 0)
+            wasDelay = delay;
+        else
+            delay = wasDelay;
+    }
+
+    public void FadeToTransition(float delay)
+    {
+        group.LeanAlpha(1f, duration).setOnComplete(() =>
+        {
+            if (delay >= 0f)
+                this.delay = delay;
+            Start();
+        });
     }
 
     public void FadeToBlack(float delay)

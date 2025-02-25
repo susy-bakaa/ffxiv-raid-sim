@@ -32,11 +32,15 @@ public class BotTimeline : MonoBehaviour
     void Awake()
     {
         index = UnityEngine.Random.Range(1000, 10000);
-        onFinish.AddListener(CleanUp);
+        if (FightTimeline.Instance != null && FightTimeline.Instance.log)
+            onBegin.AddListener((BotTimeline timeline) => { Debug.Log($"[BotTimeline ({timeline.gameObject})] {timeline.bot.name} started timeline {gameObject.name}"); });
     }
 
     public void StartTimeline()
     {
+        if (!bot.gameObject.activeSelf)
+            return;
+
         if (bot != null && updateSector)
         {
             bot.state.sector = sector;
@@ -83,7 +87,7 @@ public class BotTimeline : MonoBehaviour
         if (events != null && events.Count > 0)
         {
             onBegin.Invoke(this);
-            StartCoroutine(PlayTimeline());
+            StartCoroutine(IE_PlayTimeline());
         }
         else if (events != null)
         {
@@ -100,7 +104,7 @@ public class BotTimeline : MonoBehaviour
         onFinish.Invoke(this);
     }
 
-    public IEnumerator PlayTimeline()
+    public IEnumerator IE_PlayTimeline()
     {
         for (int i = 0; i < events.Count; i++)
         {
@@ -200,14 +204,27 @@ public class BotTimeline : MonoBehaviour
         onFinish.Invoke(this);
     }
 
-    public void CleanUp(BotTimeline botTimeline = null)
+    public void ResetTimeline()
     {
-        /*Utilities.FunctionTimer.Create(this, () =>
+        StopAllCoroutines();
+        bot = null;
+        controller = null;
+        targeting = null;
+        party = null;
+        currentTarget = null;
+
+        if (events != null && events.Count > 0)
         {
-            bot = null;
-            controller = null;
-            currentTarget = null;
-        }, 1f, $"{gameObject.name}_clean_up_delay", false, true);*/
+            for (int i = 0; i < events.Count; i++)
+            {
+                if (events[i].dynamic)
+                {
+                    BotEvent e = events[i];
+                    e.node = null;
+                    events[i] = e;
+                }
+            }
+        }
     }
 
     [System.Serializable]

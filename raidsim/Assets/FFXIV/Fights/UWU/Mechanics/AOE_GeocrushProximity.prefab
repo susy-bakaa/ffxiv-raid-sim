@@ -99,9 +99,11 @@ MonoBehaviour:
   data: {fileID: 0}
   damageName: Geocrush
   inverted: 0
+  log: 0
   owner: {fileID: 0}
   autoAssignOwner: 0
   ableToHitTag: Player
+  canHitCharacterName: 
   damage:
     name: Geocrush
     value: -40000
@@ -111,6 +113,7 @@ MonoBehaviour:
     elementalAspect: 1
     physicalAspect: 0
     applicationType: 0
+    source: {fileID: 0}
   damageFalloff:
     serializedVersion: 2
     m_Curve:
@@ -126,11 +129,11 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 24
       value: 0.1666
-      inSlope: -0.014583333
-      outSlope: -0.014583333
+      inSlope: -0.10326438
+      outSlope: -0.10326438
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
+      inWeight: 0.049915712
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -141,21 +144,30 @@ MonoBehaviour:
   initializeOnStart: 1
   self: 0
   dealsDamage: 1
-  proximityBased: 1
   passDamage: 0
+  proximityBased: 1
   isAShield: 0
   cleaves: 1
+  cancelsMovement: 0
   ignoresOwner: 0
+  ignoreSnapshot: 0
   playerActivated: 0
+  updateLive: 0
   shared: 0
   enumeration: 0
+  requireOwner: 0
+  resetOnReload: 0
+  resetOwner: 0
   visualDelay: 0
   triggerDelay: 2.7
+  triggerDelayVariance: 0
   damageApplicationDelay: 0.25
   cooldown: 10
   playersRequired: 0
+  damageMultiplierPerMissingPlayer: 1
   currentPlayers: []
   appliedEffects: []
+  appliedEffectsOnFail: []
   onHit:
     m_PersistentCalls:
       m_Calls: []
@@ -177,12 +189,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onStart:
+    m_PersistentCalls:
+      m_Calls: []
   onSpawn:
+    m_PersistentCalls:
+      m_Calls: []
+  onInitialize:
     m_PersistentCalls:
       m_Calls: []
   onTrigger:
     m_PersistentCalls:
       m_Calls: []
+  dummy: 0
 --- !u!114 &2593041011397960068
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -198,6 +217,9 @@ MonoBehaviour:
   lifetime: -1
   disableInstead: 0
   log: 0
+  onDestroy:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3497867745191244811
 GameObject:
   m_ObjectHideFlags: 0
@@ -424,6 +446,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotation: {x: 0, y: 0, z: 50}
+  setRotation: 0
+  faceTowardsName: 
+  faceTowards: {fileID: 0}
 --- !u!1 &5036202604734441532
 GameObject:
   m_ObjectHideFlags: 0

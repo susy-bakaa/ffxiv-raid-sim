@@ -80,6 +80,8 @@ public class KnockbackMechanic : FightMechanic
                 {
                     // Implement
                 }
+                if (log)
+                    Debug.Log($"[KnockbackMechanic ({gameObject.name})] {actionInfo.source.characterName} ({actionInfo.source.gameObject.name}) got hit by the knockback!");
             }
             else
             {

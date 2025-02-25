@@ -316,6 +316,14 @@ public static class GlobalData
 
         public bool value => Evaluate();
 
+        public Flag(Flag copyFrom)
+        {
+            name = copyFrom.name;
+            logic = copyFrom.logic;
+            thresholdPercentage = copyFrom.thresholdPercentage;
+            values = new List<FlagValue>(copyFrom.values);
+        }
+
         public Flag(string name, AggregateLogic logic = AggregateLogic.AllTrue, float thresholdPercentage = 0.0f)
         {
             this.name = name;
@@ -362,6 +370,12 @@ public static class GlobalData
             {
                 isDirty = true; // Mark dictionary for update
             }
+        }
+
+        public void ResetFlag()
+        {
+            values.RemoveAll(v => v.name != "base" && v.name != "toggleTargetable");
+            isDirty = true; // Mark dictionary for update
         }
 
         public void ForceUpdate()

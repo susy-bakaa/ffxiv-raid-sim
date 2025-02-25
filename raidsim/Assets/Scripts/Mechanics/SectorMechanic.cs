@@ -68,12 +68,6 @@ public class SectorMechanic : FightMechanic
 
         // Distribute the remaining nodes based on sector rules
         AssignRemainingNodes();
-
-        if (FightTimeline.Instance != null)
-        {
-            // We store the result in the timeline for the AI to use when required in their logic
-            FightTimeline.Instance.AddSectorMechanicResult(id, nodeAssignmentsBySector);
-        }
     }
 
     private void AssignMiddleNodes(int minMiddle)
@@ -219,6 +213,24 @@ public class SectorMechanic : FightMechanic
             }
 
             arenaSectors[i] = sector;
+        }
+    }
+
+    public override void InterruptMechanic(ActionInfo actionInfo)
+    {
+        middleNodesUsed = 0;
+        totalNodesUsed = 0;
+        nodeAssignmentsBySector = new Dictionary<Sector, List<MechanicNode>>();
+
+        for (int i = 0; i < arenaSectors.Count; i++)
+        {
+            ArenaSector temp = arenaSectors[i];
+            temp.current = 0;
+            for (int j = 0; j < temp.nodes.Count; j++)
+            {
+                temp.nodes[j].isTaken = false;
+            }
+            arenaSectors[i] = temp;
         }
     }
 

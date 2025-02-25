@@ -11,7 +11,7 @@ public class EnvironmentHandler : MonoBehaviour
     public string[] arenaModels;
     public GameObject[] arenas;
 
-    private Transform dynamicParent;
+    //private Transform dynamicParent;
     private FightSelector fightSelector;
     private string currentFightBundleName;
     private bool arenaModelLoaded = false;
@@ -19,7 +19,7 @@ public class EnvironmentHandler : MonoBehaviour
     private void Awake()
     {
         fightSelector = FindObjectOfType<FightSelector>();
-        dynamicParent = GameObject.FindGameObjectWithTag("persistent").transform.Find("Environment");   
+        //dynamicParent = GameObject.FindGameObjectWithTag("persistent").transform.Find("Environment");   
 #if UNITY_WEBPLAYER
         if (disableFogForWebGL)
         {
@@ -53,10 +53,10 @@ public class EnvironmentHandler : MonoBehaviour
         if (arenaModels == null || arenaModels.Length <= 0)
             return;
 
-        if (dynamicParent == null)
-            dynamicParent = GameObject.FindGameObjectWithTag("persistent").transform.Find("Environment");
+        //if (dynamicParent == null)
+            //dynamicParent = GameObject.FindGameObjectWithTag("persistent").transform.Find("Environment");
 
-        if (AssetHandler.Instance != null && SceneHandler.Instance != null && !arenaModelLoaded)
+        if (AssetHandler.Instance != null && !arenaModelLoaded) // SceneHandler.Instance != null &&
         {
             if (AssetHandler.Instance.HasBundleLoaded(currentFightBundleName))
             {
@@ -65,21 +65,22 @@ public class EnvironmentHandler : MonoBehaviour
                 arenas = new GameObject[arenaModels.Length];
                 for (int i = 0; i < arenaModels.Length; i++)
                 {
-                    //GameObject arena = AssetHandler.Instance.GetAsset(arenaModels[i]);
-                    GameObject arena = null;
-                    if (SceneHandler.Instance.DoesPersistentObjectExist(arenaModels[i]))
-                    {
-                        arena = SceneHandler.Instance.GetPersistentObject(arenaModels[i]);
-                    }
-                    else
-                    {
-                        arena = AssetHandler.Instance.GetAsset(arenaModels[i]);
-                    }
-                    arena.name = arena.name.Replace("(Clone)", "");
-                    arena.transform.SetParent(dynamicParent);
+                    GameObject arena = AssetHandler.Instance.GetAsset(arenaModels[i]);
+                    //GameObject arena = null;
+                    //if (SceneHandler.Instance.DoesPersistentObjectExist(arenaModels[i]))
+                    //{
+                    //    arena = SceneHandler.Instance.GetPersistentObject(arenaModels[i]);
+                    //}
+                    //else
+                    //{
+                    //    arena = AssetHandler.Instance.GetAsset(arenaModels[i]);
+                    //}
+                    //arena.name = arena.name.Replace("(Clone)", "");
+                    //arena.transform.SetParent(dynamicParent);
+                    arena.transform.SetParent(transform);
                     arena.SetActive(false);
                     arenas[i] = arena;
-                    SceneHandler.Instance.AddPersistentObject(arena);
+                    //SceneHandler.Instance.AddPersistentObject(arena);
                 }
 
                 if (arenas.Length > 0)

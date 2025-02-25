@@ -59,6 +59,7 @@ MonoBehaviour:
     elementalAspect: 0
     physicalAspect: 0
     applicationType: 0
+    source: {fileID: 0}
   onApplication:
     m_PersistentCalls:
       m_Calls:
@@ -97,8 +98,23 @@ MonoBehaviour:
       m_Calls: []
   onCleanse:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7093730728760169133}
+        m_TargetAssemblyTypeName: StateTrigger, Assembly-CSharp
+        m_MethodName: ToggleTarget
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onReduce:
+    m_PersistentCalls:
+      m_Calls: []
+  onAddStack:
     m_PersistentCalls:
       m_Calls: []
   onMaxStacks:
@@ -117,14 +133,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state: 0
+  party: {fileID: 0}
+  autoFindParty: 0
   source: {fileID: 0}
   target: {fileID: 0}
   targetName: VisualEffects/Woken_Effect
   targetParent: _
   targetIndex: 2
   useStatusEffectTagAsTargetIndex: 0
+  moveToTargetName: 
+  moveToSourceName: 
   localParent: 1
+  hiddenActions: 0
   toggleObject: 0
   toggleCharacterState: 0
   toggleCharacterEffect: 1
+  toggleShaderEffect: 0
+  fadeTime: 0.33
   log: 0

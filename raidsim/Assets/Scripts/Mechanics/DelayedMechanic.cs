@@ -16,7 +16,11 @@ public class DelayedMechanic : FightMechanic
     private void Start()
     {
         if (startAutomatically)
+        {
+            if (FightTimeline.Instance != null)
+                FightTimeline.Instance.onReset.AddListener(TriggerMechanic);
             TriggerMechanic();
+        }
     }
 
     public override void TriggerMechanic(ActionInfo actionInfo)
@@ -47,5 +51,11 @@ public class DelayedMechanic : FightMechanic
         ieTriggerMechanicDelayed = null;
         if (log)
             Debug.Log($"[DelayedMechanic ({gameObject.name})] onDelayedTrigger.Invoke()");
+    }
+
+    public override void InterruptMechanic(ActionInfo actionInfo)
+    {
+        StopAllCoroutines();
+        ieTriggerMechanicDelayed = null;
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Xml.Serialization;
 using NaughtyAttributes;
 using UnityEngine;
 using static BotTimeline;
@@ -8,16 +9,41 @@ public class SetDynamicBotNode : MonoBehaviour
     public BotNodeGroup nodeGroup;
     public BotNodeGroup NodeGroupFallback;
     public bool reversePriority = false;
+    private bool wasReversePriority = false;
     public bool reversePriorityFallback = false;
+    private bool wasReversePriorityFallback = false;
     public bool waitIfPriorityLowerThan = false;
+    private bool wasWaitIfPriorityLowerThan = false;
     public bool reverseIfPriorityLowerThan = false;
+    private bool wasReverseIfPriorityLowerThan = false;
     public int priority = -1;
+    private int wasPriority = -1;
     [ShowIf("waitIfPriorityLowerThan")] public float waitTime = 0f;
     [ShowIf("waitIfPriorityLowerThan")] public bool reduceWaitTimeFromTimeline = false;
     public int targetTimelineEventIndex = -1;
     public bool log = false;
 
     private Coroutine ieSetNode;
+
+    private void Awake()
+    {
+        wasReversePriority = reversePriority;
+        wasReversePriorityFallback = reversePriorityFallback;
+        wasWaitIfPriorityLowerThan = waitIfPriorityLowerThan;
+        wasReverseIfPriorityLowerThan = reverseIfPriorityLowerThan;
+        wasPriority = priority;
+    }
+
+    public void ResetComponent()
+    {
+        reversePriority = wasReversePriority;
+        reversePriorityFallback = wasReversePriorityFallback;
+        waitIfPriorityLowerThan = wasWaitIfPriorityLowerThan;
+        reverseIfPriorityLowerThan = wasReverseIfPriorityLowerThan;
+        priority = wasPriority;
+        StopAllCoroutines();
+        ieSetNode = null;
+    }
 
     public void SetNode(BotTimeline timeline)
     {
@@ -134,6 +160,10 @@ public class SetDynamicBotNode : MonoBehaviour
             node = group.GetLowestPriorityNodeForSector(timeline.bot.state.sector);
         if (setLogging)
             group.log = false;
+
+        if (log && node == null)
+            Debug.LogWarning($"[SetDynamicBotNode ({gameObject.name})] Was not able to find a node from group {group?.gameObject.name} for timeline {timeline?.gameObject.name}!");
+
         return node;
     }
 }

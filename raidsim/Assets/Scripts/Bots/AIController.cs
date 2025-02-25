@@ -9,6 +9,7 @@ public class AIController : MonoBehaviour
     public CharacterState state { get; private set; }
 
     public BotTimeline botTimeline;
+    private BotTimeline wasBotTimeline;
     public BotNode clockSpot;
     public float turnSmoothTime;
     public float ySpawnOffset = 1.1f;
@@ -32,11 +33,21 @@ public class AIController : MonoBehaviour
     private int animatorParameterSpeed = Animator.StringToHash("Speed");
     private int animatorParameterDiamondback = Animator.StringToHash("Diamondback");
     private int animatorParamterSliding = Animator.StringToHash("Slipping");
+    private int animatorParameterTurning = Animator.StringToHash("Turning");
+    private int animatorParameterJumping = Animator.StringToHash("Jump");
+    private int animatorParameterIsJumping = Animator.StringToHash("Jumping");
+    private int animatorParameterIsCasting = Animator.StringToHash("Casting");
+    private int animatorParameterIsDashing = Animator.StringToHash("Dashing");
+    private int animatorParameterIsBlueCasting = Animator.StringToHash("General_Casting_Blue");
+    private int animatorParameterIsSwipe = Animator.StringToHash("Swipe");
+    private int animatorParameterIsActionLocked = Animator.StringToHash("ActionLocked");
+    private int animatorParameterReset = Animator.StringToHash("Reset");
 
     void Awake()
     {
         animator = GetComponent<Animator>();
         state = GetComponent<CharacterState>();
+        wasBotTimeline = botTimeline;
         botTimeline.bot = this;
     }
 
@@ -46,6 +57,8 @@ public class AIController : MonoBehaviour
         knockedback = false;
         freezeMovement = false;
         movementFrozen = false;
+        sliding = false;
+        tweening = false;
     }
 
     void Update()
@@ -265,5 +278,29 @@ public class AIController : MonoBehaviour
         //transform.position = new Vector3(Random.value * 3f - 1.5f, 0f, Random.value * 3f - 1.5f);
         transform.position = new Vector3(Random.Range(-1.5f, 1.5f), ySpawnOffset, Random.Range(-1.5f, 1.5f));
         transform.eulerAngles = new Vector3(0f, Random.Range(-360f, 360f), 0f);
+    }
+
+    public void ResetController()
+    {
+        botTimeline = wasBotTimeline;
+        botTimeline.bot = this;
+        if (animator != null)
+        {
+            animator.SetBool(animatorParameterDead, false);
+            animator.SetBool(animatorParameterIsCasting, false);
+            animator.SetBool(animatorParameterDiamondback, false);
+            animator.SetBool(animatorParameterDiamondback, false);
+            animator.SetBool(animatorParamterSliding, false);
+            animator.SetFloat(animatorParameterSpeed, 0f);
+            animator.SetFloat(animatorParameterTurning, 0f);
+            animator.ResetTrigger(animatorParameterJumping);
+            animator.SetBool(animatorParameterIsJumping, false);
+            animator.SetBool(animatorParameterIsDashing, false);
+            animator.ResetTrigger(animatorParameterIsBlueCasting);
+            animator.ResetTrigger(animatorParameterIsSwipe);
+            animator.SetBool(animatorParameterIsActionLocked, false);
+            animator.SetTrigger(animatorParameterReset);
+        }
+        OnEnable();
     }
 }

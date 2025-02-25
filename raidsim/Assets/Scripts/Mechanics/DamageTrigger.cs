@@ -19,6 +19,7 @@ public class DamageTrigger : MonoBehaviour
 
     public string damageName = string.Empty;
     public bool inverted = false;
+    public bool log = false;
     public CharacterState owner;
     public bool autoAssignOwner = false;
     [Tag]
@@ -47,6 +48,8 @@ public class DamageTrigger : MonoBehaviour
     public bool shared = false;
     public bool enumeration = false;
     public bool requireOwner = false;
+    public bool resetOnReload = false;
+    public bool resetOwner = false;
     public float visualDelay = 0f;
     public float triggerDelay = 0f;
     public float triggerDelayVariance = 0f;
@@ -90,6 +93,9 @@ public class DamageTrigger : MonoBehaviour
 
         if (initializeOnStart && !initialized)
             Initialize();
+
+        if (resetOnReload && FightTimeline.Instance != null)
+            FightTimeline.Instance.onReset.AddListener(ResetTrigger);
     }
 
     void OnDisable()
@@ -120,14 +126,14 @@ public class DamageTrigger : MonoBehaviour
         if (m_collider != null && visualDelay > 0f)
         {
             m_collider.enabled = false;
-            Utilities.FunctionTimer.Create(this, () => m_collider.enabled = true, visualDelay, $"{id}_{damageName}_{gameObject}_{GetHashCode()}_visual_delay", false, true);
+            Utilities.FunctionTimer.Create(this, () => m_collider.enabled = true, visualDelay, $"{id}_{damageName}_{gameObject.name}_visual_delay", false, true);
         }
         if (triggerDelay > 0f)
         {
             Utilities.FunctionTimer.Create(this, () => {
                 if (!inProgress)
                     StartDamageTrigger();
-            }, triggerDelay + Random.Range(0f, triggerDelayVariance), $"{id}_{damageName}_{gameObject}_{GetHashCode()}_trigger_delay", false, true);
+            }, triggerDelay + Random.Range(0f, triggerDelayVariance), $"{id}_{damageName}_{gameObject.name}_trigger_delay", false, true);
         }
         else if (!playerActivated)
         {
@@ -143,6 +149,18 @@ public class DamageTrigger : MonoBehaviour
     public void ResetOwner()
     {
         owner = null;
+    }
+
+    public void ResetTrigger()
+    {
+        inProgress = false;
+        StopAllCoroutines();
+        Utilities.FunctionTimer.StopTimer($"{id}_{damageName}_{gameObject.name}_trigger_cooldown");
+        Utilities.FunctionTimer.StopTimer($"{id}_{damageName}_{gameObject.name}_trigger_delay");
+        Utilities.FunctionTimer.StopTimer($"{id}_{damageName}_{gameObject.name}_visual_delay");
+        currentPlayers.Clear();
+        if (resetOwner)
+            owner = null;
     }
 
     public void Activate(bool playerActivated)
@@ -330,28 +348,10 @@ public class DamageTrigger : MonoBehaviour
 
     private void StartDamageTrigger()
     {
+        if (log)
+            Debug.Log($"[DamageTrigger ({gameObject.name})] StartDamageTrigger (inProgress {inProgress})");
         if (damageApplicationDelay > 0)
         {
-            /*if (ignoreSnapshot)
-            {
-                if (cancelsMovement)
-                {
-                    for (int i = 0; i < currentPlayers.Count; i++)
-                    {
-                        if (ignoresOwner && currentPlayers[i] == owner)
-                            continue;
-
-                        if (currentPlayers[i].aiController != null)
-                        {
-                            currentPlayers[i].aiController.freezeMovement = true;
-                        }
-                        else if (currentPlayers[i].playerController != null)
-                        {
-                            currentPlayers[i].playerController.freezeMovement = true;
-                        }
-                    }
-                }
-            }*/
             StartCoroutine(IE_StartDamageTrigger(currentPlayers.ToArray()));
         }
         else
@@ -360,7 +360,7 @@ public class DamageTrigger : MonoBehaviour
             if (cooldown > 0f)
             {
                 inProgress = true;
-                Utilities.FunctionTimer.Create(this, () => inProgress = false, cooldown, $"{id}_{damageName}_{gameObject}_{GetHashCode()}_trigger_cooldown", false, true);
+                Utilities.FunctionTimer.Create(this, () => inProgress = false, cooldown, $"{id}_{damageName}_{gameObject.name}_trigger_cooldown", false, true);
             }
         }
         onStart.Invoke();
@@ -370,6 +370,8 @@ public class DamageTrigger : MonoBehaviour
     {
         inProgress = true;
         yield return new WaitForSeconds(damageApplicationDelay);
+        if (log)
+            Debug.Log($"[DamageTrigger ({gameObject.name})] IE_StartDamageTrigger (inProgress {inProgress})");
         if (ignoreSnapshot)
         {
             List<CharacterState> candidates = new List<CharacterState>();
@@ -389,7 +391,7 @@ public class DamageTrigger : MonoBehaviour
         }
         if (cooldown > 0f)
         {
-            Utilities.FunctionTimer.Create(this, () => inProgress = false, cooldown, $"{id}_{damageName}_{gameObject}_{GetHashCode()}_trigger_cooldown", false, true);
+            Utilities.FunctionTimer.Create(this, () => inProgress = false, cooldown, $"{id}_{damageName}_{gameObject.name}_trigger_cooldown", false, true);
         }
         else
         {
@@ -401,6 +403,15 @@ public class DamageTrigger : MonoBehaviour
     {
         if (!initialized)
             return;
+
+        if (log)
+            Debug.Log($"[DamageTrigger ({gameObject.name})] TriggerDamage (inProgress {inProgress}, players {players.Length})");
+
+        foreach (CharacterState player in players)
+        {
+            if (log)
+                Debug.Log($"[DamageTrigger ({gameObject.name})] --> player {player.gameObject.name}");
+        }
 
         string newName = damage.name;
 

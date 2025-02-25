@@ -23,6 +23,8 @@ public class FightMechanic : MonoBehaviour
         {
             log = true;
         }
+
+        FightTimeline.Instance.onReset.AddListener(InterruptMechanic);
     }
 
     public void TriggerMechanic(CharacterCollection characterCollection)
@@ -94,6 +96,7 @@ public class FightMechanic : MonoBehaviour
             string nameToLog = string.IsNullOrEmpty(mechanicName) ? "Unnamed mechanic" : mechanicName;
             Debug.Log($"[FightMechanic] '{nameToLog}' ({gameObject.name}) was interrupted with ActionInfo (action: '{actionInfo.action?.gameObject}', source: '{actionInfo.source?.characterName}', target: '{actionInfo.target?.characterName}', targetIsPlayer: '{actionInfo.targetIsPlayer}')");
         }
+        triggered = false;
     }
 
     protected bool CanTrigger()

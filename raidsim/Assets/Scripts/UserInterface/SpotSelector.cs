@@ -18,6 +18,7 @@ public class SpotSelector : MonoBehaviour
     public bool changePlayerRole = false;
     [ShowIf("changePlayerRole")] public Role[] spotRoles;
     public int defaultSpot = 4;
+    private int lastSelected = 4;
 
 #if UNITY_EDITOR
     void OnValidate()
@@ -41,6 +42,9 @@ public class SpotSelector : MonoBehaviour
     {
         dropdown = GetComponentInChildren<TMP_Dropdown>();
         Select(defaultSpot);
+
+        if (FightTimeline.Instance != null)
+            FightTimeline.Instance.onReset.AddListener(() => Select(lastSelected));
     }
 
     void Update()
@@ -81,5 +85,6 @@ public class SpotSelector : MonoBehaviour
         }
 
         partyList.UpdatePartyList();
+        lastSelected = value;
     }
 }

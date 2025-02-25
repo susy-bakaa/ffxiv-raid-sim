@@ -63,7 +63,8 @@ public class GapCloserMechanic : FightMechanic
     {
         StopAllCoroutines();
         ieDelayedMovement = null;
-        tween.reset();
+        if (tween != null)
+            tween.reset();
         if (actionInfo.source != null)
         {
             actionInfo.source.transform.position = startPosition;

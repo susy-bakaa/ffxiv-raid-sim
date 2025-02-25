@@ -17,6 +17,9 @@ public class AutomaticMechanic : FightMechanic
     {
         _triggered = false;
 
+        if (onStart && FightTimeline.Instance != null)
+            FightTimeline.Instance.onReset.AddListener(TriggerMechanic);
+
         if (onStart)
             TriggerMechanic(new ActionInfo(null, null, null));
     }

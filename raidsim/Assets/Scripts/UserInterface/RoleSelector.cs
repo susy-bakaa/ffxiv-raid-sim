@@ -15,6 +15,7 @@ public class RoleSelector : MonoBehaviour
     public PartyMember[] bots;
     public BotNode[] spots;
     public List<RoleSelectorPair> roleSelectorPairs = new List<RoleSelectorPair>();
+    private int lastSelected = 0;
 
 #if UNITY_EDITOR
     void OnValidate()
@@ -50,6 +51,8 @@ public class RoleSelector : MonoBehaviour
     {
         dropdown = GetComponentInChildren<TMP_Dropdown>();
         Select(0);
+        if (FightTimeline.Instance != null)
+            FightTimeline.Instance.onReset.AddListener(() => Select(lastSelected));
     }
 
     void Update()
@@ -97,6 +100,8 @@ public class RoleSelector : MonoBehaviour
                 }
             }
         }
+
+        lastSelected = value;
 
         partyList.UpdatePartyList();
     }

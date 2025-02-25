@@ -23,6 +23,19 @@ public class BotNodeGroup : MonoBehaviour
                 break;
             }
         }
+
+        if (FightTimeline.Instance != null)
+            FightTimeline.Instance.onReset.AddListener(ResetGroup);
+    }
+
+    public void ResetGroup()
+    {
+        foreach (BotNode node in nodes)
+        {
+            node.hasMechanic = false;
+            node.occupied = false;
+        }
+        ResetGroupRotation();
     }
 
     public void ResetGroupRotation()

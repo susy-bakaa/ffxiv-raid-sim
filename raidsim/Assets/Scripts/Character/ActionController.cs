@@ -166,6 +166,14 @@ public class ActionController : MonoBehaviour
 
     void Update()
     {
+        if (animator == null)
+        {
+            if (Utilities.RateLimiter(56))
+            {
+                animator = GetComponentInChildren<Animator>();
+            }
+        }
+
         if (characterState == null)
             return;
 
@@ -425,6 +433,29 @@ public class ActionController : MonoBehaviour
         }
     }
 
+    public void ResetController()
+    {
+        StopAllCoroutines();
+        castTime = 0f;
+        lastCastTime = 0f;
+        interrupted = false;
+        isCasting = false;
+        isGroundTargeting = false;
+        lastAction = null;
+        for (int i = 0; i < actions.Count; i++)
+        {
+            actions[i].ResetCooldown();
+            actions[i].ResetAnimationLock();
+        }
+        Utilities.FunctionTimer.StopTimer($"{characterState.characterName}_{this}_castBar_fade_out_if_interrupted");
+        Utilities.FunctionTimer.StopTimer($"{characterState.characterName}_{this}_interrupted_status");
+        ResetCastBar();
+        if (castBarGroup != null)
+            castBarGroup.alpha = 0f;
+        if (castBarGroupParty != null)
+            castBarGroupParty.alpha = 0f;
+    }
+
     public void PerformAutoAction(CharacterAction autoAction)
     {
         if (!gameObject.activeSelf)
@@ -655,7 +686,18 @@ public class ActionController : MonoBehaviour
         if (castBarElement != null)
             castBarElement.ChangeColors(false);
 
-        if ((action.isAvailable && !action.isDisabled && !action.isAnimationLocked && !action.unavailable && !animator.GetBool(animatorParameterActionLocked)) || hidden)
+        bool actionCondition = false;
+
+        if (animator != null)
+        {
+            actionCondition = ((action.isAvailable && !action.isDisabled && !action.isAnimationLocked && !action.unavailable && !animator.GetBool(animatorParameterActionLocked)) || hidden);
+        }
+        else
+        {
+            actionCondition = ((action.isAvailable && !action.isDisabled && !action.isAnimationLocked && !action.unavailable) || hidden);
+        }
+
+        if (actionCondition)
         {
             if (action.data.cast <= 0f || (action.data.cast > 0f && instantCast))
             {
@@ -765,7 +807,7 @@ public class ActionController : MonoBehaviour
 
                 ActionInfo newActionInfo = new ActionInfo(action, characterState, currentTarget);
                 action.onCast.Invoke(newActionInfo);
-                StartCoroutine(Cast(castTime, () => { if (!action.data.isGroundTargeted && action.data.recast > 0f && !hidden) { action.chargesLeft--; } action.ExecuteAction(newActionInfo); if (action.data.playAnimationOnFinish) { HandleAnimation(action); } }));
+                StartCoroutine(IE_Cast(castTime, () => { if (!action.data.isGroundTargeted && action.data.recast > 0f && !hidden) { action.chargesLeft--; } action.ExecuteAction(newActionInfo); if (action.data.playAnimationOnFinish) { HandleAnimation(action); } }));
                 onCast.Invoke(new CastInfo(newActionInfo, instantCast, characterState.GetEffects()));
 
                 if (!action.data.playAnimationOnFinish && !action.data.isGroundTargeted)
@@ -852,7 +894,7 @@ public class ActionController : MonoBehaviour
         UpdateCharacterName();
     }
 
-    private IEnumerator Cast(float length, Action action)
+    private IEnumerator IE_Cast(float length, Action action)
     {
         yield return new WaitForSeconds(length);
         action.Invoke();

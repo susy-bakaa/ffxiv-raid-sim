@@ -7,6 +7,8 @@ using static GlobalData;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Linq;
+using Unity.VisualScripting;
+
 
 
 
@@ -18,7 +20,6 @@ public class FightTimeline : MonoBehaviour
 {
     public static FightTimeline Instance;
 
-    //public List<StatusEffectData> allAvailableStatusEffects = new List<StatusEffectData>();
     public UserInput input;
     public CharacterState player;
     public PartyList partyList;
@@ -26,6 +27,9 @@ public class FightTimeline : MonoBehaviour
     public bool partyWiped { private set; get; }
     public bool enemiesWiped { private set; get; }
     public Transform mechanicParent;
+    public Transform enemiesParent;
+    public Transform charactersParent;
+    public Transform botNodeParent;
 
     public static float timeScale = 1f;
     public static float time { private set; get; }
@@ -42,18 +46,17 @@ public class FightTimeline : MonoBehaviour
     public List<string> pausedBy = new List<string>();
     public UnityEvent<bool> onPausedChanged;
     public bool disableBotTimelines = false;
+    public Transform botTimelineParent;
     public List<BotTimeline> botTimelines = new List<BotTimeline>();
     public List<TimelineEvent> events = new List<TimelineEvent>();
     public List<RandomEventResult> m_randomEventResults = new List<RandomEventResult>();
-#if UNITY_EDITOR
-    public List<SectorMechanicResult> m_sectorMechanicResults = new List<SectorMechanicResult>();
-#endif
     public List<string> executedMechanics = new List<string>();
     public bool jon = false;
     public bool log = false;
     public bool clearRandomEventResultsOnStart = true;
     public bool noNewSeedOnStart = false;
     public UnityEvent<bool> onNoNewSeedOnStartChanged;
+    public UnityEvent onReset;
 
     [Header("User Interface")]
     public Button[] disableDuringPlayback;
@@ -64,9 +67,18 @@ public class FightTimeline : MonoBehaviour
 
     private Dictionary<int, List<CharacterActionData>> randomEventCharacterActions = new Dictionary<int, List<CharacterActionData>>();
     private Dictionary<int, int> randomEventResults = new Dictionary<int, int>();
-    private Dictionary<int, SectorMechanicResult> sectorMechanicResults = new Dictionary<int, SectorMechanicResult>();
+    private BotTimeline[] allBotTimelines;
+    private SetDynamicBotNode[] allSetDynamicBotNodes;
+    private BotTimelineBranch[] allBotTimelineBranches;
+    private BotNode[] allBotNodes;
+    private MechanicNode[] allMechanicNodes;
+    private List<CharacterState> allCharacters = new List<CharacterState>();
     private bool wasPaused;
+    private Coroutine iePlayTimeline;
+    private Coroutine ieResetTimeline;
     private bool hasBeenPlayed = false;
+    private bool resetCalled = false;
+    private bool mutedBgm = false;
 
     [System.Serializable]
     public struct RandomEventResult
@@ -81,168 +93,9 @@ public class FightTimeline : MonoBehaviour
         }
     }
 
-    public int GetRandomEventResult(int id)
-    {
-        if (randomEventResults.TryGetValue(id, out int value))
-        {
-            return value;
-        }
-
-        return -1;
-    }
-
-    public bool TryGetRandomEventResult(int id, out int value)
-    {
-        if (randomEventResults.TryGetValue(id, out int v))
-        {
-            value = v;
-            return true;
-        }
-        value = -1;
-        return false;
-    }
-
-    public void SetRandomEventResult(int id, int result)
-    {
-        if (randomEventResults.ContainsKey(id))
-        {
-            randomEventResults[id] = result;
-            for (int i = 0; i < m_randomEventResults.Count; i++)
-            {
-                if (m_randomEventResults[i].id == id)
-                {
-                    RandomEventResult rer = m_randomEventResults[i];
-                    rer.value = result;
-                    m_randomEventResults[i] = rer;
-                    break;
-                }
-            }
-        }
-        else
-        {
-            if (randomEventResults.Count < 1)
-            {
-                randomEventResults = new Dictionary<int, int>();
-            }
-            randomEventResults.Add(id, result);
-            m_randomEventResults.Add(new RandomEventResult(id, result));
-        }
-    }
-
-    public void AddRandomEventResult(int id, int result)
-    {
-        int newId = id;
-        while (randomEventResults.ContainsKey(newId))
-        {
-            newId++;
-        }
-        //Debug.Log($"Added RandomEventResult with id of {newId}");
-        randomEventResults.Add(newId, result);
-        m_randomEventResults.Add(new RandomEventResult(newId, result));
-    }
-
-    public void ClearRandomEventResult(int id)
-    {
-        if (randomEventResults.ContainsKey(id))
-        {
-            randomEventResults.Remove(id);
-            for (int i = 0; i < m_randomEventResults.Count; i++)
-            {
-                if (m_randomEventResults[i].id == id)
-                {
-                    m_randomEventResults.RemoveAt(i);
-                    break;
-                }
-            }
-        }
-    }
-
-    public Dictionary<Sector, List<MechanicNode>> GetSectorMechanicResult(int id)
-    {
-        if (sectorMechanicResults.TryGetValue(id, out SectorMechanicResult result))
-        {
-            return result.nodeAssignmentsBySector;
-        }
-
-        return null;
-    }
-
-    public void AddSectorMechanicResult(int id, Dictionary<Sector, List<MechanicNode>> resultDictionary)
-    {
-        if (sectorMechanicResults == null)
-        {
-            sectorMechanicResults = new Dictionary<int, SectorMechanicResult>();
-        }
-        if (sectorMechanicResults.ContainsKey(id))
-        {
-            SectorMechanicResult result = sectorMechanicResults[id];
-            result.nodeAssignmentsBySector = resultDictionary;
-            sectorMechanicResults[id] = result;
-        }
-        else
-        {
-            sectorMechanicResults.Add(id, new SectorMechanicResult(id, resultDictionary));
-        }
-
-#if UNITY_EDITOR
-        m_sectorMechanicResults = sectorMechanicResults.Values.ToList();
-#endif
-    }
-
-    public void RemoveSectorMechanicResult(int id)
-    {
-        if (sectorMechanicResults.ContainsKey(id))
-        {
-            sectorMechanicResults.Remove(id);
-        }
-
-#if UNITY_EDITOR
-        m_sectorMechanicResults = sectorMechanicResults.Values.ToList();
-#endif
-    }
-
-    public void ToggleJonVoiceLines(bool value)
-    {
-        jon = value;
-    }
-
-    public void ToggleNoNewRandomSeed()
-    {
-        ToggleNoNewRandomSeed(!noNewSeedOnStart);
-    }
-
-    public void ToggleNoNewRandomSeed(bool value)
-    {
-        noNewSeedOnStart = value;
-        onNoNewSeedOnStartChanged.Invoke(value);
-    }
-
 #if UNITY_EDITOR
     [Header("Editor")]
     [SerializeField] private float m_wipeDelay;
-    /*[Button("Load All Status Effects")]
-    public void LoadEffectsButton()
-    {
-        allAvailableStatusEffects.Clear();
-
-        // Find all asset GUIDs of type StatusEffectData
-        string[] guids = AssetDatabase.FindAssets("t:StatusEffectData");
-
-        foreach (string guid in guids)
-        {
-            // Load the asset by its GUID
-            string assetPath = AssetDatabase.GUIDToAssetPath(guid);
-            StatusEffectData statusEffect = AssetDatabase.LoadAssetAtPath<StatusEffectData>(assetPath);
-
-            if (statusEffect != null)
-            {
-                allAvailableStatusEffects.Add(statusEffect);
-            }
-        }
-
-        // Optionally, log the count of loaded assets
-        Debug.Log($"Loaded {allAvailableStatusEffects.Count} status effects.");
-    }*/
 
     [Button("Wipe Party")]
     public void WipePartyButton()
@@ -323,10 +176,60 @@ public class FightTimeline : MonoBehaviour
 
         if (mechanicParent == null)
         {
-            mechanicParent = GameObject.Find("Mechanics").transform;
+            mechanicParent = Utilities.FindAnyByName("Mechanics").transform;
+        }
+
+        if (enemiesParent == null)
+        {
+            enemiesParent = Utilities.FindAnyByName("Enemies").transform;
+        }
+
+        if (charactersParent == null)
+        {
+            charactersParent = Utilities.FindAnyByName("Characters").transform;
+        }
+
+        if (charactersParent != null)
+        {
+            allCharacters.Clear();
+            allCharacters.AddRange(charactersParent.GetComponentsInChildren<CharacterState>());
+            allCharacters.AddRange(enemiesParent.GetComponentsInChildren<CharacterState>());
+        }
+
+        if (botNodeParent == null)
+        {
+            botNodeParent = Utilities.FindAnyByName("AINodes").transform;
+        }
+
+        if (botNodeParent != null)
+        {
+            allBotNodes = botNodeParent.GetComponentsInChildren<BotNode>();
+            allMechanicNodes = botNodeParent.GetComponentsInChildren<MechanicNode>();
+        }
+
+        if (!disableBotTimelines)
+        {
+            if (botTimelineParent == null)
+            {
+                botTimelineParent = Utilities.FindAnyByName("BotTimelines").transform;
+            }
+
+            if (botTimelineParent != null)
+            {
+                allBotTimelines = botTimelineParent.GetComponentsInChildren<BotTimeline>();
+                allSetDynamicBotNodes = botTimelineParent.GetComponentsInChildren<SetDynamicBotNode>();
+                allBotTimelineBranches = botTimelineParent.GetComponentsInChildren<BotTimelineBranch>();
+            }
         }
 
         input = GetComponentInChildren<UserInput>();
+
+        for (int i = 0; i < events.Count; i++)
+        {
+            TimelineEvent e = events[i];
+            e.SaveRandomEventPools();
+            events[i] = e;
+        }
 
         originalArenaBounds = arenaBounds;
         originalIsCircle = isCircle;
@@ -337,6 +240,25 @@ public class FightTimeline : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.F10))
+        {
+            GlobalVariables.muteBgm = !GlobalVariables.muteBgm;
+
+            Debug.Log($"GlobalVariables.muteBgm: {GlobalVariables.muteBgm}");
+
+            if (GlobalVariables.muteBgm && !mutedBgm)
+            {
+                Transform musicLoader = GameObject.Find("MusicLoader").transform;
+                AudioSource[] musicSources = musicLoader.GetComponentsInChildren<AudioSource>();
+
+                for (int i = 0; i < musicSources.Length; i++)
+                {
+                    musicSources[i].Stop();
+                }
+                mutedBgm = true;
+            }
+        }
+
         if (paused)
         {
             Time.timeScale = 0f;
@@ -358,7 +280,6 @@ public class FightTimeline : MonoBehaviour
         pausedBy.Clear();
         paused = false;
         Time.timeScale = 1f;
-        //Utilities.FunctionTimer.CleanUp(SceneManager.GetActiveScene(), new Scene());
     }
 
     public void StartTimeline()
@@ -407,7 +328,8 @@ public class FightTimeline : MonoBehaviour
         }
 
         playing = true;
-        StartCoroutine(PlayTimeline());
+        if (iePlayTimeline == null)
+            iePlayTimeline = StartCoroutine(IE_PlayTimeline());
         
         if (disableBotTimelines)
             return;
@@ -421,12 +343,12 @@ public class FightTimeline : MonoBehaviour
         }
     }
 
-    private IEnumerator PlayTimeline()
+    private IEnumerator IE_PlayTimeline()
     {
         if (hasBeenPlayed)
         {
             yield return null;
-            StopCoroutine(PlayTimeline());
+            StopCoroutine(IE_PlayTimeline());
         }
 
         for (int i = 0; i < events.Count; i++)
@@ -641,6 +563,97 @@ public class FightTimeline : MonoBehaviour
         {
             disableDuringPlayback[i].interactable = true;
         }
+        iePlayTimeline = null;
+    }
+
+    public void ResetTimeline(float delay)
+    {
+        if (resetCalled)
+            return;
+
+        if (iePlayTimeline != null)
+        {
+            StopAllCoroutines();
+            iePlayTimeline = null;
+        }
+
+        if (delay > 0f)
+        {
+            if (ieResetTimeline == null)
+                ieResetTimeline = StartCoroutine(IE_ResetTimeline(new WaitForSeconds(delay)));
+        }
+        else
+        {
+            ResetTimelineInternal();
+        }
+    }
+
+    private IEnumerator IE_ResetTimeline(WaitForSeconds wait)
+    {
+        yield return wait;
+        ResetTimelineInternal();
+        ieResetTimeline = null;
+    }
+
+    private void ResetTimelineInternal()
+    {
+        hasBeenPlayed = false;
+        playing = false;
+        partyWiped = false;
+        enemiesWiped = false;
+        executedMechanics.Clear();
+        for (int i = 0; i < events.Count; i++)
+        {
+            TimelineEvent e = events[i];
+            e.ResetRandomEventPools();
+            events[i] = e;
+        }
+        for (int i = 0; i < allBotTimelines.Length; i++)
+        {
+            allBotTimelines[i].ResetTimeline();
+        }
+        for (int i = 0; i < allSetDynamicBotNodes.Length; i++)
+        {
+            allSetDynamicBotNodes[i].ResetComponent();
+        }
+        for (int i = 0; i < allBotTimelineBranches.Length; i++)
+        {
+            allBotTimelineBranches[i].ResetComponent();
+        }
+        for (int i = 0; i < allCharacters.Count; i++)
+        {
+            allCharacters[i].gameObject.SetActive(true);
+            allCharacters[i].ResetState();
+        }
+        for (int i = 0; i < allBotNodes.Length; i++)
+        {
+            allBotNodes[i].occupied = false;
+            allBotNodes[i].hasMechanic = false;
+        }
+        for (int i = 0; i < allMechanicNodes.Length; i++)
+        {
+            allMechanicNodes[i].isTaken = false;
+        }
+        pausedBy.Clear();
+        paused = false;
+        Time.timeScale = 1f;
+        if (mechanicParent != null)
+        {
+            foreach (Transform child in mechanicParent)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+        for (int i = 0; i < disableDuringPlayback.Length; i++)
+        {
+            disableDuringPlayback[i].interactable = true;
+        }
+        if (partyList != null)
+            partyList.UpdatePartyList();
+        if (enemyList != null)
+            enemyList.UpdatePartyList();
+        onReset.Invoke();
+        resetCalled = false;
     }
 
     public void WipeParty(PartyList party, string cause = "")
@@ -650,7 +663,7 @@ public class FightTimeline : MonoBehaviour
             if (!partyWiped)
             {
                 partyWiped = true;
-                StartCoroutine(ExecutePartyWipe(party, cause));
+                StartCoroutine(IE_PartyWipe(party, cause));
             }
         }
         if (party == enemyList)
@@ -658,24 +671,115 @@ public class FightTimeline : MonoBehaviour
             if (!enemiesWiped)
             {
                 enemiesWiped = true;
-                StartCoroutine(ExecutePartyWipe(party, cause));
+                StartCoroutine(IE_PartyWipe(party, cause));
             }
         }
         else
         {
-            StopCoroutine(ExecutePartyWipe(party, cause));
-            StartCoroutine(ExecutePartyWipe(party, cause));
+            StopCoroutine(IE_PartyWipe(party, cause));
+            StartCoroutine(IE_PartyWipe(party, cause));
         }
     }
 
     // Execute the party wipe with a small delay between each member to simulate how FFXIV applies party wide damage
-    private IEnumerator ExecutePartyWipe(PartyList party, string cause)
+    private IEnumerator IE_PartyWipe(PartyList party, string cause)
     {
         for (int i = 0; i < party.members.Count; i++)
         {
             party.members[i].characterState.ModifyHealth(new Damage(100, true, true, Damage.DamageType.unique, Damage.ElementalAspect.unaspected, Damage.PhysicalAspect.none, Damage.DamageApplicationType.percentageFromMax, cause), true);
             yield return new WaitForSeconds(0.066f);
         }
+    }
+
+    public int GetRandomEventResult(int id)
+    {
+        if (randomEventResults.TryGetValue(id, out int value))
+        {
+            return value;
+        }
+
+        return -1;
+    }
+
+    public bool TryGetRandomEventResult(int id, out int value)
+    {
+        if (randomEventResults.TryGetValue(id, out int v))
+        {
+            value = v;
+            return true;
+        }
+        value = -1;
+        return false;
+    }
+
+    public void SetRandomEventResult(int id, int result)
+    {
+        if (randomEventResults.ContainsKey(id))
+        {
+            randomEventResults[id] = result;
+            for (int i = 0; i < m_randomEventResults.Count; i++)
+            {
+                if (m_randomEventResults[i].id == id)
+                {
+                    RandomEventResult rer = m_randomEventResults[i];
+                    rer.value = result;
+                    m_randomEventResults[i] = rer;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            if (randomEventResults.Count < 1)
+            {
+                randomEventResults = new Dictionary<int, int>();
+            }
+            randomEventResults.Add(id, result);
+            m_randomEventResults.Add(new RandomEventResult(id, result));
+        }
+    }
+
+    public void AddRandomEventResult(int id, int result)
+    {
+        int newId = id;
+        while (randomEventResults.ContainsKey(newId))
+        {
+            newId++;
+        }
+        randomEventResults.Add(newId, result);
+        m_randomEventResults.Add(new RandomEventResult(newId, result));
+    }
+
+    public void ClearRandomEventResult(int id)
+    {
+        if (randomEventResults.ContainsKey(id))
+        {
+            randomEventResults.Remove(id);
+            for (int i = 0; i < m_randomEventResults.Count; i++)
+            {
+                if (m_randomEventResults[i].id == id)
+                {
+                    m_randomEventResults.RemoveAt(i);
+                    break;
+                }
+            }
+        }
+    }
+
+    public void ToggleJonVoiceLines(bool value)
+    {
+        jon = value;
+    }
+
+    public void ToggleNoNewRandomSeed()
+    {
+        ToggleNoNewRandomSeed(!noNewSeedOnStart);
+    }
+
+    public void ToggleNoNewRandomSeed(bool value)
+    {
+        noNewSeedOnStart = value;
+        onNoNewSeedOnStartChanged.Invoke(value);
     }
 
     public void ToggleAutomarker()
@@ -760,6 +864,7 @@ public class FightTimeline : MonoBehaviour
         public string name;
         public float time;
         public List<RandomEventPool> randomEventPools;
+        private List<RandomEventPool> originalRandomEventPools;
         public List<TimelineCharacterEvent> characterEvents;
 
         public TimelineEvent(string name, float time, List<RandomEventPool> randomSets, List<TimelineCharacterEvent> characterEvents)
@@ -767,7 +872,44 @@ public class FightTimeline : MonoBehaviour
             this.name = name;
             this.time = time;
             this.randomEventPools = randomSets;
+            this.originalRandomEventPools = randomSets;
             this.characterEvents = characterEvents;
+        }
+
+        public void SaveRandomEventPools()
+        {
+            if (randomEventPools == null || randomEventPools.Count < 1)
+                return;
+
+            originalRandomEventPools = new List<RandomEventPool>();
+
+            if (Instance != null && Instance.log)
+                Debug.Log($"Saving random event pools for {name} with {randomEventPools.Count} entries");
+            
+            for (int i = 0; i < randomEventPools.Count; i++)
+            {
+                originalRandomEventPools.Add(new RandomEventPool(randomEventPools[i]));
+            }
+        }
+
+        public void ResetRandomEventPools()
+        {
+            if (originalRandomEventPools == null || originalRandomEventPools.Count < 1)
+            {
+                if (Instance != null && Instance.log)
+                    Debug.Log($"No original random event pools found for {name}");
+                return;
+            }
+
+            randomEventPools = new List<RandomEventPool>();
+
+            if (Instance != null && Instance.log)
+                Debug.Log($"Resetting random event pools for {name} with {originalRandomEventPools.Count} entries");
+
+            for (int i = 0; i < originalRandomEventPools.Count; i++)
+            {
+                randomEventPools.Add(new RandomEventPool(originalRandomEventPools[i]));
+            }
         }
     }
 
@@ -786,6 +928,17 @@ public class FightTimeline : MonoBehaviour
                 this.name = $"{id}_{characterActionPool.Count}";
             else
                 this.name = id.ToString();
+        }
+
+        public RandomEventPool(RandomEventPool copyFrom)
+        {
+            this.id = copyFrom.id;
+            this.CharacterActionPool = new List<CharacterActionData>();
+            for (int i = 0; i < copyFrom.CharacterActionPool.Count; i++)
+            {
+                this.CharacterActionPool.Add(copyFrom.CharacterActionPool[i]);
+            }
+            this.name = copyFrom.name;
         }
     }
 
@@ -814,30 +967,6 @@ public class FightTimeline : MonoBehaviour
         public FightMechanic[] triggerMechanics;
         public UnityEvent onEvent;
         public RandomCheck[] randomChecks;
-
-        /*public TimelineCharacterEvent(string name, int id, CharacterState character, ActionController actions, TargetController targets, AIController controller, BossController bossController, StatusEffectData[] giveBuffs, StatusEffectData[] giveDebuffs, CharacterAction[] performCharacterActions, TargetNode target, BotTimeline botTimeline, bool moveToTarget, bool faceTarget, bool teleport, bool pickRandomCharacterAction, bool pickRandomTarget, FightMechanic[] triggerMechanics, UnityEvent onEvent, int eventRandomSetPoolId = -1)
-        {
-            this.name = name;
-            this.id = id;
-            this.character = character;
-            this.actions = actions;
-            this.targets = targets;
-            this.controller = controller;
-            this.bossController = bossController;
-            this.giveBuffs = giveBuffs;
-            this.giveDebuffs = giveDebuffs;
-            this.performCharacterActions = performCharacterActions;
-            this.target = target;
-            this.botTimeline = botTimeline;
-            this.moveToTarget = moveToTarget;
-            this.faceTarget = faceTarget;
-            this.teleport = teleport;
-            this.pickRandomCharacterAction = pickRandomCharacterAction;
-            this.pickRandomTarget = pickRandomTarget;
-            this.randomEventPoolId = eventRandomSetPoolId;
-            this.triggerMechanics = triggerMechanics;
-            this.onEvent = onEvent;
-        }*/
     }
 
     [System.Serializable]
@@ -849,24 +978,5 @@ public class FightTimeline : MonoBehaviour
         [MinValue(0)] public int positiveResult;
         [MinValue(0)] public int negativeResult;
         public bool matchFromTarget;
-    }
-
-    [System.Serializable]
-    public struct SectorMechanicResult
-    {
-        public int id;
-        public Dictionary<Sector, List<MechanicNode>> nodeAssignmentsBySector;
-
-        public SectorMechanicResult(int id)
-        {
-            this.id = id;
-            nodeAssignmentsBySector = new Dictionary<Sector, List<MechanicNode>>();
-        }
-
-        public SectorMechanicResult(int id, Dictionary<Sector, List<MechanicNode>> nodeAssignmentsBySector)
-        {
-            this.id = id;
-            this.nodeAssignmentsBySector = nodeAssignmentsBySector;
-        }
     }
 }

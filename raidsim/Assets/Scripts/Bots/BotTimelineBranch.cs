@@ -13,6 +13,12 @@ public class BotTimelineBranch : MonoBehaviour
     private SetDynamicBotNode dynamicNodeNormal;
     private SetDynamicBotNode dynamicNodeAlternative;
     private Coroutine ieChooseBranch;
+    private bool used = false;
+
+    public void ResetComponent()
+    {
+        used = false;
+    }
 
     public void ChooseBranch(BotTimeline timeline)
     {
@@ -44,10 +50,17 @@ public class BotTimelineBranch : MonoBehaviour
 
     private void ChooseBranchInternal(BotTimeline timeline)
     {
+        if (used)
+        {
+            Debug.LogWarning($"[BotTimelineBranch ({gameObject.name})] already used, but the timeline '{timeline.gameObject.name}' for the bot '{timeline.bot.gameObject.name}' is trying to use it!");
+            return;
+        }
+
         if (nodeGroup != null && basedOnSectorNodeAvailability)
         {
             if (nodeGroup.DoesSectorHaveNodesAvailable(timeline.bot.state.sector))
             {
+                used = true;
                 normal.bot = timeline.bot;
                 normal.bot.botTimeline = normal;
                 if (dynamicNodeNormal != null)
@@ -58,6 +71,7 @@ public class BotTimelineBranch : MonoBehaviour
             }
             else
             {
+                used = true;
                 alternative.bot = timeline.bot;
                 alternative.bot.botTimeline = alternative;
                 if (dynamicNodeAlternative != null)

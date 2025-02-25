@@ -46,10 +46,12 @@ public class PlayerController : MonoBehaviour
     public float slideDuration = 0.5f;
     private bool movementFrozen = false;
     private bool knockedBack = false;
+    private bool preventJumping = false;
     private bool jumping = false;
     private bool jumpInput = false;
     public bool jumpInputAvailable = true;
     private InputActionReference jumpControllerBind;
+    private InputActionReference[] controllerModifierBinds;
 
     private int animatorParameterDead = Animator.StringToHash("Dead");
     private int animatorParameterSpeed = Animator.StringToHash("Speed");
@@ -57,6 +59,13 @@ public class PlayerController : MonoBehaviour
     private int animatorParamterSliding = Animator.StringToHash("Slipping");
     private int animatorParameterTurning = Animator.StringToHash("Turning");
     private int animatorParameterJumping = Animator.StringToHash("Jump");
+    private int animatorParameterIsJumping = Animator.StringToHash("Jumping");
+    private int animatorParameterIsCasting = Animator.StringToHash("Casting");
+    private int animatorParameterIsDashing = Animator.StringToHash("Dashing");
+    private int animatorParameterIsBlueCasting = Animator.StringToHash("General_Casting_Blue");
+    private int animatorParameterIsSwipe = Animator.StringToHash("Swipe");
+    private int animatorParameterIsActionLocked = Animator.StringToHash("ActionLocked");
+    private int animatorParameterReset = Animator.StringToHash("Reset");
 
     void Awake()
     {
@@ -126,11 +135,29 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        if (controllerModifierBinds == null || controllerModifierBinds.Length <= 0)
+        {
+            if (userInput != null)
+            {
+                controllerModifierBinds = userInput.controllerModifierKeys.ToArray();
+            }
+        }
+
         if (jumpControllerBind != null)
         {
             jumpControllerBind.action.Enable();
             jumpControllerBind.action.performed += ctx => { if (jumpInputAvailable) { jumpInput = true; } else { jumpInput = false; } };
             jumpControllerBind.action.canceled += ctx => jumpInput = false;
+        }
+
+        if (controllerModifierBinds != null && controllerModifierBinds.Length > 0)
+        {
+            for (int i = 0; i < controllerModifierBinds.Length; i++)
+            {
+                controllerModifierBinds[i].action.Enable();
+                controllerModifierBinds[i].action.performed += ctx => preventJumping = true;
+                controllerModifierBinds[i].action.canceled += ctx => preventJumping = false;
+            }
         }
 
         Init();
@@ -140,9 +167,19 @@ public class PlayerController : MonoBehaviour
     {
         if (jumpControllerBind != null)
         {
-            jumpControllerBind.action.Disable();
             jumpControllerBind.action.performed -= ctx => { if (jumpInputAvailable) { jumpInput = true; } else { jumpInput = false; } };
             jumpControllerBind.action.canceled -= ctx => jumpInput = false;
+            jumpControllerBind.action.Disable();
+        }
+
+        if (controllerModifierBinds != null && controllerModifierBinds.Length > 0)
+        {
+            for (int i = 0; i < controllerModifierBinds.Length; i++)
+            {
+                controllerModifierBinds[i].action.performed -= ctx => preventJumping = true;
+                controllerModifierBinds[i].action.canceled -= ctx => preventJumping = false;
+                controllerModifierBinds[i].action.Disable();
+            }
         }
     }
 
@@ -166,7 +203,7 @@ public class PlayerController : MonoBehaviour
                 state.still = true;
             }
 
-            if (jumpInput)
+            if (jumpInput && !preventJumping)
             {
                 jumpInputAvailable = false;
                 Utilities.FunctionTimer.Create(this, () => jumpInputAvailable = true, 1f, "jump_input_delay", false, true);
@@ -186,7 +223,7 @@ public class PlayerController : MonoBehaviour
             Vector2 input = Vector2.zero;
             Vector2 inputR = Vector2.zero;
 
-            if ((userInput.GetButtonDown("Jump") || jumpInput) && !jumping)
+            if ((userInput.GetButtonDown("Jump") || jumpInput) && !jumping && !preventJumping)
             {
                 jumpInput = false;
                 jumping = true;
@@ -514,5 +551,39 @@ public class PlayerController : MonoBehaviour
         transform.position = new Vector3(0f, ySpawnOffset, 0f);
         transform.eulerAngles = new Vector3(0f, Random.Range(0, 360), 0f);
         //cameraT.gameObject.GetComponent<ThirdPersonCamera>().RandomRotate();
+    }
+
+    public void ResetController()
+    {
+        enableInput = true;
+        freezeMovement = false;
+        movementFrozen = false;
+        knockedBack = false;
+        sliding = false;
+        jumping = false;
+        jumpInput = false;
+        jumpInputAvailable = true;
+        tm = 0f;
+        release = 0f;
+        storedInput = Vector2.zero;
+        storedInputR = Vector2.zero;
+        Init();
+        if (animator != null)
+        {
+            animator.SetBool(animatorParameterDead, false);
+            animator.SetBool(animatorParameterIsCasting, false);
+            animator.SetBool(animatorParameterDiamondback, false);
+            animator.SetBool(animatorParameterDiamondback, false);
+            animator.SetBool(animatorParamterSliding, false);
+            animator.SetFloat(animatorParameterSpeed, 0f);
+            animator.SetFloat(animatorParameterTurning, 0f);
+            animator.ResetTrigger(animatorParameterJumping);
+            animator.SetBool(animatorParameterIsJumping, false);
+            animator.SetBool(animatorParameterIsDashing, false);
+            animator.ResetTrigger(animatorParameterIsBlueCasting);
+            animator.ResetTrigger(animatorParameterIsSwipe);
+            animator.SetBool(animatorParameterIsActionLocked, false);
+            animator.SetTrigger(animatorParameterReset);
+        }
     }
 }

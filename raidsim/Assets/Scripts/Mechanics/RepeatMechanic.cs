@@ -33,6 +33,12 @@ public class RepeatMechanic : FightMechanic
         }
     }
 
+    public override void InterruptMechanic(ActionInfo actionInfo)
+    {
+        StopAllCoroutines();
+        ieRepeat = null;
+    }
+
     private IEnumerator IE_Repeat(ActionInfo actionInfo)
     {
         for (int i = 0; i < repeatCount; i++)

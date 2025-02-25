@@ -8,15 +8,23 @@ public class BossController : MonoBehaviour
     Animator animator;
     public CharacterState state { get; private set; }
     public ActionController controller { get; private set; }
+    private Vector3 originalPosition;
+    private Quaternion originalRotation;
+    private Vector3 originalScale;
 
     public Transform target;
+    private Transform wasTarget;
     public Transform lookTarget;
+    private Transform wasLookTarget;
     public bool includeCollider = true;
     public float stoppingDistance = 3f;
     public float turnSmoothTime;
+    private float wasTurnSmoothTime;
 
     public float turningSpeedMultiplier = 300f; // Multiplier to amplify turning speed, adjust as needed
+    private float wasTurningSpeedMultiplier;
     public float turningSmoothTime = 0.1f;   // Smoothing time for turning speed (adjust as needed)
+    private float wasTurningSmoothTime;
 
     private float turningVelocity = 0f;    // Smoothing velocity for turning speed
 
@@ -24,8 +32,11 @@ public class BossController : MonoBehaviour
     private float targetRadius = 0f;
 
     public float acceleration = 1f;  // Adjust for how quickly you want the boss to accelerate
+    private float wasAcceleration;
     public float deceleration = 2f;  // Adjust for how quickly you want the boss to decelerate
+    private float wasDeceleration;
     public float speedThreshold = 0.05f; // Threshold to lock speeds when close enough
+    private float wasSpeedThreshold;
 
     private float currentSpeed = 0f; // Track the current speed
     private float targetSpeed = 0f;  // The speed we want to reach
@@ -34,6 +45,7 @@ public class BossController : MonoBehaviour
     private float turningSpeed = 0f;       // Turning speed to send to the animator
 
     public bool ignoreCasting = false;
+    private bool wasIgnoreCasting;
 
     private int animatorParameterDead = Animator.StringToHash("Dead");
     private int animatorParameterSpeed = Animator.StringToHash("Speed");
@@ -46,6 +58,20 @@ public class BossController : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
         state = GetComponent<CharacterState>();
         controller = GetComponent<ActionController>();
+
+        wasTarget = target;
+        wasLookTarget = lookTarget;
+        wasTurnSmoothTime = turnSmoothTime;
+        wasTurningSpeedMultiplier = turningSpeedMultiplier;
+        wasTurningSmoothTime = turningSmoothTime;
+        wasAcceleration = acceleration;
+        wasDeceleration = deceleration;
+        wasSpeedThreshold = speedThreshold;
+        wasIgnoreCasting = ignoreCasting;
+
+        originalPosition = transform.position;
+        originalRotation = transform.rotation;
+        originalScale = transform.localScale;
     }
 
     void Update()
@@ -57,6 +83,18 @@ public class BossController : MonoBehaviour
         {
             animator.SetBool(animatorParameterDead, state.dead);
             animator.SetBool(animatorParameterDiamondback, state.HasEffect("Diamondback"));
+        } 
+        else
+        {
+            if (Utilities.RateLimiter(57))
+            {
+                if (animator == null)
+                    animator = GetComponentInChildren<Animator>();
+                if (state == null)
+                    state = GetComponent<CharacterState>();
+                if (controller == null)
+                    controller = GetComponent<ActionController>();
+            }
         }
 
         if (target != null && !state.dead && ((!ignoreCasting && !controller.isCasting && !animator.TryGetBool(animatorParameterActionLocked)) || ignoreCasting))
@@ -174,6 +212,22 @@ public class BossController : MonoBehaviour
                 animator.SetFloat(animatorParameterTurning, turningSpeed); // Update turning when stationary
             }
         }
+    }
+
+    public void ResetController()
+    {
+        target = wasTarget;
+        lookTarget = wasLookTarget;
+        turningSmoothTime = wasTurningSmoothTime;
+        turningSpeedMultiplier = wasTurningSpeedMultiplier;
+        turnSmoothTime = wasTurnSmoothTime;
+        acceleration = wasAcceleration;
+        deceleration = wasDeceleration;
+        speedThreshold = wasSpeedThreshold;
+        ignoreCasting = wasIgnoreCasting;
+        transform.position = originalPosition;
+        transform.rotation = originalRotation;
+        transform.localScale = originalScale;
     }
 
     public void SetAnimator(Animator animator)

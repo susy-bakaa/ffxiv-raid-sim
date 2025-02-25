@@ -331,6 +331,9 @@ public static class Utilities
 
     public static T GetRandomItem<T>(this IList<T> list)
     {
+        if (list == null || list.Count < 1)
+            return default;
+
         return list[UnityEngine.Random.Range(0, list.Count)];
     }
 

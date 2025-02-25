@@ -24,6 +24,7 @@ public class TargetController : MonoBehaviour
     public PartyList targetList;
     public TargetNode currentTarget;
     public TargetType targetType = TargetType.nearest;
+    private TargetType wasTargetType;
     //public TargetNode selfTarget;
     public List<TargetNode> availableTargets;
     public List<TargetNode> targetTriggerNodes;
@@ -39,10 +40,14 @@ public class TargetController : MonoBehaviour
     public bool isAi;
     public bool canMouseRaycast = true;
     public bool autoTarget;
+    private bool wasAutoTarget;
     public bool onlyAliveTargets = false;
+    private bool wasOnlyAliveTargets;
     public bool onlyIfSomeoneHasEnmity = false;
+    private bool wasOnlyIfSomeoneHasEnmity;
     public bool enableAutoAttacksOnDoubleMouseRaycast = false;
     public bool ignoreTargetingRestrictions = false;
+    private bool wasIgnoreTargetingRestrictions;
 
     [Header("Events")]
     public bool eventsEnabled = true;
@@ -121,6 +126,11 @@ public class TargetController : MonoBehaviour
             rateLimit = Random.Range(autoTargetRate - 9, autoTargetRate + 1);
         }
 
+        wasTargetType = targetType;
+        wasAutoTarget = autoTarget;
+        wasOnlyAliveTargets = onlyAliveTargets;
+        wasOnlyIfSomeoneHasEnmity = onlyIfSomeoneHasEnmity;
+        wasIgnoreTargetingRestrictions = ignoreTargetingRestrictions;
 
         targetTriggerNodes = new List<TargetNode>();
     }
@@ -168,6 +178,32 @@ public class TargetController : MonoBehaviour
             //if (eventsEnabled)
                 //onTarget.Invoke(null);
         }
+    }
+
+    public void ResetController()
+    {
+        targetType = wasTargetType;
+        autoTarget = wasAutoTarget;
+        onlyAliveTargets = wasOnlyAliveTargets;
+        onlyIfSomeoneHasEnmity = wasOnlyIfSomeoneHasEnmity;
+        ignoreTargetingRestrictions = wasIgnoreTargetingRestrictions;
+        currentTarget = null;
+        availableTargets.Clear();
+        targetTriggerNodes.Clear();
+        SetTarget();
+        UpdateUserInterface();
+        UpdateTarget();
+        if (self != null)
+        {
+            self.onDetarget.Invoke();
+            self.UpdateUserInterface(0f, 0f);
+        }
+        if (targetCastbarGroup != null)
+            targetCastbarGroup.alpha = 0f;
+        if (targetCastbarName != null)
+            targetCastbarName.text = "Unknown Cast";
+        if (targetsTargetGroup != null)
+            targetsTargetGroup.alpha = 0f;
     }
 
     void HandleMouseClick()

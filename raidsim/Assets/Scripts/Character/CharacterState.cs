@@ -23,6 +23,8 @@ public class CharacterState : MonoBehaviour
     [Hidden]
     public TargetController targetController;
     [Hidden]
+    public ActionController actionController;
+    [Hidden]
     public Transform dashKnockbackPivot;
 
     #region Stat Variables
@@ -116,20 +118,33 @@ public class CharacterState : MonoBehaviour
 
     [Header("States")]
     public Flag invulnerable = new Flag("invulnerable", AggregateLogic.AnyTrue);
+    private Flag wasInvulnerable;
     public Flag uncontrollable = new Flag("uncontrollable", AggregateLogic.AnyTrue);
+    private Flag wasUncontrollable;
     public Flag untargetable = new Flag("untargetable", AggregateLogic.AnyTrue);
+    private Flag wasUntargetable;
     public Flag bound = new Flag("bound", AggregateLogic.AnyTrue);
+    private Flag wasBound;
     public Flag stunned = new Flag("stunned", AggregateLogic.AnyTrue);
+    private Flag wasStunned;
     public Flag knockbackResistant = new Flag("knockbackResistant", AggregateLogic.AnyTrue);
+    private Flag wasKnockbackResistant;
     public Flag silenced = new Flag("silenced", AggregateLogic.AnyTrue);
+    private Flag wasSilenced;
     public Flag pacificied = new Flag("pacificied", AggregateLogic.AnyTrue);
+    private Flag wasPacified;
     public Flag amnesia = new Flag("amnesia", AggregateLogic.AnyTrue);
+    private Flag wasAmnesia;
     public Flag canDoActions = new Flag("canDoActions", new List<FlagValue> { new FlagValue("base", true) });
+    private Flag wasCanDoActions;
     public Flag canDie = new Flag("canDie", new List<FlagValue> { new FlagValue("base", true) }, AggregateLogic.AnyTrue);
+    private Flag wasCanDie;
     public bool dead = false;
     public bool still = false;
     public bool disabled = false;
+    private bool wasDisabled = false;
     public bool canGainEnmity = true;
+    private bool preventDamage = false;
 
     [Header("Effects")]
     private Dictionary<string, StatusEffect> effects = new Dictionary<string, StatusEffect>();
@@ -160,9 +175,13 @@ public class CharacterState : MonoBehaviour
     public Role role = Role.unassigned;
     public Sector sector = Sector.N;
     public bool isAggressive = true;
+    private bool wasIsAggressive;
     public bool hideNameplate = false;
+    private bool wasHideNameplate;
     public bool hidePartyName = false;
+    private bool wasHidePartyName;
     public bool hidePartyListEntry = false;
+    private bool wasHidePartyListEntry;
 
     #region User Interface Variables
     [Header("Personal - Name")]
@@ -202,8 +221,10 @@ public class CharacterState : MonoBehaviour
     private CanvasGroup nameplateHealthBarGroup;
     [Header("Personal - Signs")]
     public bool showSignMarkers = true;
+    public bool showDeadMarker = true;
     public CanvasGroup signMarkersGroup;
     public List<SignMarker> signMarkers = new List<SignMarker>();
+    public GameObject deadMarker;
 
     [Header("Party - Name")]
     public bool showPartyCharacterName = true;
@@ -336,6 +357,7 @@ public class CharacterState : MonoBehaviour
         aiController = GetComponent<AIController>();
         bossController = GetComponent<BossController>();
         targetController = GetComponent<TargetController>();
+        actionController = GetComponent<ActionController>();
         TaggedObject[] taggedObjects = transform.Find("Pivot")?.GetComponentsInChildren<TaggedObject>();
 
         if (taggedObjects != null && taggedObjects.Length > 0)
@@ -392,23 +414,39 @@ public class CharacterState : MonoBehaviour
             }
         }
 
+        wasDisabled = disabled;
+        wasHideNameplate = hideNameplate;
+        wasHidePartyName = hidePartyName;
+        wasHidePartyListEntry = hidePartyListEntry;
+        wasIsAggressive = isAggressive;
         currentMaxHealth = health;
         defaultMaxHealth = health;
         defaultSpeed = currentSpeed;
         dead = false;
         invulnerable.ForceUpdate();
-        invulnerable.ForceUpdate();
+        wasInvulnerable = new Flag(invulnerable);
         uncontrollable.ForceUpdate();
+        wasUncontrollable = new Flag(uncontrollable);
         untargetable.ForceUpdate();
+        wasUntargetable = new Flag(untargetable);
         bound.ForceUpdate();
+        wasBound = new Flag(bound);
         stunned.ForceUpdate();
+        wasStunned = new Flag(stunned);
         knockbackResistant.ForceUpdate();
+        wasKnockbackResistant = new Flag(knockbackResistant);
         silenced.ForceUpdate();
+        wasSilenced = new Flag(silenced);
         pacificied.ForceUpdate();
+        wasPacified = new Flag(pacificied);
         amnesia.ForceUpdate();
+        wasAmnesia = new Flag(amnesia);
         canDoActions.ForceUpdate();
+        wasCanDoActions = new Flag(canDoActions);
         canDie.ForceUpdate();
+        wasCanDie = new Flag(canDie);
         enmity = new Dictionary<CharacterState, long>();
+        preventDamage = false;
 
         if (healthBar != null)
         {
@@ -930,12 +968,172 @@ public class CharacterState : MonoBehaviour
     {
         hidePartyListEntry = !state;
     }
+
+    public void ResetState()
+    {
+        maxHealthModifiers.Clear();
+        speedModifiers.Clear();
+        speed.Clear();
+        damageOutputModifiers.Clear();
+        damageReduction.Clear();
+        magicalTypeDamageModifiers.Clear();
+        physicalTypeDamageModifiers.Clear();
+        uniqueTypeDamageModifiers.Clear();
+        unaspectedElementDamageModifiers.Clear();
+        fireElementDamageModifiers.Clear();
+        iceElementDamageModifiers.Clear();
+        lightningElementDamageModifiers.Clear();
+        waterElementDamageModifiers.Clear();
+        windElementDamageModifiers.Clear();
+        earthElementDamageModifiers.Clear();
+        darkElementDamageModifiers.Clear();
+        lightElementDamageModifiers.Clear();
+        slashingElementDamageModifiers.Clear();
+        piercingElementDamageModifiers.Clear();
+        bluntElementDamageModifiers.Clear();
+        poisonDamageModifiers.Clear();
+        enmityGenerationModifiers.Clear();
+        enmity.Clear();
+
+        // Make the character invulnerable and unable to die here for a split second so any status effects that kill on expiry don't kill them
+        invulnerable.SetFlag("resetState", true);
+        canDie.SetFlag("resetState", false);
+        preventDamage = true;
+
+        if (effectsArray != null)
+        {
+            for (int i = 0; i < effectsArray.Length; i++)
+            {
+                if (effectsArray[i] == null)
+                    continue;
+                effectsArray[i].onCleanse.Invoke(this);
+                effectsArray[i].onExpire.Invoke(this);
+            }
+        }
+
+        effects.Clear();
+        effectsArray = null;
+        instantCasts.Clear();
+        currentShields.Clear();
+
+#if UNITY_EDITOR
+        m_enmity.Clear();
+        m_effects.Clear();
+        
+#endif
+
+        currentMaxHealth = defaultMaxHealth;
+        health = defaultMaxHealth;
+        shield = 0;
+        currentSpeed = defaultSpeed;
+        currentDamageOutputMultiplier = 1f;
+        currentDamageReduction = 1f;
+        magicalTypeDamageModifier = 1f;
+        physicalTypeDamageModifier = 1f;
+        uniqueTypeDamageModifier = 1f;
+        unaspectedElementDamageModifier = 1f;
+        fireElementDamageModifier = 1f;
+        iceElementDamageModifier = 1f;
+        lightningElementDamageModifier = 1f;
+        waterElementDamageModifier = 1f;
+        windElementDamageModifier = 1f;
+        earthElementDamageModifier = 1f;
+        darkElementDamageModifier = 1f;
+        lightElementDamageModifier = 1f;
+        slashingElementDamageModifier = 1f;
+        piercingElementDamageModifier = 1f;
+        bluntElementDamageModifier = 1f;
+        poisonDamageModifier = 1f;
+        enmityGenerationModifier = 1f;
+
+        invulnerable = new Flag(wasInvulnerable);
+        uncontrollable = new Flag(wasUncontrollable);
+        untargetable = new Flag(wasUntargetable);
+        bound = new Flag(wasBound);
+        stunned = new Flag(wasStunned);
+        knockbackResistant = new Flag(wasKnockbackResistant);
+        silenced = new Flag(wasSilenced);
+        pacificied = new Flag(wasPacified);
+        amnesia = new Flag(wasAmnesia);
+        canDoActions = new Flag(wasCanDoActions);
+        canDie = new Flag(wasCanDie);
+        disabled = wasDisabled;
+        dead = false;
+        isAggressive = wasIsAggressive;
+        hideNameplate = wasHideNameplate;
+        hidePartyName = wasHidePartyName;
+        hidePartyListEntry = wasHidePartyListEntry;
+
+        if (aiController != null)
+            aiController.ResetController();
+        if (targetController != null)
+            targetController.ResetController();
+        if (bossController != null)
+            bossController.ResetController();
+        if (playerController != null)
+            playerController.ResetController();
+        if (actionController != null)
+            actionController.ResetController();
+
+        if (statusEffectParent != null)
+        {
+            foreach (Transform child in statusEffectParent)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+        if (statusEffectNegativeIconParent != null)
+        {
+            foreach (Transform child in statusEffectNegativeIconParent)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+        if (statusEffectPositiveIconParent != null)
+        {
+            foreach (Transform child in statusEffectPositiveIconParent)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+        if (statusEffectIconParentParty != null)
+        {
+            foreach (Transform child in statusEffectIconParentParty)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+        if (targetStatusEffectIconParent != null)
+        {
+            foreach (Transform child in targetStatusEffectIconParent)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
+        OnEnable();
+        Start();
+
+        HealthBarUserInterface();
+        UpdateCharacterName();
+
+        Utilities.FunctionTimer.Create(this, () =>
+        {
+            preventDamage = false;
+            dead = false;
+            currentMaxHealth = defaultMaxHealth;
+            health = defaultMaxHealth;
+        }, 0.1f, $"CharacterState_{gameObject.name}_ResetState_Health_Delay", false, false);
+    }
     #endregion
 
     #region Health
     public void ModifyHealth(Damage damage, bool kill = false, bool noFlyText = false)
     {
         if (!gameObject.activeSelf)
+            return;
+
+        if (preventDamage)
             return;
 
         if (health <= 0 || dead)
@@ -1215,6 +1413,9 @@ public class CharacterState : MonoBehaviour
 
     private void SetHealth(long value, bool negative, bool kill = false, bool ignoreDamageReduction = false, bool ignoreShields = false)
     {
+        if (preventDamage)
+            return;
+
         if (kill)
         {
             if (negative)
@@ -1241,6 +1442,9 @@ public class CharacterState : MonoBehaviour
 
     private void RemoveHealth(float percentage, bool fromMax, bool negative, bool kill = false, bool ignoreDamageReduction = false, bool ignoreShields = false)
     {
+        if (preventDamage)
+            return;
+
         if (kill)
         {
             ModifyHealthInternal(0, kill, ignoreDamageReduction, ignoreShields);
@@ -1261,6 +1465,12 @@ public class CharacterState : MonoBehaviour
 
     private void ModifyHealthInternal(long value, bool kill = false, bool ignoreDamageReduction = false, bool ignoreShields = false)
     {
+        if (preventDamage)
+        {
+            kill = false;
+            return;
+        }
+
         if (kill)
         {
             value = (long)Math.Round(-1 * (float)currentMaxHealth);
@@ -1298,7 +1508,7 @@ public class CharacterState : MonoBehaviour
         //
         long remainingDamage = value;
 
-        if (!invulnerable.value)
+        if (!invulnerable.value && !preventDamage)
         {
             if (FightTimeline.Instance.log)
                 Debug.Log($"[CharacterState.{gameObject.name}] raw damage modified from health | value {value}, kill {kill}, ignoreDamageReduction {ignoreDamageReduction}, ignoreShields {ignoreShields}");
@@ -1357,7 +1567,7 @@ public class CharacterState : MonoBehaviour
         }
         //
 
-        if (health <= 0 && !invulnerable.value)
+        if (health <= 0 && !invulnerable.value && !preventDamage)
         {
             if (canDie.value)
             {
@@ -1394,7 +1604,7 @@ public class CharacterState : MonoBehaviour
                 dead = false;
             }
         }
-        if (health > currentMaxHealth)
+        if ((health > currentMaxHealth) || preventDamage)
         {
             health = currentMaxHealth;
         }
@@ -1535,6 +1745,17 @@ public class CharacterState : MonoBehaviour
         if (healthBarTextParty != null)
         {
             healthBarTextParty.text = health.ToString();
+        }
+        if (deadMarker != null)
+        {
+            if (showDeadMarker && dead)
+            {
+                deadMarker.SetActive(true);
+            } 
+            else if (!showDeadMarker || !dead)
+            {
+                deadMarker.SetActive(false);
+            }
         }
     }
 
@@ -3326,7 +3547,7 @@ public class CharacterState : MonoBehaviour
     }
     #endregion
 
-        #region FlyTexts
+    #region FlyTexts
     public void ShowStatusEffectFlyText(StatusEffect statusEffect, int stacks, string prefix, CharacterState character = null)
     {
         ShowStatusEffectFlyText(statusEffect.data, stacks, prefix, character);
