@@ -309,7 +309,7 @@ public class CharacterState : MonoBehaviour
     }
 #endif
 
-    #region Name Functions
+    #region Custom Setters and Getters
     public string GetCharacterName()
     {
         int index = characterName.IndexOf('#');
@@ -347,6 +347,18 @@ public class CharacterState : MonoBehaviour
                 characterNameTextGroupParty.alpha = 0f;
             }
         }
+    }
+
+    public void SetAnimator(Animator animator)
+    {
+        if (bossController != null)
+            bossController.SetAnimator(animator);
+        if (playerController != null)
+            playerController.SetAnimator(animator);
+        if (aiController != null)
+            aiController.SetAnimator(animator);
+        if (actionController != null)
+            actionController.SetAnimator(animator);
     }
     #endregion
 
@@ -1123,7 +1135,7 @@ public class CharacterState : MonoBehaviour
             dead = false;
             currentMaxHealth = defaultMaxHealth;
             health = defaultMaxHealth;
-        }, 0.1f, $"CharacterState_{gameObject.name}_ResetState_Health_Delay", false, false);
+        }, 1f, $"CharacterState_{gameObject.name}_ResetState_Health_Delay", false, false);
     }
     #endregion
 

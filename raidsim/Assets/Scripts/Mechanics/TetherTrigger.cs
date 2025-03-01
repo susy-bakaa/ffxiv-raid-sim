@@ -37,6 +37,16 @@ public class TetherTrigger : MonoBehaviour
         {
             partyList = FightTimeline.Instance.partyList;
         }
+
+        initialized = false;
+
+        if (FightTimeline.Instance != null)
+        {
+            if (endPoint != null)
+                FightTimeline.Instance.onReset.AddListener(() => { initialized = false; lineRenderer.gameObject.SetActive(false); startCharacter = null; endCharacter = null; });
+            else
+                FightTimeline.Instance.onReset.AddListener(() => { initialized = false; lineRenderer.gameObject.SetActive(false); startCharacter = null; endCharacter = null; endPoint = null; });
+        }
     }
 
     void Start()

@@ -12,6 +12,7 @@ public class NextBotTimeline : MonoBehaviour
 
     [ShowIf("TypeEnum", choiceType.statusEffect)] public List<StatusEffectInfo> effects = new List<StatusEffectInfo>();
     [ShowIf("TypeEnum", choiceType.statusEffect)] public List<CharacterState> otherBots = new List<CharacterState>();
+    private List<CharacterState> originalOtherBots = new List<CharacterState>();
     [ShowIf("TypeEnum", choiceType.statusEffect)] public List<BotTimeline> otherBotsFromTimelines = new List<BotTimeline>();
     [HideIf("TypeEnum", choiceType.none)] public List<IndexMapping> indexMapping = new List<IndexMapping>();
     [HideIf("TypeEnum", choiceType.none)] public List<IndexMapping> indexMapping2 = new List<IndexMapping>();
@@ -46,6 +47,29 @@ public class NextBotTimeline : MonoBehaviour
     {
         if (player == null)
             player = Utilities.FindAnyByName("Player").GetComponent<CharacterState>();
+
+        originalOtherBots = new List<CharacterState>();
+        for (int i = 0; i < otherBots.Count; i++)
+        {
+            originalOtherBots.Add(otherBots[i]);
+        }
+
+        if (FightTimeline.Instance != null)
+        {
+            FightTimeline.Instance.onReset.AddListener(ResetVariables);
+        }
+    }
+
+    private void ResetVariables()
+    {
+        if (originalOtherBots == null || originalOtherBots.Count < 1)
+            return;
+
+        otherBots = new List<CharacterState>();
+        for (int i = 0; i < originalOtherBots.Count; i++)
+        {
+            otherBots.Add(originalOtherBots[i]);
+        }
     }
 
     public void Choose(BotTimeline old)

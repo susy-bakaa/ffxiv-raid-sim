@@ -28,10 +28,12 @@ public class BotTimeline : MonoBehaviour
 
     private int index;
     public bool TeleportAfterClose { get; private set; }
+    private float reduceWaitTime = 0f;
 
     void Awake()
     {
         index = UnityEngine.Random.Range(1000, 10000);
+        reduceWaitTime = 0f;
         if (FightTimeline.Instance != null && FightTimeline.Instance.log)
             onBegin.AddListener((BotTimeline timeline) => { Debug.Log($"[BotTimeline ({timeline.gameObject})] {timeline.bot.name} started timeline {gameObject.name}"); });
     }
@@ -188,6 +190,10 @@ public class BotTimeline : MonoBehaviour
                 // set target rotation or something
             }
             float finalWait = events[i].waitAtNode;
+            if (reduceWaitTime > 0f)
+            {
+                finalWait -= reduceWaitTime;
+            }
             if (events[i].randomWaitVariance > 0f)
             {
                 finalWait = events[i].waitAtNode + Random.Range(-events[i].randomWaitVariance, events[i].randomWaitVariance);
@@ -212,6 +218,7 @@ public class BotTimeline : MonoBehaviour
         targeting = null;
         party = null;
         currentTarget = null;
+        reduceWaitTime = 0f;
 
         if (events != null && events.Count > 0)
         {
@@ -225,6 +232,11 @@ public class BotTimeline : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void SetReducedWaitTime(float time)
+    {
+        reduceWaitTime = time;
     }
 
     [System.Serializable]

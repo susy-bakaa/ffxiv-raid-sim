@@ -8,6 +8,8 @@ public class EnvironmentHandler : MonoBehaviour
     public bool disableFogForWindows = false;
     public bool disableFogForLinux = false;
 
+    public int currentArenaIndex = 0;
+    private int originalArenaIndex = -1;
     public string[] arenaModels;
     public GameObject[] arenas;
 
@@ -38,6 +40,7 @@ public class EnvironmentHandler : MonoBehaviour
             RenderSettings.fog = false;
         }
 #endif
+        originalArenaIndex = currentArenaIndex;
     }
 
     private void Start()
@@ -46,6 +49,9 @@ public class EnvironmentHandler : MonoBehaviour
         {
             currentFightBundleName = fightSelector.CurrentScene.assetBundle;
         }
+
+        if (FightTimeline.Instance != null)
+            FightTimeline.Instance.onReset.AddListener(ResetArenaModel);
     }
 
     private void Update()
@@ -53,10 +59,7 @@ public class EnvironmentHandler : MonoBehaviour
         if (arenaModels == null || arenaModels.Length <= 0)
             return;
 
-        //if (dynamicParent == null)
-            //dynamicParent = GameObject.FindGameObjectWithTag("persistent").transform.Find("Environment");
-
-        if (AssetHandler.Instance != null && !arenaModelLoaded) // SceneHandler.Instance != null &&
+        if (AssetHandler.Instance != null && !arenaModelLoaded)
         {
             if (AssetHandler.Instance.HasBundleLoaded(currentFightBundleName))
             {
@@ -66,27 +69,29 @@ public class EnvironmentHandler : MonoBehaviour
                 for (int i = 0; i < arenaModels.Length; i++)
                 {
                     GameObject arena = AssetHandler.Instance.GetAsset(arenaModels[i]);
-                    //GameObject arena = null;
-                    //if (SceneHandler.Instance.DoesPersistentObjectExist(arenaModels[i]))
-                    //{
-                    //    arena = SceneHandler.Instance.GetPersistentObject(arenaModels[i]);
-                    //}
-                    //else
-                    //{
-                    //    arena = AssetHandler.Instance.GetAsset(arenaModels[i]);
-                    //}
-                    //arena.name = arena.name.Replace("(Clone)", "");
-                    //arena.transform.SetParent(dynamicParent);
                     arena.transform.SetParent(transform);
                     arena.SetActive(false);
                     arenas[i] = arena;
-                    //SceneHandler.Instance.AddPersistentObject(arena);
                 }
 
                 if (arenas.Length > 0)
-                    arenas[0].SetActive(true);
+                {
+                    if (originalArenaIndex >= 0 && originalArenaIndex < arenas.Length)
+                    {
+                        arenas[originalArenaIndex].SetActive(true);
+                    }
+                    else
+                    {
+                        arenas[0].SetActive(true);
+                    }
+                }
             }
         }
+    }
+
+    public void ResetArenaModel()
+    {
+        ChangeArenaModel(originalArenaIndex);
     }
 
     public void ChangeArenaModel(int index)

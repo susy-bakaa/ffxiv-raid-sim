@@ -13,7 +13,7 @@ public class BotNodeGroup : MonoBehaviour
 
     private void Awake()
     {
-        defaultAngle = transform.eulerAngles.y;
+        defaultAngle = transform.localEulerAngles.y;
         nodes.AddRange(GetComponentsInChildren<BotNode>(true));
         for (int i = 0; i < nodes.Count; i++)
         {

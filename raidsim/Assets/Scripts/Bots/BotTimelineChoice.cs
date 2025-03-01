@@ -21,14 +21,8 @@ public class BotTimelineChoice : MonoBehaviour
                 {
                     availableTimelines[i].bot = timeline.bot;
                     availableTimelines[i].bot.botTimeline = availableTimelines[i];
+                    availableTimelines[i].SetReducedWaitTime(0.1f);
                     availableTimelines[i].StartTimeline();
-
-                    if (availableTimelines[i].events != null && availableTimelines[i].events.Count > 0)
-                    {
-                        BotEvent e = availableTimelines[i].events[0];
-                        e.waitAtNode -= 0.1f;
-                        availableTimelines[i].events[0] = e;
-                    }
                     return;
                 }
             }

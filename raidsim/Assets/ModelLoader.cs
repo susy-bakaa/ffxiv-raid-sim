@@ -11,6 +11,8 @@ public class ModelLoader : MonoBehaviour
     [SerializeField] private GameObject model;
 
     private GameObject tempModel;
+    private Coroutine ieUpdateModels;
+    private ModelHandler modelHandler;
     private FightSelector fightSelector;
     private string currentFightBundleName;
     private bool modelLoaded = false;
@@ -18,6 +20,7 @@ public class ModelLoader : MonoBehaviour
     private void Awake()
     {
         fightSelector = FindObjectOfType<FightSelector>();
+        modelHandler = GetComponent<ModelHandler>();
         tempModel = transform.GetChild(0).gameObject;
     }
 
@@ -49,7 +52,20 @@ public class ModelLoader : MonoBehaviour
                 model.transform.localScale = scale;
                 this.model = model;
                 this.model.SetActive(true);
+
+                if (modelHandler != null)
+                {
+                    if (ieUpdateModels == null)
+                        ieUpdateModels = StartCoroutine(IE_UpdateModels(new WaitForSeconds(1f)));
+                }
             }
         }
+    }
+
+    private IEnumerator IE_UpdateModels(WaitForSeconds wait)
+    {
+        yield return wait;
+        modelHandler.UpdateModels();
+        ieUpdateModels = null;
     }
 }

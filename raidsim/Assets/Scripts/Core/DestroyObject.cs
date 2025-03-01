@@ -9,6 +9,7 @@ public class DestroyObject : MonoBehaviour
 
     public float lifetime = 1f;
     public bool disableInstead = false;
+    public bool disabledOnStart = false;
     public bool log = false;
 
     public UnityEvent onDestroy;
@@ -24,6 +25,21 @@ public class DestroyObject : MonoBehaviour
             state = GetComponent<CharacterState>();
 
         life = lifetime;
+    }
+
+    void Start()
+    {
+        if (disableInstead && disabledOnStart)
+        {
+            DisableObjectInternal();
+            if (FightTimeline.Instance != null)
+                FightTimeline.Instance.onReset.AddListener(() => { DisableObjectInternal(); ResetState(); });
+        }
+        else if (disableInstead && !disabledOnStart)
+        {
+            if (FightTimeline.Instance != null)
+                FightTimeline.Instance.onReset.AddListener(ResetState);
+        }
     }
 
     void Update()
@@ -91,6 +107,18 @@ public class DestroyObject : MonoBehaviour
     private void DisableObject()
     {
         triggered = true;
+        DisableObjectInternal();
+    }
+
+    public void ResetState()
+    {
+        triggered = false;
+        life = lifetime;
+        triggerLife = 0f;
+    }
+
+    private void DisableObjectInternal()
+    {
         onDestroy.Invoke();
         if (state == null)
             gameObject.SetActive(false);

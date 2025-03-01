@@ -553,6 +553,11 @@ public class PlayerController : MonoBehaviour
         //cameraT.gameObject.GetComponent<ThirdPersonCamera>().RandomRotate();
     }
 
+    public void SetAnimator(Animator animator)
+    {
+        this.animator = animator;
+    }
+
     public void ResetController()
     {
         enableInput = true;

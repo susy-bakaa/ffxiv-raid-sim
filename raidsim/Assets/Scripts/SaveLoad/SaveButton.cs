@@ -12,6 +12,7 @@ public class SaveButton : MonoBehaviour
     public string group = "";
     public string key = "UnnamedButton";
     public bool defaultValue = false;
+    public bool runInAwake = false;
 
     public UnityEvent<bool> onStart;
 
@@ -26,9 +27,22 @@ public class SaveButton : MonoBehaviour
         ini = new IniStorage(GlobalVariables.configPath);
         wait = UnityEngine.Random.Range(0.15f, 0.65f);
         id = Random.Range(0, 10000);
+
+        if (runInAwake)
+        {
+            Begin();
+        }
     }
 
     void Start()
+    {
+        if (!runInAwake)
+        {
+            Begin();
+        }
+    }
+
+    private void Begin()
     {
         if (ini.Contains(group, $"i{key}"))
         {

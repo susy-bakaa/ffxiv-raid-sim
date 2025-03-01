@@ -25,6 +25,16 @@ public class SortHotbar : MonoBehaviour
         if (actions != null && actions.Count > 0)
             character = actions[0].GetCharacter();
 
+        OnStart();
+
+        if (FightTimeline.Instance != null)
+        {
+            FightTimeline.Instance.onReset.AddListener(OnStart);
+        }
+    }
+
+    private void OnStart()
+    {
         if (updateSortingOnStartDelay <= 0f)
             UpdateSorting();
         else

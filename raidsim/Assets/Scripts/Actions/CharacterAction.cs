@@ -26,9 +26,13 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public bool isAvailable { private set; get; }
     public bool isAnimationLocked { private set; get; }
     public bool isAutoAction = false;
+    private bool wasIsAutoAction = false;
     public bool isDisabled;
+    private bool wasIsDisabled;
     public bool unavailable = false;
+    private bool wasUnavailable = false;
     public bool invisible = false;
+    private bool wasInvisible = false;
     public bool hasTarget = false;
     public float damageMultiplier = 1f;
     public float distanceToTarget;
@@ -683,6 +687,23 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
                 }
             }
         }
+    }
+
+    public void ResetAction()
+    {
+        ResetCooldown();
+        ResetAnimationLock();
+        chargesLeft = data.charges;
+        isAutoAction = wasIsAutoAction;
+        isDisabled = wasIsDisabled;
+        unavailable = wasUnavailable;
+        invisible = wasInvisible;
+        if (permanentlyUnavailable)
+        {
+            unavailable = true;
+        }
+        if (unavailable)
+            gameObject.SetActive(false);
     }
 
     public void ToggleState(bool state)

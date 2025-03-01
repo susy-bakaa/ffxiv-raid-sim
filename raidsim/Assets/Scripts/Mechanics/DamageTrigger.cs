@@ -71,6 +71,7 @@ public class DamageTrigger : MonoBehaviour
     private int id = 0;
     private bool inProgress = false;
     private bool initialized = false;
+    private bool colliderWaDisabled = false;
 
 #if UNITY_EDITOR
     public int dummy = 0;
@@ -85,6 +86,18 @@ public class DamageTrigger : MonoBehaviour
     {
         m_collider = GetComponent<Collider>();
         id = Random.Range(1000,10000);
+
+        if (m_collider != null)
+        {
+            if (m_collider.enabled)
+                colliderWaDisabled = false;
+            else
+                colliderWaDisabled = true;
+        }
+        else
+        {
+            colliderWaDisabled = true;
+        }
     }
 
     void Start()
@@ -161,6 +174,13 @@ public class DamageTrigger : MonoBehaviour
         currentPlayers.Clear();
         if (resetOwner)
             owner = null;
+        if (m_collider != null)
+        {
+            if (colliderWaDisabled)
+                m_collider.enabled = false;
+            else
+                m_collider.enabled = true;
+        }
     }
 
     public void Activate(bool playerActivated)

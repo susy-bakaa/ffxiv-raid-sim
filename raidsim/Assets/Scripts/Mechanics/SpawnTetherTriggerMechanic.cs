@@ -7,6 +7,7 @@ using static GlobalData;
 
 public class SpawnTetherTriggerMechanic : FightMechanic
 {
+    [Header("Tether Trigger Settings")]
     public GameObject tetherTriggerPrefab;
     public bool enableInstead = false;
     public Transform startPoint;
@@ -26,6 +27,8 @@ public class SpawnTetherTriggerMechanic : FightMechanic
             {
                 GameObject spawned;
 
+                if (log)
+                    Debug.Log($"[SpawnTetherTriggerMechanic ({gameObject.name})] Spawning tether trigger for {actionInfo.target.gameObject.name}");
                 if (!enableInstead)
                     spawned = Instantiate(tetherTriggerPrefab, actionInfo.target.transform.position, actionInfo.target.transform.rotation, FightTimeline.Instance.mechanicParent);
                 else
@@ -37,6 +40,8 @@ public class SpawnTetherTriggerMechanic : FightMechanic
             {
                 GameObject spawned;
 
+                if (log)
+                    Debug.Log($"[SpawnTetherTriggerMechanic ({gameObject.name})] Spawning tether trigger for {actionInfo.source.gameObject.name}");
                 if (!enableInstead)
                     spawned = Instantiate(tetherTriggerPrefab, actionInfo.source.transform.position, actionInfo.source.transform.rotation, FightTimeline.Instance.mechanicParent);
                 else
@@ -49,6 +54,8 @@ public class SpawnTetherTriggerMechanic : FightMechanic
         {
             GameObject spawned;
 
+            if (log)
+                Debug.Log($"[SpawnTetherTriggerMechanic ({gameObject.name})] Spawning tether trigger");
             if (!enableInstead)
                 spawned = Instantiate(tetherTriggerPrefab, spawnLocation.position, spawnLocation.rotation, FightTimeline.Instance.mechanicParent);
             else
@@ -70,6 +77,9 @@ public class SpawnTetherTriggerMechanic : FightMechanic
             }
             if (delay > 0)
             {
+                if (log)
+                    Debug.Log($"[SpawnTetherTriggerMechanic ({gameObject.name})] Spawning tether trigger with delay of {delay}");
+
                 spawned.gameObject.SetActive(false);
                 Utilities.FunctionTimer.Create(this, () =>
                 {
@@ -89,6 +99,9 @@ public class SpawnTetherTriggerMechanic : FightMechanic
             }
             else if (!tetherTrigger.initializeOnStart)
             {
+                if (log)
+                    Debug.Log($"[SpawnTetherTriggerMechanic ({gameObject.name})] Spawning tether trigger without any delay");
+
                 if (setTargetAutomatically && actionInfo.target != null)
                 {
                     tetherTrigger.Initialize(actionInfo.target);

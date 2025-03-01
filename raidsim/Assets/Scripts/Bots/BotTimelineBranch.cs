@@ -9,7 +9,9 @@ public class BotTimelineBranch : MonoBehaviour
     public BotNodeGroup nodeGroup;
     public bool basedOnSectorNodeAvailability = false;
     public bool randomMicroDelay = false;
-    
+    public BotTimelineBranch waitForBranchToBeDone;
+    public SetDynamicBotNode waitForDynamicNodeToBeDone;
+
     private SetDynamicBotNode dynamicNodeNormal;
     private SetDynamicBotNode dynamicNodeAlternative;
     private Coroutine ieChooseBranch;
@@ -44,6 +46,16 @@ public class BotTimelineBranch : MonoBehaviour
     private IEnumerator IE_ChooseBranch(BotTimeline timeline, WaitForSeconds wait)
     {
         yield return wait;
+
+        if (waitForBranchToBeDone != null)
+        {
+            yield return new WaitUntil(() => waitForBranchToBeDone.used);
+        }
+        if (waitForDynamicNodeToBeDone != null)
+        {
+            yield return new WaitUntil(waitForDynamicNodeToBeDone.HasFinished);
+        }
+
         ChooseBranchInternal(timeline);
         ieChooseBranch = null;
     }

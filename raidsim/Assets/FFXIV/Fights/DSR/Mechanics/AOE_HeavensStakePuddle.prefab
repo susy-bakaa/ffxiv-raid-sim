@@ -187,6 +187,7 @@ MonoBehaviour:
   data: {fileID: 0}
   damageName: Heavens' Stake
   inverted: 0
+  log: 0
   owner: {fileID: 0}
   autoAssignOwner: 0
   ableToHitTag: Player
@@ -243,6 +244,8 @@ MonoBehaviour:
   shared: 0
   enumeration: 0
   requireOwner: 0
+  resetOnReload: 0
+  resetOwner: 0
   visualDelay: 0
   triggerDelay: 0
   triggerDelayVariance: 0
@@ -330,7 +333,7 @@ MonoBehaviour:
   global: 0
   log: 0
   startAutomatically: 0
-  delay: 2.5
+  delay: 3
   onDelayedTrigger:
     m_PersistentCalls:
       m_Calls:
@@ -406,6 +409,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: 0
   disableInstead: 0
+  disabledOnStart: 0
   log: 0
   onDestroy:
     m_PersistentCalls:

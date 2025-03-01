@@ -31,6 +31,7 @@ public class ConfigMenu : MonoBehaviour
     [SerializeField] private Toggle invertHorizontalCameraToggle;
     [SerializeField] private TMP_Dropdown cameraAdjustmentDropdown;
     [SerializeField] private SliderInputLinker cameraSensitivitySync;
+    [SerializeField] private Toggle skipUpdatesToggle;
     float scale = 50;
     float newScale = 50;
     bool legacy = true;
@@ -49,6 +50,8 @@ public class ConfigMenu : MonoBehaviour
     int newCameraAdjustment = 0;
     float cameraSensitivity = 10f;
     float newCameraSensitivity = 10f;
+    bool skipUpdates = false;
+    bool newSkipUpdates = false;
     [SerializeField] private CanvasGroup applyPopup;
     public bool isOpen;
     public bool isApplyPopupOpen;
@@ -269,6 +272,12 @@ public class ConfigMenu : MonoBehaviour
         newCameraSensitivity = value;
     }
 
+    public void ChangeSkipUpdates(bool value)
+    {
+        configSaved = false;
+        newSkipUpdates = value;
+    }
+
     public void ApplySettings()
     {
         if (Mathf.Approximately(newScale, 50f))
@@ -319,6 +328,7 @@ public class ConfigMenu : MonoBehaviour
             thirdPersonCamera.controllerSensitivity = originalControllerSensitivity * finalSensitivity;
             thirdPersonCamera.freecam.rotationSpeed = originalRotationSpeed * finalSensitivity;
         }
+        skipUpdates = newSkipUpdates;
         configSaved = true;
 #endif
     }
@@ -372,6 +382,7 @@ public class ConfigMenu : MonoBehaviour
             thirdPersonCamera.controllerSensitivity = originalControllerSensitivity;
             thirdPersonCamera.freecam.rotationSpeed = originalRotationSpeed;
         }
+        newSkipUpdates = false;
         ApplySettings();
 #endif
     }
@@ -405,6 +416,8 @@ public class ConfigMenu : MonoBehaviour
         newCameraSensitivity = cameraSensitivity;
         cameraSensitivitySync.Slider.value = newCameraSensitivity;
         cameraSensitivitySync.Sync(0);
+        newSkipUpdates = skipUpdates;
+        skipUpdatesToggle.SetIsOnWithoutNotify(newSkipUpdates);
         ApplySettings();
 #endif
     }

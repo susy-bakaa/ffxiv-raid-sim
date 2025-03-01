@@ -24,6 +24,7 @@ public class SetDynamicBotNode : MonoBehaviour
     public bool log = false;
 
     private Coroutine ieSetNode;
+    private bool done = false;
 
     private void Awake()
     {
@@ -32,6 +33,7 @@ public class SetDynamicBotNode : MonoBehaviour
         wasWaitIfPriorityLowerThan = waitIfPriorityLowerThan;
         wasReverseIfPriorityLowerThan = reverseIfPriorityLowerThan;
         wasPriority = priority;
+        done = false;
     }
 
     public void ResetComponent()
@@ -43,6 +45,7 @@ public class SetDynamicBotNode : MonoBehaviour
         priority = wasPriority;
         StopAllCoroutines();
         ieSetNode = null;
+        done = false;
     }
 
     public void SetNode(BotTimeline timeline)
@@ -124,6 +127,8 @@ public class SetDynamicBotNode : MonoBehaviour
             }
         }
 
+        done = true;
+
         if (log)
             Debug.Log($"[SetDynamicBotNode ({gameObject.name})] Setting node to {node?.name}");
     }
@@ -165,5 +170,10 @@ public class SetDynamicBotNode : MonoBehaviour
             Debug.LogWarning($"[SetDynamicBotNode ({gameObject.name})] Was not able to find a node from group {group?.gameObject.name} for timeline {timeline?.gameObject.name}!");
 
         return node;
+    }
+
+    public bool HasFinished()
+    {
+        return done;
     }
 }

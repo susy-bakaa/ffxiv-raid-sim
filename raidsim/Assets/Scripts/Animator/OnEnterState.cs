@@ -26,6 +26,7 @@ public class OnEnterState : StateMachineBehaviour
 
         if (m_type == StateType.ToggleChild)
         {
+            Debug.Log($"ToggleChild '{animator.gameObject.name}' childIndex {childIndex} ({animator.transform.GetChild(childIndex).gameObject.name}) childCount {animator.transform.childCount} toggleState {toggleState}");
             animator.transform.GetChild(childIndex).gameObject.SetActive(toggleState);
         }
         else

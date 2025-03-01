@@ -444,8 +444,8 @@ public class ActionController : MonoBehaviour
         lastAction = null;
         for (int i = 0; i < actions.Count; i++)
         {
-            actions[i].ResetCooldown();
-            actions[i].ResetAnimationLock();
+            actions[i].gameObject.SetActive(true);
+            actions[i].ResetAction();
         }
         Utilities.FunctionTimer.StopTimer($"{characterState.characterName}_{this}_castBar_fade_out_if_interrupted");
         Utilities.FunctionTimer.StopTimer($"{characterState.characterName}_{this}_interrupted_status");
@@ -454,6 +454,11 @@ public class ActionController : MonoBehaviour
             castBarGroup.alpha = 0f;
         if (castBarGroupParty != null)
             castBarGroupParty.alpha = 0f;
+    }
+
+    public void SetAnimator(Animator animator)
+    {
+        this.animator = animator;
     }
 
     public void PerformAutoAction(CharacterAction autoAction)
@@ -507,7 +512,18 @@ public class ActionController : MonoBehaviour
         if (autoAction.data.hasMovement && (characterState.bound.value || characterState.uncontrollable.value))
             return false;
 
-        if (autoAction.isAvailable && !autoAction.isDisabled && !autoAction.isAnimationLocked && !autoAction.unavailable && !animator.GetBool(animatorParameterActionLocked))
+        bool autoActionCondition = false;
+
+        if (animator != null)
+        {
+            autoActionCondition = autoAction.isAvailable && !autoAction.isDisabled && !autoAction.isAnimationLocked && !autoAction.unavailable && !animator.GetBool(animatorParameterActionLocked);
+        }
+        else
+        {
+            autoActionCondition = autoAction.isAvailable && !autoAction.isDisabled && !autoAction.isAnimationLocked && !autoAction.unavailable;
+        }
+
+        if (autoActionCondition)
         {
             if (autoAction.data.actionType == CharacterActionData.ActionType.Auto)
             {
@@ -550,7 +566,7 @@ public class ActionController : MonoBehaviour
                 {
                     animator.SetInteger(animatorParameterCastFinishId, autoAction.data.onAnimationFinishId);
                 }
-                else
+                else if (animator != null)
                 {
                     animator.SetInteger(animatorParameterCastFinishId, 0);
                 }
@@ -1056,11 +1072,6 @@ public class ActionController : MonoBehaviour
             characterState.hidePartyName = false;
         }
         characterState.UpdateCharacterName();
-    }
-
-    public void SetAnimator(Animator animator)
-    {
-        this.animator = animator;
     }
 
     void OnDestroy()

@@ -641,7 +641,8 @@ public class FightTimeline : MonoBehaviour
         {
             foreach (Transform child in mechanicParent)
             {
-                Destroy(child.gameObject);
+                if (!child.CompareTag("presetMech"))
+                    Destroy(child.gameObject);
             }
         }
         for (int i = 0; i < disableDuringPlayback.Length; i++)

@@ -280,6 +280,11 @@ public class AIController : MonoBehaviour
         transform.eulerAngles = new Vector3(0f, Random.Range(-360f, 360f), 0f);
     }
 
+    public void SetAnimator(Animator animator)
+    {
+        this.animator = animator;
+    }
+
     public void ResetController()
     {
         botTimeline = wasBotTimeline;

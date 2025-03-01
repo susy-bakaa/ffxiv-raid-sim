@@ -57,10 +57,22 @@ public class MoveObjectMechanic : FightMechanic
         }
     }
 
+    public override void InterruptMechanic(ActionInfo actionInfo)
+    {
+        base.InterruptMechanic(actionInfo);
+
+        if (ieMoveObjectDelayed != null)
+        {
+            StopCoroutine(ieMoveObjectDelayed);
+            ieMoveObjectDelayed = null;
+        }
+    }
+
     private IEnumerator IE_MoveObjectDelayed(WaitForSeconds wait)
     {
         yield return wait;
         MoveObject();
+        ieMoveObjectDelayed = null;
     }
 
     private void MoveObject()

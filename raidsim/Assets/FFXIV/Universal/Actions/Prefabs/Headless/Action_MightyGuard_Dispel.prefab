@@ -45,12 +45,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: 1db7566dbb09f894f9f9b9562a17470c, type: 2}
+  isAutoAction: 0
   isDisabled: 0
   unavailable: 0
+  invisible: 0
   hasTarget: 0
   damageMultiplier: 1
   distanceToTarget: 0
+  chargesLeft: 0
   lastAction: {fileID: 0}
+  currentKeybind:
+    keyCode: 0
+    mouseButton: 0
+    alt: 0
+    control: 0
+    shift: 0
+  availableForRoles: 
+  sharedRecasts: []
+  comboOutlineEffects: []
+  hideWhileEffects: []
+  showInsteadWithEffects: 0
+  invisibilityAlsoDisables: 0
   onExecute:
     m_PersistentCalls:
       m_Calls:
@@ -81,7 +96,7 @@ MonoBehaviour:
       - m_Target: {fileID: 2206302749731043785}
         m_TargetAssemblyTypeName: CharacterAction, Assembly-CSharp
         m_MethodName: ResetCooldown
-        m_Mode: 1
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -93,7 +108,7 @@ MonoBehaviour:
       - m_Target: {fileID: 2206302749731043785}
         m_TargetAssemblyTypeName: CharacterAction, Assembly-CSharp
         m_MethodName: ResetAnimationLock
-        m_Mode: 1
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -103,29 +118,35 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
-        m_Mode: 1
+        m_TargetAssemblyTypeName: CharacterAction, Assembly-CSharp
+        m_MethodName: ToggleState
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
       - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
-        m_Mode: 1
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
+  onCast:
+    m_PersistentCalls:
+      m_Calls: []
+  onInterrupt:
+    m_PersistentCalls:
+      m_Calls: []
   recastType: 0
   borderStandard: {fileID: 0}
   borderDark: {fileID: 0}
@@ -136,6 +157,7 @@ MonoBehaviour:
   comboOutlineGroup: {fileID: 0}
   recastTimeText: {fileID: 0}
   resourceCostText: {fileID: 0}
+  keybindText: {fileID: 0}
   hudElements: []
   defaultColors: []
   unavailableColors: []
