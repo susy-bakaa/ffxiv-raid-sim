@@ -7,6 +7,7 @@ public class AssetHandler : MonoBehaviour
 {
     public static AssetHandler Instance;
 
+    public bool disable = false;
     public bool log = true;
 
     private AssetBundle currentBundle;
@@ -18,6 +19,11 @@ public class AssetHandler : MonoBehaviour
 
     private void Awake()
     {
+        if (disable)
+        {
+            Destroy(gameObject);
+            return;
+        }
         if (Instance == null)
         {
             Instance = this;
@@ -75,6 +81,23 @@ public class AssetHandler : MonoBehaviour
         }
 
         string bundlePath = Path.Combine(Application.streamingAssetsPath, bundleName);
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+        if (log)
+            Debug.Log($"Loading AssetBundle: '{bundleName}'");
+
+        // For WebGL, use UnityWebRequest to load the asset bundle
+        UnityEngine.Networking.UnityWebRequest request = UnityEngine.Networking.UnityWebRequestAssetBundle.GetAssetBundle(bundlePath);
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityEngine.Networking.UnityWebRequest.Result.Success)
+        {
+            Debug.LogError("Failed to load AssetBundle: " + request.error);
+            yield break;
+        }
+
+        AssetBundle loadedBundle = UnityEngine.Networking.DownloadHandlerAssetBundle.GetContent(request);
+#else
         if (!File.Exists(bundlePath))
         {
             Debug.LogError($"AssetBundle not found at: '{bundlePath}'!");
@@ -84,18 +107,24 @@ public class AssetHandler : MonoBehaviour
 
         if (log)
             Debug.Log($"Loading AssetBundle: '{bundleName}'");
+
+        // For other platforms, use AssetBundle.LoadFromFileAsync
         AssetBundleCreateRequest bundleRequest = AssetBundle.LoadFromFileAsync(bundlePath);
         yield return bundleRequest;
 
-        currentBundle = bundleRequest.assetBundle;
-        currentBundleName = bundleName;
+        AssetBundle loadedBundle = bundleRequest.assetBundle;
+#endif
 
-        if (currentBundle == null)
+        if (loadedBundle == null)
         {
-            Debug.LogError($"Failed to load AssetBundle: '{bundleName}'!");
+            Debug.LogError($"Failed to load AssetBundle: '{bundleName}'");
             ieLoadAssetBundle = null;
             yield break;
         }
+
+        currentBundle = loadedBundle;
+        currentBundleName = bundleName;
+        
         if (log)
             Debug.Log($"AssetBundle loaded: '{bundleName}'!");
         ieLoadAssetBundle = null;

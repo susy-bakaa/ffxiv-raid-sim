@@ -10,6 +10,7 @@ using UnityEngine.UI;
 using NaughtyAttributes;
 using TMPro;
 using Debug = UnityEngine.Debug;
+using System.Security.Cryptography;
 
 namespace susy_baka.raidsim.Updater
 {
@@ -17,6 +18,7 @@ namespace susy_baka.raidsim.Updater
     {
         [Header("Functionality")]
         [SerializeField] private string updateUrl = "https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.{0}/raidsim_v.{0}_{1}64.zip";
+        [SerializeField] private string checksumUrl = "https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.{0}/checksums.sha256";
         [SerializeField] private string zipFileName = "raidsim_v.{0}_{1}64.zip";
         [SerializeField] private string newestVersion = string.Empty;
         [SerializeField, Label("Update ID")] private int updateId = 1;
@@ -37,8 +39,13 @@ namespace susy_baka.raidsim.Updater
         private const string gameVersionUrl = "https://raw.githubusercontent.com/susy-bakaa/ffxiv-raid-sim/refs/heads/main/version.txt";
 #if UNITY_STANDALONE_WIN
         private const string platform = "win";
+        private const int checksumFileLine = 0;
 #elif UNITY_STANDALONE_LINUX
         private const string platform = "linux";
+        private const int checksumFileLine = 1;
+#elif UNITY_WEBGL
+        private const string platform = "webgl";
+        private const int checksumFileLine = 2;
 #endif
         private bool skipUpdates = false;
         private string zipFilePath;
@@ -61,6 +68,12 @@ namespace susy_baka.raidsim.Updater
         void Start()
         {
 #if UNITY_WEBPLAYER
+            destroyed = true;
+            Destroy(updatePromptGroup.gameObject);
+            Destroy(gameObject);
+            return;
+#elif UNITY_STANDALONE_LINUX
+            Debug.LogWarning("Linux platform detected. Automatic updates not supported yet. Skipping update check.");
             destroyed = true;
             Destroy(updatePromptGroup.gameObject);
             Destroy(gameObject);
@@ -192,7 +205,7 @@ namespace susy_baka.raidsim.Updater
 
             if (int.TryParse(parts[0], out latestUpdateId))
             {
-                if (latestUpdateId >= updateId)
+                if (latestUpdateId > updateId)
                 {
                     Debug.Log("Update available!");
                     ShowUpdatePrompt();
@@ -220,6 +233,7 @@ namespace susy_baka.raidsim.Updater
             cancelButton.interactable = true;
 
             updateUrl = string.Format(updateUrl, newestVersion, platform);
+            checksumUrl = string.Format(checksumUrl, newestVersion);
         }
 
         public void DownloadUpdate()
@@ -285,7 +299,7 @@ namespace susy_baka.raidsim.Updater
 
                         yield return new WaitForSeconds(0.5f);
 
-                        if (IsValidZip(zipFilePath))
+                        if (VerifyFileSHA256(zipFilePath) && IsValidZip(zipFilePath))
                         {
                             Debug.Log("ZIP file is valid. Prompting to launch updater...");
                             downloadStatus.text = "Existing Update Found";
@@ -395,7 +409,7 @@ namespace susy_baka.raidsim.Updater
                                     downloadProgress.text = "100%";
                                 }
 
-                                if (IsValidZip(zipFilePath))
+                                if (VerifyFileSHA256(zipFilePath) && IsValidZip(zipFilePath))
                                 {
                                     Debug.Log("ZIP file verified. Prompting to launch updater...");
                                     downloadStatus.text = "Download Complete";
@@ -492,6 +506,74 @@ namespace susy_baka.raidsim.Updater
                 if (ieDownloadUpdate == null) 
                     ieDownloadUpdate = StartCoroutine(IE_DownloadUpdate());
             }
+        }
+
+        private bool VerifyFileSHA256(string filePath)
+        {
+            try
+            {
+                Debug.Log("Downloading expected SHA256 hash...");
+
+                string checksumFilePath = Path.Combine(Application.persistentDataPath, "checksums.sha256");
+
+                using (WebClient client = new WebClient())
+                {
+                    client.DownloadFile(checksumUrl, checksumFilePath);
+                }
+
+                // Read the checksum file
+                string checksums = File.ReadAllText(checksumFilePath);
+
+                // Get all expected hashes
+                Dictionary<string, string> checksumMap = ExtractChecksums(checksums);
+                string expectedHash;
+
+                if (!checksumMap.TryGetValue(Path.GetFileName(filePath), out expectedHash))
+                {
+                    Debug.LogError($"SHA256 hash not found for {Path.GetFileName(filePath)} in checksums.sha256!");
+                    return false;
+                }
+
+                // Compute the SHA256 of the downloaded file
+                string computedHash = ComputeSHA256(filePath);
+                Debug.Log($"Expected: {expectedHash}");
+                Debug.Log($"Computed: {computedHash}");
+
+                return string.Equals(expectedHash, computedHash, StringComparison.OrdinalIgnoreCase);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"SHA256 verification failed: {ex.Message}");
+                return false;
+            }
+        }
+
+        private string ComputeSHA256(string filePath)
+        {
+            using (FileStream stream = File.OpenRead(filePath))
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] hash = sha256.ComputeHash(stream);
+                return BitConverter.ToString(hash).Replace("-", "").ToUpperInvariant();
+            }
+        }
+
+        private Dictionary<string, string> ExtractChecksums(string checksumFileContents)
+        {
+            Dictionary<string, string> checksumMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (string line in checksumFileContents.Split('\n'))
+            {
+                string[] parts = line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length == 2) // Ensure format: SHA256_HASH  FILENAME
+                {
+                    string fileHash = parts[0].Trim();
+                    string fileName = parts[1].Trim();
+                    checksumMap[fileName] = fileHash;
+                }
+            }
+
+            return checksumMap;
         }
 
         private bool IsValidZip(string zipPath)

@@ -214,6 +214,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outValue: 0
   inValue: 1
+  defaultFadeTime: 0.33
   outOnStart: 1
   log: 0
   fadeTime: 0.33
@@ -380,9 +381,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outValue: 0
   inValue: 1
-  outOnStart: 0
+  defaultFadeTime: 0.33
+  outOnStart: 1
   log: 0
-  fadeTime: 0.5
+  fadeTime: 0.33
 --- !u!1 &2998255634337886909
 GameObject:
   m_ObjectHideFlags: 0
@@ -935,6 +937,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rotation: {x: 0, y: 30, z: 0}
   setRotation: 0
+  faceTowardsName: 
+  faceTowards: {fileID: 0}
 --- !u!1 &7375002311992155926
 GameObject:
   m_ObjectHideFlags: 0
@@ -948,6 +952,7 @@ GameObject:
   - component: {fileID: 6367209670322815939}
   - component: {fileID: 4342201101409061624}
   - component: {fileID: 8577323345377412994}
+  - component: {fileID: 883231851338175356}
   - component: {fileID: 2594911426173321091}
   m_Layer: 0
   m_Name: AOE_IcicleImpact
@@ -1036,9 +1041,11 @@ MonoBehaviour:
   data: {fileID: 0}
   damageName: Icicle Impact
   inverted: 0
+  log: 0
   owner: {fileID: 0}
   autoAssignOwner: 0
   ableToHitTag: Player
+  canHitCharacterName: 
   damage:
     name: Icicle Impact
     value: -100000
@@ -1091,15 +1098,19 @@ MonoBehaviour:
   shared: 0
   enumeration: 0
   requireOwner: 0
+  resetOnReload: 0
+  resetOwner: 0
   visualDelay: 0
   triggerDelay: 8.9
   triggerDelayVariance: 0.025
   damageApplicationDelay: 0.25
   cooldown: 30
   playersRequired: 0
+  damageMultiplierPerMissingPlayer: 1
   currentPlayers: []
   appliedEffects:
   - {fileID: 11400000, guid: 8aef8e685d034a247a6434b7819a6718, type: 2}
+  appliedEffectsOnFail: []
   onHit:
     m_PersistentCalls:
       m_Calls: []
@@ -1112,19 +1123,7 @@ MonoBehaviour:
       - m_Target: {fileID: 2563861430638575943}
         m_TargetAssemblyTypeName: SimpleShaderFade, Assembly-CSharp
         m_MethodName: FadeOut
-        m_Mode: 4
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0.33
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 7068905365268310100}
-        m_TargetAssemblyTypeName: SimpleShaderFade, Assembly-CSharp
-        m_MethodName: FadeIn
-        m_Mode: 4
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1145,6 +1144,21 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 2594911426173321091}
+        m_TargetAssemblyTypeName: DestroyObject, Assembly-CSharp
+        m_MethodName: TriggerDestruction
+        m_Mode: 4
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 1.5
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+  onStart:
+    m_PersistentCalls:
+      m_Calls: []
   onSpawn:
     m_PersistentCalls:
       m_Calls:
@@ -1175,7 +1189,7 @@ MonoBehaviour:
       - m_Target: {fileID: 2563861430638575943}
         m_TargetAssemblyTypeName: SimpleShaderFade, Assembly-CSharp
         m_MethodName: FadeIn
-        m_Mode: 4
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1204,25 +1218,72 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mechanicEnabled: 1
-  mechanicName: Destroy
+  mechanicName: 
   onlyTriggerOnce: 0
+  global: 0
   log: 0
   startAutomatically: 0
-  delay: 0.66
+  delay: 0.25
   onDelayedTrigger:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2594911426173321091}
-        m_TargetAssemblyTypeName: DestroyObject, Assembly-CSharp
-        m_MethodName: TriggerDestruction
-        m_Mode: 4
+      - m_Target: {fileID: 7068905365268310100}
+        m_TargetAssemblyTypeName: SimpleShaderFade, Assembly-CSharp
+        m_MethodName: FadeIn
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 0.1
+          m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 883231851338175356}
+        m_TargetAssemblyTypeName: DelayedMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+--- !u!114 &883231851338175356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7375002311992155926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c11d13ba36149154fb548fc96274895b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: 
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  startAutomatically: 0
+  delay: 0.5
+  onDelayedTrigger:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7068905365268310100}
+        m_TargetAssemblyTypeName: SimpleShaderFade, Assembly-CSharp
+        m_MethodName: FadeOut
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &2594911426173321091
 MonoBehaviour:
@@ -1238,6 +1299,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: -1
   disableInstead: 0
+  disabledOnStart: 0
   log: 0
   onDestroy:
     m_PersistentCalls:

@@ -2,10 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using NaughtyAttributes;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class DebugUserInterface : MonoBehaviour
 {
+    [SerializeField] private AssetHandler assetHandler;
     [SerializeField] private CanvasGroup fpsGroup;
     [SerializeField] private TextMeshProUGUI resolutionText;
     [SerializeField] private TextMeshProUGUI screenResolutionText;
@@ -43,6 +45,13 @@ public class DebugUserInterface : MonoBehaviour
         string[] args = System.Environment.GetCommandLineArgs();
         for (int i = 0; i < args.Length; i++)
         {
+            if (args[i].Contains("-strip"))
+            {
+                if (assetHandler != null)
+                {
+                    assetHandler.disable = true;
+                }
+            }
             if (args[i].Contains("-debug") || showDebug)
             {
                 transform.GetChild(0).gameObject.SetActive(false);

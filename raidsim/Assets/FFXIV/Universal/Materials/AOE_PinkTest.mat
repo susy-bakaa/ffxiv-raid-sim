@@ -21,11 +21,12 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: AOE_PinkTest
-  m_Shader: {fileID: -6465566751694194690, guid: 66dedb55c1328e3418aed769fb06d4df, type: 3}
+  m_Shader: {fileID: 4800000, guid: 6bba0d0a01633f64e9101fe5cc6c9f71, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
-  m_InvalidKeywords: []
+  m_InvalidKeywords:
+  - _BUILTIN_SURFACE_TYPE_TRANSPARENT
   m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -83,8 +84,18 @@ Material:
     m_Ints: []
     m_Floats:
     - NORMAL_MAP: 0
+    - _Alpha: 1
+    - _BUILTIN_AlphaClip: 0
+    - _BUILTIN_Blend: 0
+    - _BUILTIN_CullMode: 2
+    - _BUILTIN_DstBlend: 10
     - _BUILTIN_QueueControl: 0
     - _BUILTIN_QueueOffset: 0
+    - _BUILTIN_SrcBlend: 5
+    - _BUILTIN_Surface: 1
+    - _BUILTIN_ZTest: 4
+    - _BUILTIN_ZWrite: 0
+    - _BUILTIN_ZWriteControl: 0
     - _BlendOp: 0
     - _BumpScale: 1
     - _CameraFadingEnabled: 0
@@ -99,6 +110,7 @@ Material:
     - _DistortionEnabled: 0
     - _DistortionStrength: 1
     - _DistortionStrengthScaled: 0.1
+    - _DoubleSided: 2
     - _DstBlend: 10
     - _EmissionEnabled: 0
     - _FlipbookMode: 0

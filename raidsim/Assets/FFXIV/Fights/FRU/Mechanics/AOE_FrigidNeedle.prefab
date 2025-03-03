@@ -234,6 +234,7 @@ MonoBehaviour:
   data: {fileID: 0}
   damageName: Frigid Needle
   inverted: 0
+  log: 0
   owner: {fileID: 0}
   autoAssignOwner: 0
   ableToHitTag: Player
@@ -290,6 +291,8 @@ MonoBehaviour:
   shared: 0
   enumeration: 0
   requireOwner: 0
+  resetOnReload: 0
+  resetOwner: 0
   visualDelay: 0
   triggerDelay: 2.9
   triggerDelayVariance: 0.025
@@ -420,6 +423,7 @@ MonoBehaviour:
   data: {fileID: 0}
   damageName: Frigid Needle
   inverted: 0
+  log: 0
   owner: {fileID: 0}
   autoAssignOwner: 0
   ableToHitTag: Player
@@ -476,6 +480,8 @@ MonoBehaviour:
   shared: 0
   enumeration: 0
   requireOwner: 0
+  resetOnReload: 0
+  resetOwner: 0
   visualDelay: 0
   triggerDelay: 2.9
   triggerDelayVariance: 0.025
@@ -521,6 +527,7 @@ GameObject:
   - component: {fileID: 8019387053756010643}
   - component: {fileID: 3259011099763040467}
   - component: {fileID: 2769392182598212870}
+  - component: {fileID: 4153422627368889505}
   - component: {fileID: 140912398790214943}
   - component: {fileID: 319748747700440904}
   m_Layer: 0
@@ -675,6 +682,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 4153422627368889505}
+        m_TargetAssemblyTypeName: DelayedMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
       - m_Target: {fileID: 140912398790214943}
         m_TargetAssemblyTypeName: DestroyObject, Assembly-CSharp
         m_MethodName: TriggerDestruction
@@ -686,6 +705,40 @@ MonoBehaviour:
           m_FloatArgument: 1
           m_StringArgument: 
           m_BoolArgument: 1
+        m_CallState: 2
+--- !u!114 &4153422627368889505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3368221871892135728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c11d13ba36149154fb548fc96274895b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: 
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  startAutomatically: 0
+  delay: 0.75
+  onDelayedTrigger:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1554934116188708596}
+        m_TargetAssemblyTypeName: SimpleShaderFade, Assembly-CSharp
+        m_MethodName: FadeOut
+        m_Mode: 4
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0.25
+          m_StringArgument: 
+          m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &140912398790214943
 MonoBehaviour:
@@ -701,6 +754,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: -1
   disableInstead: 0
+  disabledOnStart: 0
   log: 0
   onDestroy:
     m_PersistentCalls:
@@ -1076,6 +1130,7 @@ MonoBehaviour:
   data: {fileID: 0}
   damageName: Frigid Needle
   inverted: 0
+  log: 0
   owner: {fileID: 0}
   autoAssignOwner: 0
   ableToHitTag: Player
@@ -1132,6 +1187,8 @@ MonoBehaviour:
   shared: 0
   enumeration: 0
   requireOwner: 0
+  resetOnReload: 0
+  resetOwner: 0
   visualDelay: 0
   triggerDelay: 2.9
   triggerDelayVariance: 0.025
@@ -1345,6 +1402,7 @@ MonoBehaviour:
   data: {fileID: 0}
   damageName: Frigid Needle
   inverted: 0
+  log: 0
   owner: {fileID: 0}
   autoAssignOwner: 0
   ableToHitTag: Player
@@ -1401,6 +1459,8 @@ MonoBehaviour:
   shared: 0
   enumeration: 0
   requireOwner: 0
+  resetOnReload: 0
+  resetOwner: 0
   visualDelay: 0
   triggerDelay: 2.9
   triggerDelayVariance: 0.025

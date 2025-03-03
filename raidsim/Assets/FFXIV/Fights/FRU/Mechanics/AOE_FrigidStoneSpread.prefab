@@ -67,9 +67,8 @@ GameObject:
   - component: {fileID: 6570680684654266953}
   - component: {fileID: 765848739670523788}
   - component: {fileID: 6435259765918760715}
-  - component: {fileID: 7846764153618603491}
   - component: {fileID: 5783505062042211602}
-  - component: {fileID: 7882328657042111468}
+  - component: {fileID: 5645995363165899330}
   - component: {fileID: 8601049963651666892}
   m_Layer: 0
   m_Name: AOE_FrigidStoneSpread
@@ -257,14 +256,14 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 0.75
+          m_FloatArgument: 1.5
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 7846764153618603491}
-        m_TargetAssemblyTypeName: StateTrigger, Assembly-CSharp
-        m_MethodName: ToggleTarget
-        m_Mode: 6
+      - m_Target: {fileID: 943571690380184741}
+        m_TargetAssemblyTypeName: SimpleShaderFade, Assembly-CSharp
+        m_MethodName: FadeOut
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -354,9 +353,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 7846764153618603491}
-        m_TargetAssemblyTypeName: StateTrigger, Assembly-CSharp
-        m_MethodName: Initialize
+      - m_Target: {fileID: 943571690380184741}
+        m_TargetAssemblyTypeName: SimpleShaderFade, Assembly-CSharp
+        m_MethodName: FadeIn
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -366,10 +365,10 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-      - m_Target: {fileID: 7882328657042111468}
-        m_TargetAssemblyTypeName: StateTrigger, Assembly-CSharp
-        m_MethodName: Initialize
-        m_Mode: 1
+      - m_Target: {fileID: 4579055571463027535}
+        m_TargetAssemblyTypeName: SimpleShaderFade, Assembly-CSharp
+        m_MethodName: FadeOut
+        m_Mode: 4
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -377,30 +376,6 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 7846764153618603491}
-        m_TargetAssemblyTypeName: StateTrigger, Assembly-CSharp
-        m_MethodName: ToggleTarget
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 7882328657042111468}
-        m_TargetAssemblyTypeName: StateTrigger, Assembly-CSharp
-        m_MethodName: ToggleTarget
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
         m_CallState: 2
   onTrigger:
     m_PersistentCalls:
@@ -509,37 +484,6 @@ MonoBehaviour:
   memberIndex: 0
   useRandomMember: 0
   useActionInfoInstead: 1
---- !u!114 &7846764153618603491
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4761287209448353683}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d4e614f0643db6c4682d46d7fc562556, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  state: 1
-  party: {fileID: 0}
-  autoFindParty: 0
-  source: {fileID: 0}
-  target: {fileID: 4578356148943496623}
-  targetName: 
-  targetParent: 
-  targetIndex: 0
-  useStatusEffectTagAsTargetIndex: 0
-  moveToTargetName: 
-  moveToSourceName: 
-  localParent: 0
-  hiddenActions: 0
-  toggleObject: 0
-  toggleCharacterState: 0
-  toggleCharacterEffect: 0
-  toggleShaderEffect: 1
-  fadeTime: 0.33
-  log: 0
 --- !u!114 &5783505062042211602
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -562,10 +506,10 @@ MonoBehaviour:
   onDelayedTrigger:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7882328657042111468}
-        m_TargetAssemblyTypeName: StateTrigger, Assembly-CSharp
-        m_MethodName: ToggleTarget
-        m_Mode: 6
+      - m_Target: {fileID: 4579055571463027535}
+        m_TargetAssemblyTypeName: SimpleShaderFade, Assembly-CSharp
+        m_MethodName: FadeIn
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -574,7 +518,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
---- !u!114 &7882328657042111468
+      - m_Target: {fileID: 5645995363165899330}
+        m_TargetAssemblyTypeName: DelayedMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+--- !u!114 &5645995363165899330
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -583,28 +539,31 @@ MonoBehaviour:
   m_GameObject: {fileID: 4761287209448353683}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d4e614f0643db6c4682d46d7fc562556, type: 3}
+  m_Script: {fileID: 11500000, guid: c11d13ba36149154fb548fc96274895b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  state: 1
-  party: {fileID: 0}
-  autoFindParty: 0
-  source: {fileID: 0}
-  target: {fileID: 6834407589271529304}
-  targetName: 
-  targetParent: 
-  targetIndex: 0
-  useStatusEffectTagAsTargetIndex: 0
-  moveToTargetName: 
-  moveToSourceName: 
-  localParent: 0
-  hiddenActions: 0
-  toggleObject: 0
-  toggleCharacterState: 0
-  toggleCharacterEffect: 0
-  toggleShaderEffect: 1
-  fadeTime: 0.33
+  mechanicEnabled: 1
+  mechanicName: 
+  onlyTriggerOnce: 0
+  global: 0
   log: 0
+  startAutomatically: 0
+  delay: 0.5
+  onDelayedTrigger:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4579055571463027535}
+        m_TargetAssemblyTypeName: SimpleShaderFade, Assembly-CSharp
+        m_MethodName: FadeOut
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &8601049963651666892
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -756,9 +715,9 @@ MonoBehaviour:
   outValue: 0
   inValue: 1
   defaultFadeTime: 0.33
-  outOnStart: 0
+  outOnStart: 1
   log: 0
-  fadeTime: 0.5
+  fadeTime: 0.33
 --- !u!1001 &8039813761239181801
 PrefabInstance:
   m_ObjectHideFlags: 0

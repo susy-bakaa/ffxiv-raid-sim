@@ -47,9 +47,19 @@ public class MusicLoader : MonoBehaviour
             return;
 
         startSource.Stop();
+        AudioClip startClip = startSource.clip;
         startSource.clip = null;
         loopSource.Stop();
+        AudioClip loopClip = loopSource.clip;
         loopSource.clip = null;
+
+        if (startClip != null)
+            Destroy(startClip);
+        if (loopClip != null)
+            Destroy(loopClip);
+
+        // Unload unused assets to free up memory
+        Resources.UnloadUnusedAssets();
 #endif
     }
 

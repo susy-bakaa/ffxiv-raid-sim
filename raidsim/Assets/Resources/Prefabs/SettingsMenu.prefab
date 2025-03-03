@@ -33739,6 +33739,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8489452460398802008}
+  - component: {fileID: 1351790505287467802}
   m_Layer: 5
   m_Name: CheckForUpdatesButton
   m_TagString: Untagged
@@ -33766,6 +33767,22 @@ RectTransform:
   m_AnchoredPosition: {x: 145, y: -687.5}
   m_SizeDelta: {x: 125, y: 25}
   m_Pivot: {x: 1, y: 0}
+--- !u!114 &1351790505287467802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4997774780971503397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a986ee5deff11049a226ab48170d947, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  disableForWebGL: 1
+  disableForWinStandalone: 0
+  disableForLinuxStandalone: 1
+  toggleGameObject: 1
 --- !u!1 &5031781352918699440
 GameObject:
   m_ObjectHideFlags: 0
@@ -37330,6 +37347,7 @@ GameObject:
   - component: {fileID: 5753348645019813421}
   - component: {fileID: 6464423000618161637}
   - component: {fileID: 1937374327734354480}
+  - component: {fileID: 6526369455640745617}
   m_Layer: 5
   m_Name: SkipUpdatesToggle
   m_TagString: Untagged
@@ -37499,6 +37517,22 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &6526369455640745617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5665029011444446876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a986ee5deff11049a226ab48170d947, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  disableForWebGL: 1
+  disableForWinStandalone: 0
+  disableForLinuxStandalone: 1
+  toggleGameObject: 1
 --- !u!1 &5744501359393176377
 GameObject:
   m_ObjectHideFlags: 0
@@ -37511,6 +37545,7 @@ GameObject:
   - component: {fileID: 3588353335658866795}
   - component: {fileID: 8599449352516162032}
   - component: {fileID: 147494099133164160}
+  - component: {fileID: 478663626938078903}
   m_Layer: 5
   m_Name: CheckForUpdatesLabel
   m_TagString: Untagged
@@ -37674,6 +37709,22 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   dummy: 0
+--- !u!114 &478663626938078903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5744501359393176377}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a986ee5deff11049a226ab48170d947, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  disableForWebGL: 1
+  disableForWinStandalone: 0
+  disableForLinuxStandalone: 1
+  toggleGameObject: 1
 --- !u!1 &5763052641179412976
 GameObject:
   m_ObjectHideFlags: 0
@@ -39964,6 +40015,7 @@ GameObject:
   - component: {fileID: 5412713204488347782}
   - component: {fileID: 4884821523367790246}
   - component: {fileID: 5670753366712452452}
+  - component: {fileID: 2130740650829523904}
   m_Layer: 5
   m_Name: SkipUpdatesLabel
   m_TagString: Untagged
@@ -40127,6 +40179,22 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   dummy: 0
+--- !u!114 &2130740650829523904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6040502677793515128}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a986ee5deff11049a226ab48170d947, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  disableForWebGL: 1
+  disableForWinStandalone: 0
+  disableForLinuxStandalone: 1
+  toggleGameObject: 1
 --- !u!1 &6043438932095595810
 GameObject:
   m_ObjectHideFlags: 0
@@ -40292,6 +40360,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: 1
   disableInstead: 1
+  disabledOnStart: 0
   log: 0
   onDestroy:
     m_PersistentCalls:
@@ -50417,6 +50486,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: 1
   disableInstead: 1
+  disabledOnStart: 0
   log: 0
   onDestroy:
     m_PersistentCalls:

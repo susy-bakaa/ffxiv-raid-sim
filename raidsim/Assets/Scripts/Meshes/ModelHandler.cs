@@ -36,6 +36,9 @@ public class ModelHandler : MonoBehaviour
         yield return new WaitForSeconds(1f);
         for (int i = 0; i < models.Count; i++)
         {
+            if (models[i] == null)
+                continue;
+
             models[i].SetActive(i == currentModelIndex);
             if (models[i].activeSelf)
             {

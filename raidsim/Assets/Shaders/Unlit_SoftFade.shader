@@ -2,8 +2,11 @@ Shader "Custom/Unlit/SoftFade"
 {
     Properties
     {
-        _Color ("Color", Color) = (1,1,1,1)
+        [HideInInspector]
+        [MainTexture]
         _MainTex ("Texture", 2D) = "white" {}
+        [MainColor]
+        _Color ("Color", Color) = (1,1,1,1)
         _SoftFactor ("Soft Factor", Range(0.01, 1)) = 0.5
         _MinDist ("Min Distance", float) = 1.0
         _MaxDist ("Max Distance", float) = 2.0

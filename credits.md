@@ -10,5 +10,6 @@
 - Thank you to also all of the other simulators created by various talented people! [XIVSim](https://xivsim.com/), [WCGH](https://github.com/WCGH) for their various offline sims, [xiv-stats](https://github.com/xiv-stats) for their sim and of course all of the other various smaller simulator projects created by everyone over the years.
 - M4S AutoCad/uptime strat raidplan. https://raidplan.io/plan/OnQXobwatopL1G8u
 - Greggman for their better Unity WebGL template. https://github.com/greggman/better-unity-webgl-template
+- JakeCarterAU for their tool for searching materials by shader. https://github.com/JakeCarterDPM/unity-search-material-by-shader
 - Special thank you to my friends and static members for testing and helping with the timeline data.
 - Jon for his epic voicelines.
