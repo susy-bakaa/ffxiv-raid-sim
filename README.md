@@ -35,6 +35,10 @@ This simulator is mainly being built with European raiding strats from LPDU or w
 
 Timelines don't work yet for these or the bots are not finished and will die to mechanics.
 
+- The Weapon's Refrain (Ultimate) (UWU)
+	- Phase 5 (The Ultima Weapon)
+		- Ultimate Suppression
+
 # Planned fights
 
 These fights are not being worked on yet and are not guranteed to be added, but I have a special interest in working on them eventually and they are actively being considered.
@@ -57,7 +61,6 @@ These fights are not being worked on yet and are not guranteed to be added, but 
 - The Weapon's Refrain (Ultimate) (UWU)
 	- Phase 5 (The Ultima Weapon)
 		- Ultimate Predation
-		- Ultimate Suppression
 		- Ultimate Annihilation
 
 (These ones are not guranteed and more of a MAYBE, because [another sim with bots](https://github.com/WCGH/FRU-Sim) already exists and [XIVSim](https://www.xivsim.com/game/) has support for them.)

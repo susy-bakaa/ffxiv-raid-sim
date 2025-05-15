@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5722505717532405556
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5707092068589182010}
+  - component: {fileID: 2640904787150318534}
+  m_Layer: 3
+  m_Name: Windburn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5707092068589182010
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5722505717532405556}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2640904787150318534
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5722505717532405556}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc946a4ba7a920740b8cc0ab915b2c82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data: {fileID: 11400000, guid: 8b4c2ea55adcf8f4190a8fa39cd1e770, type: 2}
+  duration: 0
+  stacks: 0
+  uniqueTag: 0
+  sortOrder: 0
+  damage:
+    name: 
+    value: -1000
+    negative: 1
+    ignoreDamageReductions: 0
+    type: 1
+    elementalAspect: 6
+    physicalAspect: 0
+    applicationType: 0
+    source: {fileID: 0}
+  onApplication:
+    m_PersistentCalls:
+      m_Calls: []
+  onTick:
+    m_PersistentCalls:
+      m_Calls: []
+  onUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+  onExpire:
+    m_PersistentCalls:
+      m_Calls: []
+  onCleanse:
+    m_PersistentCalls:
+      m_Calls: []
+  onReduce:
+    m_PersistentCalls:
+      m_Calls: []
+  onAddStack:
+    m_PersistentCalls:
+      m_Calls: []
+  onMaxStacks:
+    m_PersistentCalls:
+      m_Calls: []
+  instantDeath: 0
+  stacksMultiplyDamage: 0

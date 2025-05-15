@@ -16,6 +16,7 @@ public class UserInput : MonoBehaviour
     public SimpleFreecam freecam;
     public ThirdPersonCamera cam;
     public TargetController targetController;
+    public CanvasGroupToggleChildren debugOverlays;
     public bool inputEnabled = true;
     public bool movementInputEnabled = true;
     public bool rotationInputEnabled = true;
@@ -57,6 +58,15 @@ public class UserInput : MonoBehaviour
 
     void Awake()
     {
+        if (debugOverlays == null)
+            debugOverlays = GameObject.Find("SimDebugOverlays").GetComponent<CanvasGroupToggleChildren>();
+
+        if (debugOverlays != null && debugOverlays.Group != null)
+        {
+            debugOverlays.Group.alpha = 0f;
+            debugOverlays.UpdateState();
+        }
+
         if (KeyBind.Keys == null)
             KeyBind.Keys = new Dictionary<string, KeyBind>();
         if (m_axes == null)
@@ -186,6 +196,17 @@ public class UserInput : MonoBehaviour
         if (BindedKey(KeyBind.Keys["ResetKey"]))
         {
             ResetKey();
+        }
+
+        if (BindedKey(KeyBind.Keys["ToggleDebugOverlaysKey"]))
+        {
+            if (debugOverlays != null && debugOverlays.Group != null)
+            {
+                if (debugOverlays.Group.alpha == 0f)
+                    debugOverlays.Group.alpha = 1f;
+                else
+                    debugOverlays.Group.alpha = 0f;
+            }
         }
     }
 
