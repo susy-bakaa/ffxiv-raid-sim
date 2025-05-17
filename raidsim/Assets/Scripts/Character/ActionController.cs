@@ -1042,6 +1042,9 @@ public class ActionController : MonoBehaviour
                 speechBubbleGroup.LeanAlpha(1f, 0.25f);
                 Utilities.FunctionTimer.Create(this, () => speechBubbleGroup.LeanAlpha(0f, 0.25f), speechBubbleDuration, $"{characterState.characterName}_{this}_speech_bubble_fade_out", true);
             }
+        }
+        if (action.data.speechAudio != null)
+        {
             if (speechBubbleAudio != null)
             {
                 if (FightTimeline.Instance != null && FightTimeline.Instance.jon && action.data.jonSpeechAudio != null)

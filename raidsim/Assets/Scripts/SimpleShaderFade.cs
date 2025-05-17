@@ -20,17 +20,28 @@ public class SimpleShaderFade : MonoBehaviour
 #if UNITY_EDITOR
     [Header("Editor")]
     public float fadeTime = 0.5f;
+    private SimpleScale simpleScale;
 
     [Button("Fade Out")]
     public void FadeOutButton()
     {
+        simpleScale = GetComponent<SimpleScale>();
         FadeOut(fadeTime);
+        if (simpleScale != null)
+        {
+            simpleScale.ResetScale();
+        }
     }
 
     [Button("Fade In")]
     public void FadeInButton()
     {
+        simpleScale = GetComponent<SimpleScale>();
         FadeIn(fadeTime);
+        if (simpleScale != null)
+        {
+            simpleScale.Scale();
+        }
     }
 #endif
 
@@ -108,7 +119,7 @@ public class SimpleShaderFade : MonoBehaviour
         {
             originalAlpha.Add(materials[i].GetFloat(shaderAlphaPropertyHash));
 
-            //Debug.Log($"result {materials[i].GetFloat("_Alpha")} originalAlpha {originalAlpha.Count} current {originalAlpha[i]}");
+            Debug.Log($"result {materials[i].GetFloat("_Alpha")} originalAlpha {originalAlpha.Count} current {originalAlpha[i]}");
 
             int index = i;
             if (time > 0)

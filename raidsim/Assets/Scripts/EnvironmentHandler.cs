@@ -65,6 +65,15 @@ public class EnvironmentHandler : MonoBehaviour
             {
                 arenaModelLoaded = true;
 
+                // Remove any possible temporary arena placeholders
+                if (arenas != null && arenas.Length > 0)
+                {
+                    for (int i = 0; i < arenas.Length; i++)
+                    {
+                        Destroy(arenas[i]);
+                    }
+                }
+
                 arenas = new GameObject[arenaModels.Length];
                 for (int i = 0; i < arenaModels.Length; i++)
                 {
