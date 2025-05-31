@@ -16,16 +16,50 @@ public class RaidwideDebuffsMechanic : FightMechanic
     [HideIf("ignoreRoles")] public bool onlySpecifiedRoles = false;
     [ShowIf("onlySpecifiedRoles")] public List<RoleSelection> specifiedRoles = new List<RoleSelection>();
     [ShowIf("onlySpecifiedRoles")] public bool randomizeRoleGroups = false;
+    [ShowIf("showPickBasedOnPreviousRandomEventResultField")] public bool pickBasedOnPreviousRandomEventResult = false;
+    [ShowIf("pickBasedOnPreviousRandomEventResult")] public bool useIndexMapping = false;
+    [ShowIf("useIndexMapping")] public List<IndexMapping> indexMapping = new List<IndexMapping>();
+    [ShowIf("randomizeRoleGroups")] public bool setRandomEventResult = false;
+    [ShowIf("showRandomEventIdField")] public int randomEventResultId = -1;
     public bool cleansEffects = false;
     public bool fallbackToRandom = false;
+    private bool showRandomEventIdField => (pickBasedOnPreviousRandomEventResult || setRandomEventResult);
+    private bool showPickBasedOnPreviousRandomEventResultField => (!randomizeRoleGroups && onlySpecifiedRoles);
 
     List<StatusEffectInfo> statusEffects;
     List<CharacterState> partyMembers;
 
     CharacterState player;
 
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (!randomizeRoleGroups)
+        {
+            setRandomEventResult = false;
+        }
+        else if (randomizeRoleGroups)
+        {
+            pickBasedOnPreviousRandomEventResult = false;
+            useIndexMapping = false;
+        }   
+        if (pickBasedOnPreviousRandomEventResult)
+        {
+            setRandomEventResult = false;
+            randomizeRoleGroups = false;
+        }
+        else if (!pickBasedOnPreviousRandomEventResult)
+        {
+            useIndexMapping = false;
+        }
+    }
+#endif
+
     void Awake()
     {
+        if (randomizeRoleGroups)
+            pickBasedOnPreviousRandomEventResult = false;
+
         for (int i = 0; i < party.members.Count; i++)
         {
             if (party.members[i].characterState.characterName.ToLower().Contains("player") && party.members[i].characterState.gameObject.CompareTag("Player"))
@@ -50,17 +84,54 @@ public class RaidwideDebuffsMechanic : FightMechanic
         statusEffects = new List<StatusEffectInfo>(effects); // Copy the effects list
         partyMembers = new List<CharacterState>(party.GetActiveMembers()); // Copy the party members list
 
-        if (onlySpecifiedRoles && playerEffect.data == null && !playerEffect.name.Contains('!'))
+        if (onlySpecifiedRoles && ((playerEffect.data == null && !playerEffect.name.Contains('!')) || pickBasedOnPreviousRandomEventResult))
         {
             if (specifiedRoles != null)
             {
                 if (randomizeRoleGroups)
                     specifiedRoles.Shuffle();
 
-                int selected = Random.Range(0, specifiedRoles.Count);
+                int selected = 0;
+
+                if (pickBasedOnPreviousRandomEventResult && randomEventResultId >= 0 && FightTimeline.Instance != null)
+                {
+                    if (FightTimeline.Instance.TryGetRandomEventResult(randomEventResultId, out selected))
+                    {
+                        if (useIndexMapping && indexMapping != null && indexMapping.Count > 0)
+                        {
+                            if (log)
+                                Debug.Log($"Using previous random event result ID {randomEventResultId}, selected index {selected}!");
+
+                            for (int i = 0; i < indexMapping.Count; i++)
+                            {
+                                if (indexMapping[i].previousIndex == selected)
+                                {
+                                    selected = indexMapping[i].nextIndex;
+                                    if (log)
+                                        Debug.Log($"Using index mapping for random event result ID {randomEventResultId}, selected index {selected}!");
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (log)
+                            Debug.LogWarning($"Failed to get random event result for ID {randomEventResultId}!");
+                        if (fallbackToRandom)
+                            selected = Random.Range(0, specifiedRoles.Count);
+                    }
+                }
+                else
+                {
+                    selected = Random.Range(0, specifiedRoles.Count);
+                }
 
                 if (log)
                     Debug.Log($"Role group {specifiedRoles[selected].name} selected out of possible {specifiedRoles.Count}!");
+
+                if (setRandomEventResult && randomEventResultId >= 0 && FightTimeline.Instance != null)
+                    FightTimeline.Instance.SetRandomEventResult(randomEventResultId, selected);
 
                 if (specifiedRoles.Count > 0)
                 {
@@ -83,7 +154,7 @@ public class RaidwideDebuffsMechanic : FightMechanic
                 }
             }
         }
-        else if (onlySpecifiedRoles && playerEffect.data != null)
+        else if (onlySpecifiedRoles && playerEffect.data != null && !pickBasedOnPreviousRandomEventResult)
         {
             if (specifiedRoles != null)
             {
@@ -96,6 +167,9 @@ public class RaidwideDebuffsMechanic : FightMechanic
                 {
                     if (log)
                         Debug.Log($"Player's role group {playerRoleGroup.name} selected!");
+
+                    if (setRandomEventResult && randomEventResultId >= 0 && FightTimeline.Instance != null)
+                        FightTimeline.Instance.SetRandomEventResult(randomEventResultId, specifiedRoles.IndexOf(playerRoleGroup));
 
                     for (int i = 0; i < partyMembers.Count; i++)
                     {
@@ -112,7 +186,7 @@ public class RaidwideDebuffsMechanic : FightMechanic
                 }
             }
         } 
-        else if (onlySpecifiedRoles && playerEffect.name.Contains('!'))
+        else if (onlySpecifiedRoles && playerEffect.name.Contains('!') && !pickBasedOnPreviousRandomEventResult)
         {
             if (specifiedRoles != null)
             {
@@ -134,6 +208,9 @@ public class RaidwideDebuffsMechanic : FightMechanic
 
                         if (log)
                             Debug.Log($"Role group {otherGroups[selected].name} selected out of possible {otherGroups.Count}!");
+
+                        if (setRandomEventResult && randomEventResultId >= 0 && FightTimeline.Instance != null)
+                            FightTimeline.Instance.SetRandomEventResult(randomEventResultId, specifiedRoles.IndexOf(otherGroups[selected]));
 
                         for (int i = 0; i < partyMembers.Count; i++)
                         {

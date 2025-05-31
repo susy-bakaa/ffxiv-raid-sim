@@ -35,9 +35,14 @@ This simulator is mainly being built with European raiding strats from LPDU or w
 
 Timelines don't work yet for these or the bots are not finished and will die to mechanics.
 
+- AAC Cruiserweight Tier
+	- AAC Cruiserweight M4 (Savage) (M8S)
+		- Terrestrial Rage ([Rinon](https://wtfdig.info/72/m8s#84ddog) & [Half Rinon](https://wtfdig.info/72/m8s#84ddog::halfr:::::))
+		- Beckon Moonlight ([Quad](https://raidplan.io/plan/WFsLBku1C9Iyxneu))
+		- Millenial Decay ([Toxic](https://raidplan.io/plan/0YycPJM_3KLD6L1H))
 - The Weapon's Refrain (Ultimate) (UWU)
 	- Phase 5 (The Ultima Weapon)
-		- Ultimate Suppression
+		- Ultimate Suppression ([LPDU](https://www.youtube.com/watch?v=PwEVH50b-rg))
 
 # Planned fights
 
