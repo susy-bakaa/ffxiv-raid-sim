@@ -69,7 +69,7 @@ GameObject:
   - component: {fileID: 1677697541282752826}
   - component: {fileID: 1573159849829438792}
   m_Layer: 0
-  m_Name: AOE_HeavensearthStack
+  m_Name: AOE_HeavensearthStackShort
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -162,7 +162,7 @@ MonoBehaviour:
   damage:
     name: Heavensearth
     value: -320000
-    negative: 0
+    negative: 1
     ignoreDamageReductions: 0
     type: 1
     elementalAspect: 7
@@ -214,7 +214,7 @@ MonoBehaviour:
   resetOnReload: 0
   resetOwner: 0
   visualDelay: 0
-  triggerDelay: 5
+  triggerDelay: 4
   triggerDelayVariance: 0.025
   damageApplicationDelay: 0.25
   cooldown: 10
@@ -266,6 +266,18 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0.25
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1677697541282752826}
+        m_TargetAssemblyTypeName: FightMechanic, Assembly-CSharp
+        m_MethodName: InterruptMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2

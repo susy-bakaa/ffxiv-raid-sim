@@ -51,6 +51,7 @@ public class TargetController : MonoBehaviour
 
     [Header("Events")]
     public bool eventsEnabled = true;
+    private bool wasEventsEnabled;
     public UnityEvent<TargetNode> onTarget;
 
     [Header("User Interface")]
@@ -131,6 +132,7 @@ public class TargetController : MonoBehaviour
         wasOnlyAliveTargets = onlyAliveTargets;
         wasOnlyIfSomeoneHasEnmity = onlyIfSomeoneHasEnmity;
         wasIgnoreTargetingRestrictions = ignoreTargetingRestrictions;
+        wasEventsEnabled = eventsEnabled;
 
         targetTriggerNodes = new List<TargetNode>();
     }
@@ -187,6 +189,7 @@ public class TargetController : MonoBehaviour
         onlyAliveTargets = wasOnlyAliveTargets;
         onlyIfSomeoneHasEnmity = wasOnlyIfSomeoneHasEnmity;
         ignoreTargetingRestrictions = wasIgnoreTargetingRestrictions;
+        eventsEnabled = wasEventsEnabled;
         currentTarget = null;
         availableTargets.Clear();
         targetTriggerNodes.Clear();

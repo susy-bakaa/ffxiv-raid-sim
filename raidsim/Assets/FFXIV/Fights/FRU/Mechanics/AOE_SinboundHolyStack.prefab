@@ -47,6 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outValue: 0
   inValue: 1
+  defaultFadeTime: 0.33
   outOnStart: 0
   log: 0
   fadeTime: 0.5
@@ -153,13 +154,15 @@ MonoBehaviour:
   data: {fileID: 0}
   damageName: Sinbound Holy
   inverted: 0
+  log: 0
   owner: {fileID: 0}
   autoAssignOwner: 0
   ableToHitTag: Player
+  canHitCharacterName: 
   damage:
     name: Sinbound Holy
     value: -300000
-    negative: 0
+    negative: 1
     ignoreDamageReductions: 0
     type: 1
     elementalAspect: 9
@@ -208,6 +211,8 @@ MonoBehaviour:
   shared: 1
   enumeration: 0
   requireOwner: 0
+  resetOnReload: 0
+  resetOwner: 0
   visualDelay: 0
   triggerDelay: 0.05
   triggerDelayVariance: 0.025
@@ -218,6 +223,7 @@ MonoBehaviour:
   currentPlayers: []
   appliedEffects:
   - {fileID: 11400000, guid: 8aef8e685d034a247a6434b7819a6718, type: 2}
+  appliedEffectsOnFail: []
   onHit:
     m_PersistentCalls:
       m_Calls: []
@@ -225,6 +231,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   onFinish:
+    m_PersistentCalls:
+      m_Calls: []
+  onStart:
     m_PersistentCalls:
       m_Calls: []
   onSpawn:
@@ -331,6 +340,7 @@ MonoBehaviour:
   mechanicEnabled: 1
   mechanicName: 
   onlyTriggerOnce: 1
+  global: 0
   log: 0
   party: {fileID: 0}
   autoFindParty: 1
@@ -352,6 +362,7 @@ MonoBehaviour:
   mechanicEnabled: 1
   mechanicName: 
   onlyTriggerOnce: 0
+  global: 0
   log: 0
   startAutomatically: 0
   delay: 0.8
@@ -408,6 +419,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: -1
   disableInstead: 0
+  disabledOnStart: 0
   log: 0
   onDestroy:
     m_PersistentCalls:
@@ -427,6 +439,7 @@ MonoBehaviour:
   mechanicEnabled: 1
   mechanicName: SpawnSinboundHolyPuddle
   onlyTriggerOnce: 0
+  global: 0
   log: 0
   owner: {fileID: 0}
   targetController: {fileID: 0}
@@ -435,6 +448,7 @@ MonoBehaviour:
   spawnLocation: {fileID: 8630972995688642863}
   delay: 0
   autoAssignOwner: 0
+  autoAssignLocation: 0
   useActionDamage: 0
   usePlayerHealth: 0
   useTargetControllerCurrentTargetAsLocation: 0
@@ -447,6 +461,9 @@ MonoBehaviour:
   dealDamage: 1
   damageMultiplier: 1
   increaseEnmity: 0
+  onSpawn:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1001 &4942340284129245619
 PrefabInstance:
   m_ObjectHideFlags: 0

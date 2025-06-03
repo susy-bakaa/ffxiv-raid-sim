@@ -143,10 +143,12 @@ public class DamageTrigger : MonoBehaviour
         }
         if (triggerDelay > 0f)
         {
+            if (triggerDelayVariance > 0f)
+                triggerDelay += Random.Range(0f, triggerDelayVariance);
             Utilities.FunctionTimer.Create(this, () => {
                 if (!inProgress)
                     StartDamageTrigger();
-            }, triggerDelay + Random.Range(0f, triggerDelayVariance), $"{id}_{damageName}_{gameObject.name}_trigger_delay", false, true);
+            }, triggerDelay, $"{id}_{damageName}_{gameObject.name}_trigger_delay", false, true);
         }
         else if (!playerActivated)
         {

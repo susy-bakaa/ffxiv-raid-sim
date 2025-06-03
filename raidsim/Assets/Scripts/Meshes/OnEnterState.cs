@@ -11,6 +11,7 @@ public class OnEnterState : StateMachineBehaviour
     public int childIndex;
     public string parameterName = string.Empty;
     public bool toggleState;
+    public bool log = false;
 
     private int parameterHash;
     private bool hashSet = false;
@@ -26,7 +27,8 @@ public class OnEnterState : StateMachineBehaviour
 
         if (m_type == StateType.ToggleChild)
         {
-            Debug.Log($"ToggleChild '{animator.gameObject.name}' childIndex {childIndex} ({animator.transform.GetChild(childIndex).gameObject.name}) childCount {animator.transform.childCount} toggleState {toggleState}");
+            if (log)
+                Debug.Log($"ToggleChild '{animator.gameObject.name}' childIndex {childIndex} ({animator.transform.GetChild(childIndex).gameObject.name}) childCount {animator.transform.childCount} toggleState {toggleState}");
             animator.transform.GetChild(childIndex).gameObject.SetActive(toggleState);
         }
         else

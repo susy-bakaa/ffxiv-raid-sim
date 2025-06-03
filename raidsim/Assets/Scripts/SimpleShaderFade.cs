@@ -66,7 +66,7 @@ public class SimpleShaderFade : MonoBehaviour
     private void CreateLocalSharedMaterials()
     {
         materials = new List<Material>();
-        Renderer[] renderers = GetComponentsInChildren<Renderer>();
+        Renderer[] renderers = GetComponentsInChildren<Renderer>(true);
 
         // Create a local shared material for this hierarchy
         Dictionary<Material, Material> materialMap = new Dictionary<Material, Material>();
@@ -119,7 +119,8 @@ public class SimpleShaderFade : MonoBehaviour
         {
             originalAlpha.Add(materials[i].GetFloat(shaderAlphaPropertyHash));
 
-            Debug.Log($"result {materials[i].GetFloat("_Alpha")} originalAlpha {originalAlpha.Count} current {originalAlpha[i]}");
+            if (log)
+                Debug.Log($"result {materials[i].GetFloat("_Alpha")} originalAlpha {originalAlpha.Count} current {originalAlpha[i]}");
 
             int index = i;
             if (time > 0)

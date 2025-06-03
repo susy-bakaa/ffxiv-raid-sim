@@ -6,16 +6,20 @@ using System.Collections.Generic;
 public class AssetHandler : MonoBehaviour
 {
     public static AssetHandler Instance;
-
+    
+    public string[] sharedBundles = new string[] { "common" };
     public bool disable = false;
     public bool log = true;
 
     private AssetBundle currentBundle;
     private string currentBundleName;
     private Coroutine ieLoadAssetBundle;
+    private Coroutine ieLoadSharedAssetBundle;
 
     // Cache for loaded assets (avoids reloading assets from disk)
     private Dictionary<string, Object> assetCache = new Dictionary<string, Object>();
+
+    private Dictionary<string, AssetBundle> currentSharedBundles = new Dictionary<string, AssetBundle>();
 
     private void Awake()
     {
@@ -33,6 +37,132 @@ public class AssetHandler : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        if (currentSharedBundles == null || currentSharedBundles.Keys.Count <= 0)
+        {
+            currentSharedBundles = new Dictionary<string, AssetBundle>();
+
+            LoadCommonAssetBundle();
+        }
+    }
+
+    public void LoadCommonAssetBundle()
+    {
+        if (log)
+            Debug.LogError("Loading default common AssetBundles.");
+
+        LoadCommonAssetBundleInternal(sharedBundles);
+    }
+
+    public void LoadCommonAssetBundle(string bundleName)
+    {
+        if (string.IsNullOrEmpty(bundleName))
+        {
+            Debug.LogError("Requested AssetBundle name is an empty string!");
+            return;
+        }
+
+        LoadCommonAssetBundleInternal(new string[] { bundleName });
+    }
+
+    public void LoadCommonAssetBundle(string[] bundleNames)
+    {
+        LoadCommonAssetBundleInternal(bundleNames);
+    }
+
+    private void LoadCommonAssetBundleInternal(string[] names)
+    {
+        if (names != null && names.Length > 0)
+        {
+            foreach (string bundleName in names)
+            {
+                if (!string.IsNullOrEmpty(bundleName))
+                {
+                    if (string.IsNullOrEmpty(bundleName))
+                    {
+                        if (log)
+                            Debug.Log($"Requested common AssetBundle '{bundleName}' is an empty string!");
+                        return;
+                    }
+
+                    if (currentSharedBundles.ContainsKey(bundleName))
+                    {
+                        if (log)
+                            Debug.Log($"Requested common AssetBundle '{bundleName}' is already loaded!");
+                        return;
+                    }
+
+                    if (ieLoadSharedAssetBundle == null)
+                        ieLoadSharedAssetBundle = StartCoroutine(IE_LoadCommonAssetBundle(bundleName));
+                }
+            }
+        }
+        else
+        {
+            if (log)
+                Debug.Log("Requested common AssetBundle names are null or empty! No bundles to load.");
+            return;
+        }
+    }
+
+    private IEnumerator IE_LoadCommonAssetBundle(string bundleName)
+    {
+        if (currentSharedBundles.ContainsKey(bundleName))
+        {
+            if (log)
+                Debug.Log($"Requested common AssetBundle '{bundleName}' is already loaded!");
+            ieLoadSharedAssetBundle = null;
+            yield break;
+        }
+
+        string bundlePath = Path.Combine(Application.streamingAssetsPath, bundleName);
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+        if (log)
+            Debug.Log($"Loading common AssetBundle: '{bundleName}'");
+
+        // For WebGL, use UnityWebRequest to load the asset bundle
+        UnityEngine.Networking.UnityWebRequest request = UnityEngine.Networking.UnityWebRequestAssetBundle.GetAssetBundle(bundlePath);
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityEngine.Networking.UnityWebRequest.Result.Success)
+        {
+            Debug.LogError("Failed to load common AssetBundle: " + request.error);
+            ieLoadCommonAssetBundle = null;
+            yield break;
+        }
+
+        AssetBundle loadedBundle = UnityEngine.Networking.DownloadHandlerAssetBundle.GetContent(request);
+#else
+        if (!File.Exists(bundlePath))
+        {
+            Debug.LogError($"Common AssetBundle not found at: '{bundlePath}'!");
+            ieLoadSharedAssetBundle = null;
+            yield break;
+        }
+
+        if (log)
+            Debug.Log($"Loading common AssetBundle: '{bundleName}'");
+
+        // For other platforms, use AssetBundle.LoadFromFileAsync
+        AssetBundleCreateRequest bundleRequest = AssetBundle.LoadFromFileAsync(bundlePath);
+        yield return bundleRequest;
+
+        AssetBundle loadedBundle = bundleRequest.assetBundle;
+#endif
+
+        if (loadedBundle == null)
+        {
+            Debug.LogError($"Failed to load common AssetBundle: '{bundleName}'");
+            ieLoadSharedAssetBundle = null;
+            yield break;
+        }
+
+        currentSharedBundles.Add(bundleName, loadedBundle);
+
+        if (log)
+            Debug.Log($"Common AssetBundle loaded: '{bundleName}'!");
+        ieLoadSharedAssetBundle = null;
     }
 
     public void LoadSceneAssetBundle(string bundleName)
@@ -93,6 +223,7 @@ public class AssetHandler : MonoBehaviour
         if (request.result != UnityEngine.Networking.UnityWebRequest.Result.Success)
         {
             Debug.LogError("Failed to load AssetBundle: " + request.error);
+            ieLoadAssetBundle = null;
             yield break;
         }
 

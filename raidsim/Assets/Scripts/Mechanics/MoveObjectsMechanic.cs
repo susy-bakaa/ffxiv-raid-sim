@@ -11,13 +11,16 @@ public class MoveObjectsMechanic : FightMechanic
 
     [Header("Move Object Settings")]
     public Transform[] targets;
-    public Transform destination;
+    [HideIf("multipleDestinations")] public Transform destination;
+    [ShowIf("multipleDestinations")] public Transform[] destinations;
+    public bool multipleDestinations = false;
     public bool relative = false;
     public bool local = false;
     public Vector3 destinationPosition;
     public bool rotate = false;
     [EnableIf("rotate")] public Vector3 destinationRotation;
     public bool faceTarget = false;
+    public bool copyTargetRotation = false;
     [EnableIf("faceTarget")]
     public Transform rotationTarget;
     public float animationDuration = -1f;
@@ -30,6 +33,23 @@ public class MoveObjectsMechanic : FightMechanic
     private void Start()
     {
         triggerAnimationHash = Animator.StringToHash(triggerAnimation);
+
+        if (multipleDestinations)
+        {
+            destination = null;
+
+            if (destinations == null || targets == null)
+            {
+                Debug.LogError("Multiple destinations selected but targets or destinations are missing!");
+                return;
+            }
+            if (destinations.Length != targets.Length)
+            {
+                Debug.LogError("Multiple destinations selected but the number of targets and destinations do not match!");
+                return;
+            }
+        }
+
         if (targets != null)
         {
             targetAnimators = new Animator[targets.Length];
@@ -82,6 +102,7 @@ public class MoveObjectsMechanic : FightMechanic
         for (int i = 0; i < targets.Length; i++)
         {
             Transform target = targets[i];
+            Transform destination = multipleDestinations ? destinations[i] : this.destination;
 
             if (destination != null)
             {
@@ -93,6 +114,13 @@ public class MoveObjectsMechanic : FightMechanic
                     target.LookAt(rotationTarget);
                     target.localEulerAngles = new Vector3(0, target.localEulerAngles.y, 0);
                 }
+                if (copyTargetRotation)
+                {
+                    if (local)
+                        target.localEulerAngles = destination.localEulerAngles;
+                    else
+                        target.eulerAngles = destination.eulerAngles;
+                }
             }
             else if (!relative)
             {
@@ -103,6 +131,13 @@ public class MoveObjectsMechanic : FightMechanic
                 {
                     target.LookAt(rotationTarget);
                     target.eulerAngles = new Vector3(0, target.eulerAngles.y, 0);
+                }
+                if (copyTargetRotation)
+                {
+                    if (local)
+                        target.localEulerAngles = destination.localEulerAngles;
+                    else
+                        target.eulerAngles = destination.eulerAngles;
                 }
             }
             else

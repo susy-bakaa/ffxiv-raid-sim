@@ -47,6 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outValue: 0
   inValue: 1
+  defaultFadeTime: 0.33
   outOnStart: 0
   log: 0
   fadeTime: 0.5
@@ -233,13 +234,15 @@ MonoBehaviour:
   data: {fileID: 0}
   damageName: Hallowed Ray
   inverted: 0
+  log: 0
   owner: {fileID: 0}
   autoAssignOwner: 0
   ableToHitTag: Player
+  canHitCharacterName: 
   damage:
     name: Hallowed Ray
     value: -1000000
-    negative: 0
+    negative: 1
     ignoreDamageReductions: 0
     type: 1
     elementalAspect: 1
@@ -288,6 +291,8 @@ MonoBehaviour:
   shared: 1
   enumeration: 0
   requireOwner: 0
+  resetOnReload: 0
+  resetOwner: 0
   visualDelay: 0
   triggerDelay: 0.05
   triggerDelayVariance: 0.025
@@ -297,6 +302,7 @@ MonoBehaviour:
   damageMultiplierPerMissingPlayer: 1.2
   currentPlayers: []
   appliedEffects: []
+  appliedEffectsOnFail: []
   onHit:
     m_PersistentCalls:
       m_Calls: []
@@ -304,6 +310,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   onFinish:
+    m_PersistentCalls:
+      m_Calls: []
+  onStart:
     m_PersistentCalls:
       m_Calls: []
   onSpawn:
@@ -367,6 +376,7 @@ MonoBehaviour:
   mechanicEnabled: 1
   mechanicName: 
   onlyTriggerOnce: 0
+  global: 0
   log: 0
   startAutomatically: 0
   delay: 1.5
@@ -411,6 +421,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: -1
   disableInstead: 0
+  disabledOnStart: 0
   log: 0
   onDestroy:
     m_PersistentCalls:

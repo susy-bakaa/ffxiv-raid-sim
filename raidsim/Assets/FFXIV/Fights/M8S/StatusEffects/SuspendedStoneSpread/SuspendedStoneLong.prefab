@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7968994889274011622}
   - component: {fileID: 219202917762846167}
-  - component: {fileID: 5487414209631714525}
+  - component: {fileID: -4388705746086010468}
   m_Layer: 3
-  m_Name: Heavensearth
+  m_Name: SuspendedStoneLong
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f919dc8dbf7e3a4cbd4d212ede7948b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  data: {fileID: 11400000, guid: 031f7f4b8fafae14ebc2ebc6320cf288, type: 2}
+  data: {fileID: 11400000, guid: f45e541447511c2448ac3a1949cf2cae, type: 2}
   duration: 0
   stacks: 0
   uniqueTag: 0
@@ -63,7 +63,7 @@ MonoBehaviour:
   onApplication:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5487414209631714525}
+      - m_Target: {fileID: -4388705746086010468}
         m_TargetAssemblyTypeName: FightMechanic, Assembly-CSharp
         m_MethodName: TriggerMechanic
         m_Mode: 0
@@ -96,7 +96,7 @@ MonoBehaviour:
   onMaxStacks:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &5487414209631714525
+--- !u!114 &-4388705746086010468
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -115,7 +115,7 @@ MonoBehaviour:
   log: 0
   owner: {fileID: 0}
   targetController: {fileID: 0}
-  damageTriggerPrefab: {fileID: 6613712229827229476, guid: 7052903ea4d98f0458a886951ecf847e, type: 3}
+  damageTriggerPrefab: {fileID: 3513853247504866380, guid: a875d17729780954889d3ad4b090997c, type: 3}
   enableInstead: 0
   spawnLocation: {fileID: 7968994889274011622}
   delay: 0

@@ -48,6 +48,11 @@ Timelines don't work yet for these or the bots are not finished and will die to 
 
 These fights are not being worked on yet and are not guranteed to be added, but I have a special interest in working on them eventually and they are actively being considered.
 
+- Eden's Promise
+	- Eden's Promise: Eternity (Savage)
+		- Phase 2
+			- Basic Relativity ([BLU](https://raidplan.io/plan/pAyRt1XQ3_9CyWLQ))
+			- Advanced Relativity ([BLU](https://raidplan.io/plan/M1vkew11UuLlSvcn))
 - Omega: Alphascape
 	- Alphascape 4.0 (Savage) (O12S)
 		- Phase 2

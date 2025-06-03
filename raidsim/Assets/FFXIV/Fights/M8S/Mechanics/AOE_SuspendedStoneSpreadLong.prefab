@@ -153,7 +153,7 @@ GameObject:
   - component: {fileID: 7286180299191735877}
   - component: {fileID: 969942361072253198}
   m_Layer: 0
-  m_Name: AOE_SuspendedStoneSpread
+  m_Name: AOE_SuspendedStoneSpreadLong
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -247,7 +247,7 @@ MonoBehaviour:
   damage:
     name: Suspended Stone
     value: -80000
-    negative: 0
+    negative: 1
     ignoreDamageReductions: 0
     type: 1
     elementalAspect: 7
@@ -301,7 +301,7 @@ MonoBehaviour:
   visualDelay: 0
   triggerDelay: 4.55
   triggerDelayVariance: 0.025
-  damageApplicationDelay: 0
+  damageApplicationDelay: 0.1
   cooldown: 30
   playersRequired: 0
   damageMultiplierPerMissingPlayer: 1
