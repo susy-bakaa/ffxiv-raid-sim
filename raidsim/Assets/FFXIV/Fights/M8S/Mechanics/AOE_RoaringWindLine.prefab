@@ -152,7 +152,7 @@ MonoBehaviour:
   scale: {x: 1, y: 1, z: 1}
   setScale: 0
   onUpdate: 0
-  duration: 0.5
+  duration: 0.275
 --- !u!114 &4141375364751981720
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -171,19 +171,19 @@ MonoBehaviour:
   global: 0
   log: 0
   startAutomatically: 0
-  delay: 1.6
+  delay: 1.45
   onDelayedTrigger:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 4268272810353372803}
         m_TargetAssemblyTypeName: SimpleShaderFade, Assembly-CSharp
         m_MethodName: FadeIn
-        m_Mode: 1
+        m_Mode: 4
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 0
+          m_FloatArgument: 0.3667
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
@@ -229,19 +229,19 @@ MonoBehaviour:
   global: 0
   log: 0
   startAutomatically: 0
-  delay: 0.5
+  delay: 0.667
   onDelayedTrigger:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 4268272810353372803}
         m_TargetAssemblyTypeName: SimpleShaderFade, Assembly-CSharp
         m_MethodName: FadeOut
-        m_Mode: 1
+        m_Mode: 4
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 0
+          m_FloatArgument: 0.3667
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
@@ -378,7 +378,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outValue: 0
   inValue: 1
-  defaultFadeTime: 0.33
+  defaultFadeTime: 0.4
   outOnStart: 0
   log: 0
   fadeTime: 0.5
@@ -397,7 +397,7 @@ MonoBehaviour:
   scale: {x: 1, y: 1, z: 1}
   setScale: 0
   onUpdate: 0
-  duration: 0.5
+  duration: 0.4
 --- !u!114 &6945960528125963865
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -416,7 +416,7 @@ MonoBehaviour:
   global: 0
   log: 0
   startAutomatically: 0
-  delay: 0.25
+  delay: 0.7833
   onDelayedTrigger:
     m_PersistentCalls:
       m_Calls:
@@ -474,7 +474,7 @@ MonoBehaviour:
   global: 0
   log: 0
   startAutomatically: 0
-  delay: 1
+  delay: 1.5833
   onDelayedTrigger:
     m_PersistentCalls:
       m_Calls:
@@ -597,7 +597,7 @@ MonoBehaviour:
   canHitCharacterName: 
   damage:
     name: Roaring Wind
-    value: -150000
+    value: -170000
     negative: 1
     ignoreDamageReductions: 0
     type: 1
@@ -689,7 +689,7 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 2
+          m_FloatArgument: 2.5
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2

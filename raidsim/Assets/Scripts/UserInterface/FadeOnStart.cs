@@ -7,8 +7,11 @@ public class FadeOnStart : MonoBehaviour
     CanvasGroup group;
 
     public float delay = 1f;
-    private float wasDelay = -1;
+    private float previousDelay = -1;
+    private float wasDelay;
     public float duration = 1f;
+    public bool repeatOnReset = false;
+    private bool wasRepeatOnReset;
 
     private int id = 0;
     private Coroutine ieFadeDelay;
@@ -18,6 +21,9 @@ public class FadeOnStart : MonoBehaviour
         group = GetComponent<CanvasGroup>();
         group.alpha = 1f;
         id = Random.Range(1000, 10000);
+
+        wasRepeatOnReset = repeatOnReset;
+        wasDelay = delay;
     }
 
     void Start()
@@ -31,23 +37,68 @@ public class FadeOnStart : MonoBehaviour
         }
         else
         {
-            group.LeanAlpha(0f, duration);
+            if (duration > 0f)
+                group.LeanAlpha(0f, duration);
+            else
+                group.alpha = 0f;
         }
 
-        if (wasDelay < 0)
-            wasDelay = delay;
+        if (previousDelay < 0)
+            previousDelay = delay;
         else
-            delay = wasDelay;
+            delay = previousDelay;
+    }
+
+    private void OnEnable()
+    {
+        if (repeatOnReset && FightTimeline.Instance != null)
+        {
+            FightTimeline.Instance.onReset.AddListener(OnReset);
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (repeatOnReset && FightTimeline.Instance != null)
+        {
+            FightTimeline.Instance.onReset.RemoveListener(OnReset);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (repeatOnReset && FightTimeline.Instance != null)
+        {
+            FightTimeline.Instance.onReset.RemoveListener(OnReset);
+        }
+    }
+
+    private void OnReset()
+    {
+        repeatOnReset = wasRepeatOnReset;
+        delay = wasDelay;
+        if (repeatOnReset)
+            Start();
     }
 
     public void FadeToTransition(float delay)
     {
-        group.LeanAlpha(1f, duration).setOnComplete(() =>
+        if (duration > 0f)
         {
+            group.LeanAlpha(1f, duration).setOnComplete(() =>
+            {
+                if (delay >= 0f)
+                    this.delay = delay;
+                Start();
+            });
+        }
+        else
+        {
+            group.alpha = 1f;
             if (delay >= 0f)
                 this.delay = delay;
             Start();
-        });
+        }
     }
 
     public void FadeToBlack(float delay)
@@ -61,7 +112,10 @@ public class FadeOnStart : MonoBehaviour
         }
         else
         {
-            group.LeanAlpha(1f, duration);
+            if (duration > 0f)
+                group.LeanAlpha(0f, duration);
+            else
+                group.LeanAlpha(1f, duration);
         }
     }
 
@@ -70,11 +124,17 @@ public class FadeOnStart : MonoBehaviour
         yield return wait;
         if (fadeOut)
         {
-            group.LeanAlpha(1f, duration);
+            if (duration > 0f)
+                group.LeanAlpha(1f, duration);
+            else
+                group.alpha = 1f;
         }
         else
         {
-            group.LeanAlpha(0f, duration);
+            if (duration > 0f)
+                group.LeanAlpha(0f, duration);
+            else
+                group.LeanAlpha(0f, duration);
         }
         ieFadeDelay = null;
     }

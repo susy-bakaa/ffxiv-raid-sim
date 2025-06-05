@@ -648,17 +648,27 @@ public static class Utilities
 
     /// <summary>
     /// Formats a given duration in seconds into a human-readable string.
-    /// The format is as follows:
+    /// Rounds the duration with 'Round Half Away From 0' rounding to whole number.
+    /// The format is as follows;
+    /// 
+    /// Rounding:
+    /// 0.5 seconds and up: "1"
+    /// 0.4 seconds and below: "0"
+    /// 
+    /// Formatting:
     /// - Less than 60 seconds: "X" (seconds)
     /// - 60 seconds to 3599 seconds: "Xm" (minutes)
     /// - 3600 seconds to 86399 seconds: "Xh" (hours)
     /// - 86400 seconds and above: "Xd" (days)
     /// </summary>
-    /// <param name="duration">The duration in seconds to format.</param>
+    /// <param name="duration">The duration as raw timer in seconds to format.</param>
     /// <returns>A formatted string representing the duration.</returns>
     public static string FormatDuration(float duration)
     {
         string result = string.Empty;
+
+        duration = Mathf.FloorToInt(duration + 0.5f);
+
         if (duration < 60)
         {
             result = duration.ToString("F0");

@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using Bayat.Games.Animation.Utilities;
 using UnityEngine;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(Animator))]
 public class AnimatorController : MonoBehaviour
 {
     public bool log = false;
+    public UnityEvent<Animator> onAnimatorReset;
 
     private Animator animator;
     private Dictionary<string, int> paramHashes = new Dictionary<string, int>();
@@ -15,34 +18,53 @@ public class AnimatorController : MonoBehaviour
     private int visibleAnimatorParameterHash = Animator.StringToHash("Visible");
     private int spawnAnimatorParameterHash = Animator.StringToHash("Spawn");
     private int killedAnimatorParameterHash = Animator.StringToHash("Killed");
+    private int despawnAnimatorParameterHash = Animator.StringToHash("Despawn");
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
+
+        animator.AddAnimatorUsage();
+
         if (FightTimeline.Instance != null)
             FightTimeline.Instance.onReset.AddListener(ResetAnimator);
+
+        onAnimatorReset.Invoke(animator);
     }
 
     public void SetBoolTrue(string name)
     {
         int hash = GetHash(name);
-        animator.SetBool(hash, true);
-        if (log)
-            Debug.Log($"[AnimatorController] SetBoolTrue called with name '{name}', hash '{hash}'");
+        SetBool(hash, true);
     }
 
     public void SetBoolFalse(string name)
     {
         int hash = GetHash(name);
-        animator.SetBool(hash, false);
+        SetBool(hash, false);
+    }
+
+    public void SetBool(int hash, bool value)
+    {
+        animator.SetBoolSafe(hash, value);
         if (log)
-            Debug.Log($"[AnimatorController] SetBoolFalse called with name '{name}', hash '{hash}'");
+        {
+            if (value)
+                Debug.Log($"[AnimatorController] SetBoolTrue called with name '{name}', hash '{hash}'");
+            else
+                Debug.Log($"[AnimatorController] SetBoolFalse called with name '{name}', hash '{hash}'");
+        }
     }
 
     public void SetTrigger(string name)
     {
         int hash = GetHash(name);
-        animator.SetTrigger(hash);
+        SetTrigger(hash);
+    }
+
+    public void SetTrigger(int hash)
+    {
+        animator.SetTriggerSafe(hash);
         if (log)
             Debug.Log($"[AnimatorController] SetTrigger called with name '{name}', hash '{hash}'");
     }
@@ -67,15 +89,17 @@ public class AnimatorController : MonoBehaviour
 
     public void ResetAnimator()
     {
-        Utilities.FunctionTimer.StopTimer($"AnimatorController_{gameObject.name}_Reset_ResetTrigger");
-        animator.SetBool(actionLockedAnimatorParameterHash, false);
-        animator.SetBool(castingAnimatorParameterHash, false);
-        animator.SetBool(visibleAnimatorParameterHash, true);
-        animator.SetBool(spawnAnimatorParameterHash, false);
-        animator.SetBool(killedAnimatorParameterHash, false);
-        animator.SetTrigger(resetAnimatorParameterHash);
+        Utilities.FunctionTimer.StopTimer($"AnimatorController_{gameObject.name}_Reset_ResetTriggerSafe");
+        animator.SetBoolSafe(actionLockedAnimatorParameterHash, false);
+        animator.SetBoolSafe(castingAnimatorParameterHash, false);
+        animator.SetBoolSafe(visibleAnimatorParameterHash, true);
+        animator.SetBoolSafe(spawnAnimatorParameterHash, false);
+        animator.SetBoolSafe(killedAnimatorParameterHash, false);
+        animator.SetBoolSafe(despawnAnimatorParameterHash, false);
+        animator.SetTriggerSafe(resetAnimatorParameterHash);
         if (log)
             Debug.Log($"[AnimatorController] ResetAnimator called with hash '{resetAnimatorParameterHash}'");
-        Utilities.FunctionTimer.Create(this, () => animator.ResetTrigger(resetAnimatorParameterHash), 0.1f, $"AnimatorController_{gameObject.name}_Reset_ResetTrigger", true, true);
+        Utilities.FunctionTimer.Create(this, () => animator.ResetTriggerSafe(resetAnimatorParameterHash), 0.1f, $"AnimatorController_{gameObject.name}_Reset_ResetTriggerSafe", true, true);
+        onAnimatorReset.Invoke(animator);
     }
 }

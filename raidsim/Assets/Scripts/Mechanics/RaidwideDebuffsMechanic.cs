@@ -367,7 +367,8 @@ public class RaidwideDebuffsMechanic : FightMechanic
             }
         }
 
-        Debug.LogWarning($"No suitable candidate found for status effect {effect.name} from list of {candidates.Count} candidates!");
+        if (log)
+            Debug.LogWarning($"No suitable candidate found for status effect {effect.name} from list of {candidates.Count} candidates!");
         return null; // No suitable candidate found
     }
 

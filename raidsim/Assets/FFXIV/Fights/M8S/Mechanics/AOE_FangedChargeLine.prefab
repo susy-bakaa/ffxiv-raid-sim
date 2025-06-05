@@ -94,6 +94,7 @@ GameObject:
   - component: {fileID: 150579912265280713}
   - component: {fileID: 8766367796647830135}
   - component: {fileID: 4941682966173548965}
+  - component: {fileID: 1016026144947374430}
   - component: {fileID: 1249768925430241408}
   m_Layer: 0
   m_Name: HitEffect
@@ -151,7 +152,53 @@ MonoBehaviour:
   scale: {x: 1, y: 1, z: 1}
   setScale: 0
   onUpdate: 0
-  duration: 0.5
+  duration: 0.333
+--- !u!114 &1016026144947374430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5213657383014035036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c11d13ba36149154fb548fc96274895b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: 
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  startAutomatically: 0
+  delay: 0.75
+  onDelayedTrigger:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8766367796647830135}
+        m_TargetAssemblyTypeName: SimpleShaderFade, Assembly-CSharp
+        m_MethodName: FadeIn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 4941682966173548965}
+        m_TargetAssemblyTypeName: SimpleScale, Assembly-CSharp
+        m_MethodName: Scale
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1249768925430241408
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,7 +217,7 @@ MonoBehaviour:
   global: 0
   log: 0
   startAutomatically: 0
-  delay: 1
+  delay: 0.4
   onDelayedTrigger:
     m_PersistentCalls:
       m_Calls:
@@ -347,7 +394,7 @@ MonoBehaviour:
   visualDelay: 0
   triggerDelay: 0.1
   triggerDelayVariance: 0.025
-  damageApplicationDelay: 0
+  damageApplicationDelay: 0.75
   cooldown: 30
   playersRequired: 0
   damageMultiplierPerMissingPlayer: 1
@@ -384,7 +431,7 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 1.5
+          m_FloatArgument: 2
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
@@ -421,22 +468,10 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 8766367796647830135}
-        m_TargetAssemblyTypeName: SimpleShaderFade, Assembly-CSharp
-        m_MethodName: FadeIn
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 4941682966173548965}
-        m_TargetAssemblyTypeName: SimpleScale, Assembly-CSharp
-        m_MethodName: Scale
-        m_Mode: 1
+      - m_Target: {fileID: 1016026144947374430}
+        m_TargetAssemblyTypeName: FightMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

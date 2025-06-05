@@ -134,7 +134,7 @@ public class StatusEffect : MonoBehaviour
 
         if (hasHudElement)
         {
-            if ((!data.infinite && !data.hidden) && duration >= 1)
+            if ((!data.infinite && !data.hidden) && duration >= 0.5)
             {
                 hudTimer.text = Utilities.FormatDuration(duration);
             }
@@ -147,7 +147,7 @@ public class StatusEffect : MonoBehaviour
         }
         if (hasPartyHudElement)
         {
-            if ((!data.infinite && !data.hidden) && duration >= 1)
+            if ((!data.infinite && !data.hidden) && duration >= 0.5)
             {
                 partyHudTimer.text = Utilities.FormatDuration(duration);
             }
@@ -160,7 +160,7 @@ public class StatusEffect : MonoBehaviour
         }
         if (hasTargetHudElement)
         {
-            if ((!data.infinite && !data.hidden) && duration >= 1)
+            if ((!data.infinite && !data.hidden) && duration >= 0.5)
             {
                 if ((!data.infinite && !data.hidden) && duration >= 1)
                 {

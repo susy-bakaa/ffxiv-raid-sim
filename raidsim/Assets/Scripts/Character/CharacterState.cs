@@ -460,6 +460,9 @@ public class CharacterState : MonoBehaviour
         enmity = new Dictionary<CharacterState, long>();
         preventDamage = false;
 
+        // Randomize every character's status effect update timer
+        statusEffectUpdateTimer = UnityEngine.Random.Range(0f, statusEffectUpdateInterval);
+
         if (healthBar != null)
         {
             healthBar.maxValue = currentMaxHealth;

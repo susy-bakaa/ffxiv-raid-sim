@@ -2,12 +2,14 @@ using UnityEngine;
 using System.Collections;
 using System.IO;
 using System.Collections.Generic;
+using System.Net;
 
 public class AssetHandler : MonoBehaviour
 {
     public static AssetHandler Instance;
     
     public string[] sharedBundles = new string[] { "common" };
+    public bool useExternalBundles = true;
     public bool disable = false;
     public bool log = true;
 
@@ -20,6 +22,9 @@ public class AssetHandler : MonoBehaviour
     private Dictionary<string, Object> assetCache = new Dictionary<string, Object>();
 
     private Dictionary<string, AssetBundle> currentSharedBundles = new Dictionary<string, AssetBundle>();
+
+    private const string gameBundlesListUrl = "https://raw.githubusercontent.com/susy-bakaa/ffxiv-raid-sim/refs/heads/main/bundles.txt";
+    private Dictionary<string, string> bundleUrls = new Dictionary<string, string>();
 
     private void Awake()
     {
@@ -38,6 +43,17 @@ public class AssetHandler : MonoBehaviour
             Destroy(gameObject);
         }
 
+        Setup();
+    }
+
+    private void Setup()
+    {
+        bundleUrls = new Dictionary<string, string>();
+
+        webClient = new WebClient();
+        Stream stream = webClient.OpenRead(gameVersionUrl);
+        StreamReader sRead = new StreamReader(stream);
+
         if (currentSharedBundles == null || currentSharedBundles.Keys.Count <= 0)
         {
             currentSharedBundles = new Dictionary<string, AssetBundle>();
@@ -49,7 +65,7 @@ public class AssetHandler : MonoBehaviour
     public void LoadCommonAssetBundle()
     {
         if (log)
-            Debug.LogError("Loading default common AssetBundles.");
+            Debug.Log("Loading default common AssetBundles.");
 
         LoadCommonAssetBundleInternal(sharedBundles);
     }
@@ -114,8 +130,13 @@ public class AssetHandler : MonoBehaviour
             ieLoadSharedAssetBundle = null;
             yield break;
         }
-
+        
         string bundlePath = Path.Combine(Application.streamingAssetsPath, bundleName);
+
+        if (useExternalBundles && bundleUrls.ContainsKey(bundleName))
+        {
+            bundlePath = bundleUrls[bundleName];
+        }
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         if (log)
@@ -128,7 +149,7 @@ public class AssetHandler : MonoBehaviour
         if (request.result != UnityEngine.Networking.UnityWebRequest.Result.Success)
         {
             Debug.LogError("Failed to load common AssetBundle: " + request.error);
-            ieLoadCommonAssetBundle = null;
+            ieLoadSharedAssetBundle = null;
             yield break;
         }
 
@@ -211,6 +232,11 @@ public class AssetHandler : MonoBehaviour
         }
 
         string bundlePath = Path.Combine(Application.streamingAssetsPath, bundleName);
+
+        if (useExternalBundles && bundleUrls.ContainsKey(bundleName))
+        {
+            bundlePath = bundleUrls[bundleName];
+        }
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         if (log)

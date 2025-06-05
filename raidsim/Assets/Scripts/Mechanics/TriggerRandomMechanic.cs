@@ -36,7 +36,7 @@ public class TriggerRandomMechanic : FightMechanic
                 r = editorForcedRandomEventResult;
 
             if (log)
-                Debug.Log($"r {r}");
+                Debug.Log($"[{gameObject.name}] r {r}");
 
             mechanics[0].fightMechanics[r].TriggerMechanic(actionInfo);
         }
@@ -68,7 +68,7 @@ public class TriggerRandomMechanic : FightMechanic
                 r = editorForcedRandomEventResult;
 
             if (log)
-                Debug.Log($"r {r} p {p}");
+                Debug.Log($"[{gameObject.name}] r {r} p {p}");
 
             if (p > -1 && p < mechanics.Count)
             {
@@ -97,7 +97,8 @@ public class TriggerRandomMechanic : FightMechanic
                 }
             }
 
-            Debug.Log($"b {b}");
+            if (log)
+                Debug.Log($"[{gameObject.name}] b {b}");
 
             r = b;
 

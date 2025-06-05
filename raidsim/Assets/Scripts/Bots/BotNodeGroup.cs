@@ -48,6 +48,16 @@ public class BotNodeGroup : MonoBehaviour
         transform.RotateAround(transform.position, Vector3.up, angle);
     }
 
+    public void SetGroupRotation(float y)
+    {
+        transform.localEulerAngles = new Vector3(0, y, 0);
+    }
+
+    public void CopyRotation(Transform source)
+    {
+        transform.eulerAngles = new Vector3(0, source.eulerAngles.y, 0);
+    }
+
     public bool DoesSectorHaveNodesAvailable(Sector sector)
     {
         foreach (BotNode node in nodes)

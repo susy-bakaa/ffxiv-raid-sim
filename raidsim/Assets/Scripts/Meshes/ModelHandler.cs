@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Bayat.Games.Animation.Utilities;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -13,12 +14,16 @@ public class ModelHandler : MonoBehaviour
 
     private CharacterState characterState;
     private Animator activeAnimator;
+    private AnimatorController activeAnimatorController;
+    private Dictionary<string, int> hashedParameters = new Dictionary<string, int>();
 
     private void Awake()
     {
         transform.TryGetComponentInParents(out characterState);
 
         originalModelIndex = currentModelIndex;
+
+        models = new List<GameObject>();
 
         for (int i = 0; i < transform.childCount; i++)
         {
@@ -29,6 +34,8 @@ public class ModelHandler : MonoBehaviour
         {
             FightTimeline.Instance.onReset.AddListener(ResetModelState);
         }
+
+        hashedParameters = new Dictionary<string, int>();
     }
 
     private IEnumerator Start()
@@ -43,6 +50,10 @@ public class ModelHandler : MonoBehaviour
             if (models[i].activeSelf)
             {
                 models[i].TryGetComponent(out activeAnimator);
+                if (activeAnimator != null)
+                {
+                    activeAnimator.TryGetComponent(out activeAnimatorController);
+                }
             }
         }
     }
@@ -66,6 +77,10 @@ public class ModelHandler : MonoBehaviour
             if (models[i].activeSelf)
             {
                 models[i].TryGetComponent(out activeAnimator);
+                if (activeAnimator != null)
+                {
+                    activeAnimator.TryGetComponent(out activeAnimatorController);
+                }
             }
         }
 
@@ -84,6 +99,10 @@ public class ModelHandler : MonoBehaviour
             if (models[i].activeSelf)
             {
                 models[i].TryGetComponent(out activeAnimator);
+                if (activeAnimator != null)
+                {
+                    activeAnimator.TryGetComponent(out activeAnimatorController);
+                }
             }
         }
     }
@@ -104,6 +123,10 @@ public class ModelHandler : MonoBehaviour
             if (models[i].activeSelf)
             {
                 models[i].TryGetComponent(out activeAnimator);
+                if (activeAnimator != null)
+                {
+                    activeAnimator.TryGetComponent(out activeAnimatorController);
+                }
             }
         }
 
@@ -128,6 +151,10 @@ public class ModelHandler : MonoBehaviour
             if (models[i].activeSelf)
             {
                 models[i].TryGetComponent(out activeAnimator);
+                if (activeAnimator != null)
+                {
+                    activeAnimator.TryGetComponent(out activeAnimatorController);
+                }
             }
         }
 
@@ -159,9 +186,64 @@ public class ModelHandler : MonoBehaviour
 
     public void SetTrigger(string trigger)
     {
+        if (activeAnimator == null && activeAnimatorController == null)
+            return;
+
+        if (!hashedParameters.TryGetValue(trigger, out int hash))
+        {
+            hash = Animator.StringToHash(trigger);
+            hashedParameters.Add(trigger, hash);
+        }
+
+        if (activeAnimatorController != null)
+        {
+            activeAnimatorController.SetTrigger(hash);
+        }
+        else
+        {
+            activeAnimator.SetTrigger(hash);
+        }
+    }
+
+    public void SetBooleanTrue(string boolean)
+    {
+        if (activeAnimator == null && activeAnimatorController == null)
+            return;
+
+        if (!hashedParameters.TryGetValue(boolean, out int hash))
+        {
+            hash = Animator.StringToHash(boolean);
+            hashedParameters.Add(boolean, hash);
+        }
+
+        if (activeAnimatorController != null)
+        {
+            activeAnimatorController.SetBool(hash, true);
+        }
+        else
+        {
+            activeAnimator.SetBool(hash, true);
+        }
+    }
+
+    public void SetBooleanFalse(string boolean)
+    {
         if (activeAnimator == null)
             return;
 
-        activeAnimator.SetTrigger(trigger);
+        if (!hashedParameters.TryGetValue(boolean, out int hash))
+        {
+            hash = Animator.StringToHash(boolean);
+            hashedParameters.Add(boolean, hash);
+        }
+
+        if (activeAnimatorController != null)
+        {
+            activeAnimatorController.SetBool(hash, false);
+        }
+        else
+        {
+            activeAnimator.SetBool(hash, false);
+        }
     }
 }
