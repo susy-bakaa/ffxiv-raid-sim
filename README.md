@@ -18,6 +18,10 @@ This simulator is mainly being built with European raiding strats from LPDU or w
 	- AAC Light-heavyweight M4 (Savage) (M4S)
 		- Sunrise Sabbath ([Rinon](https://www.youtube.com/watch?v=1lrk5FbNIPc))
 		- Sunrise Sabbath ([AutoCad/Uptime](https://raidplan.io/plan/OnQXobwatopL1G8u))
+- AAC Cruiserweight Tier
+	- AAC Cruiserweight M4 (Savage) (M8S)
+		- Terrestrial Rage ([Rinon](https://wtfdig.info/72/m8s#84ddog))
+		- Terrestrial Rage ([Half Rinon](https://wtfdig.info/72/m8s#84ddog::halfr:::::))
 - The Weapon's Refrain (Ultimate) (UWU)
 	- Phase 3 (Titan)
 		- Gaols ([LPDU](https://www.youtube.com/watch?v=PwEVH50b-rg))
@@ -37,7 +41,6 @@ Timelines don't work yet for these or the bots are not finished and will die to 
 
 - AAC Cruiserweight Tier
 	- AAC Cruiserweight M4 (Savage) (M8S)
-		- Terrestrial Rage ([Rinon](https://wtfdig.info/72/m8s#84ddog) & [Half Rinon](https://wtfdig.info/72/m8s#84ddog::halfr:::::))
 		- Beckon Moonlight ([Quad](https://raidplan.io/plan/WFsLBku1C9Iyxneu))
 		- Millenial Decay ([Toxic](https://raidplan.io/plan/0YycPJM_3KLD6L1H))
 - The Weapon's Refrain (Ultimate) (UWU)
