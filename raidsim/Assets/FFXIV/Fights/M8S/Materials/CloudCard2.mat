@@ -8,18 +8,17 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: CloudCard2
-  m_Shader: {fileID: -6465566751694194690, guid: 47137eab1c5f59e48bcd35e9e2bdd810, type: 3}
+  m_Shader: {fileID: 4800000, guid: d296ddc0945c4d1439d117322c7bd5a4, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords:
+  m_ValidKeywords: []
+  m_InvalidKeywords:
   - _BUILTIN_SURFACE_TYPE_TRANSPARENT
-  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: 3000
-  stringTagMap:
-    RenderType: Transparent
+  stringTagMap: {}
   disabledShaderPasses: []
   m_LockedProperties: 
   m_SavedProperties:
@@ -88,6 +87,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _Alpha: 1
+    - _AlphaThreshold: 0
     - _BUILTIN_AlphaClip: 0
     - _BUILTIN_Blend: 0
     - _BUILTIN_CullMode: 0
@@ -103,6 +103,7 @@ Material:
     - _Cutoff: 0.5
     - _DETAIL_UV: 0
     - _DetailNormalMapScale: 1
+    - _DoubleSided: 0
     - _DstBlend: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5

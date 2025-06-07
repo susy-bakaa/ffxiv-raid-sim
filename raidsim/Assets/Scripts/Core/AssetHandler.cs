@@ -3,6 +3,12 @@ using System.Collections;
 using System.IO;
 using System.Collections.Generic;
 using System.Net;
+using System.Linq;
+using System;
+using Object = UnityEngine.Object;
+#if UNITY_EDITOR
+using NaughtyAttributes;
+#endif
 
 public class AssetHandler : MonoBehaviour
 {
@@ -25,6 +31,27 @@ public class AssetHandler : MonoBehaviour
 
     private const string gameBundlesListUrl = "https://raw.githubusercontent.com/susy-bakaa/ffxiv-raid-sim/refs/heads/main/bundles.txt";
     private Dictionary<string, string> bundleUrls = new Dictionary<string, string>();
+    private bool urlsLoaded = false;
+
+#if UNITY_EDITOR
+    [Button("Print Bundle URLs")]
+    public void PrintBundleUrl()
+    {
+        if (bundleUrls == null || bundleUrls.Count <= 0 || urlsLoaded == false)
+        {
+            Debug.LogWarning("No bundle URLs loaded yet.");
+            return;
+        }
+
+        string[] keys = bundleUrls.Keys.ToArray();
+        string[] values = bundleUrls.Values.ToArray();
+
+        for (int i = 0; i < keys.Length; i++)
+        {
+            Debug.Log($"[{i}] key '{keys[i]}' value '{values[i]}'");
+        }
+    }
+#endif
 
     private void Awake()
     {
@@ -50,9 +77,55 @@ public class AssetHandler : MonoBehaviour
     {
         bundleUrls = new Dictionary<string, string>();
 
-        webClient = new WebClient();
-        Stream stream = webClient.OpenRead(gameVersionUrl);
-        StreamReader sRead = new StreamReader(stream);
+        try
+        {
+            using (WebClient webClient = new WebClient())
+            using (Stream stream = webClient.OpenRead(gameBundlesListUrl))
+            using (StreamReader sRead = new StreamReader(stream))
+            {
+                string results = sRead.ReadToEnd();
+
+                if (!string.IsNullOrEmpty(results))
+                {
+                    using (StringReader reader = new StringReader(results))
+                    {
+                        string line;
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            if (string.IsNullOrWhiteSpace(line))
+                                continue;
+
+                            string[] parts = line.Split('\t');
+                            if (parts.Length == 2)
+                            {
+                                string name = parts[0].Trim();
+                                string url = parts[1].Trim();
+                                if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(url))
+                                {
+                                    if (bundleUrls.ContainsKey(name))
+                                    {
+                                        Debug.LogWarning($"Duplicate bundle name found: '{name}', skipping entry.");
+                                        continue;
+                                    }
+
+                                    urlsLoaded = true;
+                                    bundleUrls.Add(name, url);
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    Debug.LogError("Failed to load bundle URLs from remote source: content is empty or null.");
+                    return;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Exception while loading bundle URLs from remote source: {ex.Message}");
+        }
 
         if (currentSharedBundles == null || currentSharedBundles.Keys.Count <= 0)
         {
@@ -133,11 +206,12 @@ public class AssetHandler : MonoBehaviour
         
         string bundlePath = Path.Combine(Application.streamingAssetsPath, bundleName);
 
+#if !UNITY_EDITOR
         if (useExternalBundles && bundleUrls.ContainsKey(bundleName))
         {
             bundlePath = bundleUrls[bundleName];
         }
-
+#endif
 #if UNITY_WEBGL && !UNITY_EDITOR
         if (log)
             Debug.Log($"Loading common AssetBundle: '{bundleName}'");
@@ -233,11 +307,12 @@ public class AssetHandler : MonoBehaviour
 
         string bundlePath = Path.Combine(Application.streamingAssetsPath, bundleName);
 
+#if !UNITY_EDITOR
         if (useExternalBundles && bundleUrls.ContainsKey(bundleName))
         {
             bundlePath = bundleUrls[bundleName];
         }
-
+#endif
 #if UNITY_WEBGL && !UNITY_EDITOR
         if (log)
             Debug.Log($"Loading AssetBundle: '{bundleName}'");
