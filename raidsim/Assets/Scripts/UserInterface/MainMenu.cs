@@ -18,7 +18,7 @@ public class MainMenu : MonoBehaviour
     public Button[] disableOnLoad;
 
 #if UNITY_WEBPLAYER
-    public const string webplayerQuitURL = "https://susy-bakaa.github.io/tools.html";
+    public const string webplayerQuitURL = "https://susybaka.dev/tools.html";
     [DllImport("__Internal")]
     private static extern void ReplaceURL(string url);
 #endif

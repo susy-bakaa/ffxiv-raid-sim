@@ -67,6 +67,7 @@ namespace susy_baka.raidsim.Updater
 
         void Start()
         {
+            updateId = GlobalVariables.versionNumber;
 #if UNITY_WEBPLAYER
             destroyed = true;
             Destroy(updatePromptGroup.gameObject);

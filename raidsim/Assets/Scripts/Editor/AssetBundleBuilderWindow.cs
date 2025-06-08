@@ -75,8 +75,16 @@ public class AssetBundleBuilderWindow : EditorWindow
 
             foreach (BuildTarget target in targetsToBuild)
             {
-                Debug.Log("Building for target: " + target);
-                BuildPipeline.BuildAssetBundles(outputFolder, BuildAssetBundleOptions.None, target);
+                BuildAssetBundleOptions options = BuildAssetBundleOptions.None;
+
+                if (target == BuildTarget.WebGL)
+                {
+                    options = BuildAssetBundleOptions.ChunkBasedCompression;
+                }
+
+                Debug.Log($"Building for target: {target} with the following {options}");
+
+                BuildPipeline.BuildAssetBundles(outputFolder, options, target);
             }
 
             Debug.Log("Asset bundle build completed!");

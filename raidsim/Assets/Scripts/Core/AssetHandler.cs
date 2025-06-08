@@ -1,10 +1,9 @@
-using UnityEngine;
 using System.Collections;
 using System.IO;
 using System.Collections.Generic;
-using System.Net;
 using System.Linq;
-using System;
+using UnityEngine;
+using UnityEngine.Networking;
 using Object = UnityEngine.Object;
 #if UNITY_EDITOR
 using NaughtyAttributes;
@@ -13,7 +12,7 @@ using NaughtyAttributes;
 public class AssetHandler : MonoBehaviour
 {
     public static AssetHandler Instance;
-    
+
     public string[] sharedBundles = new string[] { "common" };
     public bool useExternalBundles = true;
     public bool disable = false;
@@ -29,32 +28,31 @@ public class AssetHandler : MonoBehaviour
 
     private Dictionary<string, AssetBundle> currentSharedBundles = new Dictionary<string, AssetBundle>();
 
-    private const string gameBundlesListUrl = "https://raw.githubusercontent.com/susy-bakaa/ffxiv-raid-sim/refs/heads/main/bundles.txt";
-    private Dictionary<string, string> bundleUrls = new Dictionary<string, string>();
-    private bool urlsLoaded = false;
+#if ENABLE_EXTERNAL_BUNDLES
+    private const string externalBundlesUrl = "https://assets.susybaka.dev/raidsim/bundles/{0}?v={1}";
+#else
+    private const string externalBundlesUrl = "";
+#endif
+    private int gameVersion = -1;
 
 #if UNITY_EDITOR
-    [Button("Print Bundle URLs")]
+    private string m_bundleName = "common";
+    [Button("Print Bundle URL")]
     public void PrintBundleUrl()
     {
-        if (bundleUrls == null || bundleUrls.Count <= 0 || urlsLoaded == false)
-        {
-            Debug.LogWarning("No bundle URLs loaded yet.");
-            return;
-        }
-
-        string[] keys = bundleUrls.Keys.ToArray();
-        string[] values = bundleUrls.Values.ToArray();
-
-        for (int i = 0; i < keys.Length; i++)
-        {
-            Debug.Log($"[{i}] key '{keys[i]}' value '{values[i]}'");
-        }
+        Debug.Log(string.Format(externalBundlesUrl, m_bundleName, gameVersion));
     }
 #endif
 
     private void Awake()
     {
+#if ENABLE_EXTERNAL_BUNDLES && !UNITY_EDITOR
+        useExternalBundles = true;
+#elif !ENABLE_EXTERNAL_BUNDLES && !UNITY_EDITOR
+        useExternalBundles = false;
+#endif
+        gameVersion = GlobalVariables.versionNumber;
+
         if (disable)
         {
             Destroy(gameObject);
@@ -70,63 +68,6 @@ public class AssetHandler : MonoBehaviour
             Destroy(gameObject);
         }
 
-        Setup();
-    }
-
-    private void Setup()
-    {
-        bundleUrls = new Dictionary<string, string>();
-
-        try
-        {
-            using (WebClient webClient = new WebClient())
-            using (Stream stream = webClient.OpenRead(gameBundlesListUrl))
-            using (StreamReader sRead = new StreamReader(stream))
-            {
-                string results = sRead.ReadToEnd();
-
-                if (!string.IsNullOrEmpty(results))
-                {
-                    using (StringReader reader = new StringReader(results))
-                    {
-                        string line;
-                        while ((line = reader.ReadLine()) != null)
-                        {
-                            if (string.IsNullOrWhiteSpace(line))
-                                continue;
-
-                            string[] parts = line.Split('\t');
-                            if (parts.Length == 2)
-                            {
-                                string name = parts[0].Trim();
-                                string url = parts[1].Trim();
-                                if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(url))
-                                {
-                                    if (bundleUrls.ContainsKey(name))
-                                    {
-                                        Debug.LogWarning($"Duplicate bundle name found: '{name}', skipping entry.");
-                                        continue;
-                                    }
-
-                                    urlsLoaded = true;
-                                    bundleUrls.Add(name, url);
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    Debug.LogError("Failed to load bundle URLs from remote source: content is empty or null.");
-                    return;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"Exception while loading bundle URLs from remote source: {ex.Message}");
-        }
-
         if (currentSharedBundles == null || currentSharedBundles.Keys.Count <= 0)
         {
             currentSharedBundles = new Dictionary<string, AssetBundle>();
@@ -134,7 +75,7 @@ public class AssetHandler : MonoBehaviour
             LoadCommonAssetBundle();
         }
     }
-
+    
     public void LoadCommonAssetBundle()
     {
         if (log)
@@ -203,31 +144,35 @@ public class AssetHandler : MonoBehaviour
             ieLoadSharedAssetBundle = null;
             yield break;
         }
-        
-        string bundlePath = Path.Combine(Application.streamingAssetsPath, bundleName);
+
+        string bundlePath = string.Empty;
 
 #if !UNITY_EDITOR
-        if (useExternalBundles && bundleUrls.ContainsKey(bundleName))
+        if (useExternalBundles)
         {
-            bundlePath = bundleUrls[bundleName];
+            bundlePath = string.Format(externalBundlesUrl, bundleName, gameVersion);
+        }
+        else
+        {
+            bundlePath = Path.Combine(Application.streamingAssetsPath, bundleName);
         }
 #endif
-#if UNITY_WEBGL && !UNITY_EDITOR
+#if (UNITY_WEBGL || ENABLE_EXTERNAL_BUNDLES) && !UNITY_EDITOR
         if (log)
             Debug.Log($"Loading common AssetBundle: '{bundleName}'");
 
         // For WebGL, use UnityWebRequest to load the asset bundle
-        UnityEngine.Networking.UnityWebRequest request = UnityEngine.Networking.UnityWebRequestAssetBundle.GetAssetBundle(bundlePath);
+        UnityWebRequest request = UnityWebRequestAssetBundle.GetAssetBundle(bundlePath);
         yield return request.SendWebRequest();
 
-        if (request.result != UnityEngine.Networking.UnityWebRequest.Result.Success)
+        if (request.result != UnityWebRequest.Result.Success)
         {
             Debug.LogError("Failed to load common AssetBundle: " + request.error);
             ieLoadSharedAssetBundle = null;
             yield break;
         }
 
-        AssetBundle loadedBundle = UnityEngine.Networking.DownloadHandlerAssetBundle.GetContent(request);
+        AssetBundle loadedBundle = DownloadHandlerAssetBundle.GetContent(request);
 #else
         if (!File.Exists(bundlePath))
         {
@@ -305,15 +250,19 @@ public class AssetHandler : MonoBehaviour
             ClearCache(); // Clear cached assets since the bundle changed
         }
 
-        string bundlePath = Path.Combine(Application.streamingAssetsPath, bundleName);
+        string bundlePath = string.Empty;
 
 #if !UNITY_EDITOR
-        if (useExternalBundles && bundleUrls.ContainsKey(bundleName))
+        if (useExternalBundles)
         {
-            bundlePath = bundleUrls[bundleName];
+            bundlePath = string.Format(externalBundlesUrl, bundleName, gameVersion);
+        }
+        else
+        {
+            bundlePath = Path.Combine(Application.streamingAssetsPath, bundleName);
         }
 #endif
-#if UNITY_WEBGL && !UNITY_EDITOR
+#if (UNITY_WEBGL || ENABLE_EXTERNAL_BUNDLES) && !UNITY_EDITOR
         if (log)
             Debug.Log($"Loading AssetBundle: '{bundleName}'");
 
