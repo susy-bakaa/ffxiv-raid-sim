@@ -12,14 +12,42 @@ public class TriggerRandomMechanic : FightMechanic
     public int thisRandomEventResultId = -1;
     [MinValue(-1)]
     public int previousRandomEventResultId = -1;
+    public bool useMultipleResults = false;
+    [ShowIf("showSecondId")][MinValue(-1)] public int previousRandomEventResultId2 = -1;
     [HideIf("chooseBasedOnPreviousResult")] public bool chooseListBasedOnPrevious = false;
     [HideIf("chooseListBasedOnPrevious")] public bool chooseBasedOnPreviousResult = false;
+    [ShowIf("showBased2")] public bool chooseBasedOnPreviousResult2 = false;
     public bool useIndexMapping = false;
     public List<IndexMapping> indexMapping = new List<IndexMapping>();
 
     [Header("Editor")]
     public int editorForcedRandomEventResult = -1;
     public int editorForcedPreviousRandomEventResult = -1;
+
+    private bool showSecondId => (useMultipleResults && previousRandomEventResultId >= 0 && !chooseBasedOnPreviousResult);
+    private bool showBased2 => (showSecondId && previousRandomEventResultId2 >= 0 && chooseListBasedOnPrevious);
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (!useMultipleResults)
+        {
+            previousRandomEventResultId2 = -1;
+            chooseBasedOnPreviousResult2 = false;
+        }
+
+        if (chooseBasedOnPreviousResult)
+        {
+            previousRandomEventResultId2 = -1;
+            chooseListBasedOnPrevious = false;
+            chooseBasedOnPreviousResult2 = false;
+        }
+        if (chooseListBasedOnPrevious)
+        {
+            chooseBasedOnPreviousResult = false;
+        }
+    }
+#endif
 
     public override void TriggerMechanic(ActionInfo actionInfo)
     {
@@ -62,7 +90,14 @@ public class TriggerRandomMechanic : FightMechanic
                 }
             }
 
-            r = UnityEngine.Random.Range(0, mechanics[p].fightMechanics.Count);
+            if (!useMultipleResults)
+            {
+                r = Random.Range(0, mechanics[p].fightMechanics.Count);
+            }
+            else if (useMultipleResults && previousRandomEventResultId2 > -1 && chooseBasedOnPreviousResult2)
+            {
+                r = FightTimeline.Instance.GetRandomEventResult(previousRandomEventResultId2);
+            }
 
             if (editorForcedRandomEventResult > -1)
                 r = editorForcedRandomEventResult;
@@ -109,6 +144,22 @@ public class TriggerRandomMechanic : FightMechanic
 
         if (thisRandomEventResultId > -1)
             FightTimeline.Instance.AddRandomEventResult(thisRandomEventResultId, r);
+    }
+
+    public void SetEditorRandomEventResult(int result)
+    {
+        editorForcedRandomEventResult = result;
+    }
+
+    public void SetEditorPreviousRandomEventResult(int result)
+    {
+        editorForcedPreviousRandomEventResult = result;
+    }
+
+    public void ResetEditorRandomEventResults()
+    {
+        editorForcedRandomEventResult = -1;
+        editorForcedPreviousRandomEventResult = -1;
     }
 
     [System.Serializable]

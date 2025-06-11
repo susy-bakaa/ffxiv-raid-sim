@@ -1,30 +1,36 @@
 using System.Collections;
-using System.Xml.Serialization;
 using NaughtyAttributes;
 using UnityEngine;
 using static BotTimeline;
 
 public class SetDynamicBotNode : MonoBehaviour
 {
+    public enum DynamicNodeType { priority, nearest, furthest, roleBased, groupBased }
+
     public BotNodeGroup nodeGroup;
     public BotNodeGroup NodeGroupFallback;
-    public bool reversePriority = false;
+    public DynamicNodeType m_type = DynamicNodeType.priority;
+    [ShowIf("m_type", DynamicNodeType.priority)] public bool reversePriority = false;
     private bool wasReversePriority = false;
-    public bool reversePriorityFallback = false;
+    [ShowIf("m_type", DynamicNodeType.priority)] public bool reversePriorityFallback = false;
     private bool wasReversePriorityFallback = false;
-    public bool waitIfPriorityLowerThan = false;
+    [ShowIf("m_type", DynamicNodeType.priority)] public bool waitIfPriorityLowerThan = false;
     private bool wasWaitIfPriorityLowerThan = false;
-    public bool reverseIfPriorityLowerThan = false;
+    [ShowIf("m_type", DynamicNodeType.priority)] public bool reverseIfPriorityLowerThan = false;
     private bool wasReverseIfPriorityLowerThan = false;
-    public int priority = -1;
+    [ShowIf("m_type", DynamicNodeType.priority)] public int priority = -1;
     private int wasPriority = -1;
-    [ShowIf("waitIfPriorityLowerThan")] public float waitTime = 0f;
-    [ShowIf("waitIfPriorityLowerThan")] public bool reduceWaitTimeFromTimeline = false;
+    [ShowIf("m_type", DynamicNodeType.roleBased)] public bool matchGroup = false;
+    [ShowIf("showWaitTime")] public float waitTime = 0f;
+    [ShowIf("showWaitTime")] public bool reduceWaitTimeFromTimeline = false;
     public int targetTimelineEventIndex = -1;
+    public bool childGroups = false;
     public bool log = false;
 
     private Coroutine ieSetNode;
     private bool done = false;
+
+    private bool showWaitTime => (waitIfPriorityLowerThan && m_type == DynamicNodeType.priority);
 
     private void Awake()
     {
@@ -61,6 +67,97 @@ public class SetDynamicBotNode : MonoBehaviour
             return;
         }
 
+        switch (m_type)
+        {
+            case DynamicNodeType.priority:
+                if (log)
+                    Debug.Log($"[SetDynamicBotNode ({gameObject.name})] Setting node based on priority: {priority}");
+                SetNodeTypePriority(timeline, targetEventIndex);
+                break;
+            case DynamicNodeType.nearest:
+                if (log)
+                    Debug.Log($"[SetDynamicBotNode ({gameObject.name})] Setting node based on nearest node");
+                SetNodeTypeDistance(timeline, targetEventIndex, true);
+                break;
+            case DynamicNodeType.furthest:
+                if (log)
+                    Debug.Log($"[SetDynamicBotNode ({gameObject.name})] Setting node based on furthest node");
+                SetNodeTypeDistance(timeline, targetEventIndex, false);
+                break;
+            case DynamicNodeType.roleBased:
+                if (log)
+                    Debug.Log($"[SetDynamicBotNode ({gameObject.name})] Setting node based on role-based assignment");
+                if (matchGroup)
+                    SetNodeTypeRoleGroup(timeline, targetEventIndex);
+                else
+                    SetNodeTypeRole(timeline, targetEventIndex);
+                break;
+            case DynamicNodeType.groupBased:
+                if (log)
+                    Debug.Log($"[SetDynamicBotNode ({gameObject.name})] Setting node based on group-based assignment");
+                if (matchGroup)
+                    SetNodeTypeRoleGroup(timeline, targetEventIndex);
+                else
+                    SetNodeTypeRole(timeline, targetEventIndex);
+                break;
+            default:
+                Debug.LogError($"[SetDynamicBotNode ({gameObject.name})] node type not implemented yet!");
+                break;
+        }
+    }
+
+    private void SetNodeTypeRoleGroup(BotTimeline timeline, int targetEventIndex)
+    {
+        if (!childGroups)
+        {
+            AssignNode(timeline, targetEventIndex, nodeGroup.GetRoleNodeForGroup(timeline.bot.state.role, timeline.bot.state.group));
+        }
+        else
+        {
+            AssignNode(timeline, targetEventIndex, nodeGroup.GetRoleNodeForGroupFromChildren(timeline.bot.state.role, timeline.bot.state.group));
+        }
+    }
+
+    private void SetNodeTypeRole(BotTimeline timeline, int targetEventIndex)
+    {
+        if (!childGroups)
+        {
+            AssignNode(timeline, targetEventIndex, nodeGroup.GetRoleNode(timeline.bot.state.role));
+        }
+        else
+        {
+            AssignNode(timeline, targetEventIndex, nodeGroup.GetRoleNodeFromChildren(timeline.bot.state.role));
+        }
+    }
+
+    private void SetNodeTypeDistance(BotTimeline timeline, int targetEventIndex, bool nearest)
+    {
+        if (nearest)
+        {
+            if (!childGroups)
+            {
+                AssignNode(timeline, targetEventIndex, nodeGroup.GetNearestNode(timeline.bot.transform.position));
+            }
+            else
+            {
+                AssignNode(timeline, targetEventIndex, nodeGroup.GetNearestNodeFromChildren(timeline.bot.transform.position));
+            }
+        }
+        else
+        {
+            if (!childGroups)
+            {
+                AssignNode(timeline, targetEventIndex, nodeGroup.GetFurthestNode(timeline.bot.transform.position));
+            }
+            else
+            {
+                AssignNode(timeline, targetEventIndex, nodeGroup.GetFurthestNodeFromChildren(timeline.bot.transform.position));
+            }
+        }
+    }
+
+    private void SetNodeTypePriority(BotTimeline timeline, int targetEventIndex)
+    {
         if (priority >= 0)
         {
             if (nodeGroup.GetHighestPriorityForSector(timeline.bot.state.sector) < priority)
@@ -74,28 +171,28 @@ public class SetDynamicBotNode : MonoBehaviour
                 {
                     if (ieSetNode == null)
                     {
-                        ieSetNode = StartCoroutine(IE_AssignNode(timeline, targetEventIndex, new WaitForSeconds(waitTime)));
+                        ieSetNode = StartCoroutine(IE_AssignNode(timeline, targetEventIndex, (BotNode)null, new WaitForSeconds(waitTime)));
                         if (log)
                             Debug.Log($"[SetDynamicBotNode ({gameObject.name})] Setting node in {waitTime} seconds");
                     }
                 }
                 else
                 {
-                    AssignNode(timeline, targetEventIndex);
+                    AssignNodeTypePriority(timeline, targetEventIndex);
                 }
             }
             else
             {
-                AssignNode(timeline, targetEventIndex);
+                AssignNodeTypePriority(timeline, targetEventIndex);
             }
         }
         else
         {
-            AssignNode(timeline, targetEventIndex);
+            AssignNodeTypePriority(timeline, targetEventIndex);
         }
     }
 
-    private void AssignNode(BotTimeline timeline, int targetEventIndex)
+    private void AssignNodeTypePriority(BotTimeline timeline, int targetEventIndex)
     {
         BotNode node = null;
 
@@ -106,11 +203,22 @@ public class SetDynamicBotNode : MonoBehaviour
             node = TryGetNodeFromGroup(NodeGroupFallback, timeline, reversePriorityFallback);
         }
 
-        if (node != null && targetEventIndex > -1 && timeline.events != null && timeline.events.Count <= targetEventIndex)
+        if (log)
+            Debug.Log($"[SetDynamicBotNode ({gameObject.name})] Priority assignment finished with the following node: {node?.name}");
+
+        AssignNode(timeline, targetEventIndex, node);
+    }
+
+    private void AssignNode(BotTimeline timeline, int targetEventIndex, BotNode node)
+    {
+        BotEvent? tempEvent = null;
+
+        if (node != null && targetEventIndex > -1 && timeline.events != null && timeline.events.Count > targetEventIndex)
         {
             BotEvent targetEvent = timeline.events[targetEventIndex];
             targetEvent.node = node.transform;
             timeline.events[targetEventIndex] = targetEvent;
+            tempEvent = timeline.events[targetEventIndex];
         }
         else if (node != null && targetEventIndex < 0 && timeline.events != null && timeline.events.Count > 0)
         {
@@ -124,16 +232,16 @@ public class SetDynamicBotNode : MonoBehaviour
                 }
 
                 timeline.events[i] = targetEvent;
+                tempEvent = timeline.events[i];
             }
         }
-
         done = true;
 
         if (log)
-            Debug.Log($"[SetDynamicBotNode ({gameObject.name})] Setting node to {node?.name}");
+            Debug.Log($"[SetDynamicBotNode ({gameObject.name})] Setting events '{tempEvent?.name}' (index {tempEvent?.index}) node to {node?.name}");
     }
 
-    private IEnumerator IE_AssignNode(BotTimeline timeline, int targetEventIndex, WaitForSeconds wait)
+    private IEnumerator IE_AssignNode(BotTimeline timeline, int targetEventIndex, BotNode node, WaitForSeconds wait)
     {
         timeline.paused = true;
         if (reduceWaitTimeFromTimeline)
@@ -143,7 +251,10 @@ public class SetDynamicBotNode : MonoBehaviour
             timeline.events[timeline.events.Count - 1] = e;
         }
         yield return wait;
-        AssignNode(timeline, targetEventIndex);
+        if (m_type == DynamicNodeType.priority)
+            AssignNodeTypePriority(timeline, targetEventIndex);
+        else if (node != null)
+            AssignNode(timeline, targetEventIndex, node);
         timeline.paused = false;
         ieSetNode = null;
     }

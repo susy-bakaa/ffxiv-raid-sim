@@ -17,6 +17,8 @@ public class SpotSelector : MonoBehaviour
     public BotNode[] spots;
     public bool changePlayerRole = false;
     [ShowIf("changePlayerRole")] public Role[] spotRoles;
+    public bool changePlayerGroup = false;
+    [ShowIf("changePlayerGroup")] public int[] spotGroups;
     public int defaultSpot = 4;
     private int lastSelected = 4;
 
@@ -64,6 +66,13 @@ public class SpotSelector : MonoBehaviour
             if (spotRoles != null && spotRoles.Length == spots.Length)
             {
                 player.characterState.role = spotRoles[value];
+            }
+        }
+        if (changePlayerGroup)
+        {
+            if (spotGroups != null && spotGroups.Length == spots.Length)
+            {
+                player.characterState.group = spotGroups[value];
             }
         }
 

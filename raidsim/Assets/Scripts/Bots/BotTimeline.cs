@@ -30,6 +30,18 @@ public class BotTimeline : MonoBehaviour
     public bool TeleportAfterClose { get; private set; }
     private float reduceWaitTime = 0f;
 
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        for (int i = 0; i < events.Count; i++)
+        {
+            BotEvent e = events[i];
+            e.index = i;
+            events[i] = e;
+        }
+    }
+#endif
+
     void Awake()
     {
         index = UnityEngine.Random.Range(1000, 10000);
@@ -114,6 +126,37 @@ public class BotTimeline : MonoBehaviour
             {
                 yield return new WaitUntil(() => !paused);
             }
+
+            float finalWaitAtNode = events[i].waitAtNode;
+
+            if (reduceWaitTime > 0f)
+            {
+                finalWaitAtNode -= reduceWaitTime;
+            }
+            if (events[i].randomWaitVariance > 0f)
+            {
+                finalWaitAtNode = events[i].waitAtNode + Random.Range(-events[i].randomWaitVariance, events[i].randomWaitVariance);
+            }
+
+            float combinedWaitTime = events[i].waitForAction + events[i].waitForRotation + finalWaitAtNode;
+
+            if (events[i].onEvent.enabled)
+            {
+                if (events[i].onEvent.waitTime > 0f)
+                {
+                    float waitTime = events[i].onEvent.waitTime;
+
+                    if (waitTime > combinedWaitTime)
+                        waitTime = combinedWaitTime;
+
+                    StartCoroutine(IE_TriggerEvent(events[i].onEvent, new WaitForSeconds(waitTime)));
+                }
+                else
+                {
+                    events[i].onEvent.onEvent.Invoke(this);
+                }
+            }
+
             if (!string.IsNullOrEmpty(events[i].targetStatusEffectHolder.name) && events[i].targetStatusEffectHolder.data != null && party != null)
             {
                 foreach (PartyList.PartyMember member in party.members)
@@ -189,18 +232,9 @@ public class BotTimeline : MonoBehaviour
                 }
                 // set target rotation or something
             }
-            float finalWait = events[i].waitAtNode;
-            if (reduceWaitTime > 0f)
+            if (finalWaitAtNode > 0f)
             {
-                finalWait -= reduceWaitTime;
-            }
-            if (events[i].randomWaitVariance > 0f)
-            {
-                finalWait = events[i].waitAtNode + Random.Range(-events[i].randomWaitVariance, events[i].randomWaitVariance);
-            }
-            if (finalWait > 0f)
-            {
-                yield return new WaitForSeconds(finalWait);
+                yield return new WaitForSeconds(finalWaitAtNode);
             }
             else
             {
@@ -239,6 +273,15 @@ public class BotTimeline : MonoBehaviour
         reduceWaitTime = time;
     }
 
+    private IEnumerator IE_TriggerEvent(BotEventUnityEvent botEvent, WaitForSeconds wait)
+    {
+        yield return wait;
+        if (botEvent.onEvent != null)
+        {
+            botEvent.onEvent.Invoke(this);
+        }
+    }
+
     [System.Serializable]
     public struct BotEvent
     {
@@ -257,8 +300,10 @@ public class BotTimeline : MonoBehaviour
         public float waitForRotation;
         public TargetNode target;
         public StatusEffectInfo targetStatusEffectHolder;
+        public BotEventUnityEvent onEvent;
+        public int index; // used for debugging purposes, not saved in the inspector
 
-        public BotEvent(string name, Transform node, bool dynamic, float waitAtNode, float randomWaitVariance, bool teleportAfterCloseEnough, CharacterActionData action, bool unrestrictedAction, float waitForAction, Vector3 rotation, Transform faceTowards, Transform faceAway, float waitForRotation, TargetNode cycleTarget, StatusEffectInfo targetStatusEffectHolder)
+        public BotEvent(string name, int index, Transform node, bool dynamic, float waitAtNode, float randomWaitVariance, bool teleportAfterCloseEnough, CharacterActionData action, bool unrestrictedAction, float waitForAction, Vector3 rotation, Transform faceTowards, Transform faceAway, float waitForRotation, TargetNode cycleTarget, StatusEffectInfo targetStatusEffectHolder, BotEventUnityEvent onEvent)
         {
             this.name = name;
             this.node = node;
@@ -275,6 +320,23 @@ public class BotTimeline : MonoBehaviour
             this.waitForRotation = waitForRotation;
             this.target = cycleTarget;
             this.targetStatusEffectHolder = targetStatusEffectHolder;
+            this.onEvent = onEvent;
+            this.index = index;
+        }
+    }
+
+    [System.Serializable]
+    public struct BotEventUnityEvent 
+    {
+        public bool enabled;
+        public float waitTime;
+        public UnityEvent<BotTimeline> onEvent;
+
+        public BotEventUnityEvent(bool enabled, float waitTime, UnityEvent<BotTimeline> onEvent)
+        {
+            this.enabled = enabled;
+            this.waitTime = waitTime;
+            this.onEvent = onEvent;
         }
     }
 }

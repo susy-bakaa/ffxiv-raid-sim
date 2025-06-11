@@ -121,7 +121,6 @@ public class UserInput : MonoBehaviour
             cam.enableZooming = false;
             cam.enableMovement = false;
             cam.enableRotation = false;
-            return;
         }
         else
         {
@@ -140,25 +139,24 @@ public class UserInput : MonoBehaviour
         if (targetController != null)
             targetController.canMouseRaycast = targetRaycastInputEnabled;
 
-        if (!inputEnabled)
-            return;
-
         if (keys != null && keys.Count > 0)
         {
             for (int i = 0; i < keys.Count; i++)
             {
-                //Debug.Log($"KeyBind {keys[i].bind} state {BindedKey(keys[i].bind)}");
-                if (keys[i].bind != null && BindedKey(keys[i].bind))
+                if (inputEnabled || keys[i].neverDisable)
                 {
-                    if (keys[i].action != null && characterAction != null)
-                        characterAction.PerformAction(keys[i].action);
-                    if (keys[i].statusEffect != null && characterState != null)
-                        characterState.AddEffect(keys[i].statusEffect, characterState);
-                    keys[i].onInput.Invoke();
-                }
-                else if (keys[i].bind != null && BindedKeyHeld(keys[i].bind))
-                {
-                    keys[i].onHeld.Invoke();
+                    if (keys[i].bind != null && BindedKey(keys[i].bind))
+                    {
+                        if (keys[i].action != null && characterAction != null)
+                            characterAction.PerformAction(keys[i].action);
+                        if (keys[i].statusEffect != null && characterState != null)
+                            characterState.AddEffect(keys[i].statusEffect, characterState);
+                        keys[i].onInput.Invoke();
+                    }
+                    else if (keys[i].bind != null && BindedKeyHeld(keys[i].bind))
+                    {
+                        keys[i].onHeld.Invoke();
+                    }
                 }
             }
         }
@@ -166,29 +164,32 @@ public class UserInput : MonoBehaviour
         {
             for (int i = 0; i < axes.Count; i++)
             {
-                if (axes[i].positive.bind != null && BindedKey(axes[i].positive.bind))
+                if (inputEnabled || axes[i].neverDisable)
                 {
-                    if (axes[i].positive.action != null && characterAction != null)
-                        characterAction.PerformAction(axes[i].positive.action);
-                    if (axes[i].positive.statusEffect != null && characterState != null)
-                        characterState.AddEffect(axes[i].positive.statusEffect, characterState);
-                    axes[i].positive.onInput.Invoke();
-                }
-                else if (axes[i].positive.bind != null && BindedKeyHeld(axes[i].positive.bind))
-                {
-                    axes[i].positive.onHeld.Invoke();
-                }
-                if (axes[i].negative.bind != null && BindedKey(axes[i].negative.bind))
-                {
-                    if (axes[i].negative.action != null && characterAction != null)
-                        characterAction.PerformAction(axes[i].negative.action);
-                    if (axes[i].negative.statusEffect != null && characterState != null)
-                        characterState.AddEffect(axes[i].negative.statusEffect, characterState);
-                    axes[i].negative.onInput.Invoke();
-                }
-                else if (axes[i].negative.bind != null && BindedKeyHeld(axes[i].negative.bind))
-                {
-                    axes[i].negative.onHeld.Invoke();
+                    if (axes[i].positive.bind != null && BindedKey(axes[i].positive.bind))
+                    {
+                        if (axes[i].positive.action != null && characterAction != null)
+                            characterAction.PerformAction(axes[i].positive.action);
+                        if (axes[i].positive.statusEffect != null && characterState != null)
+                            characterState.AddEffect(axes[i].positive.statusEffect, characterState);
+                        axes[i].positive.onInput.Invoke();
+                    }
+                    else if (axes[i].positive.bind != null && BindedKeyHeld(axes[i].positive.bind))
+                    {
+                        axes[i].positive.onHeld.Invoke();
+                    }
+                    if (axes[i].negative.bind != null && BindedKey(axes[i].negative.bind))
+                    {
+                        if (axes[i].negative.action != null && characterAction != null)
+                            characterAction.PerformAction(axes[i].negative.action);
+                        if (axes[i].negative.statusEffect != null && characterState != null)
+                            characterState.AddEffect(axes[i].negative.statusEffect, characterState);
+                        axes[i].negative.onInput.Invoke();
+                    }
+                    else if (axes[i].negative.bind != null && BindedKeyHeld(axes[i].negative.bind))
+                    {
+                        axes[i].negative.onHeld.Invoke();
+                    }
                 }
             }
         }
@@ -695,9 +696,10 @@ public class UserInput : MonoBehaviour
         public UnityEvent onHeld;
         public bool hasControllerBinding;
         public bool requiresModifier;
+        public bool neverDisable;
         public InputActionReference controllerBind;
 
-        public InputBinding(string name, KeyBind bind, CharacterAction action, StatusEffectData statusEffect, UnityEvent onInput, UnityEvent onHeld, bool hasControllerBinding, bool requiresModifier, InputActionReference controllerBind)
+        public InputBinding(string name, KeyBind bind, CharacterAction action, StatusEffectData statusEffect, UnityEvent onInput, UnityEvent onHeld, bool hasControllerBinding, bool requiresModifier, bool neverDisable, InputActionReference controllerBind)
         {
             this.name = name;
             this.bind = bind;
@@ -707,6 +709,7 @@ public class UserInput : MonoBehaviour
             this.onHeld = onHeld;
             this.hasControllerBinding = hasControllerBinding;
             this.requiresModifier = requiresModifier;
+            this.neverDisable = neverDisable;
             this.controllerBind = controllerBind;
         }
 
@@ -728,10 +731,11 @@ public class UserInput : MonoBehaviour
         public InputBinding negative;
         public bool weakModifierKeys;
         public bool hasControllerBinding;
+        public bool neverDisable;
         public InputActionReference controllerBind;
         public NewInputAxis controllerBindUseAxis;
 
-        public InputAxis(string name, InputBinding positive, InputBinding negative, bool weakModifierKeys, bool hasControllerBinding, InputActionReference controllerBind, NewInputAxis controllerBindUseAxis)
+        public InputAxis(string name, InputBinding positive, InputBinding negative, bool weakModifierKeys, bool hasControllerBinding, bool neverDisable, InputActionReference controllerBind, NewInputAxis controllerBindUseAxis)
         {
             this.name = name;
             this.positive = positive;
@@ -744,6 +748,7 @@ public class UserInput : MonoBehaviour
             this.negative = n;
             this.weakModifierKeys = weakModifierKeys;
             this.hasControllerBinding = hasControllerBinding;
+            this.neverDisable = neverDisable;
             this.controllerBind = controllerBind;
             this.controllerBindUseAxis = controllerBindUseAxis;
         }

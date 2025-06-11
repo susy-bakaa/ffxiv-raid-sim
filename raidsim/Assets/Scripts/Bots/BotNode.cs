@@ -12,6 +12,8 @@ public class BotNode : MonoBehaviour
     public MechanicNode mechanicNode;
     public bool hasMechanic;
     public List<SectorPriority> sectorPriorities = new List<SectorPriority>();
+    public List<int> groupPriorities = new List<int>();
+    public List<Role> allowedRoles = new List<Role>();
 
     void Awake()
     {

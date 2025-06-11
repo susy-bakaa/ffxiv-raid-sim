@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using static StatusEffectData;
 
 public class RandomMechanicSelector : MonoBehaviour
@@ -10,6 +11,8 @@ public class RandomMechanicSelector : MonoBehaviour
 
     public int[] results;
     public TriggerRandomMechanic target;
+    public UnityEvent<int> onSelect;
+    public bool log = true;
 
     void Start()
     {
@@ -24,7 +27,13 @@ public class RandomMechanicSelector : MonoBehaviour
 
     public void Select(int value)
     {
-        if (target != null && results != null && results.Length > 0)
+        if (target == null)
+        {
+            if (log)
+                Debug.LogWarning($"RandomMechanicSelector {gameObject.name} component is missing a valid target or results! This might be unintended.");
+        }
+
+        if (results != null && results.Length > 0)
         {
             int maxLength = results.Length - 1;
             if (value > maxLength)
@@ -36,11 +45,10 @@ public class RandomMechanicSelector : MonoBehaviour
                 value = 0;
             }
 
-            target.editorForcedRandomEventResult = results[value];
-        }
-        else
-        {
-            Debug.LogWarning($"RandomMechanicSelector {gameObject.name} component is missing a valid target or results!");
+            if (target != null)
+                target.editorForcedRandomEventResult = results[value];
+
+            onSelect.Invoke(results[value]);
         }
     }
 }

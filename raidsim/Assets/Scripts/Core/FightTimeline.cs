@@ -7,11 +7,6 @@ using static GlobalData;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Linq;
-using Unity.VisualScripting;
-
-
-
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -57,6 +52,7 @@ public class FightTimeline : MonoBehaviour
     public bool noNewSeedOnStart = false;
     public UnityEvent<bool> onNoNewSeedOnStartChanged;
     public UnityEvent onReset;
+    public UnityEvent onPlay;
 
     [Header("User Interface")]
     public Button[] disableDuringPlayback;
@@ -326,6 +322,8 @@ public class FightTimeline : MonoBehaviour
         {
             disableDuringPlayback[i].interactable = false;
         }
+
+        onPlay.Invoke();
 
         playing = true;
         if (iePlayTimeline == null)

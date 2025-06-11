@@ -16,6 +16,7 @@ public class SpawnDamageTriggerMechanic : FightMechanic
     public GameObject damageTriggerPrefab;
     public bool enableInstead = false;
     public Transform spawnLocation;
+    public bool copyRotation = false;
     public float delay = 0f;
     public bool autoAssignOwner = false;
     public bool autoAssignLocation = false;
@@ -68,6 +69,9 @@ public class SpawnDamageTriggerMechanic : FightMechanic
                 else
                     spawned = damageTriggerPrefab;
 
+                if (copyRotation)
+                    spawned.transform.eulerAngles = actionInfo.target.transform.eulerAngles;
+
                 SetupDamageTrigger(spawned, actionInfo);
             }
             else if (actionInfo.source != null && actionInfo.action != null)
@@ -78,6 +82,9 @@ public class SpawnDamageTriggerMechanic : FightMechanic
                     spawned = Instantiate(damageTriggerPrefab, actionInfo.source.transform.position, actionInfo.source.transform.rotation, FightTimeline.Instance.mechanicParent);
                 else
                     spawned = damageTriggerPrefab;
+
+                if (copyRotation)
+                    spawned.transform.eulerAngles = actionInfo.source.transform.eulerAngles;
 
                 SetupDamageTrigger(spawned, actionInfo);
             }
@@ -91,8 +98,11 @@ public class SpawnDamageTriggerMechanic : FightMechanic
             else
                 spawned = damageTriggerPrefab;
 
+            if (copyRotation)
+                spawned.transform.eulerAngles = spawnLocation.eulerAngles;
+
             if (log)
-                Debug.Log($"Object was spawned at {spawned?.transform.position} using '{spawnLocation?.gameObject.name}' at {spawnLocation?.position} as target");
+                Debug.Log($"Object was spawned at {spawned?.transform.position} with rotation {spawned?.transform.eulerAngles} using '{spawnLocation?.gameObject.name}' at {spawnLocation?.position} with rotation {spawnLocation?.eulerAngles} as target");
 
             SetupDamageTrigger(spawned, actionInfo);
         }

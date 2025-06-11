@@ -174,6 +174,7 @@ public class CharacterState : MonoBehaviour
     public string letterSpriteAsset = "letters_1";
     public Role role = Role.unassigned;
     public Sector sector = Sector.N;
+    public int group = 0;
     public bool isAggressive = true;
     private bool wasIsAggressive;
     public bool hideNameplate = false;
