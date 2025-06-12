@@ -99,9 +99,11 @@ MonoBehaviour:
   data: {fileID: 0}
   damageName: Arena
   inverted: 1
+  log: 0
   owner: {fileID: 0}
   autoAssignOwner: 0
   ableToHitTag: Player
+  canHitCharacterName: Player
   damage:
     name: Arena
     value: 100
@@ -111,6 +113,31 @@ MonoBehaviour:
     elementalAspect: 1
     physicalAspect: 0
     applicationType: 2
+    source: {fileID: 0}
+  damageFalloff:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   enmity: 0
   increaseEnmity: 0
   topEnmity: 0
@@ -118,19 +145,29 @@ MonoBehaviour:
   self: 0
   dealsDamage: 1
   passDamage: 0
+  proximityBased: 0
   isAShield: 0
   cleaves: 1
+  cancelsMovement: 0
   ignoresOwner: 0
+  ignoreSnapshot: 0
   playerActivated: 1
+  updateLive: 0
   shared: 0
   enumeration: 0
+  requireOwner: 0
+  resetOnReload: 0
+  resetOwner: 0
   visualDelay: 0
   triggerDelay: 0
+  triggerDelayVariance: 0
   damageApplicationDelay: 0.25
   cooldown: 0
   playersRequired: 0
+  damageMultiplierPerMissingPlayer: 1
   currentPlayers: []
   appliedEffects: []
+  appliedEffectsOnFail: []
   onHit:
     m_PersistentCalls:
       m_Calls: []
@@ -140,12 +177,19 @@ MonoBehaviour:
   onFinish:
     m_PersistentCalls:
       m_Calls: []
+  onStart:
+    m_PersistentCalls:
+      m_Calls: []
   onSpawn:
+    m_PersistentCalls:
+      m_Calls: []
+  onInitialize:
     m_PersistentCalls:
       m_Calls: []
   onTrigger:
     m_PersistentCalls:
       m_Calls: []
+  dummy: 0
 --- !u!114 &6093065187348846985
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -160,7 +204,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: 47
   disableInstead: 0
+  disabledOnStart: 0
   log: 0
+  onDestroy:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1001 &831206578375113517
 PrefabInstance:
   m_ObjectHideFlags: 0

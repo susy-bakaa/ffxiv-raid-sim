@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class ModelLoader : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class ModelLoader : MonoBehaviour
     [SerializeField] private Vector3 rotation = Vector3.zero;
     [SerializeField] private Vector3 scale = Vector3.one;
     [SerializeField] private GameObject model;
+    [SerializeField] private UnityEvent onModelLoaded;
 
     private GameObject tempModel;
     private Coroutine ieUpdateModels;
@@ -41,6 +43,7 @@ public class ModelLoader : MonoBehaviour
         {
             if (AssetHandler.Instance.HasBundleLoaded(currentFightBundleName))
             {
+                onModelLoaded.Invoke();
                 modelLoaded = true;
 
                 Destroy(tempModel);

@@ -147,7 +147,6 @@ public class AssetHandler : MonoBehaviour
 
         string bundlePath = string.Empty;
 
-#if !UNITY_EDITOR
         if (useExternalBundles)
         {
             bundlePath = string.Format(externalBundlesUrl, bundleName, gameVersion);
@@ -156,7 +155,6 @@ public class AssetHandler : MonoBehaviour
         {
             bundlePath = Path.Combine(Application.streamingAssetsPath, bundleName);
         }
-#endif
 #if (UNITY_WEBGL || ENABLE_EXTERNAL_BUNDLES) && !UNITY_EDITOR
         if (log)
             Debug.Log($"Loading common AssetBundle: '{bundleName}'");
@@ -251,8 +249,7 @@ public class AssetHandler : MonoBehaviour
         }
 
         string bundlePath = string.Empty;
-
-#if !UNITY_EDITOR
+        
         if (useExternalBundles)
         {
             bundlePath = string.Format(externalBundlesUrl, bundleName, gameVersion);
@@ -261,7 +258,6 @@ public class AssetHandler : MonoBehaviour
         {
             bundlePath = Path.Combine(Application.streamingAssetsPath, bundleName);
         }
-#endif
 #if (UNITY_WEBGL || ENABLE_EXTERNAL_BUNDLES) && !UNITY_EDITOR
         if (log)
             Debug.Log($"Loading AssetBundle: '{bundleName}'");
