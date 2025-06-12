@@ -22,6 +22,7 @@ This simulator is mainly being built with European raiding strats from LPDU or w
 	- AAC Cruiserweight M4 (Savage) (M8S)
 		- Terrestrial Rage ([Rinon](https://wtfdig.info/72/m8s#84ddog))
 		- Terrestrial Rage ([Half Rinon](https://wtfdig.info/72/m8s#84ddog::halfr:::::))
+		- Beckon Moonlight ([Quad](https://raidplan.io/plan/WFsLBku1C9Iyxneu))
 - The Weapon's Refrain (Ultimate) (UWU)
 	- Phase 3 (Titan)
 		- Gaols ([LPDU](https://www.youtube.com/watch?v=PwEVH50b-rg))
@@ -39,10 +40,6 @@ This simulator is mainly being built with European raiding strats from LPDU or w
 
 Timelines don't work yet for these or the bots are not finished and will die to mechanics.
 
-- AAC Cruiserweight Tier
-	- AAC Cruiserweight M4 (Savage) (M8S)
-		- Beckon Moonlight ([Quad](https://raidplan.io/plan/WFsLBku1C9Iyxneu))
-		- Millenial Decay ([Toxic](https://raidplan.io/plan/0YycPJM_3KLD6L1H))
 - The Weapon's Refrain (Ultimate) (UWU)
 	- Phase 5 (The Ultima Weapon)
 		- Ultimate Suppression ([LPDU](https://www.youtube.com/watch?v=PwEVH50b-rg))
@@ -76,8 +73,11 @@ These fights are not being worked on yet and are not guranteed to be added, but 
 		- Ultimate Predation
 		- Ultimate Annihilation
 
-(These ones are not guranteed and more of a MAYBE, because [another sim with bots](https://github.com/WCGH/FRU-Sim) already exists and [XIVSim](https://www.xivsim.com/game/) has support for them.)
+(These ones are not guranteed and more of a MAYBE, because [another sim with bots](https://github.com/WCGH/FRU-Sim) already exists and [XIVSim](https://www.xivsim.com/game/) has support for them. Or they might not be that useful in my opinion.)
 
+- AAC Cruiserweight Tier
+	- AAC Cruiserweight M4 (Savage) (M8S)
+		- Millenial Decay ([Toxic](https://raidplan.io/plan/0YycPJM_3KLD6L1H))
 - Futures Rewritten (Ultimate) (FRU)
 	- Phase 1
 		- Fall of Faith ([Early LPDU](https://raidplan.io/plan/V0swEBYmpTP22HnK))
@@ -92,7 +92,7 @@ These fights are not being worked on yet and are not guranteed to be added, but 
 
 # Installation
 
-Download Latest Build: [Windows x64](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.5.0/raidsim_v.0.5.0_win64.zip) [Linux x64](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.5.0/raidsim_v.0.5.0_linux64.zip)
+Download Latest Build: [Windows x64](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.5.2/raidsim_v.0.5.2_win64.zip) [Linux x64](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.5.2/raidsim_v.0.5.2_linux64.zip)
 
 You have two options when it comes to using this program, either open the [web version](https://susybaka.dev/unityweb/raidsim/index.html) or just head over to the [releases section](https://github.com/susy-bakaa/ffxiv-raid-sim/releases) and download the latest archive file for your respective operating system. They are both the same exact program and version except the web one lacks controller support due to Unity not having it for WebGL games. For the standalone version, you need to extract the .Zip archive with some tool such as 7zip and then open up the raidsim.exe or raidsim.x86_64 to launch the program. The build available for Linux is not well tested so it might have some issues. If you instead want to download the source code or expand upon this program, check the git instructions down below and/or contact me on Discord @no00ob or Twitter [@susyy_bakaa](https://x.com/susyy_bakaa) and I will get back to you.
 
