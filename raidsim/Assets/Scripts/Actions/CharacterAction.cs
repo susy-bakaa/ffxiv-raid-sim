@@ -67,6 +67,14 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public List<Color> defaultColors;
     public List<Color> unavailableColors;
 
+    private string[] animations = new string[]
+    {
+        "ui_hotbar_recast_type1_none",
+        "ui_hotbar_recast_type1_fill",
+        "ui_hotbar_recast_type2_fill",
+        "ui_hotbar_recast_type3_fill"
+    };
+    private int[] animationHashes = new int[0];
     private bool pointer;
     private bool colorsFlag;
     private bool animFlag;
@@ -135,6 +143,12 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         }
 
         normalRecastType = recastType;
+
+        animationHashes = new int[animations.Length];
+        for (int i = 0; i < animations.Length; i++)
+        {
+            animationHashes[i] = Animator.StringToHash(animations[i]);
+        }
 
         id = UnityEngine.Random.Range(0, 10000);
     }
@@ -420,12 +434,13 @@ public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         if (recastFillAnimator != null && timer > 0f)
         {
             animFlag = false;
-            recastFillAnimator.Play($"ui_hotbar_recast_type{(int)recastType + 1}_fill", 0, Utilities.Map(lastRecast - timer, 0f, lastRecast, 0f, 1f));
+            //Debug.Log($"new '{animations[(int)recastType + 1]}' old 'ui_hotbar_recast_type{(int)recastType + 1}_fill'");
+            recastFillAnimator.Play(animationHashes[(int)recastType + 1], 0, Utilities.Map(lastRecast - timer, 0f, lastRecast, 0f, 1f));
         }
         else if (recastFillAnimator != null && !animFlag)
         {
             animFlag = true;
-            recastFillAnimator.Play("ui_hotbar_recast_type1_none");
+            recastFillAnimator.Play(animationHashes[0]);
         }
 
         if (button != null)
