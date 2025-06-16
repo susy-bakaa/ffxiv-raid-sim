@@ -10,9 +10,9 @@ This small update focuses on **polishing the in-game updater system**, improving
 
 ### Bug Fixes
 
--   Fixed bot positioning logic in **M8S: Terrestrial Rage** for both **Rinon** and **Half Rinon** strategies.
+-   Fixed bot positioning logic in **M8S: Terrestrial Rage** for both **Rinon** and **Half Rinon** strats.
 -   Fixed an issue where the **enemy list** in **M8S: Beckon Moonlight** would show incorrectly at the end of the mechanic.
--   Fixed the first **spread/stack mechanic selector** in **M8S: Terrestrial Rage**, which previously failed to trigger correctly.
+-   Fixed the first mechanic (**spread/stack**) selector in **M8S: Terrestrial Rage**, which previously was not working at all.
 
 ### Other Changes
 

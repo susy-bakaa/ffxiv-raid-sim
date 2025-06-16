@@ -45,6 +45,7 @@ namespace susy_baka.raidsim.Updater
         [SerializeField] private TextMeshProUGUI changelogTitle;
         [SerializeField] private Button changelogCloseButton;
         [SerializeField] private Button changelogCloseButton2;
+        [SerializeField] private Button checkForUpdatesButton;
 
 #if UNITY_EDITOR
         [Header("Debug")]
@@ -95,13 +96,17 @@ namespace susy_baka.raidsim.Updater
 #endif
 #if UNITY_WEBPLAYER
             destroyed = true;
+            checkForUpdatesButton.gameObject.SetActive(false);
             Destroy(updatePromptGroup.gameObject);
+            Destroy(changelogGroup.gameObject);
             Destroy(gameObject);
             return;
 #elif UNITY_STANDALONE_LINUX
             Debug.LogWarning("Linux platform detected. Automatic updates not supported yet. Skipping update check.");
             destroyed = true;
+            checkForUpdatesButton.gameObject.SetActive(false);
             Destroy(updatePromptGroup.gameObject);
+            Destroy(changelogGroup.gameObject);
             Destroy(gameObject);
             return;
 #endif

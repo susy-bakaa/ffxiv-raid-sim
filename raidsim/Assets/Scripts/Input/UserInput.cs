@@ -110,6 +110,7 @@ public class UserInput : MonoBehaviour
 
             if (GlobalVariables.muteBgm && !mutedBgm)
             {
+#if !UNITY_WEBPLAYER
                 Transform musicLoader = GameObject.Find("MusicLoader").transform;
                 AudioSource[] musicSources = musicLoader.GetComponentsInChildren<AudioSource>();
 
@@ -117,10 +118,12 @@ public class UserInput : MonoBehaviour
                 {
                     musicSources[i].volume = 0f;
                 }
+#endif
                 mutedBgm = true;
             } 
             else if (!GlobalVariables.muteBgm && mutedBgm)
             {
+#if !UNITY_WEBPLAYER
                 Transform musicLoader = GameObject.Find("MusicLoader").transform;
                 AudioSource[] musicSources = musicLoader.GetComponentsInChildren<AudioSource>();
 
@@ -128,6 +131,7 @@ public class UserInput : MonoBehaviour
                 {
                     musicSources[i].volume = 1f;
                 }
+#endif
                 mutedBgm = false;
             }
         }
