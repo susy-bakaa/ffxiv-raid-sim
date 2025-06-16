@@ -10,7 +10,6 @@ public static class GlobalData
     public enum Sector { N, E, S, W }
     public enum SubSector { NE, SE, SW, NW }
 
-
     public struct ActionInfo
     {
         public CharacterAction action;

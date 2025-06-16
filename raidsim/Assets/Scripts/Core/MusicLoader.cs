@@ -22,11 +22,20 @@ public class MusicLoader : MonoBehaviour
         Destroy(gameObject);
         return;
 #else
-        if (GlobalVariables.muteBgm)
-            return;
 
         startSource = transform.GetChild(0).GetComponent<AudioSource>();
         loopSource = transform.GetChild(1).GetComponent<AudioSource>();
+
+        if (GlobalVariables.muteBgm)
+        {
+            startSource.volume = 0f;
+            loopSource.volume = 0f;
+        }
+        else
+        {
+            startSource.volume = 1f;
+            loopSource.volume = 1f;
+        }
 
         if (startSource != null && loopSource != null)
         {
@@ -43,7 +52,7 @@ public class MusicLoader : MonoBehaviour
 #if UNITY_WEBPLAYER
         return;
 #else
-        if (GlobalVariables.muteBgm || startSource == null || loopSource == null)
+        if (startSource == null || loopSource == null)
             return;
 
         startSource.Stop();
@@ -65,9 +74,6 @@ public class MusicLoader : MonoBehaviour
 
     private async void LoadSongAsync()
     {
-        if (GlobalVariables.muteBgm)
-            return;
-
         if (string.IsNullOrEmpty(completePath))
         {
             completePath = CompilePath();

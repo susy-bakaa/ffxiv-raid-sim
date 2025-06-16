@@ -28,6 +28,7 @@ public class UserInput : MonoBehaviour
     private Dictionary<string, InputBinding> m_keys;
     public List<InputAxis> axes = new List<InputAxis>();
     private Dictionary<string, InputAxis> m_axes;
+    private bool mutedBgm = false;
 
 #if UNITY_EDITOR
     private void OnValidate()
@@ -101,6 +102,36 @@ public class UserInput : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.F10))
+        {
+            GlobalVariables.muteBgm = !GlobalVariables.muteBgm;
+
+            Debug.Log($"GlobalVariables.muteBgm: {GlobalVariables.muteBgm}");
+
+            if (GlobalVariables.muteBgm && !mutedBgm)
+            {
+                Transform musicLoader = GameObject.Find("MusicLoader").transform;
+                AudioSource[] musicSources = musicLoader.GetComponentsInChildren<AudioSource>();
+
+                for (int i = 0; i < musicSources.Length; i++)
+                {
+                    musicSources[i].volume = 0f;
+                }
+                mutedBgm = true;
+            } 
+            else if (!GlobalVariables.muteBgm && mutedBgm)
+            {
+                Transform musicLoader = GameObject.Find("MusicLoader").transform;
+                AudioSource[] musicSources = musicLoader.GetComponentsInChildren<AudioSource>();
+
+                for (int i = 0; i < musicSources.Length; i++)
+                {
+                    musicSources[i].volume = 1f;
+                }
+                mutedBgm = false;
+            }
+        }
+
         if (characterController == null)
             return;
         if (characterAction == null)

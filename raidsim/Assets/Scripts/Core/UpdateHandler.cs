@@ -5,12 +5,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.UI;
-using NaughtyAttributes;
 using TMPro;
+using NaughtyAttributes;
+using LogicUI.FancyTextRendering;
 using Debug = UnityEngine.Debug;
-using System.Security.Cryptography;
 
 namespace susy_baka.raidsim.Updater
 {
@@ -19,14 +20,17 @@ namespace susy_baka.raidsim.Updater
         [Header("Functionality")]
         [SerializeField] private string updateUrl = "https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.{0}/raidsim_v.{0}_{1}64.zip";
         [SerializeField] private string checksumUrl = "https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.{0}/checksums.sha256";
+        [SerializeField] private string changelogUrl = "https://raw.githubusercontent.com/susy-bakaa/ffxiv-raid-sim/refs/heads/main/changelog.md";
         [SerializeField] private string zipFileName = "raidsim_v.{0}_{1}64.zip";
+        [SerializeField] private string updatePromptMessage = "An update for raidsim is available.<br><size=0.33em></size><br>Current version: <b>{0}</b><br>New version: <b>{1}</b>";
         [SerializeField] private string newestVersion = string.Empty;
         [SerializeField, Label("Update ID")] private int updateId = 1;
         [SerializeField, Label("Latest Update ID")] private int latestUpdateId = -1;
-        [Header("User Interface")]
+        [Header("User Interface - Prompt")]
         [SerializeField] private double updateInterval = 0.5;
         [SerializeField] private CanvasGroup updatePromptGroup;
         [SerializeField] private GameObject askPrompt;
+        [SerializeField] private TextMeshProUGUI updatePromptText;
         [SerializeField] private GameObject downloadPrompt;
         [SerializeField] private TextMeshProUGUI downloadStatus;
         [SerializeField] private Slider downloadProgressBar;
@@ -35,6 +39,17 @@ namespace susy_baka.raidsim.Updater
         [SerializeField] private Button retryButton;
         [SerializeField] private Button restartButton;
         [SerializeField] private Button cancelButton;
+        [Header("User Interface - Changelog")]
+        [SerializeField] private CanvasGroup changelogGroup;
+        [SerializeField] private MarkdownRenderer changelogText;
+        [SerializeField] private TextMeshProUGUI changelogTitle;
+        [SerializeField] private Button changelogCloseButton;
+        [SerializeField] private Button changelogCloseButton2;
+
+#if UNITY_EDITOR
+        [Header("Debug")]
+        [SerializeField][Min(-1)] private int forceUpdateId = -1; // For testing purposes only, to force an update check
+#endif
 
         private const string gameVersionUrl = "https://raw.githubusercontent.com/susy-bakaa/ffxiv-raid-sim/refs/heads/main/version.txt";
 #if UNITY_STANDALONE_WIN
@@ -52,22 +67,32 @@ namespace susy_baka.raidsim.Updater
         private Coroutine ieDownloadUpdate;
         private WebClient webClient;
         private Stopwatch downloadStopwatch;
-        private long lastBytesReceived = 0;
+        //private long lastBytesReceived = 0;
         private float uiUpdateTimer = 0f;
         private float lastProgress = 0f;
         private string lastEstimatedTimeText = "";
-        private Queue<double> speedHistory = new Queue<double>();
-        private int speedHistoryCount = 5;
+        // For improved speed averaging
+        private readonly Queue<(long bytes, double time)> speedSamples = new();
+        private const double speedSampleWindow = 8.0; // seconds
+        //private int speedHistoryCount = 5;
         private float noDataReceivedTimer = 0f;
         private float connectionLostTimeout = 5f;
         private bool restarting = false;
         private bool destroyed = false;
         private bool showDownloadSpeed = false;
         private bool downloadAborted = false;
+        private bool updatePromptVisible = false;
 
         void Start()
         {
             updateId = GlobalVariables.versionNumber;
+#if UNITY_EDITOR
+            if (forceUpdateId > -1)
+            {
+                Debug.Log($"Forcing update ID to {forceUpdateId} for testing purposes.");
+                updateId = forceUpdateId;
+            }
+#endif
 #if UNITY_WEBPLAYER
             destroyed = true;
             Destroy(updatePromptGroup.gameObject);
@@ -90,6 +115,10 @@ namespace susy_baka.raidsim.Updater
             downloadProgressBar.value = 0f;
             downloadProgress.text = "0%";
             downloadEstimatedDuration.text = "Estimated Time Left: Unknown";
+
+            updatePromptText.text = string.Format(updatePromptMessage, Application.version, newestVersion);
+            changelogTitle.text = $"Changelog - v.{newestVersion}";
+            changelogText.Source = "";
 
             cancelButton.interactable = true;
             retryButton.interactable = false;
@@ -158,6 +187,8 @@ namespace susy_baka.raidsim.Updater
             if (destroyed)
                 return;
 
+            updatePromptVisible = true;
+
             showDownloadSpeed = false;
 
             updatePromptGroup.alpha = 1f;
@@ -170,9 +201,13 @@ namespace susy_baka.raidsim.Updater
             if (destroyed)
                 return;
 
+            updatePromptVisible = false;
+
             updatePromptGroup.alpha = 0f;
             updatePromptGroup.interactable = false;
             updatePromptGroup.blocksRaycasts = false;
+
+            HideChangelog();
 
             if (webClient != null)
                 webClient.CancelAsync();
@@ -183,6 +218,35 @@ namespace susy_baka.raidsim.Updater
             downloadProgressBar.value = 0f;
             downloadProgress.text = "0%";
             downloadEstimatedDuration.text = "Estimated Time Left: Unknown";
+        }
+
+        public void ShowChangelog()
+        {
+            if (destroyed)
+                return;
+
+            updatePromptGroup.interactable = false;
+            updatePromptGroup.blocksRaycasts = false;
+
+            changelogGroup.alpha = 1f;
+            changelogGroup.interactable = true;
+            changelogGroup.blocksRaycasts = true;
+        }
+
+        public void HideChangelog()
+        {
+            if (destroyed)
+                return;
+
+            if (updatePromptVisible)
+            {
+                updatePromptGroup.interactable = true;
+                updatePromptGroup.blocksRaycasts = true;
+            }
+
+            changelogGroup.alpha = 0f;
+            changelogGroup.interactable = false;
+            changelogGroup.blocksRaycasts = false;
         }
 
         public void SetSkipUpdates(bool value)
@@ -235,6 +299,26 @@ namespace susy_baka.raidsim.Updater
 
             updateUrl = string.Format(updateUrl, newestVersion, platform);
             checksumUrl = string.Format(checksumUrl, newestVersion);
+
+            updatePromptText.text = string.Format(updatePromptMessage, Application.version, newestVersion);
+
+            DownloadChangelog();
+        }
+
+        private void DownloadChangelog()
+        {
+            if (destroyed)
+                return;
+
+            if (string.IsNullOrEmpty(changelogUrl))
+                return;
+
+            Stream stream = webClient.OpenRead(changelogUrl);
+            StreamReader sRead = new StreamReader(stream);
+            string changelogContent = sRead.ReadToEnd();
+
+            changelogTitle.text = $"Changelog - v.{newestVersion}";
+            changelogText.Source = changelogContent;
         }
 
         public void DownloadUpdate()
@@ -285,9 +369,6 @@ namespace susy_baka.raidsim.Updater
                     downloadProgressBar.value = 0f;
                     downloadProgress.text = "0%";
                     downloadEstimatedDuration.text = "Estimated Time Left: Unknown";
-
-                    //long existingFileSize = 0;
-                    //bool resumeDownload = false;
 
                     if (File.Exists(zipFilePath))
                     {
@@ -342,9 +423,8 @@ namespace susy_baka.raidsim.Updater
                         downloadEstimatedDuration.text = "Estimated Time Left: Unknown";
 
                         downloadStopwatch = new Stopwatch();
-                        lastBytesReceived = 0;
                         noDataReceivedTimer = 0;
-                        speedHistory.Clear();
+                        speedSamples.Clear();
 
                         Uri uri = new Uri(updateUrl);
                         webClient.DownloadProgressChanged += (sender, data) =>
@@ -352,7 +432,7 @@ namespace susy_baka.raidsim.Updater
                             float progress = data.ProgressPercentage / 100f;
                             long bytesReceived = data.BytesReceived;
                             long totalBytes = data.TotalBytesToReceive;
-                            double elapsedTime = downloadStopwatch.Elapsed.TotalSeconds;
+                            double now = downloadStopwatch.Elapsed.TotalSeconds;
 
                             if (!destroyed)
                             {
@@ -361,37 +441,32 @@ namespace susy_baka.raidsim.Updater
                                 downloadProgress.text = $"{data.ProgressPercentage}%";
                             }
 
-                            if (elapsedTime > 0 && bytesReceived > 0 && totalBytes > 0)
+                            if (!downloadStopwatch.IsRunning)
+                                downloadStopwatch.Start();
+
+                            speedSamples.Enqueue((bytesReceived, now));
+
+                            while (speedSamples.Count > 0 && now - speedSamples.Peek().time > speedSampleWindow)
                             {
-                                double speedMbps = ((bytesReceived - lastBytesReceived) / (1024.0 * 1024.0)) / elapsedTime;
-                                lastBytesReceived = bytesReceived;
-                                downloadStopwatch.Restart();
-                                noDataReceivedTimer = 0;
-
-                                // Store the speed in a rolling history
-                                if (speedHistory.Count >= speedHistoryCount)
-                                {
-                                    speedHistory.Dequeue();
-                                }
-                                speedHistory.Enqueue(speedMbps);
-
-                                // Calculate rolling average speed
-                                double averageSpeed = 0;
-                                foreach (double speed in speedHistory)
-                                {
-                                    averageSpeed += speed;
-                                }
-                                averageSpeed /= speedHistory.Count;
-
-                                double remainingTime = (totalBytes - bytesReceived) / (averageSpeed * 1024 * 1024);
-                                string estimatedTimeText = FormatTime(remainingTime);
-
-                                lastProgress = progress;
-                                lastEstimatedTimeText = $"Estimated Time Left: {estimatedTimeText} ({averageSpeed:F2} MB/s)";
-                                showDownloadSpeed = true;
-
-                                Debug.Log($"Downloading update... {data.ProgressPercentage}% - {averageSpeed:F2} MB/s - Time Left: {estimatedTimeText}");
+                                speedSamples.Dequeue();
                             }
+
+                            if (speedSamples.Count >= 2 && totalBytes > 0)
+                            {
+                                var (oldBytes, oldTime) = speedSamples.Peek();
+                                double bytesPerSecond = (bytesReceived - oldBytes) / (now - oldTime);
+                                if (bytesPerSecond > 0)
+                                {
+                                    double remainingTime = (totalBytes - bytesReceived) / bytesPerSecond;
+                                    string estimatedTimeText = FormatTime(remainingTime);
+
+                                    lastProgress = progress;
+                                    lastEstimatedTimeText = $"Estimated Time Left: {estimatedTimeText} ({bytesPerSecond / 1024 / 1024:F2} MB/s)";
+                                    showDownloadSpeed = true;
+                                }
+                            }
+
+                            noDataReceivedTimer = 0;
                         };
 
                         webClient.DownloadFileCompleted += (sender, args) =>
@@ -432,7 +507,7 @@ namespace susy_baka.raidsim.Updater
                             else if (args.Cancelled)
                             {
                                 showDownloadSpeed = false;
-                                Debug.LogWarning($"Download was cancelled.");
+                                Debug.LogWarning("Download was cancelled.");
                             }
                             else
                             {
@@ -444,6 +519,7 @@ namespace susy_baka.raidsim.Updater
                             }
                         };
 
+                        downloadStopwatch.Reset();
                         webClient.DownloadFileAsync(uri, zipFilePath);
                         downloadStopwatch.Start();
                     }

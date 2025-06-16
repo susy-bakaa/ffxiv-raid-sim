@@ -1,13 +1,12 @@
 using System.IO;
 using System.Runtime.InteropServices;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public static class GlobalVariables
 {
-    // This is increment when the game gets updated.
-    // Used by WebGL to determine if the game assets need to be redownloaded and by the auto updater for version checks for updates.
-    public const int versionNumber = 4;
+    // This value is incremented when the game gets an updated.
+    // It is used by WebGL to determine if the game assets need to be redownloaded and by the auto updater for version checks for updates.
+    public const int versionNumber = 5;
 #if UNITY_EDITOR
     public static string configPath = Application.dataPath + "/config.ini";
     public static string bgmPath = "F:/Users/Aki/Files/GitHub/ffxiv-raid-sim/raidsim/Source/Audio/bgm";

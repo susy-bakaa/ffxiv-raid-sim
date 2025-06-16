@@ -74,7 +74,6 @@ public class FightTimeline : MonoBehaviour
     private Coroutine ieResetTimeline;
     private bool hasBeenPlayed = false;
     private bool resetCalled = false;
-    private bool mutedBgm = false;
 
     [System.Serializable]
     public struct RandomEventResult
@@ -236,25 +235,6 @@ public class FightTimeline : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F10))
-        {
-            GlobalVariables.muteBgm = !GlobalVariables.muteBgm;
-
-            Debug.Log($"GlobalVariables.muteBgm: {GlobalVariables.muteBgm}");
-
-            if (GlobalVariables.muteBgm && !mutedBgm)
-            {
-                Transform musicLoader = GameObject.Find("MusicLoader").transform;
-                AudioSource[] musicSources = musicLoader.GetComponentsInChildren<AudioSource>();
-
-                for (int i = 0; i < musicSources.Length; i++)
-                {
-                    musicSources[i].Stop();
-                }
-                mutedBgm = true;
-            }
-        }
-
         if (paused)
         {
             Time.timeScale = 0f;

@@ -1,16 +1,23 @@
-This small hotfix addresses a **critical issue** with **M8S: Terrestrial rage**, specifically the **Half Rinon** strat and includes a few minor improvements and updates. If you've been running into problems with the **M8S: Terrestrial Rage** timeline, this should fix it.
+This small update focuses on **polishing the in-game updater system**, improving clarity for update status, and addressing some timeline-specific issues. It also introduces the ability to **view changelogs directly in-game**.
 
 ## Changelog:
 
+### New Features
+
+-   Added a **button to the main menu** to manually **recheck for updates** at any time.
+-   Update notifications now show both your **current version** and the **new version** for better clarity.
+-   Added a button to **view the changelog** of a new update directly **in-game** after an update is detected.
+
 ### Bug Fixes
 
--   Fixed a critical issue where **Half Rinon** was broken due to an untested change before the last release.
+-   Fixed bot positioning logic in **M8S: Terrestrial Rage** for both **Rinon** and **Half Rinon** strategies.
+-   Fixed an issue where the **enemy list** in **M8S: Beckon Moonlight** would show incorrectly at the end of the mechanic.
+-   Fixed the first **spread/stack mechanic selector** in **M8S: Terrestrial Rage**, which previously failed to trigger correctly.
 
 ### Other Changes
 
--   Made some **minor performance improvements** by updating a few animators to use **hashed animation names** instead of strings.
--   Added my **FFXIV character name** to the credits text on the main menu. :)
+-   Improved the **estimated time remaining** and **download speed** display for the in-game updater. This is a **visual-only change**, but values should now be far more accurate and informative.
 
 ---
 
-Thanks for your patience with this one! If any other bugs or issues arise or something breaks, just make an issue [here](https://github.com/susy-bakaa/ffxiv-raid-sim/issues) on GitHub or send me a Discord DM.
+As always, if any other bugs and problems come up, just make an issue [here](https://github.com/susy-bakaa/ffxiv-raid-sim/issues) on GitHub or send me a Discord DM. Thanks for keeping up with the updates!

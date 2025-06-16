@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 2560
     height: 1336
   m_ShowMode: 4
-  m_Title: Project
+  m_Title: Console
   m_RootView: {fileID: 2}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -120,7 +120,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 100}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 43
+  controlID: 19
   draggingID: 0
 --- !u!114 &6
 MonoBehaviour:
@@ -146,7 +146,7 @@ MonoBehaviour:
   m_MinSize: {x: 100, y: 100}
   m_MaxSize: {x: 8096, y: 16192}
   vertical: 1
-  controlID: 44
+  controlID: 20
   draggingID: 0
 --- !u!114 &7
 MonoBehaviour:
@@ -158,7 +158,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 1
   m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: GameView
+  m_Name: PackageManagerWindow
   m_EditorClassIdentifier: 
   m_Children: []
   m_Position:
@@ -167,9 +167,9 @@ MonoBehaviour:
     y: 0
     width: 1388
     height: 827
-  m_MinSize: {x: 101, y: 121}
+  m_MinSize: {x: 801, y: 271}
   m_MaxSize: {x: 4001, y: 4021}
-  m_ActualView: {fileID: 11}
+  m_ActualView: {fileID: 14}
   m_Panes:
   - {fileID: 12}
   - {fileID: 11}
@@ -177,8 +177,8 @@ MonoBehaviour:
   - {fileID: 14}
   - {fileID: 15}
   - {fileID: 16}
-  m_Selected: 1
-  m_LastSelected: 0
+  m_Selected: 3
+  m_LastSelected: 1
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -189,7 +189,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: ProjectBrowser
+  m_Name: ConsoleWindow
   m_EditorClassIdentifier: 
   m_Children: []
   m_Position:
@@ -198,9 +198,9 @@ MonoBehaviour:
     y: 827
     width: 1388
     height: 459
-  m_MinSize: {x: 231, y: 271}
-  m_MaxSize: {x: 10001, y: 10021}
-  m_ActualView: {fileID: 17}
+  m_MinSize: {x: 101, y: 121}
+  m_MaxSize: {x: 4001, y: 4021}
+  m_ActualView: {fileID: 18}
   m_Panes:
   - {fileID: 17}
   - {fileID: 18}
@@ -208,8 +208,8 @@ MonoBehaviour:
   - {fileID: 20}
   - {fileID: 21}
   - {fileID: 22}
-  m_Selected: 0
-  m_LastSelected: 1
+  m_Selected: 1
+  m_LastSelected: 0
 --- !u!114 &9
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -1518,7 +1518,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets
+    - Assets/Scripts/Core
     m_Globs: []
     m_OriginalText: 
     m_ImportLogFlags: 0
@@ -1526,16 +1526,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets
+  - Assets/Scripts/Core
   m_LastFoldersGridSize: -1
   m_LastProjectPath: F:\Users\Aki\Files\GitHub\ffxiv-raid-sim\raidsim
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 967d0000
-    m_LastClickedID: 32150
-    m_ExpandedIDs: 00000000927d0000947d0000
+    m_SelectedIDs: c0980000
+    m_LastClickedID: 39104
+    m_ExpandedIDs: 00000000927d0000947d0000c47d0000d87d0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1563,7 +1563,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000927d0000947d0000967d0000
+    m_ExpandedIDs: 00000000927d0000947d0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1588,9 +1588,9 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: 
-    m_LastClickedInstanceID: 0
-    m_HadKeyboardFocusLastEvent: 0
+    m_SelectedInstanceIDs: a87e0000
+    m_LastClickedInstanceID: 32424
+    m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: 5a770100e271000040950000c6a40000f2610000aeb8000000000000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -1689,7 +1689,7 @@ MonoBehaviour:
     m_OverlaysVisible: 1
   m_LockTracker:
     m_IsLocked: 0
-  m_LastSelectedObjectID: -23490
+  m_LastSelectedObjectID: 32424
 --- !u!114 &20
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -2782,9 +2782,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 
-      m_LastClickedID: 0
-      m_ExpandedIDs: ea06ebff2c07ebff2e61ebfffcbaebffe004ecffce54ecff5ea3ecff58f5ecff3e3cedffe488edffb4d3edffbe1deeff8855eeff5a8deeffa6d3eeff44e7eeffd2e9eeffe2f4eeff24f5eeff264feffff4a8efffd8f2efffca42f0ff5a91f0ff58e3f0ff3e2af1ffe676f1ffb8c1f1ffc40bf2ff8e43f2ff607bf2ffacc1f2ff4ad5f2ffd8d7f2ff72e2f2ffb4e2f2ff9a3cf3ff6896f3ff4ce0f3ff3e30f4ffce7ef4ffccd0f4ffb217f5ff5a64f5ff2caff5ff38f9f5ff0231f6ffd468f6ff20aff6ffbec2f6ff4cc5f6ff12c8f6ff3ee0f6ff96e8f6ffe8e8f6ffea42f7ffb89cf7ff9ce6f7ff8e36f8ff1e85f8ff1cd7f8ff021ef9ffaa6af9ff7cb5f9ff88fff9ff5237faff246ffaff70b5faff0ec9faff9ccbfaff72cefaff14dffdff3ef5fdffd454feff7cc3feff0af8ffff2afbffffa8800000ce9c00002cbc0000
+      m_SelectedIDs: a87e0000
+      m_LastClickedID: 32424
+      m_ExpandedIDs: 18e1ffff1ae1ffffe4f7ffff2afbffff367e0000a87f0000b8800000b6810000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 

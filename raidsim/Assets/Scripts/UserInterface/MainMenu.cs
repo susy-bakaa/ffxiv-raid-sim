@@ -24,7 +24,6 @@ public class MainMenu : MonoBehaviour
 #endif
     Coroutine ie_exitApp;
 
-#if UNITY_STANDALONE_WIN
     private void Start()
     {
         fadeOut.interactable = false;
@@ -34,6 +33,7 @@ public class MainMenu : MonoBehaviour
 
         KeyBind.SetupKeyNames();
 
+#if UNITY_STANDALONE_WIN
         if (Application.isEditor)
             return;
 
@@ -55,8 +55,8 @@ public class MainMenu : MonoBehaviour
         {
             Debug.LogError($"Error setting window title: {ex}");
         }
-    }
 #endif
+    }
 
     public void LoadSimScene()
     {
@@ -75,6 +75,13 @@ public class MainMenu : MonoBehaviour
         fadeOut.blocksRaycasts = true;
         fadeOut.LeanAlpha(1f, 0.5f).setOnComplete(() => SceneManager.LoadScene(simSceneName));
         StopAllCoroutines();
+    }
+
+    public void ReloadMainMenu(Button button)
+    {
+        StopAllCoroutines();
+        button.interactable = false;
+        Utilities.FunctionTimer.Create(this, () => SceneManager.LoadScene(SceneManager.GetActiveScene().name), 0.5f, "mainmenu_reload", true, true);
     }
 
     public void Quit()
