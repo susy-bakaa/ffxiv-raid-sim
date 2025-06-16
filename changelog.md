@@ -13,4 +13,4 @@ This small hotfix addresses a **critical issue** with **M8S: Terrestrial rage**,
 
 ---
 
-Thanks for your patience with this one! If any other bugs or issues arise or something breaks, just make an issue here on GitHub or send me a Discord DM.
+Thanks for your patience with this one! If any other bugs or issues arise or something breaks, just make an issue [here](https://github.com/susy-bakaa/ffxiv-raid-sim/issues) on GitHub or send me a Discord DM.
