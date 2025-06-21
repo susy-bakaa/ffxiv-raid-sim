@@ -74,6 +74,8 @@ MonoBehaviour:
     assetBundle: dsr
   - scene: suppression
     assetBundle: uwup5
+  - scene: terrestrial_rage_clock
+    assetBundle: m8s
   - scene: terrestrial_rage
     assetBundle: m8s
   - scene: beckon_moonlight
@@ -89,11 +91,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 864227202019974020, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0009332289
+      value: 0.000366621
       objectReference: {fileID: 0}
     - target: {fileID: 2397317220443939482, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Name
       value: Dropdown
+      objectReference: {fileID: 0}
+    - target: {fileID: 2692715965678967534, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+    - target: {fileID: 2692715965678967534, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_ActiveFontFeatures.Array.data[0]
+      value: 1801810542
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Value
@@ -101,7 +111,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Options.m_Options.Array.size
-      value: 13
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Options.m_Options.Array.data[5].m_Text
@@ -124,8 +134,64 @@ PrefabInstance:
       value: 'DSR P2: Meteors'
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[11].m_Text
+      value: 'M8S: Terrestrial Rage (Clock)'
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Options.m_Options.Array.data[12].m_Text
+      value: 'M8S: Terrestrial Rage (Rinon)'
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[13].m_Text
       value: 'M8S: Beckon Moonlight'
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[11].m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[11].m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[11].m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[11].m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[12].m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[12].m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[12].m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[12].m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[13].m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[13].m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[13].m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[13].m_Color.r
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
@@ -150,6 +216,14 @@ PrefabInstance:
     - target: {fileID: 5594349047633344503, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_text
       value: 'CODC: Grim Embrace (P1 Debuff)'
+      objectReference: {fileID: 0}
+    - target: {fileID: 5594349047633344503, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+    - target: {fileID: 5594349047633344503, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_ActiveFontFeatures.Array.data[0]
+      value: 1801810542
       objectReference: {fileID: 0}
     - target: {fileID: 6464313048467052032, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Size
