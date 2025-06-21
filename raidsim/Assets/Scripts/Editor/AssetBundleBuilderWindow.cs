@@ -14,7 +14,8 @@ public class AssetBundleBuilderWindow : EditorWindow
     {
         BuildTarget.StandaloneWindows64,
         BuildTarget.StandaloneLinux64,
-        BuildTarget.WebGL
+        BuildTarget.WebGL,
+        BuildTarget.StandaloneOSX,
     };
 
     [MenuItem("Tools/AssetBundle Builder")]
