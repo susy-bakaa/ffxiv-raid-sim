@@ -1,0 +1,27 @@
+site_name: FFXIV Raid Sim Docs
+site_url: https://docs.susybaka.dev/raidsim
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.expand
+    - toc.integrate
+    - search.highlight
+    - search.share
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Architecture: architecture.md
+  - Creating Content:
+      - Adding Scriptable Objects: creating-content/adding-scriptable-objects.md
+      - Duplicating Prefabs: creating-content/duplicating-prefabs.md
+      - Using Components: creating-content/using-components.md
+  - Systems:
+      - Core System Overview: systems/core-system-overview.md
+      - Scene Loader: systems/scene-loader.md
+      - Input System: systems/input-system.md
+  - API Reference:
+      - FightTimeline Class: api/class-FightTimeline.md
+      - CharacterState Class: api/class-CharacterState.md
+  - Contributing: contributing.md
