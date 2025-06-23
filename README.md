@@ -98,6 +98,8 @@ You have two options when it comes to using this program, either open the [web v
 
 # Git Usage Instructions
 
+For more in-depth guide, please check out the [official documentation website](https://docs.susybaka.dev/raidsim/).
+
 This repository uses [gdrive](https://github.com/prasmussen/gdrive) for LFS storage. To learn more about installing gdrive follow [this guide](https://medium.com/machine-learning-intuition/tutorial-storing-large-a-i-models-with-gdrive-don-t-use-git-lfs-a1aaccdc5b26). To get started, edit `gdrive_default.txt` located inside the `.gdrive` directory on the project root. Each line corresponds to one variable. After you're done save it as `gdrive_config.txt` into the same folder.
 
 Config file explanation:
