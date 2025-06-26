@@ -2,7 +2,7 @@
 
 A singleplayer raid and fight mechanic simulator with bots, made in the Unity game engine from scratch, for the critically acclaimed MMORPG Final Fantasy XIV: Online by Square Enix. This program will get more timelines and fights added to it as I develop it further. I will also accept any external thirdparty contributions possibly developed by others. Current main focus is Blue Mage specific plans for older fights and mechanics with various ultimate mechanics missing from other simulators thrown in to the mix, with maybe an occasional savage mechanic if I feel like it.
 
-If you want to keep up with development, have any questions or want to contribute yourself, join the [discord server](https://discord.gg/XNeWeZkhSf).
+If you want to keep up with development, have any questions or want to contribute yourself, join the [discord server](https://discord.gg/wepQtPfC6D).
 
 # Supported fights
 
