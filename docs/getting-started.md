@@ -57,6 +57,7 @@ If you are contributing internally and want to **sync your own changes** to the 
 3. Run `gdrive_util.bat` from the root of the repository and follow the command prompt instructions.
 
 This is an explanation of what each line inside the config file has to include:
+
 1. Disk your repository is on
 2. Path to your local repository (In a format the windows cd command can read)
 3. Name of the archive used with Google Drive
@@ -65,6 +66,7 @@ This is an explanation of what each line inside the config file has to include:
 6. File used for ignored folders and file types (By default `.gdriveignore`)
 
 This tool just allows you to automatically do the following:
+
 - Create archived backups of all binary and large files.
 - Upload backups to Google Drive.
 - Maintain consistency in archive structure.
