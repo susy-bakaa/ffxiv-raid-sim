@@ -441,4 +441,79 @@ public class BotNodeGroup : MonoBehaviour
 
         return furthestNode;
     }
+
+    public BotNode GetEnabledNode()
+    {
+        foreach (BotNode node in nodes)
+        {
+            if (node.gameObject.activeSelf)
+            {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    public BotNode GetEnabledNodeFromChildren()
+    {
+        foreach (BotNodeGroup group in childGroups)
+        {
+            BotNode node = group.GetEnabledNode();
+            if (node != null)
+            {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    public BotNode GetUnoccupiedNode()
+    {
+        foreach (BotNode node in nodes)
+        {
+            if (!node.occupied && node.gameObject.activeSelf)
+            {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    public BotNode GetUnoccupiedNodeFromChildren()
+    {
+        foreach (BotNodeGroup group in childGroups)
+        {
+            BotNode node = group.GetUnoccupiedNode();
+            if (node != null)
+            {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    public BotNode GetEmptyNode()
+    {
+        foreach (BotNode node in nodes)
+        {
+            if (!node.hasMechanic && node.gameObject.activeSelf)
+            {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    public BotNode GetEmptyNodeFromChildren()
+    {
+        foreach (BotNodeGroup group in childGroups)
+        {
+            BotNode node = group.GetEmptyNode();
+            if (node != null)
+            {
+                return node;
+            }
+        }
+        return null;
+    }
 }

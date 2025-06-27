@@ -5,7 +5,7 @@ using static BotTimeline;
 
 public class SetDynamicBotNode : MonoBehaviour
 {
-    public enum DynamicNodeType { priority, nearest, furthest, roleBased, groupBased }
+    public enum DynamicNodeType { priority, nearest, furthest, roleBased, groupBased, enabled, unoccupied, empty }
 
     public BotNodeGroup nodeGroup;
     public BotNodeGroup NodeGroupFallback;
@@ -99,6 +99,21 @@ public class SetDynamicBotNode : MonoBehaviour
                     SetNodeTypeRoleGroup(timeline, targetEventIndex);
                 else
                     SetNodeTypeRole(timeline, targetEventIndex);
+                break;
+            case DynamicNodeType.enabled:
+                if (log)
+                    Debug.Log($"[SetDynamicBotNode ({gameObject.name})] Setting node based on enabled nodes in group");
+                SetNodeTypeEnabled(timeline, targetEventIndex);
+                break;
+            case DynamicNodeType.unoccupied:
+                if (log)
+                    Debug.Log($"[SetDynamicBotNode ({gameObject.name})] Setting node based on unoccupied nodes in group");
+                SetNodeTypeUnoccupied(timeline, targetEventIndex);
+                break;
+            case DynamicNodeType.empty:
+                if (log)
+                    Debug.Log($"[SetDynamicBotNode ({gameObject.name})] Setting node based on empty nodes in group");
+                SetNodeTypeEmpty(timeline, targetEventIndex);
                 break;
             default:
                 Debug.LogError($"[SetDynamicBotNode ({gameObject.name})] node type not implemented yet!");
@@ -206,6 +221,81 @@ public class SetDynamicBotNode : MonoBehaviour
         if (log)
             Debug.Log($"[SetDynamicBotNode ({gameObject.name})] Priority assignment finished with the following node: {node?.name}");
 
+        AssignNode(timeline, targetEventIndex, node);
+    }
+
+    private void SetNodeTypeEnabled(BotTimeline timeline, int targetEventIndex)
+    {
+        BotNode node = null;
+        if (!childGroups)
+        {
+            node = nodeGroup.GetEnabledNode();
+        }
+        else
+        {
+            node = nodeGroup.GetEnabledNodeFromChildren();
+        }
+        if (node == null && NodeGroupFallback != null)
+        {
+            if (!childGroups)
+            {
+                node = NodeGroupFallback.GetEnabledNode();
+            }
+            else
+            {
+                node = NodeGroupFallback.GetEnabledNodeFromChildren();
+            }
+        }
+        AssignNode(timeline, targetEventIndex, node);
+    }
+
+    private void SetNodeTypeUnoccupied(BotTimeline timeline, int targetEventIndex)
+    {
+        BotNode node = null;
+        if (!childGroups)
+        {
+            node = nodeGroup.GetUnoccupiedNode();
+        }
+        else
+        {
+            node = nodeGroup.GetUnoccupiedNodeFromChildren();
+        }
+        if (node == null && NodeGroupFallback != null)
+        {
+            if (!childGroups)
+            {
+                node = NodeGroupFallback.GetUnoccupiedNode();
+            }
+            else
+            {
+                node = NodeGroupFallback.GetUnoccupiedNodeFromChildren();
+            }
+        }
+        AssignNode(timeline, targetEventIndex, node);
+    }
+
+    private void SetNodeTypeEmpty(BotTimeline timeline, int targetEventIndex)
+    {
+        BotNode node = null;
+        if (!childGroups)
+        {
+            node = nodeGroup.GetEmptyNode();
+        }
+        else
+        {
+            node = nodeGroup.GetEmptyNodeFromChildren();
+        }
+        if (node == null && NodeGroupFallback != null)
+        {
+            if (!childGroups)
+            {
+                node = NodeGroupFallback.GetEmptyNode();
+            }
+            else
+            {
+                node = NodeGroupFallback.GetEmptyNodeFromChildren();
+            }
+        }
         AssignNode(timeline, targetEventIndex, node);
     }
 
