@@ -41,6 +41,7 @@ public class CharacterActionData : ScriptableObject
     public bool playAnimationDirectly = false;
     public bool playAnimationOnFinish = false;
     public int onAnimationFinishId = -1;
+    [Min(0f)] public float animationDelay = 0f;
     public string speech = string.Empty;
     public AudioClip speechAudio = null;
     public AudioClip jonSpeechAudio = null;

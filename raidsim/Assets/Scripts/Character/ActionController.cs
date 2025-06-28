@@ -556,19 +556,47 @@ public class ActionController : MonoBehaviour
                 onCast.Invoke(new CastInfo(newActionInfo, instantCast, characterState.GetEffects()));
                 if (animator != null && !string.IsNullOrEmpty(autoAction.data.animationName) && !autoAction.data.playAnimationDirectly)
                 {
-                    animator.SetTrigger(autoAction.data.animationName);
+                    if (autoAction.data.animationDelay > 0f)
+                    {
+                        Utilities.FunctionTimer.Create(this, () => animator.SetTrigger(autoAction.data.animationName), autoAction.data.animationDelay, $"{autoAction.data.actionName}_animation_{autoAction.data.animationName}_delay");
+                    }
+                    else
+                    {
+                        animator.SetTrigger(autoAction.data.animationName);
+                    }
                 }
                 else if (animator != null && !string.IsNullOrEmpty(autoAction.data.animationName) && autoAction.data.playAnimationDirectly)
                 {
-                    animator.CrossFadeInFixedTime(autoAction.data.animationName, 0.2f);
+                    if (autoAction.data.animationDelay > 0f)
+                    {
+                        Utilities.FunctionTimer.Create(this, () => animator.CrossFadeInFixedTime(autoAction.data.animationName, 0.2f), autoAction.data.animationDelay, $"{autoAction.data.actionName}_animation_{autoAction.data.animationName}_delay");
+                    }
+                    else
+                    {
+                        animator.CrossFadeInFixedTime(autoAction.data.animationName, 0.2f);
+                    }                  
                 }
                 if (animator != null && autoAction.data.onAnimationFinishId >= 0)
                 {
-                    animator.SetInteger(animatorParameterCastFinishId, autoAction.data.onAnimationFinishId);
+                    if (autoAction.data.animationDelay > 0f)
+                    {
+                        Utilities.FunctionTimer.Create(this, () => animator.SetInteger(animatorParameterCastFinishId, autoAction.data.onAnimationFinishId), autoAction.data.animationDelay, $"{autoAction.data.actionName}_animation_{autoAction.data.animationName}_delay");
+                    }
+                    else
+                    {
+                        animator.SetInteger(animatorParameterCastFinishId, autoAction.data.onAnimationFinishId);
+                    }
                 }
                 else if (animator != null)
                 {
-                    animator.SetInteger(animatorParameterCastFinishId, 0);
+                    if (autoAction.data.animationDelay > 0f)
+                    {
+                        Utilities.FunctionTimer.Create(this, () => animator.SetInteger(animatorParameterCastFinishId, 0), autoAction.data.animationDelay, $"{autoAction.data.actionName}_animation_{autoAction.data.animationName}_delay");
+                    }
+                    else
+                    {
+                        animator.SetInteger(animatorParameterCastFinishId, 0);
+                    }
                 }
 
                 return true;
@@ -956,19 +984,47 @@ public class ActionController : MonoBehaviour
         {
             if (!action.data.playAnimationDirectly)
             {
-                animator.SetTrigger(action.data.animationName);
+                if (action.data.animationDelay > 0f)
+                {
+                    Utilities.FunctionTimer.Create(this, () => animator.SetTrigger(action.data.animationName), action.data.animationDelay, $"{action.data.actionName}_animation_{action.data.animationName}_delay");
+                }
+                else
+                {
+                    animator.SetTrigger(action.data.animationName);
+                }
             }
             else
             {
-                animator.CrossFadeInFixedTime(action.data.animationName, 0.2f);
+                if (action.data.animationDelay > 0f)
+                {
+                    Utilities.FunctionTimer.Create(this, () => animator.CrossFadeInFixedTime(action.data.animationName, 0.2f), action.data.animationDelay, $"{action.data.actionName}_animation_{action.data.animationName}_delay");
+                }
+                else
+                {
+                    animator.CrossFadeInFixedTime(action.data.animationName, 0.2f);
+                }
             }
             if (action.data.onAnimationFinishId >= 0)
             {
-                animator.SetInteger(animatorParameterCastFinishId, action.data.onAnimationFinishId);
+                if (action.data.animationDelay > 0f)
+                {
+                    Utilities.FunctionTimer.Create(this, () => animator.SetInteger(animatorParameterCastFinishId, action.data.onAnimationFinishId), action.data.animationDelay, $"{action.data.actionName}_animation_{action.data.animationName}_delay");
+                }
+                else
+                {
+                    animator.SetInteger(animatorParameterCastFinishId, action.data.onAnimationFinishId);
+                }
             }
             else
             {
-                animator.SetInteger(animatorParameterCastFinishId, 0);
+                if (action.data.animationDelay > 0f)
+                {
+                    Utilities.FunctionTimer.Create(this, () => animator.SetInteger(animatorParameterCastFinishId, 0), action.data.animationDelay, $"{action.data.actionName}_animation_{action.data.animationName}_delay");
+                }
+                else
+                {
+                    animator.SetInteger(animatorParameterCastFinishId, 0);
+                }
             }
         }
     }
