@@ -863,7 +863,14 @@ public class ActionController : MonoBehaviour
 
                 if (animator != null && !action.data.isGroundTargeted)
                 {
-                    animator.SetBool(animatorParameterCasting, true);
+                    if (action.data.playCastingAnimationDirectly)
+                    {
+                        animator.CrossFadeInFixedTime(action.data.castingAnimationName, 0.2f);
+                    }
+                    else
+                    {
+                        animator.SetBool(animatorParameterCasting, true);
+                    }
                 }
 
                 if (action.data.isGroundTargeted)
