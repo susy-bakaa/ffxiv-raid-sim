@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using NaughtyAttributes;
 using static GlobalData;
 
 [CreateAssetMenu(fileName = "New Character Action", menuName = "FFXIV/New Character Action")]
@@ -37,6 +38,8 @@ public class CharacterActionData : ScriptableObject
     public StatusEffectData debuff;
     public bool dispelDebuffInstead = false;
     public CharacterActionData comboAction;
+    public bool playCastingAnimationDirectly = false;
+    [ShowIf("playCastingAnimationDirectly")] public string castingAnimationName = string.Empty;
     public string animationName = string.Empty;
     public bool playAnimationDirectly = false;
     public bool playAnimationOnFinish = false;
