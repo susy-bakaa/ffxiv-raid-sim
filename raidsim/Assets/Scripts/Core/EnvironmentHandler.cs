@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using NaughtyAttributes;
+#endif
 
 public class EnvironmentHandler : MonoBehaviour
 {
@@ -12,11 +15,37 @@ public class EnvironmentHandler : MonoBehaviour
     private int originalArenaIndex = -1;
     public string[] arenaModels;
     public GameObject[] arenas;
+    public ArenaModelData[] arenaModelData;
 
     //private Transform dynamicParent;
     private FightSelector fightSelector;
     private string currentFightBundleName;
     private bool arenaModelLoaded = false;
+
+#if UNITY_EDITOR
+    [Button]
+    public void TransferArenaData()
+    {
+        arenaModelData = new ArenaModelData[arenaModels.Length];
+
+        if (arenas == null || arenaModels == null || arenas.Length != arenaModels.Length)
+        {
+            Debug.LogWarning("Arena models and arenas do not match in length. Please ensure they are set up correctly and contain placeholder models.");
+            return;
+        }
+
+        for (int i = 0; i < arenaModelData.Length; i++)
+        {
+            ArenaModelData temp = arenaModelData[i];
+            temp.name = arenaModels[i];
+            temp.model = arenas[i];
+            temp.position = Vector3.zero;
+            temp.rotation = Vector3.zero;
+            temp.scale = Vector3.one;
+            arenaModelData[i] = temp;
+        }
+    }
+#endif
 
     private void Awake()
     {
@@ -56,7 +85,7 @@ public class EnvironmentHandler : MonoBehaviour
 
     private void Update()
     {
-        if (arenaModels == null || arenaModels.Length <= 0)
+        if (arenaModelData == null || arenaModelData.Length <= 0)
             return;
 
         if (AssetHandler.Instance != null && !arenaModelLoaded)
@@ -66,32 +95,39 @@ public class EnvironmentHandler : MonoBehaviour
                 arenaModelLoaded = true;
 
                 // Remove any possible temporary arena placeholders
-                if (arenas != null && arenas.Length > 0)
+                if (arenaModelData != null && arenaModelData.Length > 0)
                 {
-                    for (int i = 0; i < arenas.Length; i++)
+                    for (int i = 0; i < arenaModelData.Length; i++)
                     {
-                        Destroy(arenas[i]);
+                        if (string.IsNullOrEmpty(arenaModelData[i].name))
+                        {
+                            continue;
+                        }
+
+                        if (arenaModelData[i].model != null)
+                        {
+                            Destroy(arenaModelData[i].model);
+                        }
+
+                        GameObject arena = AssetHandler.Instance.GetAsset(arenaModelData[i].name);
+                        arena.transform.SetParent(transform);
+                        arena.SetActive(false);
+                        arena.transform.localPosition = arenaModelData[i].position;
+                        arena.transform.localEulerAngles = arenaModelData[i].rotation;
+                        arena.transform.localScale = arenaModelData[i].scale;
+                        arenaModelData[i].model = arena;
                     }
                 }
 
-                arenas = new GameObject[arenaModels.Length];
-                for (int i = 0; i < arenaModels.Length; i++)
+                if (arenaModelData.Length > 0)
                 {
-                    GameObject arena = AssetHandler.Instance.GetAsset(arenaModels[i]);
-                    arena.transform.SetParent(transform);
-                    arena.SetActive(false);
-                    arenas[i] = arena;
-                }
-
-                if (arenas.Length > 0)
-                {
-                    if (originalArenaIndex >= 0 && originalArenaIndex < arenas.Length)
+                    if (originalArenaIndex >= 0 && originalArenaIndex < arenaModelData.Length)
                     {
-                        arenas[originalArenaIndex].SetActive(true);
+                        arenaModelData[originalArenaIndex].model?.SetActive(true);
                     }
                     else
                     {
-                        arenas[0].SetActive(true);
+                        arenaModelData[0].model?.SetActive(true);
                     }
                 }
             }
@@ -105,12 +141,31 @@ public class EnvironmentHandler : MonoBehaviour
 
     public void ChangeArenaModel(int index)
     {
-        if (arenas == null || arenas.Length == 0)
+        if (arenaModelData == null || arenaModelData.Length == 0)
             return;
 
-        for (int i = 0; i < arenas.Length; i++)
+        for (int i = 0; i < arenaModelData.Length; i++)
         {
-            arenas[i].SetActive(i == index);
+            arenaModelData[i].model.SetActive(i == index);
+        }
+    }
+
+    [System.Serializable]
+    public struct ArenaModelData
+    {
+        public string name;
+        public GameObject model;
+        public Vector3 position;
+        public Vector3 rotation;
+        public Vector3 scale;
+
+        public ArenaModelData(string name, GameObject model, Vector3 position, Vector3 rotation, Vector3 scale)
+        {
+            this.name = name;
+            this.model = model;
+            this.position = position;
+            this.rotation = rotation;
+            this.scale = scale;
         }
     }
 }
