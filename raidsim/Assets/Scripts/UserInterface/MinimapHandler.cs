@@ -1,4 +1,6 @@
-// Source and credit for 90% of the code: https://github.com/ZackOfAllTrad3s/Minimap
+// Source and credit for most of the original code: https://github.com/ZackOfAllTrad3s/Minimap
+// License: Apache-2.0 license
+// This script is a modified version of the original minimap manager to fit the needs of this project.
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,17 +11,18 @@ using NaughtyAttributes;
 
 namespace dev.susybaka.raidsim.UI
 {
-    public enum MinimapMode
-    {
-        Mini, Fullscreen
-    }
     [RequireComponent(typeof(CanvasGroup))]
     public class MinimapHandler : MonoBehaviour
     {
+        // Enum to define the different modes of the minimap
+        public enum MinimapMode { Mini, Fullscreen }
+
+        // References to other components and singleton instance
         public static MinimapHandler Instance;
         private CanvasGroup canvasGroup;
         private UserInput userInput;
 
+        // Public properties and serialized fields for the minimap configuration
         public bool visible = true;
         [SerializeField] private Button zoomIn;
         [SerializeField] private Button zoomOut;
@@ -42,31 +45,25 @@ namespace dev.susybaka.raidsim.UI
         [SerializeField] private MinimapIcon minimapIconPrefab;
         [SerializeField] private Transform playerCameraTransform;
         [SerializeField] private Transform playerTransform;
-        [SerializeField] private bool rotateMapInstead = false;
+        public bool rotateMapInstead = false;
 
-        Matrix4x4 transformationMatrix;
-
+        // Private fields for internal state management
+        private Matrix4x4 transformationMatrix;
         private MinimapMode currentMiniMapMode = MinimapMode.Mini;
-        private MinimapIcon followIcon;
         private Vector2 scrollViewDefaultSize;
         private Vector2 scrollViewDefaultPosition;
-        Dictionary<MinimapWorldObject, MinimapIcon> miniMapWorldObjectsLookup = new Dictionary<MinimapWorldObject, MinimapIcon>();
+        private Dictionary<MinimapWorldObject, MinimapIcon> miniMapWorldObjectsLookup = new Dictionary<MinimapWorldObject, MinimapIcon>();
         private const string minimapToggleKeyName = "ToggleMinimapKey";
 
+        // Editor only section to recalculate the transformation matrix and handle validation checks
 #if UNITY_EDITOR
         private Vector2 previousWorldSize = Vector2.zero;
-
         [Button]
-        public void RecalculateTransformationMatrix()
-        {
-            CalculateTransformationMatrix();
-        }
-
+        public void RecalculateTransformationMatrix() => CalculateTransformationMatrix();
         private void OnValidate()
         {
             if (autoCalculateMin)
                 worldMin = new Vector2(worldSize.x / 2, worldSize.y / 2) * -1;
-
             if (worldSize != previousWorldSize)
             {
                 previousWorldSize = worldSize;
@@ -80,454 +77,313 @@ namespace dev.susybaka.raidsim.UI
             Instance = this;
             scrollViewDefaultSize = scrollViewRectTransform.sizeDelta;
             scrollViewDefaultPosition = scrollViewRectTransform.anchoredPosition;
-
             if (autoCalculateMin)
                 worldMin = new Vector2(worldSize.x / 2, worldSize.y / 2) * -1;
 
             canvasGroup = GetComponent<CanvasGroup>();
             userInput = FindObjectOfType<UserInput>();
-
-            if (userInput != null)
+            if (userInput?.keys != null)
             {
-                if (userInput.keys != null && userInput.keys.Count > 0)
-                {
-                    foreach (UserInput.InputBinding binding in userInput.keys)
-                    {
-                        if (binding.name == minimapToggleKeyName)
-                        {
-                            binding.onInput.AddListener(ToggleVisible);
-                        }
-                    }
-                }
+                foreach (var binding in userInput.keys)
+                    if (binding.name == minimapToggleKeyName)
+                        binding.onInput.AddListener(ToggleVisible);
             }
 
             ToggleVisible(visible);
-
             zoomIn.onClick.AddListener(ZoomIn);
             zoomOut.onClick.AddListener(ZoomOut);
             settingsButton.onClick.AddListener(ToggleMinimapLock);
         }
 
-        private void Start()
-        {
-            CalculateTransformationMatrix();
-        }
+        private void Start() => CalculateTransformationMatrix();
 
         private void Update()
         {
-            /*if (Input.GetKeyDown(KeyCode.M))
-            {
-                SetMinimapMode(currentMiniMapMode == MinimapMode.Mini ? MinimapMode.Fullscreen : MinimapMode.Mini);
-            }*/
-
-            //float zoom = Input.GetAxis("Mouse ScrollWheel");
-            //ZoomMap(zoom);
-
-            if (rotateMapInstead && playerCameraTransform != null)
-            {
-                float rotationY = playerCameraTransform.eulerAngles.y;
-                contentRectTransform.localRotation = Quaternion.Euler(0, 0, rotationY);
-            }
-            else
-            {
-                contentRectTransform.localRotation = Quaternion.identity;
-            }
-
-            UpdateMiniMapIcons();
-            CenterMapOnIcon();
-
-            if (followIcon == null)
+            if (!visible)
                 return;
 
-            coordinatesText.text = $"X: {coordinateTarget.transform.position.x:F1}, Y: {coordinateTarget.transform.position.z:F1}".Replace(',', '.');
+            UpdateMiniMapIcons();
+            CenterMapOnPlayer();
+
+            if (coordinateTarget == null)
+                return;
+            
+            coordinatesText.text = $"X: {coordinateTarget.position.x:F1}, Y: {coordinateTarget.position.z:F1}".Replace(',', '.');
         }
 
         private void OnDestroy()
         {
-            if (userInput != null)
+            if (userInput?.keys != null)
             {
-                if (userInput.keys != null && userInput.keys.Count > 0)
-                {
-                    foreach (UserInput.InputBinding binding in userInput.keys)
-                    {
-                        if (binding.name == minimapToggleKeyName)
-                        {
-                            binding.onInput.RemoveListener(ToggleVisible);
-                        }
-                    }
-                }
+                foreach (var binding in userInput.keys)
+                    if (binding.name == minimapToggleKeyName)
+                        binding.onInput.RemoveListener(ToggleVisible);
             }
         }
 
+        // These two toggle the visibility of the minimap by changing the alpha of the CanvasGroup component
+        // These functions are required to be able to toggle the minimap visibility with a keybind
         public void ToggleVisible()
         {
             if (!gameObject.activeSelf)
                 return;
-
             visible = !visible;
             ToggleVisible(visible);
         }
 
         public void ToggleVisible(bool state)
         {
-            if (canvasGroup != null)
-            {
-                canvasGroup.alpha = state ? 1f : 0f;
-                canvasGroup.interactable = state;
-                canvasGroup.blocksRaycasts = state;
-            }
+            canvasGroup.alpha = state ? 1f : 0f;
+            canvasGroup.interactable = state;
+            canvasGroup.blocksRaycasts = state;
         }
 
-        public void ZoomIn()
+        // Zooms the minimap in or out based on the function
+        // These are required to be able to zoom the minimap in and out with UI buttons
+        public void ZoomIn() => ZoomMap(1f);
+        public void ZoomOut() => ZoomMap(-1f);
+
+        // Toggles the minimap's lock state, allowing it to either rotate with the player's camera or remain locked with north facing upwards.
+        // This function is required to switch between the two modes of minimap rotation behavior with an UI button
+        public void ToggleMinimapLock()
         {
-            ZoomMap(1f);
+            rotateMapInstead = !rotateMapInstead;
         }
 
-        public void ZoomOut()
+        /// <summary>
+        /// Registers a MinimapWorldObject to the minimap by creating or using an existing MinimapIcon.
+        /// The icon is configured with the world object's properties, such as sprites and behaviors.
+        /// Ensures the icons are sorted by priority for proper rendering order.
+        /// <param name="worldObject">The MinimapWorldObject to register. If null, the function exits early.</param>
+        /// </summary>
+        public void RegisterMinimapWorldObject(MinimapWorldObject worldObject)
         {
-            ZoomMap(-1f);
-        }
-
-        public void RegisterMinimapWorldObject(MinimapWorldObject miniMapWorldObject, bool followObject = false)
-        {
-            if (miniMapWorldObject == null)
+            if (worldObject == null)
                 return;
 
-            MinimapIcon minimapIcon;
+            MinimapIcon icon = worldObject.ExistingIcon ?? Instantiate(minimapIconPrefab);
+            if (worldObject.ExistingIcon == null)
+                icon.gameObject.name = worldObject.ObjectName + "_MinimapIcon";
+            icon.transform.SetParent(contentRectTransform, false);
+            icon.iconImage.sprite = worldObject.MinimapIconSprite;
+            if (icon.alternativeIconImage && worldObject.MinimapIconSprite != null)
+                icon.alternativeIconImage.sprite = worldObject.MinimapIconSprite;
+            if (icon.arrowImage && worldObject.MinimapArrowSprite != null)
+                icon.arrowImage.sprite = worldObject.MinimapArrowSprite;
+            icon.worldObject = worldObject;
+            icon.useAlternativeIconWhenOutsideView = worldObject.UseAlternativeIconWhenOutsideView;
+            icon.alwaysFollowObjectRotation = worldObject.AlwaysFollowObjectRotation;
+            miniMapWorldObjectsLookup[worldObject] = icon;
 
-            if (miniMapWorldObject.ExistingIcon == null)
-            {
-                minimapIcon = Instantiate(minimapIconPrefab);
-                minimapIcon.gameObject.name = $"{miniMapWorldObject.ObjectName}_MinimapIcon";
-            }
-            else
-            {
-                minimapIcon = miniMapWorldObject.ExistingIcon;
-            }
-            
-            minimapIcon.transform.SetParent(contentRectTransform);
-            for (int i = 0; i < minimapIcon.IconImages.Length; i++)
-            {
-                minimapIcon.IconImages[i].sprite = miniMapWorldObject.MinimapIconSprite;
-            }
-            if (minimapIcon.ArrowImage != null && miniMapWorldObject.MinimapArrowSprite != null)
-                minimapIcon.ArrowImage.sprite = miniMapWorldObject.MinimapArrowSprite;
-            minimapIcon.WorldObject = miniMapWorldObject;
-            minimapIcon.useAlternativeIconWhenOutsideView = miniMapWorldObject.UseAlternativeIconWhenOutsideView;
-            miniMapWorldObjectsLookup[miniMapWorldObject] = minimapIcon;
-
-            if (followObject)
-                followIcon = minimapIcon;
-
-            // Sort children by priority (higher numbers above others)
-            List<Transform> children = new List<Transform>();
-            for (int i = 0; i < contentRectTransform.childCount; i++)
-            {
-                children.Add(contentRectTransform.GetChild(i));
-            }
-
-            children.Sort((a, b) =>
-            {
-                int priorityA = int.MinValue;
-                int priorityB = int.MinValue;
-
-                if (a.TryGetComponent(out MinimapIcon iconA))
-                {
-                    if (iconA.WorldObject != null)
-                        priorityA = iconA.WorldObject.priority;
-                    else
-                        priorityA = iconA.priority;
-                }
-                if (b.TryGetComponent(out MinimapIcon iconB))
-                {
-                    if (iconB.WorldObject != null)
-                        priorityB = iconB.WorldObject.priority;
-                    else
-                        priorityB = iconB.priority;
-                }
-                // Higher priority first
-                return priorityA.CompareTo(priorityB);
-            });
-
-            for (int i = 0; i < children.Count; i++)
-            {
-                children[i].SetSiblingIndex(i);
-            }
+            // Sort the children of the content RectTransform by their priority
+            // This is done to ensure that icons are rendered in the correct order based on their priorities
+            contentRectTransform.SortChildrenByMinimapIconPriority();
         }
 
-        public void RemoveMinimapWorldObject(MinimapWorldObject minimapWorldObject)
+        /// <summary>
+        /// Removes a specified MinimapWorldObject from the minimap and destroys its associated icon.
+        /// If the world object exists in the minimap lookup, it is removed and its icon GameObject is destroyed.
+        /// <param name="worldObject">The worldObject that gets removed. If not set the function exits early.</param>
+        /// </summary>
+        public void RemoveMinimapWorldObject(MinimapWorldObject worldObject)
         {
-            if (miniMapWorldObjectsLookup.TryGetValue(minimapWorldObject, out MinimapIcon icon))
+            if (worldObject == null)
+                return;
+
+            if (miniMapWorldObjectsLookup.TryGetValue(worldObject, out var icon))
             {
-                miniMapWorldObjectsLookup.Remove(minimapWorldObject);
+                miniMapWorldObjectsLookup.Remove(worldObject);
                 Destroy(icon.gameObject);
             }
         }
 
-
-        private Vector2 halfVector2 = new Vector2(0.5f, 0.5f);
+        // Currently not in use and not needed necessarily for our use case, but kept for future reference just in case
         public void SetMinimapMode(MinimapMode mode)
         {
-            const float defaultScaleWhenFullScreen = 1.3f; // 1.3f looks good here but it could be anything
-
             if (mode == currentMiniMapMode)
                 return;
-
-            switch (mode)
+            const float fullScreenScale = 1.3f;
+            if (mode == MinimapMode.Mini)
             {
-                case MinimapMode.Mini:
-                    scrollViewRectTransform.sizeDelta = scrollViewDefaultSize;
-                    scrollViewRectTransform.anchorMin = Vector2.one;
-                    scrollViewRectTransform.anchorMax = Vector2.one;
-                    scrollViewRectTransform.pivot = Vector2.one;
-                    scrollViewRectTransform.anchoredPosition = scrollViewDefaultPosition;
-                    currentMiniMapMode = MinimapMode.Mini;
-                    break;
-                case MinimapMode.Fullscreen:
-                    scrollViewRectTransform.sizeDelta = fullScreenDimensions;
-                    scrollViewRectTransform.anchorMin = halfVector2;
-                    scrollViewRectTransform.anchorMax = halfVector2;
-                    scrollViewRectTransform.pivot = halfVector2;
-                    scrollViewRectTransform.anchoredPosition = Vector2.zero;
-                    currentMiniMapMode = MinimapMode.Fullscreen;
-                    contentRectTransform.transform.localScale = Vector3.one * defaultScaleWhenFullScreen;
-                    break;
-            }
-        }
-
-        private void ZoomMap(float zoom)
-        {
-            if (zoom == 0)
-                return;
-
-            float currentMapScale = contentRectTransform.localScale.x;
-            // we need to scale the zoom speed by the current map scale to keep the zooming linear
-            float zoomAmount = (zoom > 0 ? zoomSpeed : -zoomSpeed) * currentMapScale;
-            float newScale = currentMapScale + zoomAmount;
-            float clampedScale = Mathf.Clamp(newScale, minZoom, maxZoom);
-            contentRectTransform.localScale = Vector3.one * clampedScale;
-        }
-
-        private void CenterMapOnIcon()
-        {
-            if (followIcon == null)
-                return;
-
-            float mapScale = contentRectTransform.localScale.x;
-            Vector2 playerPos = WorldPositionToMapPosition(playerTransform.position);
-
-            // If we're rotating the map, adjust the offset to counter the rotation
-            if (rotateMapInstead && playerCameraTransform != null)
-            {
-                float rotationY = playerCameraTransform.eulerAngles.y;
-                Quaternion rotation = Quaternion.Euler(0, 0, rotationY);
-
-                // Undo the rotation for the centering
-                Vector2 rotatedOffset = rotation * playerPos;
-                contentRectTransform.anchoredPosition = -rotatedOffset * mapScale;
-                contentRectTransform.localRotation = rotation;
-                mapBorderRectTransform.localRotation = rotation;
+                scrollViewRectTransform.sizeDelta = scrollViewDefaultSize;
+                scrollViewRectTransform.anchorMin = scrollViewRectTransform.anchorMax = scrollViewRectTransform.pivot = Vector2.one;
+                scrollViewRectTransform.anchoredPosition = scrollViewDefaultPosition;
+                contentRectTransform.localScale = Vector3.one;
             }
             else
             {
-                contentRectTransform.anchoredPosition = -playerPos * mapScale;
-                contentRectTransform.localRotation = Quaternion.identity;
-                mapBorderRectTransform.localRotation = Quaternion.identity;
+                scrollViewRectTransform.sizeDelta = fullScreenDimensions;
+                scrollViewRectTransform.anchorMin = scrollViewRectTransform.anchorMax = scrollViewRectTransform.pivot = Vector2.one * 0.5f;
+                scrollViewRectTransform.anchoredPosition = Vector2.zero;
+                contentRectTransform.localScale = Vector3.one * fullScreenScale;
             }
+            currentMiniMapMode = mode;
         }
 
-        /*private void CenterMapOnIcon()
+        /// <summary>
+        /// Adjusts the zoom level of the minimap by modifying the scale of its content.
+        /// The zoom level is increased or decreased based on the provided delta value.
+        /// Ensures the zoom level remains within the defined minimum and maximum limits.
+        /// <param name="delta">The zoom adjustment value. Positive values zoom in, negative values zoom out.</param>
+        /// </summary>
+        private void ZoomMap(float delta)
         {
-            if (followIcon == null)
+            if (delta == 0)
+                return;
+            float scale = contentRectTransform.localScale.x;
+            float amt = (delta > 0 ? zoomSpeed : -zoomSpeed) * scale;
+            contentRectTransform.localScale = Vector3.one * Mathf.Clamp(scale + amt, minZoom, maxZoom);
+        }
+
+        /// <summary>
+        /// Centers the minimap on the player's position and adjusts its rotation based on the player's camera.
+        /// If the map is set to rotate instead of locking north, the minimap content and border will rotate
+        /// to match the player's camera orientation. Otherwise, the map remains static with north locked upwards.
+        /// </summary>
+        private void CenterMapOnPlayer()
+        {
+            if (playerTransform == null || playerCameraTransform == null)
                 return;
 
             float mapScale = contentRectTransform.localScale.x;
-            Vector2 playerPos = followIcon.RectTransform.anchoredPosition;
+            Vector2 playerMapPos = WorldPositionToMapPosition(playerTransform.position);
+            Quaternion mapRotation = rotateMapInstead && playerCameraTransform
+                ? Quaternion.Euler(0, 0, playerCameraTransform.eulerAngles.y)
+                : Quaternion.identity;
 
-            // If rotating the map, center normally (rotation is visual only)
-            contentRectTransform.anchoredPosition = -playerPos * mapScale;
-        }*/
+            Vector2 rotatedPos = mapRotation * playerMapPos;
+            contentRectTransform.anchoredPosition = -rotatedPos * mapScale;
+            contentRectTransform.localRotation = mapRotation;
+            mapBorderRectTransform.localRotation = mapRotation;
+        }
 
-        /*private void CenterMapOnIcon()
-        {
-            if (followIcon != null)
-            {
-                float mapScale = contentRectTransform.transform.localScale.x;
-                // we simply move the map in the opposite direction the player moved, scaled by the mapscale
-                contentRectTransform.anchoredPosition = (-followIcon.RectTransform.anchoredPosition * mapScale);
-            }
-        }*/
-
+        /// <summary>
+        /// Updates the positions, rotations, scales, and visibility states of all minimap icons.
+        /// This method calculates the clamping of minimap icons to the viewable area, adjusts their positions
+        /// relative to the player's location, and handles icon rotation based on map rotation settings.
+        /// It also ensures proper scaling and alignment of icons and their subcomponents, including alternative icons
+        /// and directional arrows for objects outside the minimap's view.
+        /// </summary>
         private void UpdateMiniMapIcons()
         {
-            // scale icons by the inverse of the mapscale to keep them a consitent size
-            float iconScale = 1 / contentRectTransform.transform.localScale.x;
+            // Calculates the clamping of the minimap icons to the viewable area of the minimap.
+            float mapScale = contentRectTransform.localScale.x;
+            float iconScale = 1f / mapScale;
+            float baseRadius = Mathf.Min(scrollViewRectTransform.rect.width, scrollViewRectTransform.rect.height) * 0.5f;
+            float maxRadius = baseRadius * iconMaxRadiusModifier / mapScale;
+
+            // Checks if the whole map is rotating or if north is locked upwards and there is no rotation applied to the map.
+            Quaternion mapRotation = rotateMapInstead && playerCameraTransform
+                ? Quaternion.Euler(0, 0, playerCameraTransform.eulerAngles.y)
+                : Quaternion.identity;
+
+            // Get the center of the map based on the player's position
+            Vector2 centerMap = WorldPositionToMapPosition(playerTransform.position);
+
             foreach (var kvp in miniMapWorldObjectsLookup)
             {
-                var miniMapWorldObject = kvp.Key;
-                var miniMapIcon = kvp.Value;
+                MinimapWorldObject worldObject = kvp.Key;
+                MinimapIcon icon = kvp.Value;
+                Vector2 mapPos = WorldPositionToMapPosition(
+                    worldObject.OverrideTransform != null && worldObject.OverridePosition
+                        ? worldObject.OverrideTransform.position
+                        : worldObject.transform.position);
 
-                Vector2 mapPosition;
+                // Calculates the raw offset and rotate for clamping
+                Vector2 rawOffset = mapPos - centerMap;
+                Vector2 offsetToClamp = rotateMapInstead ? (mapRotation * rawOffset) : rawOffset;
+                bool isClamped = offsetToClamp.magnitude > maxRadius;
+                Vector2 clampedRotatedOffset = isClamped ? offsetToClamp.normalized * maxRadius : offsetToClamp;
+                Vector2 finalOffset = rotateMapInstead ? (Quaternion.Inverse(mapRotation) * clampedRotatedOffset) : clampedRotatedOffset;
 
-                if (miniMapWorldObject.OverrideTransform == null)
+                // Setting the position and the clamped state of the icon
+                icon.rectTransform.anchoredPosition = centerMap + finalOffset;
+                icon.isOutsideView = isClamped;
+
+                // Calculates and sets all of the rotations of each icon and their sub components
+                if (icon.useAlternativeIconWhenOutsideView && isClamped)
                 {
-                    mapPosition = WorldPositionToMapPosition(miniMapWorldObject.transform.position);
-                }
-                else
-                {
-                    if (miniMapWorldObject.OverridePosition)
+                    float angle = Mathf.Atan2(offsetToClamp.y, offsetToClamp.x) * Mathf.Rad2Deg;
+                    float arrowRot = angle - 90f;
+
+                    // So this section is a bit of a mess, but it works.
+                    // I designed this whole thing kinda backwards and had so much trouble with it,
+                    // because for some reason GitHub Copilot insisted on doing everything with localRotation and Quaternion.Euler,
+                    // which was not the play at all with this. I thought there was no way to do it any other way with UI.
+                    // Turns out you can just set the global rotation of RectTransforms just like any other Transform,
+                    // which handles this painful translation logic for you and there is no need to touch any Quaternions.
+                    // So yeah because of this I kinda have tons of these redundant reverse calculations and checks for rotations,
+                    // but I don't want to break the existing functionality and refactor it so I'm leaving it as is for now.
+                    //
+                    // - susy_baka
+
+                    // Rotates the out of view icons to point towards the center of the map,
+                    // but keeps the alternative icons pointing upwards on the screen (north).
+                    // This is done with various Quaternion.Euler calls and localRotation adjustments.
+                    if (!rotateMapInstead)
                     {
-                        mapPosition = WorldPositionToMapPosition(miniMapWorldObject.OverrideTransform.position);
+                        icon.arrowRectTransform.localRotation = Quaternion.Euler(0, 0, arrowRot);
+                        icon.alternativeIconRectTransform.localRotation = Quaternion.Euler(0, 0, arrowRot);
+                        icon.alternativeIconImage.rectTransform.localRotation = Quaternion.Euler(0, 0, -arrowRot);
                     }
+                    else // If the map is rotating instead, adjustments to the rotation based on the camera's Y axis rotation are needed
+                    {
+                        float camY = playerCameraTransform.eulerAngles.y;
+
+                        icon.arrowRectTransform.localRotation = Quaternion.Euler(0, 0, arrowRot - camY);
+
+                        icon.alternativeIconRectTransform.localRotation = Quaternion.Euler(0, 0, arrowRot - camY);
+                        icon.alternativeIconImage.rectTransform.eulerAngles = Vector3.zero;
+                    }
+                }
+
+                // Handles setting the Y axis rotation and position based on if there are overrides or not
+                float objY = (worldObject.OverrideTransform != null && worldObject.OverrideRotation)
+                    ? worldObject.OverrideTransform.eulerAngles.y
+                    : worldObject.transform.eulerAngles.y;
+
+                // If rotateMapInstead is true, adjusts the icon's rotation based on the camera's Y axis rotation
+                // or if the object always follows its own rotation handles that
+                if (rotateMapInstead)
+                {
+                    if (!worldObject.AlwaysFollowObjectRotation)
+                        icon.iconRectTransform.localRotation = Quaternion.Euler(0, 0, -playerCameraTransform.eulerAngles.y);
                     else
-                    {
-                        mapPosition = WorldPositionToMapPosition(miniMapWorldObject.transform.position);
-                    }
+                        icon.iconRectTransform.localRotation = Quaternion.Euler(0, 0, -objY);
+                }
+                else // If rotateMapInstead is false, sets the icon's rotation directly based on it's world objects Y axis rotation
+                {
+                    icon.iconRectTransform.localRotation = Quaternion.Euler(0, 0, -objY);
                 }
 
-                //miniMapIcon.RectTransform.anchoredPosition = mapPosition;
-
-                Vector3 rotation;
-
-                if (miniMapWorldObject.OverrideTransform == null)
-                {
-                    rotation = miniMapWorldObject.transform.rotation.eulerAngles;
-                }
-                else
-                {
-                    if (miniMapWorldObject.OverrideRotation)
-                    {
-                        rotation = miniMapWorldObject.OverrideTransform.rotation.eulerAngles;
-                    }
-                    else
-                    {
-                        rotation = miniMapWorldObject.transform.rotation.eulerAngles;
-                    }
-                }
-
-                /*if (rotateMapInsteadOfIcon && miniMapWorldObject == followIcon.WorldObject)
-                {
-                    miniMapIcon.IconRectTransform.localRotation = Quaternion.identity;
-                    if (miniMapIcon.useAlternativeIconWhenOutsideView)
-                        miniMapIcon.alternativeIconRectTransform.localRotation = Quaternion.identity;
-                }
-                else
-                {
-                    miniMapIcon.IconRectTransform.localRotation = Quaternion.AngleAxis(-rotation.y, Vector3.forward);
-                    if (miniMapIcon.useAlternativeIconWhenOutsideView)
-                        miniMapIcon.alternativeIconRectTransform.localRotation = Quaternion.AngleAxis(-rotation.y, Vector3.forward);
-                }*/
-
-                miniMapIcon.IconRectTransform.localRotation = GetIconRotation(miniMapWorldObject, rotation.y);
-                if (miniMapIcon.alternativeIconRectTransform != null)
-                    miniMapIcon.alternativeIconRectTransform.localRotation = GetIconRotation(miniMapWorldObject, rotation.y);
-
-                Vector2 center = -contentRectTransform.anchoredPosition / contentRectTransform.localScale.x;
-                Vector2 offset = mapPosition - center;
-
-                float zoomScale = contentRectTransform.localScale.x;
-                float baseRadius = Mathf.Min(scrollViewRectTransform.rect.width, scrollViewRectTransform.rect.height) * 0.5f;
-                float maxRadius = baseRadius * iconMaxRadiusModifier / zoomScale;
-
-                // Clamp only if it's beyond the visible minimap area
-                bool isClamped = offset.magnitude > maxRadius;
-                Vector2 clampedOffset = isClamped
-                    ? offset.normalized * maxRadius
-                    : offset;
-
-                Vector2 finalPosition = center + clampedOffset;
-                miniMapIcon.RectTransform.anchoredPosition = finalPosition;
-                //if (miniMapIcon.useAlternativeIconWhenOutsideView)
-                //    miniMapIcon.alternativeIconRectTransform.anchoredPosition = finalPosition;
-
-                miniMapIcon.isOutsideView = isClamped;
-
-                // Rotate toward the off-map direction if needed
-                if (miniMapIcon.useAlternativeIconWhenOutsideView)
-                {
-                    if (offset.magnitude > maxRadius)
-                    {
-                        float angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
-                        miniMapIcon.alternativeIconRectTransform.localRotation = Quaternion.Euler(0, 0, angle - 90f);
-
-                        // Counter-rotate the icon image itself to keep it appearing upright
-                        miniMapIcon.alternativeIconImage.rectTransform.localRotation = Quaternion.Euler(0, 0, -(angle - 90f));
-                    }
-                    else if (!rotateMapInstead || miniMapWorldObject != followIcon.WorldObject)
-                    {
-                        // Use normal world rotation
-                        miniMapIcon.alternativeIconRectTransform.localRotation = Quaternion.AngleAxis(-rotation.y, Vector3.forward);
-                    }
-                    else
-                    {
-                        miniMapIcon.alternativeIconRectTransform.localRotation = Quaternion.identity;
-                    }
-                }
-
-                Vector3 scale = Vector3.one * iconScale;
-
-                miniMapIcon.IconRectTransform.localScale = scale;
-                if (miniMapIcon.useAlternativeIconWhenOutsideView)
-                    miniMapIcon.alternativeIconRectTransform.localScale = scale;
+                // Calculates and sets all of the scales of each icon and their sub components
+                icon.iconRectTransform.localScale = Vector3.one * iconScale;
+                if (icon.alternativeIconRectTransform != null)
+                    icon.alternativeIconRectTransform.localScale = Vector3.one * iconScale;
+                if (icon.arrowRectTransform != null)
+                    icon.arrowRectTransform.localScale = Vector3.one * iconScale;
             }
         }
 
         private Vector2 WorldPositionToMapPosition(Vector3 worldPos)
-        {
-            var pos = new Vector2(worldPos.x, worldPos.z);
-            return transformationMatrix.MultiplyPoint3x4(pos);
-        }
+            => transformationMatrix.MultiplyPoint3x4(new Vector2(worldPos.x, worldPos.z));
 
-        // Updated with code from the video description
+
+        /// <summary>
+        /// Calculates the transformation matrix used to convert world coordinates to minimap coordinates.
+        /// This matrix accounts for the size and position of the minimap content relative to the world dimensions.
+        /// It ensures proper scaling and translation of world positions to fit within the minimap.
+        /// </summary>
         private void CalculateTransformationMatrix()
         {
 #if UNITY_EDITOR
             if (!Application.isPlaying)
                 return;
 #endif
-            Vector2 minimapSize = contentRectTransform.rect.size;
-
-            Vector2 scaleRatio = new Vector2(minimapSize.x / worldSize.x, minimapSize.y / worldSize.y);
-            Vector2 translation = -worldMin * scaleRatio - (minimapSize * 0.5f);
-            
+            Vector2 mapSize = contentRectTransform.rect.size;
+            Vector2 scaleRatio = new Vector2(mapSize.x / worldSize.x, mapSize.y / worldSize.y);
+            Vector2 translation = -worldMin * scaleRatio - mapSize * 0.5f;
             transformationMatrix = Matrix4x4.TRS(translation, Quaternion.identity, new Vector3(scaleRatio.x, scaleRatio.y, 1f));
-
-            //  {scaleRatio.x,   0,           0,   translation.x},
-            //  {  0,        scaleRatio.y,    0,   translation.y},
-            //  {  0,            0,           1,            0},
-            //  {  0,            0,           0,            1}
-        }
-
-        private Vector2 ClampToCircle(Vector2 pos, float radius)
-        {
-            if (pos.magnitude > radius)
-                return pos.normalized * radius;
-            return pos;
-        }
-
-        private Vector2 ClampToRect(Vector2 position, Vector2 bounds)
-        {
-            return new Vector2(
-                Mathf.Clamp(position.x, -bounds.x, bounds.x),
-                Mathf.Clamp(position.y, -bounds.y, bounds.y)
-            );
-        }
-
-        private Quaternion GetIconRotation(MinimapWorldObject obj, float objectRotationY)
-        {
-            if (!rotateMapInstead)
-                return Quaternion.Euler(0, 0, -objectRotationY);
-
-            if (obj == followIcon.WorldObject)
-                return Quaternion.Euler(0, 0, -objectRotationY);
-
-            float minimapRotation = playerCameraTransform.eulerAngles.y;
-            return Quaternion.Euler(0, 0, minimapRotation);
-        }
-
-        public void ToggleMinimapLock()
-        {
-            rotateMapInstead = !rotateMapInstead;
         }
     }
 }

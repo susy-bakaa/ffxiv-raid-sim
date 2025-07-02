@@ -1,27 +1,29 @@
+// Source and credit for most of the original code: https://github.com/ZackOfAllTrad3s/Minimap
+// License: Apache-2.0 license
+// This script is a modified version of the original minimap icon to fit the needs of this project.
 using System.Collections;
-using System.Collections.Generic;
-using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.UI;
-using static GlobalData;
 
 namespace dev.susybaka.raidsim.UI 
 {
     public class MinimapIcon : MonoBehaviour
     {
-        public RectTransform RectTransform;
-        public Image[] IconImages;
-        public RectTransform IconRectTransform;
-        public Image ArrowImage;
+        public RectTransform rectTransform;
+        public Image iconImage;
+        public RectTransform iconRectTransform;
+        public Image arrowImage;
+        public RectTransform arrowRectTransform;
         public Image alternativeIconImage;
         public RectTransform alternativeIconRectTransform;
-        public MinimapWorldObject WorldObject;
+        public MinimapWorldObject worldObject;
         public int priority = 0;
         public bool isOutsideView = false;
-        private bool wasOutsideView = false;
         public bool clampToView = true;
         public bool useAlternativeIconWhenOutsideView = false;
+        public bool alwaysFollowObjectRotation = false;
 
+        private bool wasOutsideView = false;
         private WaitForSecondsRealtime wait = new WaitForSecondsRealtime(0.5f);
 
         private IEnumerator Start()
@@ -29,28 +31,47 @@ namespace dev.susybaka.raidsim.UI
             yield return wait;
             isOutsideView = false;
             wasOutsideView = false;
-            if (IconRectTransform != null)
-                IconRectTransform.gameObject.SetActive(true);
+            if (iconRectTransform != null)
+                iconRectTransform.gameObject.SetActive(true);
             if (alternativeIconRectTransform != null)
                 alternativeIconRectTransform.gameObject.SetActive(false);
+            if (arrowRectTransform != null)
+                arrowRectTransform.gameObject.SetActive(false);
         }
 
         private void Update()
         {
+            if (MinimapHandler.Instance == null || !MinimapHandler.Instance.visible)
+            {
+                isOutsideView = false;
+                wasOutsideView = false;
+                if (iconRectTransform != null)
+                    iconRectTransform.gameObject.SetActive(true);
+                if (alternativeIconRectTransform != null)
+                    alternativeIconRectTransform.gameObject.SetActive(false);
+                if (arrowRectTransform != null)
+                    arrowRectTransform.gameObject.SetActive(false);
+                return;
+            }
+
             if (clampToView && isOutsideView && !wasOutsideView)
             {
                 wasOutsideView = isOutsideView;
                 if (useAlternativeIconWhenOutsideView)
                 {
-                    IconRectTransform.gameObject.SetActive(false);
+                    iconRectTransform.gameObject.SetActive(false);
                     if (alternativeIconRectTransform != null)
                         alternativeIconRectTransform.gameObject.SetActive(true);
+                    if (arrowRectTransform != null)
+                        arrowRectTransform.gameObject.SetActive(true);
                 }
                 else
                 {
-                    IconRectTransform.gameObject.SetActive(true);
+                    iconRectTransform.gameObject.SetActive(true);
                     if (alternativeIconRectTransform != null)
                         alternativeIconRectTransform.gameObject.SetActive(false);
+                    if (arrowRectTransform != null)
+                        arrowRectTransform.gameObject.SetActive(false);
                 }
             }
             else if (clampToView && !isOutsideView && wasOutsideView)
@@ -58,15 +79,19 @@ namespace dev.susybaka.raidsim.UI
                 wasOutsideView = isOutsideView;
                 if (useAlternativeIconWhenOutsideView)
                 {
-                    IconRectTransform.gameObject.SetActive(true);
+                    iconRectTransform.gameObject.SetActive(true);
                     if (alternativeIconRectTransform != null)
                         alternativeIconRectTransform.gameObject.SetActive(false);
+                    if (arrowRectTransform != null)
+                        arrowRectTransform.gameObject.SetActive(false);
                 }
                 else
                 {
-                    IconRectTransform.gameObject.SetActive(true);
+                    iconRectTransform.gameObject.SetActive(true);
                     if (alternativeIconRectTransform != null)
                         alternativeIconRectTransform.gameObject.SetActive(false);
+                    if (arrowRectTransform != null)
+                        arrowRectTransform.gameObject.SetActive(false);
                 }
             }
         }

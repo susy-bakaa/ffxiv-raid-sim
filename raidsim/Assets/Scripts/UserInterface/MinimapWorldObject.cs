@@ -1,5 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
+// Source and credit for most of the original code: https://github.com/ZackOfAllTrad3s/Minimap
+// License: Apache-2.0 license
+// This script is a modified version of the original minimap world object to fit the needs of this project.
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -8,25 +9,25 @@ namespace dev.susybaka.raidsim.UI
     public class MinimapWorldObject : MonoBehaviour
     {
         [SerializeField] private string objectName = string.Empty;
-        public string ObjectName => objectName;
-        [SerializeField] private bool followObject = false;
-        //[SerializeField] private MinimapIcon minimapIconPrefab;
-        //public MinimapIcon MinimapIconPrefab => minimapIconPrefab;
         [SerializeField] private bool useAlternativeIconWhenOutsideView = false;
-        public bool UseAlternativeIconWhenOutsideView => useAlternativeIconWhenOutsideView;
         [SerializeField, FormerlySerializedAs("minimapIcon")] private Sprite minimapIconSprite;
-        public Sprite MinimapIconSprite => minimapIconSprite;
         [SerializeField] private Sprite minimapArrowSprite;
-        public Sprite MinimapArrowSprite => minimapArrowSprite;
         [SerializeField] private MinimapIcon existingIcon;
-        public MinimapIcon ExistingIcon => existingIcon;
         [SerializeField] private Transform overrideTransform;
-        public Transform OverrideTransform => overrideTransform;
         [SerializeField] private bool overridePosition = false;
-        public bool OverridePosition => overridePosition;
         [SerializeField] private bool overrideRotation = false;
-        public bool OverrideRotation => overrideRotation;
+        [SerializeField] private bool alwaysFollowObjectRotation = false;
         public int priority = 0;
+
+        public string ObjectName { get { return objectName; } }
+        public bool UseAlternativeIconWhenOutsideView { get { return useAlternativeIconWhenOutsideView; } }
+        public Sprite MinimapIconSprite { get { return minimapIconSprite; } }
+        public Sprite MinimapArrowSprite { get { return minimapArrowSprite; } }
+        public MinimapIcon ExistingIcon { get { return existingIcon; } }
+        public Transform OverrideTransform { get { return overrideTransform; } }
+        public bool OverridePosition { get { return overridePosition; } }
+        public bool OverrideRotation { get { return overrideRotation; } }
+        public bool AlwaysFollowObjectRotation { get { return alwaysFollowObjectRotation; } }
 
         private void Start()
         {
@@ -38,7 +39,7 @@ namespace dev.susybaka.raidsim.UI
             if (MinimapHandler.Instance == null)
                 return;
 
-            MinimapHandler.Instance.RegisterMinimapWorldObject(this, followObject);
+            MinimapHandler.Instance.RegisterMinimapWorldObject(this);
         }
 
         private void OnDestroy()

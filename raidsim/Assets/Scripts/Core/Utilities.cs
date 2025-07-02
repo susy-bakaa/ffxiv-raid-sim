@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using dev.susybaka.raidsim.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
@@ -645,6 +646,26 @@ public static class Utilities
         return null;
     }
 
+    /// <summary>
+    /// Sorts the children of the given RectTransform based on the priority of their associated MinimapIcon components.
+    /// MinimapIcons with higher priority values will be placed earlier in the hierarchy.
+    /// If a child does not have a MinimapIcon or its priority is undefined, it will be treated with the lowest priority.
+    /// </summary>
+    /// <param name="rt">The RectTransform whose children will be sorted.</param>
+    public static void SortChildrenByMinimapIconPriority(this RectTransform rt)
+    {
+        var children = new List<Transform>();
+        for (int i = 0; i < rt.childCount; i++)
+            children.Add(rt.GetChild(i));
+        children.Sort((a, b) =>
+        {
+            int pa = a.GetComponent<MinimapIcon>()?.worldObject?.priority ?? int.MinValue;
+            int pb = b.GetComponent<MinimapIcon>()?.worldObject?.priority ?? int.MinValue;
+            return pa.CompareTo(pb);
+        });
+        for (int i = 0; i < children.Count; i++)
+            children[i].SetSiblingIndex(i);
+    }
 
     /// <summary>
     /// Formats a given duration in seconds into a human-readable string.
