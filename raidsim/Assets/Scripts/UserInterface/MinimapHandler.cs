@@ -1,5 +1,4 @@
 // Source and credit for 90% of the code: https://github.com/ZackOfAllTrad3s/Minimap
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,6 +23,7 @@ namespace dev.susybaka.raidsim.UI
         public bool visible = true;
         [SerializeField] private Button zoomIn;
         [SerializeField] private Button zoomOut;
+        [SerializeField] private Button settingsButton;
         [SerializeField] private TextMeshProUGUI coordinatesText;
         [SerializeField] private Transform coordinateTarget;
 
@@ -32,18 +32,17 @@ namespace dev.susybaka.raidsim.UI
         [SerializeField] private bool autoCalculateMin = true;
 
         [SerializeField] private Vector2 fullScreenDimensions = new Vector2(1000, 1000);
-
         [SerializeField] private float zoomSpeed = 0.1f;
-
         [SerializeField] private float maxZoom = 10f;
-
         [SerializeField] private float minZoom = 1f;
-
+        [SerializeField] private float iconMaxRadiusModifier = 0.5f;
         [SerializeField] private RectTransform scrollViewRectTransform;
-
         [SerializeField] private RectTransform contentRectTransform;
-
+        [SerializeField] private RectTransform mapBorderRectTransform;
         [SerializeField] private MinimapIcon minimapIconPrefab;
+        [SerializeField] private Transform playerCameraTransform;
+        [SerializeField] private Transform playerTransform;
+        [SerializeField] private bool rotateMapInstead = false;
 
         Matrix4x4 transformationMatrix;
 
@@ -106,6 +105,7 @@ namespace dev.susybaka.raidsim.UI
 
             zoomIn.onClick.AddListener(ZoomIn);
             zoomOut.onClick.AddListener(ZoomOut);
+            settingsButton.onClick.AddListener(ToggleMinimapLock);
         }
 
         private void Start()
@@ -122,6 +122,16 @@ namespace dev.susybaka.raidsim.UI
 
             //float zoom = Input.GetAxis("Mouse ScrollWheel");
             //ZoomMap(zoom);
+
+            if (rotateMapInstead && playerCameraTransform != null)
+            {
+                float rotationY = playerCameraTransform.eulerAngles.y;
+                contentRectTransform.localRotation = Quaternion.Euler(0, 0, rotationY);
+            }
+            else
+            {
+                contentRectTransform.localRotation = Quaternion.identity;
+            }
 
             UpdateMiniMapIcons();
             CenterMapOnIcon();
@@ -188,6 +198,7 @@ namespace dev.susybaka.raidsim.UI
             if (miniMapWorldObject.ExistingIcon == null)
             {
                 minimapIcon = Instantiate(minimapIconPrefab);
+                minimapIcon.gameObject.name = $"{miniMapWorldObject.ObjectName}_MinimapIcon";
             }
             else
             {
@@ -195,8 +206,14 @@ namespace dev.susybaka.raidsim.UI
             }
             
             minimapIcon.transform.SetParent(contentRectTransform);
-            minimapIcon.Image.sprite = miniMapWorldObject.MinimapIcon;
+            for (int i = 0; i < minimapIcon.IconImages.Length; i++)
+            {
+                minimapIcon.IconImages[i].sprite = miniMapWorldObject.MinimapIconSprite;
+            }
+            if (minimapIcon.ArrowImage != null && miniMapWorldObject.MinimapArrowSprite != null)
+                minimapIcon.ArrowImage.sprite = miniMapWorldObject.MinimapArrowSprite;
             minimapIcon.WorldObject = miniMapWorldObject;
+            minimapIcon.useAlternativeIconWhenOutsideView = miniMapWorldObject.UseAlternativeIconWhenOutsideView;
             miniMapWorldObjectsLookup[miniMapWorldObject] = minimapIcon;
 
             if (followObject)
@@ -293,13 +310,53 @@ namespace dev.susybaka.raidsim.UI
 
         private void CenterMapOnIcon()
         {
+            if (followIcon == null)
+                return;
+
+            float mapScale = contentRectTransform.localScale.x;
+            Vector2 playerPos = WorldPositionToMapPosition(playerTransform.position);
+
+            // If we're rotating the map, adjust the offset to counter the rotation
+            if (rotateMapInstead && playerCameraTransform != null)
+            {
+                float rotationY = playerCameraTransform.eulerAngles.y;
+                Quaternion rotation = Quaternion.Euler(0, 0, rotationY);
+
+                // Undo the rotation for the centering
+                Vector2 rotatedOffset = rotation * playerPos;
+                contentRectTransform.anchoredPosition = -rotatedOffset * mapScale;
+                contentRectTransform.localRotation = rotation;
+                mapBorderRectTransform.localRotation = rotation;
+            }
+            else
+            {
+                contentRectTransform.anchoredPosition = -playerPos * mapScale;
+                contentRectTransform.localRotation = Quaternion.identity;
+                mapBorderRectTransform.localRotation = Quaternion.identity;
+            }
+        }
+
+        /*private void CenterMapOnIcon()
+        {
+            if (followIcon == null)
+                return;
+
+            float mapScale = contentRectTransform.localScale.x;
+            Vector2 playerPos = followIcon.RectTransform.anchoredPosition;
+
+            // If rotating the map, center normally (rotation is visual only)
+            contentRectTransform.anchoredPosition = -playerPos * mapScale;
+        }*/
+
+        /*private void CenterMapOnIcon()
+        {
             if (followIcon != null)
             {
                 float mapScale = contentRectTransform.transform.localScale.x;
                 // we simply move the map in the opposite direction the player moved, scaled by the mapscale
                 contentRectTransform.anchoredPosition = (-followIcon.RectTransform.anchoredPosition * mapScale);
             }
-        }
+        }*/
 
         private void UpdateMiniMapIcons()
         {
@@ -328,7 +385,7 @@ namespace dev.susybaka.raidsim.UI
                     }
                 }
 
-                miniMapIcon.RectTransform.anchoredPosition = mapPosition;
+                //miniMapIcon.RectTransform.anchoredPosition = mapPosition;
 
                 Vector3 rotation;
 
@@ -348,9 +405,70 @@ namespace dev.susybaka.raidsim.UI
                     }
                 }
 
-                miniMapIcon.IconRectTransform.localRotation = Quaternion.AngleAxis(-rotation.y, Vector3.forward);
+                /*if (rotateMapInsteadOfIcon && miniMapWorldObject == followIcon.WorldObject)
+                {
+                    miniMapIcon.IconRectTransform.localRotation = Quaternion.identity;
+                    if (miniMapIcon.useAlternativeIconWhenOutsideView)
+                        miniMapIcon.alternativeIconRectTransform.localRotation = Quaternion.identity;
+                }
+                else
+                {
+                    miniMapIcon.IconRectTransform.localRotation = Quaternion.AngleAxis(-rotation.y, Vector3.forward);
+                    if (miniMapIcon.useAlternativeIconWhenOutsideView)
+                        miniMapIcon.alternativeIconRectTransform.localRotation = Quaternion.AngleAxis(-rotation.y, Vector3.forward);
+                }*/
 
-                miniMapIcon.IconRectTransform.localScale = Vector3.one * iconScale;
+                miniMapIcon.IconRectTransform.localRotation = GetIconRotation(miniMapWorldObject, rotation.y);
+                if (miniMapIcon.alternativeIconRectTransform != null)
+                    miniMapIcon.alternativeIconRectTransform.localRotation = GetIconRotation(miniMapWorldObject, rotation.y);
+
+                Vector2 center = -contentRectTransform.anchoredPosition / contentRectTransform.localScale.x;
+                Vector2 offset = mapPosition - center;
+
+                float zoomScale = contentRectTransform.localScale.x;
+                float baseRadius = Mathf.Min(scrollViewRectTransform.rect.width, scrollViewRectTransform.rect.height) * 0.5f;
+                float maxRadius = baseRadius * iconMaxRadiusModifier / zoomScale;
+
+                // Clamp only if it's beyond the visible minimap area
+                bool isClamped = offset.magnitude > maxRadius;
+                Vector2 clampedOffset = isClamped
+                    ? offset.normalized * maxRadius
+                    : offset;
+
+                Vector2 finalPosition = center + clampedOffset;
+                miniMapIcon.RectTransform.anchoredPosition = finalPosition;
+                //if (miniMapIcon.useAlternativeIconWhenOutsideView)
+                //    miniMapIcon.alternativeIconRectTransform.anchoredPosition = finalPosition;
+
+                miniMapIcon.isOutsideView = isClamped;
+
+                // Rotate toward the off-map direction if needed
+                if (miniMapIcon.useAlternativeIconWhenOutsideView)
+                {
+                    if (offset.magnitude > maxRadius)
+                    {
+                        float angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
+                        miniMapIcon.alternativeIconRectTransform.localRotation = Quaternion.Euler(0, 0, angle - 90f);
+
+                        // Counter-rotate the icon image itself to keep it appearing upright
+                        miniMapIcon.alternativeIconImage.rectTransform.localRotation = Quaternion.Euler(0, 0, -(angle - 90f));
+                    }
+                    else if (!rotateMapInstead || miniMapWorldObject != followIcon.WorldObject)
+                    {
+                        // Use normal world rotation
+                        miniMapIcon.alternativeIconRectTransform.localRotation = Quaternion.AngleAxis(-rotation.y, Vector3.forward);
+                    }
+                    else
+                    {
+                        miniMapIcon.alternativeIconRectTransform.localRotation = Quaternion.identity;
+                    }
+                }
+
+                Vector3 scale = Vector3.one * iconScale;
+
+                miniMapIcon.IconRectTransform.localScale = scale;
+                if (miniMapIcon.useAlternativeIconWhenOutsideView)
+                    miniMapIcon.alternativeIconRectTransform.localScale = scale;
             }
         }
 
@@ -378,6 +496,38 @@ namespace dev.susybaka.raidsim.UI
             //  {  0,        scaleRatio.y,    0,   translation.y},
             //  {  0,            0,           1,            0},
             //  {  0,            0,           0,            1}
+        }
+
+        private Vector2 ClampToCircle(Vector2 pos, float radius)
+        {
+            if (pos.magnitude > radius)
+                return pos.normalized * radius;
+            return pos;
+        }
+
+        private Vector2 ClampToRect(Vector2 position, Vector2 bounds)
+        {
+            return new Vector2(
+                Mathf.Clamp(position.x, -bounds.x, bounds.x),
+                Mathf.Clamp(position.y, -bounds.y, bounds.y)
+            );
+        }
+
+        private Quaternion GetIconRotation(MinimapWorldObject obj, float objectRotationY)
+        {
+            if (!rotateMapInstead)
+                return Quaternion.Euler(0, 0, -objectRotationY);
+
+            if (obj == followIcon.WorldObject)
+                return Quaternion.Euler(0, 0, -objectRotationY);
+
+            float minimapRotation = playerCameraTransform.eulerAngles.y;
+            return Quaternion.Euler(0, 0, minimapRotation);
+        }
+
+        public void ToggleMinimapLock()
+        {
+            rotateMapInstead = !rotateMapInstead;
         }
     }
 }

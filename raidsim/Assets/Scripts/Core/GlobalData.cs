@@ -537,4 +537,23 @@ public static class GlobalData
             return hash;
         }
     }
+
+    [System.Serializable]
+    public struct Transformation
+    {
+        public string name;
+        public Vector3 position;
+        public Vector3 rotation;
+        public Vector3 scale;
+        public bool relative;
+
+        public Transformation(string name, Vector3 position, Vector3 rotation, Vector3 scale, bool relative)
+        {
+            this.name = name;
+            this.position = position;
+            this.rotation = rotation;
+            this.scale = scale;
+            this.relative = relative;
+        }
+    }
 }
