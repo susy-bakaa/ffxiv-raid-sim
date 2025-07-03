@@ -31,4 +31,5 @@ public static class GlobalVariables
     public const long maximumDamage = 999999999999999999;
     public static Vector3 minimapZoom;
     public static bool modifiedMinimapZoom = false;
+    public static bool rotateMinimap = false;
 }

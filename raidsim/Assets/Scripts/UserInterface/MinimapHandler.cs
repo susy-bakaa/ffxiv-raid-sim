@@ -100,6 +100,7 @@ namespace dev.susybaka.raidsim.UI
             {
                 contentRectTransform.localScale = GlobalVariables.minimapZoom;
             }
+            rotateMapInstead = GlobalVariables.rotateMinimap;
         }
 
         private void Start() => CalculateTransformationMatrix();
@@ -155,6 +156,7 @@ namespace dev.susybaka.raidsim.UI
         public void ToggleMinimapLock()
         {
             rotateMapInstead = !rotateMapInstead;
+            GlobalVariables.rotateMinimap = rotateMapInstead;
         }
 
         /// <summary>
