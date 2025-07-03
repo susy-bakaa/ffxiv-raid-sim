@@ -51,6 +51,8 @@ public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public List<Color> alternativeColors = new List<Color>();
     [Header("Events")]
     public UnityEvent onInitialize;
+    public UnityEvent<PointerEventData> onPointerEnter;
+    public UnityEvent<PointerEventData> onPointerExit;
 
 #if UNITY_EDITOR
     [Header("Editor")]
@@ -261,19 +263,21 @@ public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (input == null || FightTimeline.Instance == null)
-            return;
+        if (input != null)
+        {
+            if (blocksAllInput)
+                input.inputEnabled = false;
+            if (blocksPosInput)
+                input.movementInputEnabled = false;
+            if (blocksRotInput)
+                input.rotationInputEnabled = false;
+            if (blocksScrInput)
+                input.zoomInputEnabled = false;
+            if (blocksTargetRaycasts)
+                input.targetRaycastInputEnabled = false;
+        }    
 
-        if (blocksAllInput)
-            input.inputEnabled = false;
-        if (blocksPosInput)
-            input.movementInputEnabled = false;
-        if (blocksRotInput)
-            input.rotationInputEnabled = false;
-        if (blocksScrInput)
-            input.zoomInputEnabled = false;
-        if (blocksTargetRaycasts)
-            input.targetRaycastInputEnabled = false;
+        onPointerEnter.Invoke(eventData);
     }
 
     public void OnPointerExit()
@@ -283,18 +287,20 @@ public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (input == null || FightTimeline.Instance == null)
-            return;
+        if (input != null)
+        {
+            if (blocksAllInput)
+                input.inputEnabled = true;
+            if (blocksPosInput)
+                input.movementInputEnabled = true;
+            if (blocksRotInput)
+                input.rotationInputEnabled = true;
+            if (blocksScrInput)
+                input.zoomInputEnabled = true;
+            if (blocksTargetRaycasts)
+                input.targetRaycastInputEnabled = true;
+        }
 
-        if (blocksAllInput)
-            input.inputEnabled = true;
-        if (blocksPosInput)
-            input.movementInputEnabled = true;
-        if (blocksRotInput)
-            input.rotationInputEnabled = true;
-        if (blocksScrInput)
-            input.zoomInputEnabled = true;
-        if (blocksTargetRaycasts)
-            input.targetRaycastInputEnabled = true;
+        onPointerExit.Invoke(eventData);
     }
 }
