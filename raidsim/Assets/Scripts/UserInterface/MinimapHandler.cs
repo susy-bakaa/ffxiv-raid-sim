@@ -58,15 +58,17 @@ namespace dev.susybaka.raidsim.UI
         // Editor only section to recalculate the transformation matrix and handle validation checks
 #if UNITY_EDITOR
         private Vector2 previousWorldSize = Vector2.zero;
+        private Vector2 previousWorldMin = Vector2.zero;
         [Button]
         public void RecalculateTransformationMatrix() => CalculateTransformationMatrix();
         private void OnValidate()
         {
             if (autoCalculateMin)
                 worldMin = new Vector2(worldSize.x / 2, worldSize.y / 2) * -1;
-            if (worldSize != previousWorldSize)
+            if ((worldSize != previousWorldSize) || (worldMin != previousWorldMin))
             {
                 previousWorldSize = worldSize;
+                previousWorldMin = worldMin;
                 CalculateTransformationMatrix();
             }
         }
@@ -93,6 +95,11 @@ namespace dev.susybaka.raidsim.UI
             zoomIn.onClick.AddListener(ZoomIn);
             zoomOut.onClick.AddListener(ZoomOut);
             settingsButton.onClick.AddListener(ToggleMinimapLock);
+
+            if (GlobalVariables.modifiedMinimapZoom)
+            {
+                contentRectTransform.localScale = GlobalVariables.minimapZoom;
+            }
         }
 
         private void Start() => CalculateTransformationMatrix();
@@ -159,6 +166,9 @@ namespace dev.susybaka.raidsim.UI
         public void RegisterMinimapWorldObject(MinimapWorldObject worldObject)
         {
             if (worldObject == null)
+                return;
+
+            if (miniMapWorldObjectsLookup.ContainsKey(worldObject))
                 return;
 
             MinimapIcon icon = worldObject.ExistingIcon ?? Instantiate(minimapIconPrefab);
@@ -233,6 +243,9 @@ namespace dev.susybaka.raidsim.UI
             float scale = contentRectTransform.localScale.x;
             float amt = (delta > 0 ? zoomSpeed : -zoomSpeed) * scale;
             contentRectTransform.localScale = Vector3.one * Mathf.Clamp(scale + amt, minZoom, maxZoom);
+
+            GlobalVariables.minimapZoom = contentRectTransform.localScale;
+            GlobalVariables.modifiedMinimapZoom = true;
         }
 
         /// <summary>

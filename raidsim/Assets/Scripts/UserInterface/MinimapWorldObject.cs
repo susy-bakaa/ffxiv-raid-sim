@@ -38,8 +38,24 @@ namespace dev.susybaka.raidsim.UI
 
             if (MinimapHandler.Instance == null)
                 return;
+            
+            MinimapHandler.Instance.RegisterMinimapWorldObject(this);
+        }
+
+        private void OnEnable()
+        {
+            if (MinimapHandler.Instance == null)
+                return;
 
             MinimapHandler.Instance.RegisterMinimapWorldObject(this);
+        }
+
+        private void OnDisable()
+        {
+            if (MinimapHandler.Instance == null)
+                return;
+
+            MinimapHandler.Instance.RemoveMinimapWorldObject(this);
         }
 
         private void OnDestroy()
