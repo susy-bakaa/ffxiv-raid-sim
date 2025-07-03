@@ -88,7 +88,7 @@ public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
         if (input == null)
         {
-            if (blocksAllInput || blocksPosInput || blocksRotInput || blocksScrInput)
+            if (blocksAllInput || blocksPosInput || blocksRotInput || blocksScrInput || blocksTargetRaycasts)
             {
                 if (FightTimeline.Instance != null)
                     input = FightTimeline.Instance.input;
