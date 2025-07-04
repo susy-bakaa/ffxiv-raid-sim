@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour
     ThirdPersonCamera cameraScript;
     UserInput userInput;
 
-    public float ySpawnOffset = 1.25f;
+    public Vector3 spawnOffset = new Vector3(0f, 1.25f, 0f);
     public float turnSmoothTime;
     private float turnSmoothVelocity;
     private float tm;
@@ -548,7 +548,7 @@ public class PlayerController : MonoBehaviour
 
     public void Init()
     {
-        transform.position = new Vector3(0f, ySpawnOffset, 0f);
+        transform.position = spawnOffset;
         transform.eulerAngles = new Vector3(0f, Random.Range(0, 360), 0f);
         //cameraT.gameObject.GetComponent<ThirdPersonCamera>().RandomRotate();
     }

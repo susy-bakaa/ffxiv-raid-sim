@@ -12,7 +12,7 @@ public class AIController : MonoBehaviour
     private BotTimeline wasBotTimeline;
     public BotNode clockSpot;
     public float turnSmoothTime;
-    public float ySpawnOffset = 1.1f;
+    public Vector3 spawnOffset = new Vector3(0f, 1.1f, 0f);
     public bool log;
     public bool freezeMovement = false;
     public bool sliding = false;
@@ -275,8 +275,7 @@ public class AIController : MonoBehaviour
 
     public void Init()
     {
-        //transform.position = new Vector3(Random.value * 3f - 1.5f, 0f, Random.value * 3f - 1.5f);
-        transform.position = new Vector3(Random.Range(-1.5f, 1.5f), ySpawnOffset, Random.Range(-1.5f, 1.5f));
+        transform.position = new Vector3(spawnOffset.x + Random.Range(-1.5f, 1.5f), spawnOffset.y, spawnOffset.z + Random.Range(-1.5f, 1.5f));
         transform.eulerAngles = new Vector3(0f, Random.Range(-360f, 360f), 0f);
     }
 
