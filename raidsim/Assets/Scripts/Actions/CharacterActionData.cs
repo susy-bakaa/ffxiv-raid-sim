@@ -40,8 +40,10 @@ public class CharacterActionData : ScriptableObject
     public CharacterActionData comboAction;
     public bool playCastingAnimationDirectly = false;
     [ShowIf("playCastingAnimationDirectly")] public string castingAnimationName = string.Empty;
+    [ShowIf("playCastingAnimationDirectly")] [Min(0f)] public float castingAnimationCrossFade = 0.2f;
     public string animationName = string.Empty;
     public bool playAnimationDirectly = false;
+    [ShowIf("playAnimationDirectly")] [Min(0f)] public float animationCrossFade = 0.2f;
     public bool playAnimationOnFinish = false;
     public int onAnimationFinishId = -1;
     [Min(0f)] public float animationDelay = 0f;

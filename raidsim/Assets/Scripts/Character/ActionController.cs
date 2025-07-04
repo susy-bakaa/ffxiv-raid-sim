@@ -569,11 +569,11 @@ public class ActionController : MonoBehaviour
                 {
                     if (autoAction.data.animationDelay > 0f)
                     {
-                        Utilities.FunctionTimer.Create(this, () => animator.CrossFadeInFixedTime(autoAction.data.animationName, 0.2f), autoAction.data.animationDelay, $"{autoAction.data.actionName}_animation_{autoAction.data.animationName}_delay");
+                        Utilities.FunctionTimer.Create(this, () => animator.CrossFadeInFixedTime(autoAction.data.animationName, autoAction.data.animationCrossFade), autoAction.data.animationDelay, $"{autoAction.data.actionName}_animation_{autoAction.data.animationName}_delay");
                     }
                     else
                     {
-                        animator.CrossFadeInFixedTime(autoAction.data.animationName, 0.2f);
+                        animator.CrossFadeInFixedTime(autoAction.data.animationName, autoAction.data.animationCrossFade);
                     }                  
                 }
                 if (animator != null && autoAction.data.onAnimationFinishId >= 0)
@@ -865,7 +865,7 @@ public class ActionController : MonoBehaviour
                 {
                     if (action.data.playCastingAnimationDirectly)
                     {
-                        animator.CrossFadeInFixedTime(action.data.castingAnimationName, 0.2f);
+                        animator.CrossFadeInFixedTime(action.data.castingAnimationName, action.data.castingAnimationCrossFade);
                     }
                     else
                     {
@@ -1004,11 +1004,11 @@ public class ActionController : MonoBehaviour
             {
                 if (action.data.animationDelay > 0f)
                 {
-                    Utilities.FunctionTimer.Create(this, () => animator.CrossFadeInFixedTime(action.data.animationName, 0.2f), action.data.animationDelay, $"{action.data.actionName}_animation_{action.data.animationName}_delay");
+                    Utilities.FunctionTimer.Create(this, () => animator.CrossFadeInFixedTime(action.data.animationName, action.data.animationCrossFade), action.data.animationDelay, $"{action.data.actionName}_animation_{action.data.animationName}_delay");
                 }
                 else
                 {
-                    animator.CrossFadeInFixedTime(action.data.animationName, 0.2f);
+                    animator.CrossFadeInFixedTime(action.data.animationName, action.data.animationCrossFade);
                 }
             }
             if (action.data.onAnimationFinishId >= 0)
