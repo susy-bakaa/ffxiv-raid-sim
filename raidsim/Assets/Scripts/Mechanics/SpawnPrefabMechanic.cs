@@ -1,51 +1,53 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using static GlobalData;
+using dev.susybaka.raidsim.Core;
+using static dev.susybaka.raidsim.Core.GlobalData;
 
-public class SpawnPrefabMechanic : FightMechanic
+namespace dev.susybaka.raidsim.Mechanics
 {
-    [Header("Spawn Prefab Settings")]
-    public GameObject objectPrefab;
-    public Transform spawnLocation;
-    public string spawnEnemyName = string.Empty;
-
-    public override void TriggerMechanic(ActionInfo actionInfo)
+    public class SpawnPrefabMechanic : FightMechanic
     {
-        if (!CanTrigger(actionInfo))
-            return;
+        [Header("Spawn Prefab Settings")]
+        public GameObject objectPrefab;
+        public Transform spawnLocation;
+        public string spawnEnemyName = string.Empty;
 
-        if (spawnLocation == null)
+        public override void TriggerMechanic(ActionInfo actionInfo)
         {
-            if (actionInfo.target != null)
-            {
-                GameObject spawned = Instantiate(objectPrefab, actionInfo.target.transform.position, actionInfo.target.transform.rotation, FightTimeline.Instance.mechanicParent);
+            if (!CanTrigger(actionInfo))
+                return;
 
-                HandleSpawnedObject(spawned);
-            }
-            else if (actionInfo.source != null && actionInfo.action != null)
+            if (spawnLocation == null)
             {
-                GameObject spawned = Instantiate(objectPrefab, actionInfo.source.transform.position, actionInfo.source.transform.rotation, FightTimeline.Instance.mechanicParent);
+                if (actionInfo.target != null)
+                {
+                    GameObject spawned = Instantiate(objectPrefab, actionInfo.target.transform.position, actionInfo.target.transform.rotation, FightTimeline.Instance.mechanicParent);
+
+                    HandleSpawnedObject(spawned);
+                }
+                else if (actionInfo.source != null && actionInfo.action != null)
+                {
+                    GameObject spawned = Instantiate(objectPrefab, actionInfo.source.transform.position, actionInfo.source.transform.rotation, FightTimeline.Instance.mechanicParent);
+
+                    HandleSpawnedObject(spawned);
+                }
+            }
+            else
+            {
+                GameObject spawned = Instantiate(objectPrefab, spawnLocation.position, spawnLocation.rotation, FightTimeline.Instance.mechanicParent);
 
                 HandleSpawnedObject(spawned);
             }
         }
-        else
-        {
-            GameObject spawned = Instantiate(objectPrefab, spawnLocation.position, spawnLocation.rotation, FightTimeline.Instance.mechanicParent);
 
-            HandleSpawnedObject(spawned);
-        }
-    }
-
-    private void HandleSpawnedObject(GameObject spawned)
-    {
-        if (!string.IsNullOrEmpty(spawnEnemyName) && spawned.TryGetComponent(out SpawnEnemyMechanic enemyMechanic))
+        private void HandleSpawnedObject(GameObject spawned)
         {
-            enemyMechanic.enemyObjectName = spawnEnemyName;
-            if (enemyMechanic.enemyObject != null && enemyMechanic.enemyObject.name != spawnEnemyName)
+            if (!string.IsNullOrEmpty(spawnEnemyName) && spawned.TryGetComponent(out SpawnEnemyMechanic enemyMechanic))
             {
-                enemyMechanic.enemyObject = null;
+                enemyMechanic.enemyObjectName = spawnEnemyName;
+                if (enemyMechanic.enemyObject != null && enemyMechanic.enemyObject.name != spawnEnemyName)
+                {
+                    enemyMechanic.enemyObject = null;
+                }
             }
         }
     }

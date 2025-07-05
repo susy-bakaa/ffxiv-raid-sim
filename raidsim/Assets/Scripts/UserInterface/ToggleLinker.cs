@@ -1,52 +1,54 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class ToggleLinker : MonoBehaviour
+namespace dev.susybaka.raidsim.UI
 {
-    public List<Toggle> toggles = new List<Toggle>();
-
-    public UnityEvent<int> onTogglesUpdated;
-
-    public void UpdateToggles(int toggle)
+    public class ToggleLinker : MonoBehaviour
     {
-        UpdateToggles(toggles[toggle]);
-    }
+        public List<Toggle> toggles = new List<Toggle>();
 
-    public void UpdateToggles(Toggle toggle)
-    {
-        foreach (Toggle t in toggles)
+        public UnityEvent<int> onTogglesUpdated;
+
+        public void UpdateToggles(int toggle)
         {
-            if (t != toggle)
+            UpdateToggles(toggles[toggle]);
+        }
+
+        public void UpdateToggles(Toggle toggle)
+        {
+            foreach (Toggle t in toggles)
             {
-                t.SetIsOnWithoutNotify(false);
-            }
-            else
-            {
-                t.SetIsOnWithoutNotify(true);
-                onTogglesUpdated.Invoke(toggles.IndexOf(t));
+                if (t != toggle)
+                {
+                    t.SetIsOnWithoutNotify(false);
+                }
+                else
+                {
+                    t.SetIsOnWithoutNotify(true);
+                    onTogglesUpdated.Invoke(toggles.IndexOf(t));
+                }
             }
         }
-    }
 
-    public void SetToggles(int toggle)
-    {
-        SetToggles(toggles[toggle]);
-    }
-
-    public void SetToggles(Toggle toggle)
-    {
-        foreach (Toggle t in toggles)
+        public void SetToggles(int toggle)
         {
-            if (t != toggle)
+            SetToggles(toggles[toggle]);
+        }
+
+        public void SetToggles(Toggle toggle)
+        {
+            foreach (Toggle t in toggles)
             {
-                t.SetIsOnWithoutNotify(false);
-            }
-            else
-            {
-                t.isOn = true;
+                if (t != toggle)
+                {
+                    t.SetIsOnWithoutNotify(false);
+                }
+                else
+                {
+                    t.isOn = true;
+                }
             }
         }
     }

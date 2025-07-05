@@ -11,9 +11,12 @@ using UnityEngine.UI;
 using TMPro;
 using NaughtyAttributes;
 using LogicUI.FancyTextRendering;
+using dev.susybaka.raidsim.Core;
+using dev.susybaka.Shared;
 using Debug = UnityEngine.Debug;
 
-namespace susy_baka.raidsim.Updater
+
+namespace dev.susybaka.raidsim.Updater
 {
     public class UpdateHandler : MonoBehaviour
     {
@@ -84,7 +87,7 @@ namespace susy_baka.raidsim.Updater
         private bool downloadAborted = false;
         private bool updatePromptVisible = false;
 
-        void Start()
+        private void Start()
         {
             updateId = GlobalVariables.versionNumber;
 #if UNITY_EDITOR
@@ -142,7 +145,7 @@ namespace susy_baka.raidsim.Updater
                 Debug.Log("Skipping update check.");
         }
 
-        void Update()
+        private void Update()
         {
             if (destroyed)
                 return;
@@ -177,7 +180,7 @@ namespace susy_baka.raidsim.Updater
             }
         }
 
-        void OnDestroy()
+        private void OnDestroy()
         {
             destroyed = true;
 

@@ -1,19 +1,20 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using static GlobalData;
+using static dev.susybaka.raidsim.Core.GlobalData;
 
-public class CombinedFightMechanic : FightMechanic
+namespace dev.susybaka.raidsim.Mechanics
 {
-    [Header("Combined Fight Mechanic Settings")]
-    public UnityEvent<ActionInfo> onTriggerMechanic;
-
-    public override void TriggerMechanic(ActionInfo actionInfo)
+    public class CombinedFightMechanic : FightMechanic
     {
-        if (!CanTrigger(actionInfo))
-            return;
+        [Header("Combined Fight Mechanic Settings")]
+        public UnityEvent<ActionInfo> onTriggerMechanic;
 
-        onTriggerMechanic.Invoke(actionInfo);
+        public override void TriggerMechanic(ActionInfo actionInfo)
+        {
+            if (!CanTrigger(actionInfo))
+                return;
+
+            onTriggerMechanic.Invoke(actionInfo);
+        }
     }
 }

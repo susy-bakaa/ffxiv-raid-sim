@@ -1,38 +1,39 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using dev.susybaka.raidsim.Characters;
 
-public class MaximumHealthBuff : StatusEffect
+namespace dev.susybaka.raidsim.StatusEffects
 {
-    public float maxHealthModifier = 1.2f;
-
-    public override void OnApplication(CharacterState state)
+    public class MaximumHealthBuff : StatusEffect
     {
-        if (uniqueTag != 0)
-            state.AddMaxHealth(maxHealthModifier, $"{data.statusName}_{uniqueTag}");
-        else
-            state.AddMaxHealth(maxHealthModifier, $"{data.statusName}");
+        public float maxHealthModifier = 1.2f;
 
-        base.OnApplication(state);
-    }
+        public override void OnApplication(CharacterState state)
+        {
+            if (uniqueTag != 0)
+                state.AddMaxHealth(maxHealthModifier, $"{data.statusName}_{uniqueTag}");
+            else
+                state.AddMaxHealth(maxHealthModifier, $"{data.statusName}");
 
-    public override void OnCleanse(CharacterState state)
-    {
-        if (uniqueTag != 0)
-            state.RemoveMaxHealth($"{data.statusName}_{uniqueTag}");
-        else
-            state.RemoveMaxHealth($"{data.statusName}");
+            base.OnApplication(state);
+        }
 
-        base.OnCleanse(state);
-    }
-    
-    public override void OnExpire(CharacterState state)
-    {
-        if (uniqueTag != 0)
-            state.RemoveMaxHealth($"{data.statusName}_{uniqueTag}");
-        else
-            state.RemoveMaxHealth($"{data.statusName}");
-        
-        base.OnExpire(state);
+        public override void OnCleanse(CharacterState state)
+        {
+            if (uniqueTag != 0)
+                state.RemoveMaxHealth($"{data.statusName}_{uniqueTag}");
+            else
+                state.RemoveMaxHealth($"{data.statusName}");
+
+            base.OnCleanse(state);
+        }
+
+        public override void OnExpire(CharacterState state)
+        {
+            if (uniqueTag != 0)
+                state.RemoveMaxHealth($"{data.statusName}_{uniqueTag}");
+            else
+                state.RemoveMaxHealth($"{data.statusName}");
+
+            base.OnExpire(state);
+        }
     }
 }

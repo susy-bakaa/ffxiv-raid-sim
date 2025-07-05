@@ -1,23 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using dev.susybaka.raidsim.Characters;
 
-public class SurecastBuff : StatusEffect
+namespace dev.susybaka.raidsim.StatusEffects
 {
-    public override void OnApplication(CharacterState state)
+    public class SurecastBuff : StatusEffect
     {
-        state.knockbackResistant.SetFlag(data.statusName, true);
-    }
+        public override void OnApplication(CharacterState state)
+        {
+            state.knockbackResistant.SetFlag(data.statusName, true);
+        }
 
-    public override void OnExpire(CharacterState state)
-    {
-        state.knockbackResistant.SetFlag(data.statusName, false);
-        base.OnExpire(state);
-    }
+        public override void OnExpire(CharacterState state)
+        {
+            state.knockbackResistant.SetFlag(data.statusName, false);
+            base.OnExpire(state);
+        }
 
-    public override void OnCleanse(CharacterState state)
-    {
-        state.knockbackResistant.SetFlag(data.statusName, false);
-        base.OnCleanse(state);
+        public override void OnCleanse(CharacterState state)
+        {
+            state.knockbackResistant.SetFlag(data.statusName, false);
+            base.OnCleanse(state);
+        }
     }
 }

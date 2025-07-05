@@ -1,61 +1,64 @@
 using UnityEngine;
 
-public class GameObjectSync : MonoBehaviour
+namespace dev.susybaka.raidsim.Events 
 {
-    public string targetPath;
-    public bool searchFromRoot = false;
-    public GameObject target;
-    public bool beginActive = false;
-
-    private bool started = false;
-
-    private void OnEnable()
+    public class GameObjectSync : MonoBehaviour
     {
-        if (started && target != null)
-        {
-            target.SetActive(true);
-            return;
-        }
+        public string targetPath;
+        public bool searchFromRoot = false;
+        public GameObject target;
+        public bool beginActive = false;
 
-        Setup();
-    }
+        private bool started = false;
 
-    private void OnDisable()
-    {
-        if (target != null)
+        private void OnEnable()
         {
-            target.SetActive(false);
-            return;
-        }
-    }
-
-    public void Setup()
-    {
-        if (target == null)
-        {
-            if (!string.IsNullOrEmpty(targetPath) && !targetPath.Contains('%'))
+            if (started && target != null)
             {
-                if (searchFromRoot)
+                target.SetActive(true);
+                return;
+            }
+
+            Setup();
+        }
+
+        private void OnDisable()
+        {
+            if (target != null)
+            {
+                target.SetActive(false);
+                return;
+            }
+        }
+
+        public void Setup()
+        {
+            if (target == null)
+            {
+                if (!string.IsNullOrEmpty(targetPath) && !targetPath.Contains('%'))
                 {
-                    target = transform.root.Find(targetPath)?.gameObject;
+                    if (searchFromRoot)
+                    {
+                        target = transform.root.Find(targetPath)?.gameObject;
+                    }
+                    else
+                    {
+                        target = transform.Find(targetPath)?.gameObject;
+                    }
+                }
+            }
+            else if (target != null && !started)
+            {
+                started = true;
+                if (beginActive)
+                {
+                    target.SetActive(true);
                 }
                 else
                 {
-                    target = transform.Find(targetPath)?.gameObject;
+                    target.SetActive(false);
+                    gameObject.SetActive(false);
                 }
-            }
-        }
-        else if (target != null && !started)
-        {
-            started = true;
-            if (beginActive)
-            {
-                target.SetActive(true);
-            }
-            else
-            {
-                target.SetActive(false);
-                gameObject.SetActive(false);
             }
         }
     }

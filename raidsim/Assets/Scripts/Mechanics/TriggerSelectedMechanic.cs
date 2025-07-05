@@ -1,42 +1,44 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using static GlobalData;
+using static dev.susybaka.raidsim.Core.GlobalData;
 
-public class TriggerSelectedMechanic : FightMechanic
+namespace dev.susybaka.raidsim.Mechanics
 {
-    [Header("Trigger Selected Settings")]
-    public List<UnityEvent<ActionInfo>> availableMechanics = new List<UnityEvent<ActionInfo>>();
-    public int selectedMechanic = 0;
-
-    public override void TriggerMechanic(ActionInfo actionInfo)
+    public class TriggerSelectedMechanic : FightMechanic
     {
-        if (!CanTrigger())
-            return;
+        [Header("Trigger Selected Settings")]
+        public List<UnityEvent<ActionInfo>> availableMechanics = new List<UnityEvent<ActionInfo>>();
+        public int selectedMechanic = 0;
 
-        if (availableMechanics != null && availableMechanics.Count > 0)
+        public override void TriggerMechanic(ActionInfo actionInfo)
         {
-            if (selectedMechanic >= 0 && selectedMechanic < availableMechanics.Count)
+            if (!CanTrigger())
+                return;
+
+            if (availableMechanics != null && availableMechanics.Count > 0)
             {
-                if (log)
-                    Debug.Log($"[FightMechanic.TriggerSelectedMechanic '{mechanicName}'] triggered mechanic {selectedMechanic} out of {availableMechanics.Count}!");
-                availableMechanics[selectedMechanic].Invoke(actionInfo);
-            }
-            else
-            {
-                Debug.LogError($"[FightMechanic.TriggerSelectedMechanic '{mechanicName}'] Selected mechanic index {selectedMechanic} is out of bounds for available mechanics list.");
+                if (selectedMechanic >= 0 && selectedMechanic < availableMechanics.Count)
+                {
+                    if (log)
+                        Debug.Log($"[FightMechanic.TriggerSelectedMechanic '{mechanicName}'] triggered mechanic {selectedMechanic} out of {availableMechanics.Count}!");
+                    availableMechanics[selectedMechanic].Invoke(actionInfo);
+                }
+                else
+                {
+                    Debug.LogError($"[FightMechanic.TriggerSelectedMechanic '{mechanicName}'] Selected mechanic index {selectedMechanic} is out of bounds for available mechanics list.");
+                }
             }
         }
-    }
 
-    public void SelectMechanic(int value)
-    {
-        if (value >= availableMechanics.Count)
-            value = availableMechanics.Count - 1;
-        else if (value < 0)
-            value = 0;
+        public void SelectMechanic(int value)
+        {
+            if (value >= availableMechanics.Count)
+                value = availableMechanics.Count - 1;
+            else if (value < 0)
+                value = 0;
 
-        selectedMechanic = value;
+            selectedMechanic = value;
+        }
     }
 }

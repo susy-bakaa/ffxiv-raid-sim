@@ -1,122 +1,126 @@
-using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static PartyList;
+using TMPro;
+using dev.susybaka.raidsim.Characters;
+using dev.susybaka.Shared;
+using static dev.susybaka.raidsim.UI.PartyList;
 
-public class EnmitySlider : MonoBehaviour
+namespace dev.susybaka.raidsim.UI
 {
-    private PartyListHelper partyHelper;
-    private CanvasGroup group;
-
-    [SerializeField] private CharacterState character;
-    private EnmitySliderColor sliderColor;
-    private Slider slider;
-    private TextMeshProUGUI label;
-
-    private List<EnmityInfo> enmityList = new List<EnmityInfo>();
-
-    int id = 0;
-    private int rateLimit = 0;
-
-    void Awake()
+    public class EnmitySlider : MonoBehaviour
     {
-        id = Random.Range(0, 10000);
-        group = GetComponent<CanvasGroup>();
-        partyHelper = transform.parent.GetComponentInParent<PartyListHelper>();
-        slider = transform.GetComponentInChildren<Slider>();
-        label = transform.GetComponentInChildren<TextMeshProUGUI>();
-        sliderColor = slider.GetComponent<EnmitySliderColor>();
-        rateLimit = partyHelper.updateEnmityList + 5;
-    }
+        private PartyListHelper partyHelper;
+        private CanvasGroup group;
 
-    void Start()
-    {
-        if (character == null)
+        [SerializeField] private CharacterState character;
+        private EnmitySliderColor sliderColor;
+        private Slider slider;
+        private TextMeshProUGUI label;
+
+        private List<EnmityInfo> enmityList = new List<EnmityInfo>();
+
+        int id = 0;
+        private int rateLimit = 0;
+
+        private void Awake()
         {
-            Utilities.FunctionTimer.Create(this, () => character = transform.parent.GetComponent<HudElement>().characterState, 1.1f, $"EnmitySlider_{id}_start_delay", true, false);
+            id = Random.Range(0, 10000);
+            group = GetComponent<CanvasGroup>();
+            partyHelper = transform.parent.GetComponentInParent<PartyListHelper>();
+            slider = transform.GetComponentInChildren<Slider>();
+            label = transform.GetComponentInChildren<TextMeshProUGUI>();
+            sliderColor = slider.GetComponent<EnmitySliderColor>();
+            rateLimit = partyHelper.updateEnmityList + 5;
         }
-    }
 
-    void Update()
-    {
-        if (character == null)
-            return;
-
-        if (Utilities.RateLimiter(rateLimit))
+        private void Start()
         {
-            // Get the updated enmity list
-            enmityList = partyHelper.GetCurrentPlayerTargetEnmityList();
-
-            // Filter out dead players from the enmity list
-            enmityList = enmityList.FindAll(info => !info.state.dead);
-
-            // Check if we have any enmity values
-            if (enmityList.Count <= 0 || character.dead)
+            if (character == null)
             {
-                slider.minValue = 0;
-                slider.maxValue = 1;
-                slider.value = 0;
-                label.text = "8"; // Lowest rank
-                group.alpha = 0f;
+                Utilities.FunctionTimer.Create(this, () => character = transform.parent.GetComponent<HudElement>().characterState, 1.1f, $"EnmitySlider_{id}_start_delay", true, false);
+            }
+        }
+
+        private void Update()
+        {
+            if (character == null)
                 return;
-            }
-            else
+
+            if (Utilities.RateLimiter(rateLimit))
             {
-                group.alpha = 1f;
-            }
+                // Get the updated enmity list
+                enmityList = partyHelper.GetCurrentPlayerTargetEnmityList();
 
-            // Find the player's enmity in the list
-            EnmityInfo? playerEnmityInfo = enmityList.Find(info => info.state == character);
+                // Filter out dead players from the enmity list
+                enmityList = enmityList.FindAll(info => !info.state.dead);
 
-            // If no enmity value for player, default to lowest rank
-            if (playerEnmityInfo == null || !playerEnmityInfo.HasValue || playerEnmityInfo.Value.enmity <= 0)
-            {
-                slider.minValue = 0;
-                slider.maxValue = 1;
-                slider.value = 0;
-                label.text = "8"; // Lowest rank
-                group.alpha = 0f;
-                return;
-            }
+                // Check if we have any enmity values
+                if (enmityList.Count <= 0 || character.dead)
+                {
+                    slider.minValue = 0;
+                    slider.maxValue = 1;
+                    slider.value = 0;
+                    label.text = "8"; // Lowest rank
+                    group.alpha = 0f;
+                    return;
+                }
+                else
+                {
+                    group.alpha = 1f;
+                }
 
-            // Get the player's index in the list (lower index = higher enmity)
-            int playerIndex = enmityList.IndexOf(playerEnmityInfo.Value);
+                // Find the player's enmity in the list
+                EnmityInfo? playerEnmityInfo = enmityList.Find(info => info.state == character);
 
-            // Update the rank label (convert 1st place to 'A' and others to numbers)
-            label.text = playerIndex == 0 ? "A" : (playerIndex + 1).ToString();
+                // If no enmity value for player, default to lowest rank
+                if (playerEnmityInfo == null || !playerEnmityInfo.HasValue || playerEnmityInfo.Value.enmity <= 0)
+                {
+                    slider.minValue = 0;
+                    slider.maxValue = 1;
+                    slider.value = 0;
+                    label.text = "8"; // Lowest rank
+                    group.alpha = 0f;
+                    return;
+                }
 
-            // Update enmitySliderColor based on player's position
-            sliderColor.useAlternativeColors = playerIndex == 1; // True if second in the list, false otherwise
+                // Get the player's index in the list (lower index = higher enmity)
+                int playerIndex = enmityList.IndexOf(playerEnmityInfo.Value);
 
-            // Set the slider values based on the neighboring enmity values
-            if (playerIndex == 0)
-            {
-                // Top enmity, max out the slider
-                slider.minValue = 0;
-                slider.maxValue = playerEnmityInfo.Value.enmity;
-                slider.value = playerEnmityInfo.Value.enmity;
-            }
-            else if (playerIndex == enmityList.Count - 1)
-            {
-                // Lowest enmity, min out the slider
-                slider.minValue = 0;
-                slider.maxValue = enmityList[playerIndex - 1].enmity <= 0 ? 1 : enmityList[playerIndex - 1].enmity; // Max is the enmity of the one above
-                slider.value = enmityList[playerIndex].enmity;
-            }
-            else
-            {
-                // For everyone else, set min and max based on neighbors
-                int lowerEnmity = enmityList[playerIndex + 1].enmity;
-                int upperEnmity = enmityList[playerIndex - 1].enmity;
+                // Update the rank label (convert 1st place to 'A' and others to numbers)
+                label.text = playerIndex == 0 ? "A" : (playerIndex + 1).ToString();
 
-                if (upperEnmity <= 0)
-                    upperEnmity = 1;
+                // Update enmitySliderColor based on player's position
+                sliderColor.useAlternativeColors = playerIndex == 1; // True if second in the list, false otherwise
 
-                slider.minValue = lowerEnmity;
-                slider.maxValue = upperEnmity;
-                slider.value = playerEnmityInfo.Value.enmity;
+                // Set the slider values based on the neighboring enmity values
+                if (playerIndex == 0)
+                {
+                    // Top enmity, max out the slider
+                    slider.minValue = 0;
+                    slider.maxValue = playerEnmityInfo.Value.enmity;
+                    slider.value = playerEnmityInfo.Value.enmity;
+                }
+                else if (playerIndex == enmityList.Count - 1)
+                {
+                    // Lowest enmity, min out the slider
+                    slider.minValue = 0;
+                    slider.maxValue = enmityList[playerIndex - 1].enmity <= 0 ? 1 : enmityList[playerIndex - 1].enmity; // Max is the enmity of the one above
+                    slider.value = enmityList[playerIndex].enmity;
+                }
+                else
+                {
+                    // For everyone else, set min and max based on neighbors
+                    int lowerEnmity = enmityList[playerIndex + 1].enmity;
+                    int upperEnmity = enmityList[playerIndex - 1].enmity;
+
+                    if (upperEnmity <= 0)
+                        upperEnmity = 1;
+
+                    slider.minValue = lowerEnmity;
+                    slider.maxValue = upperEnmity;
+                    slider.value = playerEnmityInfo.Value.enmity;
+                }
             }
         }
     }

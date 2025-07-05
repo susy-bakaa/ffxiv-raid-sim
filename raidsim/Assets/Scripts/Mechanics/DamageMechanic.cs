@@ -1,30 +1,31 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using static GlobalData;
+using static dev.susybaka.raidsim.Core.GlobalData;
 
-public class DamageMechanic : FightMechanic
+namespace dev.susybaka.raidsim.Mechanics
 {
-    [Header("Damage Settings")]
-    public Damage damage;
-    public bool kill = false;
-
-    public override void TriggerMechanic(ActionInfo actionInfo)
+    public class DamageMechanic : FightMechanic
     {
-        if (!CanTrigger(actionInfo))
-            return;
+        [Header("Damage Settings")]
+        public Damage damage;
+        public bool kill = false;
 
-        if (actionInfo.target != null)
+        public override void TriggerMechanic(ActionInfo actionInfo)
         {
-            actionInfo.target.ModifyHealth(damage, kill);
-            if (log)
-                Debug.Log("DamageMechanic: actionInfo.target.ModifyHealth(damage, kill);");
-        } 
-        else if (actionInfo.source != null)
-        {
-            actionInfo.source.ModifyHealth(damage, kill);
-            if (log)
-                Debug.Log("DamageMechanic: actionInfo.source.ModifyHealth(damage, kill);");
+            if (!CanTrigger(actionInfo))
+                return;
+
+            if (actionInfo.target != null)
+            {
+                actionInfo.target.ModifyHealth(damage, kill);
+                if (log)
+                    Debug.Log("DamageMechanic: actionInfo.target.ModifyHealth(damage, kill);");
+            }
+            else if (actionInfo.source != null)
+            {
+                actionInfo.source.ModifyHealth(damage, kill);
+                if (log)
+                    Debug.Log("DamageMechanic: actionInfo.source.ModifyHealth(damage, kill);");
+            }
         }
     }
 }

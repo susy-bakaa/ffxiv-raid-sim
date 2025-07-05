@@ -1,54 +1,56 @@
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-using static StatusEffectData;
+using TMPro;
+using dev.susybaka.raidsim.Core;
+using dev.susybaka.raidsim.Mechanics;
 
-public class RandomMechanicSelector : MonoBehaviour
+namespace dev.susybaka.raidsim.UI
 {
-    TMP_Dropdown dropdown;
-
-    public int[] results;
-    public TriggerRandomMechanic target;
-    public UnityEvent<int> onSelect;
-    public bool log = true;
-
-    void Start()
+    public class RandomMechanicSelector : MonoBehaviour
     {
-        dropdown = GetComponentInChildren<TMP_Dropdown>();
-        Select(0);
-    }
+        TMP_Dropdown dropdown;
 
-    void Update()
-    {
-        dropdown.interactable = !FightTimeline.Instance.playing;
-    }
+        public int[] results;
+        public TriggerRandomMechanic target;
+        public UnityEvent<int> onSelect;
+        public bool log = true;
 
-    public void Select(int value)
-    {
-        if (target == null)
+        private void Start()
         {
-            if (log)
-                Debug.LogWarning($"RandomMechanicSelector {gameObject.name} component is missing a valid target or results! This might be unintended.");
+            dropdown = GetComponentInChildren<TMP_Dropdown>();
+            Select(0);
         }
 
-        if (results != null && results.Length > 0)
+        private void Update()
         {
-            int maxLength = results.Length - 1;
-            if (value > maxLength)
+            dropdown.interactable = !FightTimeline.Instance.playing;
+        }
+
+        public void Select(int value)
+        {
+            if (target == null)
             {
-                value = maxLength;
-            }
-            if (value < 0)
-            {
-                value = 0;
+                if (log)
+                    Debug.LogWarning($"RandomMechanicSelector {gameObject.name} component is missing a valid target or results! This might be unintended.");
             }
 
-            if (target != null)
-                target.editorForcedRandomEventResult = results[value];
+            if (results != null && results.Length > 0)
+            {
+                int maxLength = results.Length - 1;
+                if (value > maxLength)
+                {
+                    value = maxLength;
+                }
+                if (value < 0)
+                {
+                    value = 0;
+                }
 
-            onSelect.Invoke(results[value]);
+                if (target != null)
+                    target.editorForcedRandomEventResult = results[value];
+
+                onSelect.Invoke(results[value]);
+            }
         }
     }
 }

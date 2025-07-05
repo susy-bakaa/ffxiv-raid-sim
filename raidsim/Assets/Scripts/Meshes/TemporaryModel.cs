@@ -1,64 +1,68 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using dev.susybaka.raidsim.Actions;
+using dev.susybaka.Shared;
 
-public class TemporaryModel : MonoBehaviour
+namespace dev.susybaka.raidsim.Animations
 {
-    ActionController actionController;
-    [SerializeField] private List<AnimationTell> animationTells = new List<AnimationTell>();
-
-    private void Awake()
+    public class TemporaryModel : MonoBehaviour
     {
-        transform.TryGetComponentInParents(out actionController);
-    }
+        ActionController actionController;
+        [SerializeField] private List<AnimationTell> animationTells = new List<AnimationTell>();
 
-    private void Update()
-    {
-        if (actionController == null)
-            return;
-
-        if (actionController.LastAction == null)
+        private void Awake()
         {
-            if (Utilities.RateLimiter(58))
+            transform.TryGetComponentInParents(out actionController);
+        }
+
+        private void Update()
+        {
+            if (actionController == null)
+                return;
+
+            if (actionController.LastAction == null)
             {
-                for (int i = 0; i < animationTells.Count; i++)
+                if (Utilities.RateLimiter(58))
+                {
+                    for (int i = 0; i < animationTells.Count; i++)
+                    {
+                        animationTells[i].gameObject.SetActive(!animationTells[i].state);
+                    }
+                }
+                return;
+            }
+
+            if (animationTells == null || animationTells.Count < 1)
+                return;
+
+            for (int i = 0; i < animationTells.Count; i++)
+            {
+                if (actionController.LastAction == animationTells[i].action)
+                {
+                    animationTells[i].gameObject.SetActive(animationTells[i].state);
+                }
+                else
                 {
                     animationTells[i].gameObject.SetActive(!animationTells[i].state);
                 }
             }
-            return;
         }
 
-        if (animationTells == null || animationTells.Count < 1)
-            return;
-
-        for (int i = 0; i < animationTells.Count; i++)
+        private void OnDestroy()
         {
-            if (actionController.LastAction == animationTells[i].action)
+            for (int i = 0; i < animationTells.Count; i++)
             {
-                animationTells[i].gameObject.SetActive(animationTells[i].state);
-            }
-            else
-            {
-                animationTells[i].gameObject.SetActive(!animationTells[i].state);
+                animationTells[i].gameObject.SetActive(true);
             }
         }
-    }
 
-    private void OnDestroy()
-    {
-        for (int i = 0; i < animationTells.Count; i++)
+        [System.Serializable]
+        private struct AnimationTell
         {
-            animationTells[i].gameObject.SetActive(true);
+            public string name;
+            public CharacterAction action;
+            public GameObject gameObject;
+            public bool state;
         }
-    }
-
-    [System.Serializable]
-    private struct AnimationTell
-    {
-        public string name;
-        public CharacterAction action;
-        public GameObject gameObject;
-        public bool state;
     }
 }

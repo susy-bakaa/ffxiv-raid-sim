@@ -1,57 +1,62 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using dev.illa4257;
+using dev.susybaka.raidsim.Core;
+using dev.susybaka.raidsim.Inputs;
+using dev.susybaka.Shared;
 
-[RequireComponent(typeof(ThirdPersonCamera))]
-public class SaveCameraOffset : MonoBehaviour
+namespace dev.susybaka.raidsim.SaveLoad
 {
-    ThirdPersonCamera tpc;
-    float savedValue = 2f;
-
-    public string group = "";
-    public string key = "UnnamedCameraOffset";
-
-    public UnityEvent<float> onStart;
-
-    IniStorage ini;
-    int id = 0;
-    float wait;
-
-    void Awake()
+    [RequireComponent(typeof(ThirdPersonCamera))]
+    public class SaveCameraOffset : MonoBehaviour
     {
-        tpc = GetComponent<ThirdPersonCamera>();
-        savedValue = 2;
-        ini = new IniStorage(GlobalVariables.configPath);
-        wait = UnityEngine.Random.Range(0.15f, 0.65f);
-        id = Random.Range(0, 10000);
-    }
+        ThirdPersonCamera tpc;
+        float savedValue = 2f;
 
-    void Start()
-    {
-        if (ini.Contains(group, $"f{key}"))
+        public string group = "";
+        public string key = "UnnamedCameraOffset";
+
+        public UnityEvent<float> onStart;
+
+        IniStorage ini;
+        int id = 0;
+        float wait;
+
+        private void Awake()
         {
-            savedValue = ini.GetFloat(group, $"f{key}");
-
-            if (tpc != null)
-            {
-                tpc.offsetFromTarget.y = savedValue;
-            }
+            tpc = GetComponent<ThirdPersonCamera>();
+            savedValue = 2;
+            ini = new IniStorage(GlobalVariables.configPath);
+            wait = UnityEngine.Random.Range(0.15f, 0.65f);
+            id = Random.Range(0, 10000);
         }
 
-        onStart.Invoke(savedValue);
-    }
+        private void Start()
+        {
+            if (ini.Contains(group, $"f{key}"))
+            {
+                savedValue = ini.GetFloat(group, $"f{key}");
 
-    public void SaveValue(float value)
-    {
-        string n = gameObject.name;
-        Utilities.FunctionTimer.Create(this, () => {
-            ini.Load(GlobalVariables.configPath);
+                if (tpc != null)
+                {
+                    tpc.offsetFromTarget.y = savedValue;
+                }
+            }
 
-            savedValue = value;
-            ini.Set(group, $"f{key}", savedValue);
+            onStart.Invoke(savedValue);
+        }
 
-            ini.Save();
-        }, wait, $"SaveCameraOffset_{id}_{n}_savevalue_delay", false, true);
+        public void SaveValue(float value)
+        {
+            string n = gameObject.name;
+            Utilities.FunctionTimer.Create(this, () => {
+                ini.Load(GlobalVariables.configPath);
+
+                savedValue = value;
+                ini.Set(group, $"f{key}", savedValue);
+
+                ini.Save();
+            }, wait, $"SaveCameraOffset_{id}_{n}_savevalue_delay", false, true);
+        }
     }
 }

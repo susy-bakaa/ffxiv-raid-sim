@@ -1,10 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using dev.susybaka.raidsim.SaveLoad;
 
-namespace susy_baka.raidsim.UserInterface
+namespace dev.susybaka.raidsim.UI
 {
     public class DraggableWindowScript : MonoBehaviour, IDragHandler, IEndDragHandler
     {
@@ -20,7 +19,7 @@ namespace susy_baka.raidsim.UserInterface
         private Vector2 widgetTransformDefaultPosition;
         private Vector2 targetTransformDefaultPosition;
 
-        void Awake()
+        private void Awake()
         {
             widgetTransformDefaultPosition = widgetTransform.anchoredPosition;
             targetTransformDefaultPosition = targetTransform.anchoredPosition;

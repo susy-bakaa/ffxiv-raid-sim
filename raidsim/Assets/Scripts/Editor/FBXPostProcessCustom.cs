@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEditor;
-using susy_baka.Shared.Utils;
+using dev.susybaka.raidsim.Core;
 
 // For this thing to work, you need to first edit one of the clips included with the model, no idea why Unity works that way but it just does.
 // I will then go through and update the naming and animation events of all the available clips included in the model.
 // Source: https://discussions.unity.com/t/editor-script-for-editing-animation-settings-after-import/494941/2
-namespace susy_baka.WaveSurvivalGame.Editor
+namespace dev.susybaka.Shared.Editor
 {
     public class FBXPostProcessCustom : AssetPostprocessor
     {
-        void OnPostprocessModel(GameObject g)
+        private void OnPostprocessModel(GameObject g)
         {
             ModelImporter modelImporter = assetImporter as ModelImporter;
 

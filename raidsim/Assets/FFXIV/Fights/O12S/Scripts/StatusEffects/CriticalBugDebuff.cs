@@ -1,30 +1,35 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using dev.susybaka.raidsim.Characters;
+using dev.susybaka.raidsim.Core;
+using dev.susybaka.raidsim.Mechanics;
 
-public class CriticalBugDebuff : StatusEffect
+namespace dev.susybaka.raidsim.StatusEffects
 {
-    [Header("Function")]
-    public GameObject spawnObjectPrefab;
-    public StatusEffectData inflictsStatusEffect;
-    public List<StatusEffectData> cleansStatusEffects = new List<StatusEffectData>();
-
-    public override void OnExpire(CharacterState state)
+    public class CriticalBugDebuff : StatusEffect
     {
-        GameObject spawned = Instantiate(spawnObjectPrefab, state.transform.position, state.transform.rotation, FightTimeline.Instance.mechanicParent);
-        if (spawned.TryGetComponent(out DamageTrigger damageTrigger))
+        [Header("Function")]
+        public GameObject spawnObjectPrefab;
+        public StatusEffectData inflictsStatusEffect;
+        public List<StatusEffectData> cleansStatusEffects = new List<StatusEffectData>();
+
+        public override void OnExpire(CharacterState state)
         {
-            damageTrigger.owner = state;
-        }
-        state.AddEffect(inflictsStatusEffect, state);
-        if (cleansStatusEffects != null && cleansStatusEffects.Count > 0 )
-        {
-            for (int i = 0; i < cleansStatusEffects.Count; i++)
+            GameObject spawned = Instantiate(spawnObjectPrefab, state.transform.position, state.transform.rotation, FightTimeline.Instance.mechanicParent);
+            if (spawned.TryGetComponent(out DamageTrigger damageTrigger))
             {
-                if (state.HasEffect(cleansStatusEffects[i].statusName))
-                    state.RemoveEffect(cleansStatusEffects[i].statusName, false, state);
+                damageTrigger.owner = state;
             }
+            state.AddEffect(inflictsStatusEffect, state);
+            if (cleansStatusEffects != null && cleansStatusEffects.Count > 0)
+            {
+                for (int i = 0; i < cleansStatusEffects.Count; i++)
+                {
+                    if (state.HasEffect(cleansStatusEffects[i].statusName))
+                        state.RemoveEffect(cleansStatusEffects[i].statusName, false, state);
+                }
+            }
+            base.OnExpire(state);
         }
-        base.OnExpire(state);
     }
 }

@@ -1,27 +1,28 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ToggleImage : MonoBehaviour
+namespace dev.susybaka.raidsim.UI
 {
-    public Sprite off;
-    public Sprite on;
-    public Image target;
-    public bool CurrentState => state;
-
-    private bool state;
-
-    public void Toggle(bool state)
+    public class ToggleImage : MonoBehaviour
     {
-        this.state = state;
-        if (state)
+        public Sprite off;
+        public Sprite on;
+        public Image target;
+        public bool CurrentState => state;
+
+        private bool state;
+
+        public void Toggle(bool state)
         {
-            target.sprite = on;
-        }
-        else
-        {
-            target.sprite = off;
+            this.state = state;
+            if (state)
+            {
+                target.sprite = on;
+            }
+            else
+            {
+                target.sprite = off;
+            }
         }
     }
 }

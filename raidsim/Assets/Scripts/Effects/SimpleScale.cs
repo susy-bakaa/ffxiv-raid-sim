@@ -1,74 +1,75 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class SimpleScale : MonoBehaviour
+namespace dev.susybaka.raidsim.Visuals
 {
-    public Vector3 scale;
-    public bool setScale = false;
-    public bool onUpdate = true;
-    public float duration = 0.5f;
-
-    private Vector3 originalScale;
-    private bool scaled;
-
-    private void Awake()
+    public class SimpleScale : MonoBehaviour
     {
-        originalScale = transform.localScale;
-        scaled = false;
-    }
+        public Vector3 scale;
+        public bool setScale = false;
+        public bool onUpdate = true;
+        public float duration = 0.5f;
 
-    void Update()
-    {
-        if (!onUpdate)
-            return;
+        private Vector3 originalScale;
+        private bool scaled;
 
-        Scale();
-    }
-
-    public void Scale()
-    {
-        if (scaled)
-            return;
-
-        if (!setScale)
+        private void Awake()
         {
-            if (scale != Vector3.zero)
+            originalScale = transform.localScale;
+            scaled = false;
+        }
+
+        private void Update()
+        {
+            if (!onUpdate)
+                return;
+
+            Scale();
+        }
+
+        public void Scale()
+        {
+            if (scaled)
+                return;
+
+            if (!setScale)
+            {
+                if (scale != Vector3.zero)
+                {
+                    scaled = true;
+                    transform.LeanScale(scale, duration);
+                }
+            }
+            else
             {
                 scaled = true;
-                transform.LeanScale(scale, duration);
+                transform.localScale = scale;
             }
         }
-        else
-        {
-            scaled = true;
-            transform.localScale = scale;
-        }
-    }
 
-    public void ResetScale()
-    {
-        if (!scaled)
-            return;
-
-        if (!setScale)
+        public void ResetScale()
         {
-            if (originalScale != Vector3.zero)
+            if (!scaled)
+                return;
+
+            if (!setScale)
             {
-                scaled = false;
-                transform.LeanScale(originalScale, duration);
+                if (originalScale != Vector3.zero)
+                {
+                    scaled = false;
+                    transform.LeanScale(originalScale, duration);
+                }
+                else
+                {
+                    scaled = false;
+                    originalScale = new Vector3(0.01f, 0.01f, 0.01f);
+                    transform.localScale = originalScale;
+                }
             }
             else
             {
                 scaled = false;
-                originalScale = new Vector3(0.01f, 0.01f, 0.01f);
                 transform.localScale = originalScale;
             }
-        }
-        else
-        {
-            scaled = false;
-            transform.localScale = originalScale;
         }
     }
 }

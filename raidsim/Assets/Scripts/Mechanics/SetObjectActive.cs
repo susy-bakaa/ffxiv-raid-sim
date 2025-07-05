@@ -1,24 +1,27 @@
 using UnityEngine;
 
-public class SetObjectActive : MonoBehaviour
+namespace dev.susybaka.raidsim
 {
-    public GameObject objectToSet;
-    public bool setChildrenToo;
-
-    public void SetActiveTo(bool active)
+    public class SetObjectActive : MonoBehaviour
     {
-        SetObjectActiveTo(objectToSet, active);
-    }
+        public GameObject objectToSet;
+        public bool setChildrenToo;
 
-    private void SetObjectActiveTo(GameObject obj, bool active)
-    {
-        obj.SetActive(active);
-
-        if (setChildrenToo)
+        public void SetActiveTo(bool active)
         {
-            foreach (Transform child in obj.transform)
+            SetObjectActiveTo(objectToSet, active);
+        }
+
+        private void SetObjectActiveTo(GameObject obj, bool active)
+        {
+            obj.SetActive(active);
+
+            if (setChildrenToo)
             {
-                SetObjectActiveTo(child.gameObject, active);
+                foreach (Transform child in obj.transform)
+                {
+                    SetObjectActiveTo(child.gameObject, active);
+                }
             }
         }
     }

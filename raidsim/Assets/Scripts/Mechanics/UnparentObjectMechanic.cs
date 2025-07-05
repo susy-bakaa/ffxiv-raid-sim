@@ -1,34 +1,36 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using static GlobalData;
+using dev.susybaka.Shared;
+using static dev.susybaka.raidsim.Core.GlobalData;
 
-public class UnparentObjectMechanic : FightMechanic
+namespace dev.susybaka.raidsim.Mechanics
 {
-    [Header("Unparent Settings")]
-    public Transform target;
-    public Transform newParent;
-    public string newParentName;
-    public UnityEvent<GameObject> onExecute;
-
-    private void Awake()
+    public class UnparentObjectMechanic : FightMechanic
     {
-        if (newParent == null && !string.IsNullOrEmpty(newParentName))
+        [Header("Unparent Settings")]
+        public Transform target;
+        public Transform newParent;
+        public string newParentName;
+        public UnityEvent<GameObject> onExecute;
+
+        private void Awake()
         {
-            newParent = Utilities.FindAnyByName(newParentName).transform;
+            if (newParent == null && !string.IsNullOrEmpty(newParentName))
+            {
+                newParent = Utilities.FindAnyByName(newParentName).transform;
+            }
         }
-    }
 
-    public override void TriggerMechanic(ActionInfo actionInfo)
-    {
-        if (!CanTrigger(actionInfo))
-            return;
-
-        if (target != null)
+        public override void TriggerMechanic(ActionInfo actionInfo)
         {
-            target.SetParent(newParent);
-            onExecute.Invoke(target.gameObject);
+            if (!CanTrigger(actionInfo))
+                return;
+
+            if (target != null)
+            {
+                target.SetParent(newParent);
+                onExecute.Invoke(target.gameObject);
+            }
         }
     }
 }

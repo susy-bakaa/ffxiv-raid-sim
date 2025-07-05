@@ -1,141 +1,144 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using dev.susybaka.raidsim.Core;
 
-public class FadeOnStart : MonoBehaviour
+namespace dev.susybaka.raidsim.UI
 {
-    CanvasGroup group;
-
-    public float delay = 1f;
-    private float previousDelay = -1;
-    private float wasDelay;
-    public float duration = 1f;
-    public bool repeatOnReset = false;
-    private bool wasRepeatOnReset;
-
-    private int id = 0;
-    private Coroutine ieFadeDelay;
-
-    void Awake()
+    public class FadeOnStart : MonoBehaviour
     {
-        group = GetComponent<CanvasGroup>();
-        group.alpha = 1f;
-        id = Random.Range(1000, 10000);
+        CanvasGroup group;
 
-        wasRepeatOnReset = repeatOnReset;
-        wasDelay = delay;
-    }
+        public float delay = 1f;
+        private float previousDelay = -1;
+        private float wasDelay;
+        public float duration = 1f;
+        public bool repeatOnReset = false;
+        private bool wasRepeatOnReset;
 
-    void Start()
-    {
-        if (delay > 0f)
+        private int id = 0;
+        private Coroutine ieFadeDelay;
+
+        private void Awake()
         {
-            if (ieFadeDelay == null && gameObject.scene.isLoaded && gameObject.activeSelf)
+            group = GetComponent<CanvasGroup>();
+            group.alpha = 1f;
+            id = Random.Range(1000, 10000);
+
+            wasRepeatOnReset = repeatOnReset;
+            wasDelay = delay;
+        }
+
+        private void Start()
+        {
+            if (delay > 0f)
             {
-                ieFadeDelay = StartCoroutine(IE_FadeDelay(new WaitForSecondsRealtime(delay), false));
+                if (ieFadeDelay == null && gameObject.scene.isLoaded && gameObject.activeSelf)
+                {
+                    ieFadeDelay = StartCoroutine(IE_FadeDelay(new WaitForSecondsRealtime(delay), false));
+                }
+            }
+            else
+            {
+                if (duration > 0f)
+                    group.LeanAlpha(0f, duration);
+                else
+                    group.alpha = 0f;
+            }
+
+            if (previousDelay < 0)
+                previousDelay = delay;
+            else
+                delay = previousDelay;
+        }
+
+        private void OnEnable()
+        {
+            if (repeatOnReset && FightTimeline.Instance != null)
+            {
+                FightTimeline.Instance.onReset.AddListener(OnReset);
             }
         }
-        else
+
+        private void OnDisable()
+        {
+            if (repeatOnReset && FightTimeline.Instance != null)
+            {
+                FightTimeline.Instance.onReset.RemoveListener(OnReset);
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (repeatOnReset && FightTimeline.Instance != null)
+            {
+                FightTimeline.Instance.onReset.RemoveListener(OnReset);
+            }
+        }
+
+        private void OnReset()
+        {
+            repeatOnReset = wasRepeatOnReset;
+            delay = wasDelay;
+            if (repeatOnReset)
+                Start();
+        }
+
+        public void FadeToTransition(float delay)
         {
             if (duration > 0f)
-                group.LeanAlpha(0f, duration);
-            else
-                group.alpha = 0f;
-        }
-
-        if (previousDelay < 0)
-            previousDelay = delay;
-        else
-            delay = previousDelay;
-    }
-
-    private void OnEnable()
-    {
-        if (repeatOnReset && FightTimeline.Instance != null)
-        {
-            FightTimeline.Instance.onReset.AddListener(OnReset);
-        }
-    }
-
-    private void OnDisable()
-    {
-        if (repeatOnReset && FightTimeline.Instance != null)
-        {
-            FightTimeline.Instance.onReset.RemoveListener(OnReset);
-        }
-    }
-
-    private void OnDestroy()
-    {
-        if (repeatOnReset && FightTimeline.Instance != null)
-        {
-            FightTimeline.Instance.onReset.RemoveListener(OnReset);
-        }
-    }
-
-    private void OnReset()
-    {
-        repeatOnReset = wasRepeatOnReset;
-        delay = wasDelay;
-        if (repeatOnReset)
-            Start();
-    }
-
-    public void FadeToTransition(float delay)
-    {
-        if (duration > 0f)
-        {
-            group.LeanAlpha(1f, duration).setOnComplete(() =>
             {
+                group.LeanAlpha(1f, duration).setOnComplete(() =>
+                {
+                    if (delay >= 0f)
+                        this.delay = delay;
+                    Start();
+                });
+            }
+            else
+            {
+                group.alpha = 1f;
                 if (delay >= 0f)
                     this.delay = delay;
                 Start();
-            });
-        }
-        else
-        {
-            group.alpha = 1f;
-            if (delay >= 0f)
-                this.delay = delay;
-            Start();
-        }
-    }
-
-    public void FadeToBlack(float delay)
-    {
-        if (delay > 0f)
-        {
-            if (ieFadeDelay == null && gameObject.scene.isLoaded && gameObject.activeSelf)
-            {
-                ieFadeDelay = StartCoroutine(IE_FadeDelay(new WaitForSecondsRealtime(delay), true));
             }
         }
-        else
-        {
-            if (duration > 0f)
-                group.LeanAlpha(0f, duration);
-            else
-                group.LeanAlpha(1f, duration);
-        }
-    }
 
-    private IEnumerator IE_FadeDelay(WaitForSecondsRealtime wait, bool fadeOut)
-    {
-        yield return wait;
-        if (fadeOut)
+        public void FadeToBlack(float delay)
         {
-            if (duration > 0f)
-                group.LeanAlpha(1f, duration);
+            if (delay > 0f)
+            {
+                if (ieFadeDelay == null && gameObject.scene.isLoaded && gameObject.activeSelf)
+                {
+                    ieFadeDelay = StartCoroutine(IE_FadeDelay(new WaitForSecondsRealtime(delay), true));
+                }
+            }
             else
-                group.alpha = 1f;
+            {
+                if (duration > 0f)
+                    group.LeanAlpha(0f, duration);
+                else
+                    group.LeanAlpha(1f, duration);
+            }
         }
-        else
+
+        private IEnumerator IE_FadeDelay(WaitForSecondsRealtime wait, bool fadeOut)
         {
-            if (duration > 0f)
-                group.LeanAlpha(0f, duration);
+            yield return wait;
+            if (fadeOut)
+            {
+                if (duration > 0f)
+                    group.LeanAlpha(1f, duration);
+                else
+                    group.alpha = 1f;
+            }
             else
-                group.LeanAlpha(0f, duration);
+            {
+                if (duration > 0f)
+                    group.LeanAlpha(0f, duration);
+                else
+                    group.LeanAlpha(0f, duration);
+            }
+            ieFadeDelay = null;
         }
-        ieFadeDelay = null;
     }
 }

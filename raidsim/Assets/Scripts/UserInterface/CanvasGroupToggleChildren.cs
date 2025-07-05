@@ -1,61 +1,62 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(CanvasGroup))]
-public class CanvasGroupToggleChildren : MonoBehaviour
+namespace dev.susybaka.raidsim
 {
-    private CanvasGroup group;
-    public CanvasGroup Group => group;
-    private bool done = false;
-
-    private void Awake()
+    [RequireComponent(typeof(CanvasGroup))]
+    public class CanvasGroupToggleChildren : MonoBehaviour
     {
-        group = GetComponent<CanvasGroup>();
-    }
+        private CanvasGroup group;
+        public CanvasGroup Group => group;
+        private bool done = false;
 
-    private void Update()
-    {
-        if (group == null)
-            return;
-
-        if (!done && group.alpha > 0f)
+        private void Awake()
         {
-            done = true;
-            foreach (Transform child in group.transform)
+            group = GetComponent<CanvasGroup>();
+        }
+
+        private void Update()
+        {
+            if (group == null)
+                return;
+
+            if (!done && group.alpha > 0f)
             {
-                child.gameObject.SetActive(true);
+                done = true;
+                foreach (Transform child in group.transform)
+                {
+                    child.gameObject.SetActive(true);
+                }
+            }
+            else if (done && group.alpha <= 0f)
+            {
+                done = false;
+                foreach (Transform child in group.transform)
+                {
+                    child.gameObject.SetActive(false);
+                }
             }
         }
-        else if (done && group.alpha <= 0f)
-        {
-            done = false;
-            foreach (Transform child in group.transform)
-            {
-                child.gameObject.SetActive(false);
-            }
-        }
-    }
 
-    public void UpdateState()
-    {
-        if (group == null)
-            return;
+        public void UpdateState()
+        {
+            if (group == null)
+                return;
 
-        if (group.alpha > 0f)
-        {
-            done = true;
-            foreach (Transform child in group.transform)
+            if (group.alpha > 0f)
             {
-                child.gameObject.SetActive(false);
+                done = true;
+                foreach (Transform child in group.transform)
+                {
+                    child.gameObject.SetActive(false);
+                }
             }
-        }
-        else if (group.alpha <= 0f)
-        {
-            done = false;
-            foreach (Transform child in group.transform)
+            else if (group.alpha <= 0f)
             {
-                child.gameObject.SetActive(true);
+                done = false;
+                foreach (Transform child in group.transform)
+                {
+                    child.gameObject.SetActive(true);
+                }
             }
         }
     }

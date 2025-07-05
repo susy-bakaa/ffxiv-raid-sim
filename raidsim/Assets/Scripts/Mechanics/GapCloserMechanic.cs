@@ -1,111 +1,112 @@
 using System.Collections;
-using System.Collections.Generic;
-using NaughtyAttributes;
-using Unity.VisualScripting;
 using UnityEngine;
-using static GlobalData;
+using NaughtyAttributes;
+using static dev.susybaka.raidsim.Core.GlobalData;
 
-public class GapCloserMechanic : FightMechanic
+namespace dev.susybaka.raidsim.Mechanics
 {
-    [Header("Gap Closer Settings")]
-    public bool lockMovement = true;
-    public bool lockActions = true;
-    public bool fakeKnockback = false;
-    [ShowIf("fakeKnockback")] public bool canBeResisted = false;
-    public float duration = 0.5f;
-    public float delay = 0.25f;
-    public float maxMelee = 1.5f;
-    public LeanTweenType ease = LeanTweenType.easeInOutQuad;
-    public Axis moveAxis = new Axis(true, false, true);
-    public Transform overrideTarget;
-
-    Coroutine ieDelayedMovement;
-    LTDescr tween;
-    Vector3 startPosition;
-
-    public override void TriggerMechanic(ActionInfo actionInfo)
+    public class GapCloserMechanic : FightMechanic
     {
-        if (!CanTrigger(actionInfo))
-            return;
+        [Header("Gap Closer Settings")]
+        public bool lockMovement = true;
+        public bool lockActions = true;
+        public bool fakeKnockback = false;
+        [ShowIf("fakeKnockback")] public bool canBeResisted = false;
+        public float duration = 0.5f;
+        public float delay = 0.25f;
+        public float maxMelee = 1.5f;
+        public LeanTweenType ease = LeanTweenType.easeInOutQuad;
+        public Axis moveAxis = new Axis(true, false, true);
+        public Transform overrideTarget;
 
-        if (fakeKnockback)
+        Coroutine ieDelayedMovement;
+        LTDescr tween;
+        Vector3 startPosition;
+
+        public override void TriggerMechanic(ActionInfo actionInfo)
         {
-            bool resisted = (actionInfo.source.knockbackResistant.value && canBeResisted) || actionInfo.source.bound.value || actionInfo.source.dead;
-
-            if (resisted)
+            if (!CanTrigger(actionInfo))
                 return;
-        }
 
-        if (actionInfo.source != null && (actionInfo.target != null || overrideTarget != null))
-        {
-            startPosition = actionInfo.source.transform.position;
-
-            if ((actionInfo.target?.targetController != null && actionInfo.target?.targetController?.self != null) || overrideTarget != null)
+            if (fakeKnockback)
             {
-                if (lockMovement)
-                    actionInfo.source.uncontrollable.SetFlag($"{mechanicName}_GapCloser", true);
-                if (lockActions)
-                    actionInfo.source.canDoActions.SetFlag($"{mechanicName}_GapCloser", true);
-                if (delay > 0)
+                bool resisted = (actionInfo.source.knockbackResistant.value && canBeResisted) || actionInfo.source.bound.value || actionInfo.source.dead;
+
+                if (resisted)
+                    return;
+            }
+
+            if (actionInfo.source != null && (actionInfo.target != null || overrideTarget != null))
+            {
+                startPosition = actionInfo.source.transform.position;
+
+                if ((actionInfo.target?.targetController != null && actionInfo.target?.targetController?.self != null) || overrideTarget != null)
                 {
-                    if (ieDelayedMovement == null)
-                        ieDelayedMovement = StartCoroutine(DelayedMovement(actionInfo, new WaitForSeconds(delay)));
-                }
-                else
-                {
-                    MoveToTarget(actionInfo);
+                    if (lockMovement)
+                        actionInfo.source.uncontrollable.SetFlag($"{mechanicName}_GapCloser", true);
+                    if (lockActions)
+                        actionInfo.source.canDoActions.SetFlag($"{mechanicName}_GapCloser", true);
+                    if (delay > 0)
+                    {
+                        if (ieDelayedMovement == null)
+                            ieDelayedMovement = StartCoroutine(DelayedMovement(actionInfo, new WaitForSeconds(delay)));
+                    }
+                    else
+                    {
+                        MoveToTarget(actionInfo);
+                    }
                 }
             }
         }
-    }
 
-    public override void InterruptMechanic(ActionInfo actionInfo)
-    {
-        StopAllCoroutines();
-        ieDelayedMovement = null;
-        if (tween != null)
-            tween.reset();
-        if (actionInfo.source != null)
+        public override void InterruptMechanic(ActionInfo actionInfo)
         {
-            actionInfo.source.transform.position = startPosition;
+            StopAllCoroutines();
+            ieDelayedMovement = null;
+            if (tween != null)
+                tween.reset();
+            if (actionInfo.source != null)
+            {
+                actionInfo.source.transform.position = startPosition;
+            }
+            ResetState(actionInfo);
         }
-        ResetState(actionInfo);
-    }
 
-    private IEnumerator DelayedMovement(ActionInfo actionInfo, WaitForSeconds wait)
-    {
-        yield return wait;
-        MoveToTarget(actionInfo);
-    }
-
-    private void MoveToTarget(ActionInfo actionInfo)
-    {
-        Transform target = overrideTarget != null ? overrideTarget : actionInfo.target?.targetController?.self?.transform;
-        float hitboxRadius = 0f;
-        if (actionInfo.target != null && actionInfo.target.targetController != null && actionInfo.target.targetController.self != null)
-            hitboxRadius = actionInfo.target.targetController.self.hitboxRadius;
-
-        Vector3 originalPosition = actionInfo.source.transform.position;
-        Vector3 direction = (target.position - actionInfo.source.transform.position).normalized;
-        Vector3 targetPosition = target.position - direction * (hitboxRadius + maxMelee);
-        if (!moveAxis.x)
-            targetPosition.x = 0f;
-        if (!moveAxis.y)
-            targetPosition.y = 0f;
-        if (!moveAxis.z)
-            targetPosition.z = 0f;
-        tween = actionInfo.source.transform.LeanMove(targetPosition, duration).setEase(ease).setOnUpdate((float _) => { if (actionInfo.source.dead) { LeanTween.cancel(tween.id); actionInfo.source.transform.position = originalPosition; } }).setOnComplete(() => ResetState(actionInfo));
-    }
-
-    private void ResetState(ActionInfo actionInfo)
-    {
-        ieDelayedMovement = null;
-        if (actionInfo.source != null)
+        private IEnumerator DelayedMovement(ActionInfo actionInfo, WaitForSeconds wait)
         {
-            if (lockMovement)
-                actionInfo.source.uncontrollable.RemoveFlag($"{mechanicName}_GapCloser");
-            if (lockActions)
-                actionInfo.source.canDoActions.RemoveFlag($"{mechanicName}_GapCloser");
+            yield return wait;
+            MoveToTarget(actionInfo);
+        }
+
+        private void MoveToTarget(ActionInfo actionInfo)
+        {
+            Transform target = overrideTarget != null ? overrideTarget : actionInfo.target?.targetController?.self?.transform;
+            float hitboxRadius = 0f;
+            if (actionInfo.target != null && actionInfo.target.targetController != null && actionInfo.target.targetController.self != null)
+                hitboxRadius = actionInfo.target.targetController.self.hitboxRadius;
+
+            Vector3 originalPosition = actionInfo.source.transform.position;
+            Vector3 direction = (target.position - actionInfo.source.transform.position).normalized;
+            Vector3 targetPosition = target.position - direction * (hitboxRadius + maxMelee);
+            if (!moveAxis.x)
+                targetPosition.x = 0f;
+            if (!moveAxis.y)
+                targetPosition.y = 0f;
+            if (!moveAxis.z)
+                targetPosition.z = 0f;
+            tween = actionInfo.source.transform.LeanMove(targetPosition, duration).setEase(ease).setOnUpdate((float _) => { if (actionInfo.source.dead) { LeanTween.cancel(tween.id); actionInfo.source.transform.position = originalPosition; } }).setOnComplete(() => ResetState(actionInfo));
+        }
+
+        private void ResetState(ActionInfo actionInfo)
+        {
+            ieDelayedMovement = null;
+            if (actionInfo.source != null)
+            {
+                if (lockMovement)
+                    actionInfo.source.uncontrollable.RemoveFlag($"{mechanicName}_GapCloser");
+                if (lockActions)
+                    actionInfo.source.canDoActions.RemoveFlag($"{mechanicName}_GapCloser");
+            }
         }
     }
 }

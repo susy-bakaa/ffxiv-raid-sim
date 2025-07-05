@@ -1,34 +1,36 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using static GlobalData;
+using dev.susybaka.raidsim.Characters;
+using static dev.susybaka.raidsim.Core.GlobalData;
 
-public class DamageOvertimeDebuff : StatusEffect
+namespace dev.susybaka.raidsim.StatusEffects
 {
-    public bool instantDeath = false;
-    public bool stacksMultiplyDamage = false;
-
-    public void Reset()
+    public class DamageOvertimeDebuff : StatusEffect
     {
-        damage = new Damage(-1000, true, string.Empty);
-    }
+        public bool instantDeath = false;
+        public bool stacksMultiplyDamage = false;
 
-    public override void OnTick(CharacterState state)
-    {
-        if (stacksMultiplyDamage)
+        public void Reset()
         {
-            int stacks = 1;
-
-            if (this.stacks > 1)
-                stacks = this.stacks;
-
-            state.ModifyHealth(new Damage(damage, Mathf.RoundToInt(damage.value * stacks), data.negative), instantDeath, data.hidden);
-        }
-        else
-        {
-            state.ModifyHealth(new Damage(damage, data.negative), instantDeath, data.hidden);
+            damage = new Damage(-1000, true, string.Empty);
         }
 
-        base.OnTick(state);
+        public override void OnTick(CharacterState state)
+        {
+            if (stacksMultiplyDamage)
+            {
+                int stacks = 1;
+
+                if (this.stacks > 1)
+                    stacks = this.stacks;
+
+                state.ModifyHealth(new Damage(damage, Mathf.RoundToInt(damage.value * stacks), data.negative), instantDeath, data.hidden);
+            }
+            else
+            {
+                state.ModifyHealth(new Damage(damage, data.negative), instantDeath, data.hidden);
+            }
+
+            base.OnTick(state);
+        }
     }
 }

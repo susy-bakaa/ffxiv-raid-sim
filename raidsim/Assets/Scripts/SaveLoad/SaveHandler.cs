@@ -1,101 +1,102 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class SaveHandler : MonoBehaviour
+namespace dev.susybaka.raidsim.SaveLoad
 {
-    public static SaveHandler Instance;
-
-    private string[] saveData;
-#if UNITY_EDITOR
-    public string[] SaveData;
-    public string[] SavedData;
-    public string savedDataString;
-
-    [NaughtyAttributes.Button]
-    public void TestSave() 
+    public class SaveHandler : MonoBehaviour
     {
-        SaveToPlayerPrefs();
-    }
+        public static SaveHandler Instance;
+
+        private string[] saveData;
+#if UNITY_EDITOR
+        public string[] SaveData;
+        public string[] SavedData;
+        public string savedDataString;
+
+        [NaughtyAttributes.Button]
+        public void TestSave()
+        {
+            SaveToPlayerPrefs();
+        }
 #endif
 
-    private void Awake()
-    {
+        private void Awake()
+        {
 #if UNITY_WEBPLAYER
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-        if (PlayerPrefs.HasKey("Config"))
-        {
-            string loadedString = PlayerPrefs.GetString("Config");
-
-            List<string> loadedData = new List<string>(loadedString.Split('&'));
-
-            for (int i = 0; i < loadedData.Count; i++)
+            if (Instance == null)
             {
-                if (loadedData[i] == "%")
+                Instance = this;
+                DontDestroyOnLoad(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+            if (PlayerPrefs.HasKey("Config"))
+            {
+                string loadedString = PlayerPrefs.GetString("Config");
+
+                List<string> loadedData = new List<string>(loadedString.Split('&'));
+
+                for (int i = 0; i < loadedData.Count; i++)
                 {
-                    loadedData[i] = string.Empty;
+                    if (loadedData[i] == "%")
+                    {
+                        loadedData[i] = string.Empty;
+                    }
+                }
+
+                saveData = loadedData.ToArray();
+            }
+#else
+            Debug.Log("Not a WebGL build -> SaveHandler was destroyed!");
+            Destroy(gameObject);
+            return;
+#endif
+        }
+
+#if UNITY_EDITOR
+        private void Update()
+        {
+            SaveData = saveData;
+        }
+#endif
+
+        private void SaveToPlayerPrefs()
+        {
+            string[] dataToSave = new string[saveData.Length];
+
+            for (int i = 0; i < dataToSave.Length; i++)
+            {
+                dataToSave[i] = saveData[i];
+
+                if (string.IsNullOrEmpty(dataToSave[i]))
+                {
+                    dataToSave[i] = "%";
                 }
             }
 
-            saveData = loadedData.ToArray();
-        }
-#else
-        Debug.Log("Not a WebGL build -> SaveHandler was destroyed!");
-        Destroy(gameObject);
-        return;
-#endif
-    }
-
 #if UNITY_EDITOR
-    private void Update()
-    {
-        SaveData = saveData;
-    }
+            SavedData = dataToSave;
+            savedDataString = string.Join('&', dataToSave);
 #endif
 
-    private void SaveToPlayerPrefs()
-    {
-        string[] dataToSave = new string[saveData.Length];
+            PlayerPrefs.SetString("Config", string.Join('&', dataToSave));
+            PlayerPrefs.Save();
+        }
 
-        for (int i = 0; i < dataToSave.Length; i++)
+        public void Write(string[] lines)
         {
-            dataToSave[i] = saveData[i];
-
-            if (string.IsNullOrEmpty(dataToSave[i]))
+            if (lines != null && lines.Length > 0)
             {
-                dataToSave[i] = "%";
+                saveData = lines;
             }
+
+            SaveToPlayerPrefs();
         }
 
-#if UNITY_EDITOR
-        SavedData = dataToSave;
-        savedDataString = string.Join('&', dataToSave);
-#endif
-
-        PlayerPrefs.SetString("Config", string.Join('&', dataToSave));
-        PlayerPrefs.Save();
-    }
-
-    public void Write(string[] lines)
-    {
-        if (lines != null && lines.Length > 0)
+        public string[] Load()
         {
-            saveData = lines;
+            return saveData;
         }
-
-        SaveToPlayerPrefs();
-    }
-
-    public string[] Load()
-    {
-        return saveData;
     }
 }

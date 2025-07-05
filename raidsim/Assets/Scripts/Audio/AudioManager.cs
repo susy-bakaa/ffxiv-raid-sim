@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
@@ -24,7 +23,7 @@ namespace dev.susybaka.Shared.Audio
 
         private AudioSource templateSource;
 
-        void Awake()
+        private void Awake()
         {
             if (Instance != null)
             {

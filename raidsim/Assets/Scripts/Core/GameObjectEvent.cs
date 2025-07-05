@@ -1,23 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class GameObjectEvent : MonoBehaviour
+namespace dev.susybaka.raidsim.Events
 {
-    public GameObject target;
-    public UnityEvent<GameObject> m_event;
-
-    private void Awake()
+    public class GameObjectEvent : MonoBehaviour
     {
-        if (target == null)
+        public GameObject target;
+        public UnityEvent<GameObject> m_event;
+
+        private void Awake()
         {
-            target = gameObject;
+            if (target == null)
+            {
+                target = gameObject;
+            }
         }
-    }
 
-    public void BasicGameObjectEvent()
-    {
-        m_event.Invoke(target);
+        public void BasicGameObjectEvent()
+        {
+            m_event.Invoke(target);
+        }
     }
 }
