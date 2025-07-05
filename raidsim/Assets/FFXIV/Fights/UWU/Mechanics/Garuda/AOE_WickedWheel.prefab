@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 3849263378146598750}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 5, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -134,7 +134,7 @@ Transform:
   m_GameObject: {fileID: 4162137549207503233}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 5, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -222,11 +222,10 @@ GameObject:
   m_Component:
   - component: {fileID: 3085135588893668244}
   - component: {fileID: 383948166382945804}
-  - component: {fileID: 2001367913838979580}
-  - component: {fileID: 3799639059380124778}
   - component: {fileID: 8119704914481502265}
   - component: {fileID: 7548860378786856858}
   - component: {fileID: 6868299651153619431}
+  - component: {fileID: 7485899407065873059}
   m_Layer: 0
   m_Name: AOE_WickedWheel
   m_TagString: Untagged
@@ -244,8 +243,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 7, y: 1, z: 7}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 488252762819424803}
   - {fileID: 3145032812830141691}
@@ -274,7 +273,7 @@ MonoBehaviour:
   onTrigger:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2001367913838979580}
+      - m_Target: {fileID: 4623105184884614879}
         m_TargetAssemblyTypeName: SimpleScale, Assembly-CSharp
         m_MethodName: Scale
         m_Mode: 1
@@ -286,7 +285,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 3799639059380124778}
+      - m_Target: {fileID: 5298749015552943784}
         m_TargetAssemblyTypeName: SimpleScale, Assembly-CSharp
         m_MethodName: Scale
         m_Mode: 1
@@ -298,38 +297,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &2001367913838979580
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5666687548012896243}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d05cb3927fce93948a7624acfed3516d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scale: {x: 0, y: 0, z: 0}
-  setScale: 1
-  onUpdate: 0
-  duration: 0
---- !u!114 &3799639059380124778
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5666687548012896243}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d05cb3927fce93948a7624acfed3516d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scale: {x: 7, y: 1, z: 7}
-  setScale: 0
-  onUpdate: 0
-  duration: 0.3
 --- !u!114 &8119704914481502265
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -347,7 +314,7 @@ MonoBehaviour:
   onlyTriggerOnce: 0
   global: 0
   log: 0
-  startAutomatically: 0
+  startAutomatically: 1
   delay: 2.7
   onDelayedTrigger:
     m_PersistentCalls:
@@ -373,6 +340,18 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 7485899407065873059}
+        m_TargetAssemblyTypeName: DestroyObject, Assembly-CSharp
+        m_MethodName: TriggerDestruction
+        m_Mode: 4
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 2.5
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
@@ -404,6 +383,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectToSet: {fileID: 4162137549207503233}
   setChildrenToo: 0
+--- !u!114 &7485899407065873059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5666687548012896243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 978fd0b79b45324438a8cccb67660064, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lifetime: -1
+  disableInstead: 0
+  disabledOnStart: 0
+  log: 0
+  onDestroy:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7323188127178635372
 GameObject:
   m_ObjectHideFlags: 0
@@ -433,7 +431,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.000000029802319, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -0}
-  m_LocalScale: {x: 7, y: 7, z: 7}
+  m_LocalScale: {x: 1.25, y: 1.25, z: 1.25}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 3085135588893668244}
@@ -484,7 +482,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.179
+  m_Radius: 7
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &4784745886605654173
 MonoBehaviour:
@@ -601,6 +599,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 488252762819424803}
+  - component: {fileID: 4623105184884614879}
+  - component: {fileID: 5298749015552943784}
   m_Layer: 0
   m_Name: Pivot
   m_TagString: Untagged
@@ -617,11 +617,43 @@ Transform:
   m_GameObject: {fileID: 7695223556922228577}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0.05, z: 0}
+  m_LocalScale: {x: 7, y: 7, z: 7}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 6870181099664399852}
   - {fileID: 3385039926776906754}
   m_Father: {fileID: 3085135588893668244}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!114 &4623105184884614879
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7695223556922228577}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d05cb3927fce93948a7624acfed3516d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scale: {x: 0, y: 0, z: 0}
+  setScale: 1
+  onUpdate: 0
+  duration: 0
+--- !u!114 &5298749015552943784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7695223556922228577}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d05cb3927fce93948a7624acfed3516d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scale: {x: 7, y: 7, z: 7}
+  setScale: 0
+  onUpdate: 0
+  duration: 0.3
