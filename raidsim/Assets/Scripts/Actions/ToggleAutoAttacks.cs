@@ -1,60 +1,62 @@
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using TMPro;
+using dev.susybaka.Shared;
 
-public class ToggleAutoAttacks : MonoBehaviour
+namespace dev.susybaka.raidsim.Actions
 {
-    [SerializeField] private ActionController actionController;
-    [SerializeField] private TextMeshProUGUI statusText;
-    public UnityEvent<bool> onToggle;
-
-    bool state = false;
-
-    private void Start()
+    public class ToggleAutoAttacks : MonoBehaviour
     {
-        if (actionController != null)
-            state = actionController.autoAttackEnabled;
-        if (statusText != null)
-        {
-            statusText.text = this.state ? "<color=green>ON</color>" : "<color=red>OFF</color>";
-        }
-    }
+        [SerializeField] private ActionController actionController;
+        [SerializeField] private TextMeshProUGUI statusText;
+        public UnityEvent<bool> onToggle;
 
-    void Update()
-    {
-        if (actionController == null)
-            return;
+        bool state = false;
 
-        if (Utilities.RateLimiter(63))
+        private void Start()
         {
-            state = actionController.autoAttackEnabled;
+            if (actionController != null)
+                state = actionController.autoAttackEnabled;
             if (statusText != null)
             {
                 statusText.text = this.state ? "<color=green>ON</color>" : "<color=red>OFF</color>";
             }
         }
-    }
 
-    public void ToggleStatus()
-    {
-        state = !state;
-        ToggleStatus(state);
-    }
-
-    public void ToggleStatus(bool state)
-    {
-        if (actionController == null)
-            return;
-
-        this.state = state;
-
-        actionController.autoAttackEnabled = this.state;
-        if (statusText != null)
+        private void Update()
         {
-            statusText.text = this.state ? "<color=green>ON</color>" : "<color=red>OFF</color>";
+            if (actionController == null)
+                return;
+
+            if (Utilities.RateLimiter(63))
+            {
+                state = actionController.autoAttackEnabled;
+                if (statusText != null)
+                {
+                    statusText.text = this.state ? "<color=green>ON</color>" : "<color=red>OFF</color>";
+                }
+            }
         }
-        onToggle.Invoke(this.state);
+
+        public void ToggleStatus()
+        {
+            state = !state;
+            ToggleStatus(state);
+        }
+
+        public void ToggleStatus(bool state)
+        {
+            if (actionController == null)
+                return;
+
+            this.state = state;
+
+            actionController.autoAttackEnabled = this.state;
+            if (statusText != null)
+            {
+                statusText.text = this.state ? "<color=green>ON</color>" : "<color=red>OFF</color>";
+            }
+            onToggle.Invoke(this.state);
+        }
     }
 }

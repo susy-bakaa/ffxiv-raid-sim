@@ -1,16 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
+using TMPro;
 
-[RequireComponent(typeof(TextMeshProUGUI))]
-public class VersionDisplay : MonoBehaviour
+namespace dev.susybaka.raidsim.UI
 {
-    TextMeshProUGUI display;
-
-    private void Awake()
+    [RequireComponent(typeof(TextMeshProUGUI))]
+    public class VersionDisplay : MonoBehaviour
     {
-        display = GetComponent<TextMeshProUGUI>();
-        display.text = $"Version: {Application.version}";
+        TextMeshProUGUI display;
+
+        private void Awake()
+        {
+            display = GetComponent<TextMeshProUGUI>();
+            display.text = $"Version: {Application.version}";
+        }
     }
 }

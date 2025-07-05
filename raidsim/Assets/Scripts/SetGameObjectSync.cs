@@ -1,28 +1,29 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class SetGameObjectSync : MonoBehaviour
+namespace dev.susybaka.raidsim.Events
 {
-    [SerializeField] private string replacedPart = string.Empty;
-    private GameObjectSync[] syncs;
-    private bool done = false;
-
-    private void OnDisable()
+    public class SetGameObjectSync : MonoBehaviour
     {
-        if (done)
-            return;
+        [SerializeField] private string replacedPart = string.Empty;
+        private GameObjectSync[] syncs;
+        private bool done = false;
 
-        syncs = GetComponentsInChildren<GameObjectSync>(true);
-
-        if (syncs != null && syncs.Length > 0 && !string.IsNullOrEmpty(replacedPart))
+        private void OnDisable()
         {
-            for (int i = 0; i < syncs.Length; i++)
+            if (done)
+                return;
+
+            syncs = GetComponentsInChildren<GameObjectSync>(true);
+
+            if (syncs != null && syncs.Length > 0 && !string.IsNullOrEmpty(replacedPart))
             {
-                syncs[i].targetPath = syncs[i].targetPath.Replace("%i", replacedPart);
-                syncs[i].Setup();
+                for (int i = 0; i < syncs.Length; i++)
+                {
+                    syncs[i].targetPath = syncs[i].targetPath.Replace("%i", replacedPart);
+                    syncs[i].Setup();
+                }
+                done = true;
             }
-            done = true;
         }
     }
 }

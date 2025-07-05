@@ -1,21 +1,24 @@
 using UnityEngine;
 
-public class DebugShapeChild : MonoBehaviour
+namespace dev.susybaka.raidsim.Editor
 {
-#if UNITY_EDITOR
-    DebugShape debugShape;
-
-    private void OnDrawGizmosSelected()
+    public class DebugShapeChild : MonoBehaviour
     {
-        if (debugShape == null)
+#if UNITY_EDITOR
+        DebugShape debugShape;
+
+        private void OnDrawGizmosSelected()
         {
-            debugShape = GetComponentInParent<DebugShape>();
+            if (debugShape == null)
+            {
+                debugShape = GetComponentInParent<DebugShape>();
+            }
+            if (debugShape != null)
+            {
+                if (debugShape.whenSelected)
+                    debugShape.OnDrawGizmosSelected();
+            }
         }
-        if (debugShape != null)
-        {
-            if (debugShape.whenSelected)
-                debugShape.OnDrawGizmosSelected();
-        }
-    }
 #endif
+    }
 }

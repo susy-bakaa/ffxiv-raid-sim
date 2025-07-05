@@ -1,35 +1,39 @@
 using System.Collections;
 using UnityEngine;
+using dev.susybaka.raidsim.Characters;
 
-public class ResetCharacter : MonoBehaviour
+namespace dev.susybaka.raidsim.Mechanics
 {
-    public CanvasGroup screenFade;
-    public Vector3 location = new Vector3(0f, 1f, 0f);
-    Coroutine iePerformPlayerReset;
-
-    public void StartReset(CharacterState state)
+    public class ResetCharacter : MonoBehaviour
     {
-        screenFade.alpha = 0f;
-        if (state.characterName.ToLower().Contains("player") && iePerformPlayerReset == null)
-            iePerformPlayerReset = StartCoroutine(IE_PerformPlayerReset(state.transform));
-        else if (!state.characterName.ToLower().Contains("player"))
-            StartCoroutine(IE_PerformReset(state.transform));
-    }
+        public CanvasGroup screenFade;
+        public Vector3 location = new Vector3(0f, 1f, 0f);
+        Coroutine iePerformPlayerReset;
 
-    private IEnumerator IE_PerformReset(Transform target)
-    {
-        yield return new WaitForSeconds(1.5f);
-        target.transform.position = location;
-    }
+        public void StartReset(CharacterState state)
+        {
+            screenFade.alpha = 0f;
+            if (state.characterName.ToLower().Contains("player") && iePerformPlayerReset == null)
+                iePerformPlayerReset = StartCoroutine(IE_PerformPlayerReset(state.transform));
+            else if (!state.characterName.ToLower().Contains("player"))
+                StartCoroutine(IE_PerformReset(state.transform));
+        }
 
-    private IEnumerator IE_PerformPlayerReset(Transform target)
-    {
-        yield return new WaitForSeconds(0.5f);
-        screenFade.LeanAlpha(1f, 1f);
-        yield return new WaitForSeconds(1f);
-        target.transform.position = location;
-        yield return new WaitForSeconds(0.5f);
-        screenFade.LeanAlpha(0f, 2f);
-        iePerformPlayerReset = null;
+        private IEnumerator IE_PerformReset(Transform target)
+        {
+            yield return new WaitForSeconds(1.5f);
+            target.transform.position = location;
+        }
+
+        private IEnumerator IE_PerformPlayerReset(Transform target)
+        {
+            yield return new WaitForSeconds(0.5f);
+            screenFade.LeanAlpha(1f, 1f);
+            yield return new WaitForSeconds(1f);
+            target.transform.position = location;
+            yield return new WaitForSeconds(0.5f);
+            screenFade.LeanAlpha(0f, 2f);
+            iePerformPlayerReset = null;
+        }
     }
 }

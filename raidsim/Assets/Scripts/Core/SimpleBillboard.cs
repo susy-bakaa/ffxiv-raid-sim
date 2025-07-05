@@ -1,26 +1,29 @@
 using UnityEngine;
 
-public class SimpleBillboard : MonoBehaviour
+namespace dev.susybaka.raidsim.Visuals
 {
-    public bool x = true;
-    public bool y = true;
-    public bool z = true;
-
-    private Transform target;
-
-    void Awake()
+    public class SimpleBillboard : MonoBehaviour
     {
-        if (target == null)
-            target = Camera.main.transform;
-    }
+        public bool x = true;
+        public bool y = true;
+        public bool z = true;
 
-    void LateUpdate()
-    {
-        if (target != null)
+        private Transform target;
+
+        private void Awake()
         {
-            Vector3 rot = transform.localEulerAngles;
-            transform.LookAt(target);
-            transform.localEulerAngles = new Vector3(x ? transform.localEulerAngles.x : rot.x, y ? transform.localEulerAngles.y : rot.y, z ? transform.localEulerAngles.z : rot.z);
+            if (target == null)
+                target = Camera.main.transform;
+        }
+
+        private void LateUpdate()
+        {
+            if (target != null)
+            {
+                Vector3 rot = transform.localEulerAngles;
+                transform.LookAt(target);
+                transform.localEulerAngles = new Vector3(x ? transform.localEulerAngles.x : rot.x, y ? transform.localEulerAngles.y : rot.y, z ? transform.localEulerAngles.z : rot.z);
+            }
         }
     }
 }

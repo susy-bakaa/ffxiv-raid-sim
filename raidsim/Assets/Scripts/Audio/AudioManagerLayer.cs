@@ -6,7 +6,7 @@ namespace dev.susybaka.Shared.Audio
     {
         private AudioManager manager;
 
-        void Awake()
+        private void Awake()
         {
             if (FindObjectOfType<AudioManager>() != null)
                 manager = FindObjectOfType<AudioManager>();

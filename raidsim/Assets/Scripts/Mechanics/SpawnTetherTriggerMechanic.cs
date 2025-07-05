@@ -1,114 +1,115 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using static ActionController;
-using static GlobalData.Damage;
-using static GlobalData;
+using dev.susybaka.raidsim.Core;
+using dev.susybaka.Shared;
+using static dev.susybaka.raidsim.Core.GlobalData;
 
-public class SpawnTetherTriggerMechanic : FightMechanic
+namespace dev.susybaka.raidsim.Mechanics
 {
-    [Header("Tether Trigger Settings")]
-    public GameObject tetherTriggerPrefab;
-    public bool enableInstead = false;
-    public Transform startPoint;
-    public Vector3 startOffset;
-    public Transform spawnLocation;
-    public bool setTargetAutomatically = false;
-    public float delay = 0f;
-
-    public override void TriggerMechanic(ActionInfo actionInfo)
+    public class SpawnTetherTriggerMechanic : FightMechanic
     {
-        if (!CanTrigger(actionInfo))
-            return;
+        [Header("Tether Trigger Settings")]
+        public GameObject tetherTriggerPrefab;
+        public bool enableInstead = false;
+        public Transform startPoint;
+        public Vector3 startOffset;
+        public Transform spawnLocation;
+        public bool setTargetAutomatically = false;
+        public float delay = 0f;
 
-        if (spawnLocation == null)
+        public override void TriggerMechanic(ActionInfo actionInfo)
         {
-            if (actionInfo.target != null)
+            if (!CanTrigger(actionInfo))
+                return;
+
+            if (spawnLocation == null)
             {
-                GameObject spawned;
-
-                if (log)
-                    Debug.Log($"[SpawnTetherTriggerMechanic ({gameObject.name})] Spawning tether trigger for {actionInfo.target.gameObject.name}");
-                if (!enableInstead)
-                    spawned = Instantiate(tetherTriggerPrefab, actionInfo.target.transform.position, actionInfo.target.transform.rotation, FightTimeline.Instance.mechanicParent);
-                else
-                    spawned = tetherTriggerPrefab;
-
-                SetupTetherTrigger(spawned, actionInfo);
-            }
-            else if (actionInfo.source != null && actionInfo.action != null)
-            {
-                GameObject spawned;
-
-                if (log)
-                    Debug.Log($"[SpawnTetherTriggerMechanic ({gameObject.name})] Spawning tether trigger for {actionInfo.source.gameObject.name}");
-                if (!enableInstead)
-                    spawned = Instantiate(tetherTriggerPrefab, actionInfo.source.transform.position, actionInfo.source.transform.rotation, FightTimeline.Instance.mechanicParent);
-                else
-                    spawned = tetherTriggerPrefab;
-
-                SetupTetherTrigger(spawned, actionInfo);
-            }
-        }
-        else
-        {
-            GameObject spawned;
-
-            if (log)
-                Debug.Log($"[SpawnTetherTriggerMechanic ({gameObject.name})] Spawning tether trigger");
-            if (!enableInstead)
-                spawned = Instantiate(tetherTriggerPrefab, spawnLocation.position, spawnLocation.rotation, FightTimeline.Instance.mechanicParent);
-            else
-                spawned = tetherTriggerPrefab;
-
-            SetupTetherTrigger(spawned, actionInfo);
-        }
-    }
-
-    public void SetupTetherTrigger(GameObject spawned, ActionInfo actionInfo)
-    {
-        if (spawned.TryGetComponent(out TetherTrigger tetherTrigger))
-        {
-            spawned.gameObject.SetActive(true);
-            if (startPoint != null)
-            {
-                tetherTrigger.startPoint = startPoint;
-                tetherTrigger.startOffset = startOffset;
-            }
-            if (delay > 0)
-            {
-                if (log)
-                    Debug.Log($"[SpawnTetherTriggerMechanic ({gameObject.name})] Spawning tether trigger with delay of {delay}");
-
-                spawned.gameObject.SetActive(false);
-                Utilities.FunctionTimer.Create(this, () =>
+                if (actionInfo.target != null)
                 {
-                    spawned.gameObject.SetActive(true);
-                    if (!tetherTrigger.initializeOnStart)
-                    {
-                        if (setTargetAutomatically && actionInfo.target != null)
-                        {
-                            tetherTrigger.Initialize(actionInfo.target);
-                        }
-                        else
-                        {
-                            tetherTrigger.Initialize();
-                        }
-                    }
-                }, delay, $"{tetherTrigger}_{tetherTrigger.GetHashCode()}_{mechanicName.Replace(" ", "")}_Activation_Delay", false, true);
-            }
-            else if (!tetherTrigger.initializeOnStart)
-            {
-                if (log)
-                    Debug.Log($"[SpawnTetherTriggerMechanic ({gameObject.name})] Spawning tether trigger without any delay");
+                    GameObject spawned;
 
-                if (setTargetAutomatically && actionInfo.target != null)
-                {
-                    tetherTrigger.Initialize(actionInfo.target);
+                    if (log)
+                        Debug.Log($"[SpawnTetherTriggerMechanic ({gameObject.name})] Spawning tether trigger for {actionInfo.target.gameObject.name}");
+                    if (!enableInstead)
+                        spawned = Instantiate(tetherTriggerPrefab, actionInfo.target.transform.position, actionInfo.target.transform.rotation, FightTimeline.Instance.mechanicParent);
+                    else
+                        spawned = tetherTriggerPrefab;
+
+                    SetupTetherTrigger(spawned, actionInfo);
                 }
-                else
+                else if (actionInfo.source != null && actionInfo.action != null)
                 {
-                    tetherTrigger.Initialize();
+                    GameObject spawned;
+
+                    if (log)
+                        Debug.Log($"[SpawnTetherTriggerMechanic ({gameObject.name})] Spawning tether trigger for {actionInfo.source.gameObject.name}");
+                    if (!enableInstead)
+                        spawned = Instantiate(tetherTriggerPrefab, actionInfo.source.transform.position, actionInfo.source.transform.rotation, FightTimeline.Instance.mechanicParent);
+                    else
+                        spawned = tetherTriggerPrefab;
+
+                    SetupTetherTrigger(spawned, actionInfo);
+                }
+            }
+            else
+            {
+                GameObject spawned;
+
+                if (log)
+                    Debug.Log($"[SpawnTetherTriggerMechanic ({gameObject.name})] Spawning tether trigger");
+                if (!enableInstead)
+                    spawned = Instantiate(tetherTriggerPrefab, spawnLocation.position, spawnLocation.rotation, FightTimeline.Instance.mechanicParent);
+                else
+                    spawned = tetherTriggerPrefab;
+
+                SetupTetherTrigger(spawned, actionInfo);
+            }
+        }
+
+        public void SetupTetherTrigger(GameObject spawned, ActionInfo actionInfo)
+        {
+            if (spawned.TryGetComponent(out TetherTrigger tetherTrigger))
+            {
+                spawned.gameObject.SetActive(true);
+                if (startPoint != null)
+                {
+                    tetherTrigger.startPoint = startPoint;
+                    tetherTrigger.startOffset = startOffset;
+                }
+                if (delay > 0)
+                {
+                    if (log)
+                        Debug.Log($"[SpawnTetherTriggerMechanic ({gameObject.name})] Spawning tether trigger with delay of {delay}");
+
+                    spawned.gameObject.SetActive(false);
+                    Utilities.FunctionTimer.Create(this, () =>
+                    {
+                        spawned.gameObject.SetActive(true);
+                        if (!tetherTrigger.initializeOnStart)
+                        {
+                            if (setTargetAutomatically && actionInfo.target != null)
+                            {
+                                tetherTrigger.Initialize(actionInfo.target);
+                            }
+                            else
+                            {
+                                tetherTrigger.Initialize();
+                            }
+                        }
+                    }, delay, $"{tetherTrigger}_{tetherTrigger.GetHashCode()}_{mechanicName.Replace(" ", "")}_Activation_Delay", false, true);
+                }
+                else if (!tetherTrigger.initializeOnStart)
+                {
+                    if (log)
+                        Debug.Log($"[SpawnTetherTriggerMechanic ({gameObject.name})] Spawning tether trigger without any delay");
+
+                    if (setTargetAutomatically && actionInfo.target != null)
+                    {
+                        tetherTrigger.Initialize(actionInfo.target);
+                    }
+                    else
+                    {
+                        tetherTrigger.Initialize();
+                    }
                 }
             }
         }

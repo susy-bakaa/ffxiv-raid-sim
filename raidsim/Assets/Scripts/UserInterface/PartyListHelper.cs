@@ -1,55 +1,59 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static PartyList;
+using dev.susybaka.raidsim.Targeting;
+using dev.susybaka.Shared;
+using static dev.susybaka.raidsim.UI.PartyList;
 
-[RequireComponent(typeof(PartyList))]
-public class PartyListHelper : MonoBehaviour
+namespace dev.susybaka.raidsim.UI
 {
-    private PartyList party;
-    public PartyList PartyList { get { return party; } }
-
-    public int updateEnmityList = 130;
-    public TargetController player;
-
-    private List<EnmityInfo> enmityAgainstPlayerTarget = new List<EnmityInfo>();
-
-    void Awake()
+    [RequireComponent(typeof(PartyList))]
+    public class PartyListHelper : MonoBehaviour
     {
-        party = GetComponent<PartyList>();
-        if (player == null)
-        {
-            for (int i = 0; i < party.members.Count; i++)
-            {
-                if (party.members[i].characterState == null)
-                    continue;
+        private PartyList party;
+        public PartyList PartyList { get { return party; } }
 
-                if (party.members[i].characterState.characterName.ToLower().Contains("player"))
+        public int updateEnmityList = 130;
+        public TargetController player;
+
+        private List<EnmityInfo> enmityAgainstPlayerTarget = new List<EnmityInfo>();
+
+        private void Awake()
+        {
+            party = GetComponent<PartyList>();
+            if (player == null)
+            {
+                for (int i = 0; i < party.members.Count; i++)
                 {
-                    player = party.members[i].targetController;
+                    if (party.members[i].characterState == null)
+                        continue;
+
+                    if (party.members[i].characterState.characterName.ToLower().Contains("player"))
+                    {
+                        player = party.members[i].targetController;
+                    }
                 }
             }
         }
-    }
 
-    void Update()
-    {
-        if (Utilities.RateLimiter(updateEnmityList))
+        private void Update()
         {
-            if (player != null && player.currentTarget != null && player.allowedGroups.Contains(player.currentTarget.Group))
+            if (Utilities.RateLimiter(updateEnmityList))
             {
-                // Get the enmity list sorted by enmity values (highest first)
-                enmityAgainstPlayerTarget = party.GetEnmityValuesList(player.currentTarget.GetCharacterState());
-            }
-            else
-            {
-                enmityAgainstPlayerTarget.Clear();
+                if (player != null && player.currentTarget != null && player.allowedGroups.Contains(player.currentTarget.Group))
+                {
+                    // Get the enmity list sorted by enmity values (highest first)
+                    enmityAgainstPlayerTarget = party.GetEnmityValuesList(player.currentTarget.GetCharacterState());
+                }
+                else
+                {
+                    enmityAgainstPlayerTarget.Clear();
+                }
             }
         }
-    }
 
-    public List<EnmityInfo> GetCurrentPlayerTargetEnmityList()
-    {
-        return enmityAgainstPlayerTarget;
+        public List<EnmityInfo> GetCurrentPlayerTargetEnmityList()
+        {
+            return enmityAgainstPlayerTarget;
+        }
     }
 }

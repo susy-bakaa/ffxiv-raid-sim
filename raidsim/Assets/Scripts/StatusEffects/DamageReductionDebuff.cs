@@ -1,24 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using dev.susybaka.raidsim.Characters;
 
-public class DamageReductionDebuff : StatusEffect
+namespace dev.susybaka.raidsim.StatusEffects
 {
-    [Header("Function")]
-    public float damageOutputModifier = 0.7f;
-
-    public override void OnApplication(CharacterState state)
+    public class DamageReductionDebuff : StatusEffect
     {
-        base.OnApplication(state);
-    }
+        [Header("Function")]
+        public float damageOutputModifier = 0.7f;
 
-    public override void OnExpire(CharacterState state)
-    {
-        base.OnExpire(state);
-    }
+        public override void OnApplication(CharacterState state)
+        {
+            base.OnApplication(state);
+        }
 
-    public override void OnCleanse(CharacterState state)
-    {
-        base.OnCleanse(state);
+        public override void OnExpire(CharacterState state)
+        {
+            base.OnExpire(state);
+        }
+
+        public override void OnCleanse(CharacterState state)
+        {
+            base.OnCleanse(state);
+        }
     }
 }

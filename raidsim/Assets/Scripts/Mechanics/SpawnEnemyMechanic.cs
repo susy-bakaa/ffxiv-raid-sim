@@ -1,100 +1,103 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using static GlobalData;
+using dev.susybaka.raidsim.Characters;
+using dev.susybaka.Shared;
+using static dev.susybaka.raidsim.Core.GlobalData;
 
-public class SpawnEnemyMechanic : FightMechanic
+namespace dev.susybaka.raidsim.Mechanics
 {
-    public string enemyObjectName = string.Empty;
-    public GameObject enemyObject;
-    public bool activateInstead = true;
-    public bool despawnInstead = false;
-    public bool toggleNameplate = false;
-    public bool togglePartylistEntry = false;
-    public bool toggleTargetable = false;
-    public Transform spawnLocation;
-
-    public void Awake()
+    public class SpawnEnemyMechanic : FightMechanic
     {
-        if (activateInstead && enemyObject == null && !string.IsNullOrEmpty(enemyObjectName))
+        public string enemyObjectName = string.Empty;
+        public GameObject enemyObject;
+        public bool activateInstead = true;
+        public bool despawnInstead = false;
+        public bool toggleNameplate = false;
+        public bool togglePartylistEntry = false;
+        public bool toggleTargetable = false;
+        public Transform spawnLocation;
+
+        public void Awake()
         {
-            enemyObject = Utilities.FindAnyByName(enemyObjectName);
-        }
-    }
-
-    public override void TriggerMechanic(ActionInfo actionInfo)
-    {
-        if (!CanTrigger(actionInfo))
-            return;
-
-        if (activateInstead && enemyObject == null && !string.IsNullOrEmpty(enemyObjectName))
-        {
-            enemyObject = Utilities.FindAnyByName(enemyObjectName);
-        }
-
-        if (enemyObject == null)
-            return;
-
-        if (activateInstead && enemyObject != null)
-        {
-            enemyObject.SetActive(true);
-
-            if (enemyObject.TryGetComponent(out CharacterState state))
+            if (activateInstead && enemyObject == null && !string.IsNullOrEmpty(enemyObjectName))
             {
-                ToggleCharacterState(state);
+                enemyObject = Utilities.FindAnyByName(enemyObjectName);
             }
         }
-        else if (enemyObject != null)
+
+        public override void TriggerMechanic(ActionInfo actionInfo)
         {
-            if (spawnLocation == null)
+            if (!CanTrigger(actionInfo))
+                return;
+
+            if (activateInstead && enemyObject == null && !string.IsNullOrEmpty(enemyObjectName))
             {
-                if (actionInfo.target != null)
+                enemyObject = Utilities.FindAnyByName(enemyObjectName);
+            }
+
+            if (enemyObject == null)
+                return;
+
+            if (activateInstead && enemyObject != null)
+            {
+                enemyObject.SetActive(true);
+
+                if (enemyObject.TryGetComponent(out CharacterState state))
                 {
-                    GameObject spawned = Instantiate(enemyObject, actionInfo.target.transform.position, actionInfo.target.transform.rotation, GameObject.Find("Enemies").transform);
+                    ToggleCharacterState(state);
+                }
+            }
+            else if (enemyObject != null)
+            {
+                if (spawnLocation == null)
+                {
+                    if (actionInfo.target != null)
+                    {
+                        GameObject spawned = Instantiate(enemyObject, actionInfo.target.transform.position, actionInfo.target.transform.rotation, GameObject.Find("Enemies").transform);
+                        if (spawned.TryGetComponent(out CharacterState state))
+                        {
+                            ToggleCharacterState(state, true);
+                        }
+                    }
+                    else if (actionInfo.source != null && actionInfo.action != null)
+                    {
+                        GameObject spawned = Instantiate(enemyObject, actionInfo.source.transform.position, actionInfo.source.transform.rotation, GameObject.Find("Enemies").transform);
+                        if (spawned.TryGetComponent(out CharacterState state))
+                        {
+                            ToggleCharacterState(state, true);
+                        }
+                    }
+                }
+                else
+                {
+                    GameObject spawned = Instantiate(enemyObject, spawnLocation.position, spawnLocation.rotation, GameObject.Find("Enemies").transform);
                     if (spawned.TryGetComponent(out CharacterState state))
                     {
                         ToggleCharacterState(state, true);
                     }
                 }
-                else if (actionInfo.source != null && actionInfo.action != null)
-                {
-                    GameObject spawned = Instantiate(enemyObject, actionInfo.source.transform.position, actionInfo.source.transform.rotation, GameObject.Find("Enemies").transform);
-                    if (spawned.TryGetComponent(out CharacterState state))
-                    {
-                        ToggleCharacterState(state, true);
-                    }
-                }
+            }
+        }
+
+        private void ToggleCharacterState(CharacterState state, bool overrideState = false)
+        {
+            if (state == null)
+                return;
+
+            if (!overrideState)
+            {
+                state.ToggleState(!despawnInstead);
             }
             else
             {
-                GameObject spawned = Instantiate(enemyObject, spawnLocation.position, spawnLocation.rotation, GameObject.Find("Enemies").transform);
-                if (spawned.TryGetComponent(out CharacterState state))
-                {
-                    ToggleCharacterState(state, true);
-                }
+                state.ToggleState(true);
             }
-        }
-    }
 
-    private void ToggleCharacterState(CharacterState state, bool overrideState = false)
-    {
-        if (state == null)
-            return;
-
-        if (!overrideState)
-        {
-            state.ToggleState(!despawnInstead);
+            if (toggleNameplate)
+                state.ToggleNameplate(!state.hideNameplate);
+            if (togglePartylistEntry)
+                state.TogglePartyListEntry(!state.hidePartyListEntry);
+            if (toggleTargetable)
+                state.ToggleTargetable(!state.untargetable.value);
         }
-        else
-        {
-            state.ToggleState(true);
-        }
-
-        if (toggleNameplate)
-            state.ToggleNameplate(!state.hideNameplate);
-        if (togglePartylistEntry)
-            state.TogglePartyListEntry(!state.hidePartyListEntry);
-        if (toggleTargetable)
-            state.ToggleTargetable(!state.untargetable.value);
     }
 }

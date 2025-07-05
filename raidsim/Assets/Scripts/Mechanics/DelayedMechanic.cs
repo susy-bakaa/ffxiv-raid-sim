@@ -1,61 +1,64 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using static GlobalData;
+using dev.susybaka.raidsim.Core;
+using static dev.susybaka.raidsim.Core.GlobalData;
 
-public class DelayedMechanic : FightMechanic
+namespace dev.susybaka.raidsim.Mechanics
 {
-    [Header("Delayed Mechanic Settings")]
-    public bool startAutomatically = false;
-    public float delay = 1f;
-    public UnityEvent<ActionInfo> onDelayedTrigger;
-
-    private Coroutine ieTriggerMechanicDelayed = null;
-
-    private void Start()
+    public class DelayedMechanic : FightMechanic
     {
-        if (startAutomatically)
+        [Header("Delayed Mechanic Settings")]
+        public bool startAutomatically = false;
+        public float delay = 1f;
+        public UnityEvent<ActionInfo> onDelayedTrigger;
+
+        private Coroutine ieTriggerMechanicDelayed = null;
+
+        private void Start()
         {
-            if (FightTimeline.Instance != null)
-                FightTimeline.Instance.onReset.AddListener(TriggerMechanic);
-            TriggerMechanic();
+            if (startAutomatically)
+            {
+                if (FightTimeline.Instance != null)
+                    FightTimeline.Instance.onReset.AddListener(TriggerMechanic);
+                TriggerMechanic();
+            }
         }
-    }
 
-    public override void TriggerMechanic(ActionInfo actionInfo)
-    {
-        if (!CanTrigger(actionInfo))
-            return;
-
-        if (log)
-            Debug.Log($"[DelayedMechanic ({gameObject.name})] Triggered delayed mechanic");
-
-        if (delay > 0f)
+        public override void TriggerMechanic(ActionInfo actionInfo)
         {
-            if (ieTriggerMechanicDelayed != null)
-                StopCoroutine(ieTriggerMechanicDelayed);
+            if (!CanTrigger(actionInfo))
+                return;
 
-            ieTriggerMechanicDelayed = StartCoroutine(IE_TriggerMechanicDelayed(actionInfo, new WaitForSeconds(delay)));
+            if (log)
+                Debug.Log($"[DelayedMechanic ({gameObject.name})] Triggered delayed mechanic");
+
+            if (delay > 0f)
+            {
+                if (ieTriggerMechanicDelayed != null)
+                    StopCoroutine(ieTriggerMechanicDelayed);
+
+                ieTriggerMechanicDelayed = StartCoroutine(IE_TriggerMechanicDelayed(actionInfo, new WaitForSeconds(delay)));
+            }
+            else
+            {
+                onDelayedTrigger.Invoke(actionInfo);
+            }
         }
-        else
+
+        private IEnumerator IE_TriggerMechanicDelayed(ActionInfo actionInfo, WaitForSeconds wait)
         {
+            yield return wait;
             onDelayedTrigger.Invoke(actionInfo);
+            ieTriggerMechanicDelayed = null;
+            if (log)
+                Debug.Log($"[DelayedMechanic ({gameObject.name})] onDelayedTrigger.Invoke()");
         }
-    }
 
-    private IEnumerator IE_TriggerMechanicDelayed(ActionInfo actionInfo, WaitForSeconds wait)
-    {
-        yield return wait;
-        onDelayedTrigger.Invoke(actionInfo);
-        ieTriggerMechanicDelayed = null;
-        if (log)
-            Debug.Log($"[DelayedMechanic ({gameObject.name})] onDelayedTrigger.Invoke()");
-    }
-
-    public override void InterruptMechanic(ActionInfo actionInfo)
-    {
-        StopAllCoroutines();
-        ieTriggerMechanicDelayed = null;
+        public override void InterruptMechanic(ActionInfo actionInfo)
+        {
+            StopAllCoroutines();
+            ieTriggerMechanicDelayed = null;
+        }
     }
 }

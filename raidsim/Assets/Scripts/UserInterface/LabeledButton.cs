@@ -1,65 +1,67 @@
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using TMPro;
+using dev.susybaka.Shared;
 
-[RequireComponent(typeof(Button))]
-public class LabeledButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+namespace dev.susybaka.raidsim.UI
 {
-    Button button;
-    ToggleImage toggleImage;
-    TextMeshProUGUI label;
-
-    public string[] states = new string[2] { "Turn Off", "Turn On" };
-
-    private string originalText;
-
-    private void Awake()
+    [RequireComponent(typeof(Button))]
+    public class LabeledButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
-        button = GetComponent<Button>();
-        toggleImage = GetComponentInParent<ToggleImage>();
-        label = GetComponentInChildren<TextMeshProUGUI>();
-        originalText = label.text;
-        button.onClick.AddListener(UpdateLabel);
-        Utilities.FunctionTimer.Create(this, () => ResetLabel(), 0.5f, $"{toggleImage.gameObject.name}_LabeledButton_ResetLabel", true, false);
-    }
+        Button button;
+        ToggleImage toggleImage;
+        TextMeshProUGUI label;
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        UpdateLabel();
-    }
+        public string[] states = new string[2] { "Turn Off", "Turn On" };
 
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        if (label != null)
+        private string originalText;
+
+        private void Awake()
         {
-            label.text = originalText;
+            button = GetComponent<Button>();
+            toggleImage = GetComponentInParent<ToggleImage>();
+            label = GetComponentInChildren<TextMeshProUGUI>();
+            originalText = label.text;
+            button.onClick.AddListener(UpdateLabel);
+            Utilities.FunctionTimer.Create(this, () => ResetLabel(), 0.5f, $"{toggleImage.gameObject.name}_LabeledButton_ResetLabel", true, false);
         }
-    }
 
-    private void UpdateLabel()
-    {
-        if (toggleImage != null && label != null && states != null && states.Length > 1)
+        public void OnPointerEnter(PointerEventData eventData)
         {
-            if (toggleImage.CurrentState)
+            UpdateLabel();
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            if (label != null)
             {
-                label.text = states[0];
+                label.text = originalText;
+            }
+        }
+
+        private void UpdateLabel()
+        {
+            if (toggleImage != null && label != null && states != null && states.Length > 1)
+            {
+                if (toggleImage.CurrentState)
+                {
+                    label.text = states[0];
+                }
+                else
+                {
+                    label.text = states[1];
+                }
             }
             else
             {
-                label.text = states[1];
+                label.text = originalText;
             }
         }
-        else
+
+        public void ResetLabel()
         {
             label.text = originalText;
         }
-    }
-
-    public void ResetLabel()
-    {
-        label.text = originalText;
     }
 }

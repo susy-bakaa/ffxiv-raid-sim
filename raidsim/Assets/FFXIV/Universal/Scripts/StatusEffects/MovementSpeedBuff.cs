@@ -1,90 +1,92 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using dev.susybaka.raidsim.Characters;
 
-public class MovementSpeedBuff : StatusEffect
+namespace dev.susybaka.raidsim.StatusEffects
 {
-    [Header("Function")]
-    public float newMovementSpeed = 9.45f;
-    public float newMovementSpeedModifier = -1f;
-
-    public override void OnApplication(CharacterState state)
+    public class MovementSpeedBuff : StatusEffect
     {
-        if (uniqueTag != 0)
-        {
-            if (newMovementSpeed >= 0f)
-            {
-                state.AddMovementSpeed(newMovementSpeed, $"{data.statusName}_{uniqueTag}");
-            }
-            if (newMovementSpeedModifier >= 0f)
-            {
-                state.AddMovementSpeedModifier(newMovementSpeedModifier, $"{data.statusName}_{uniqueTag}");
-            }
-        }
-        else
-        {
-            if (newMovementSpeed >= 0f)
-            {
-                state.AddMovementSpeed(newMovementSpeed, data.statusName);
-            }
-            if (newMovementSpeedModifier >= 0f)
-            {
-                state.AddMovementSpeedModifier(newMovementSpeedModifier, data.statusName);
-            }
-        }
-    }
+        [Header("Function")]
+        public float newMovementSpeed = 9.45f;
+        public float newMovementSpeedModifier = -1f;
 
-    public override void OnExpire(CharacterState state)
-    {
-        if (uniqueTag != 0)
+        public override void OnApplication(CharacterState state)
         {
-            if (newMovementSpeed >= 0f)
+            if (uniqueTag != 0)
             {
-                state.RemoveMovementSpeed($"{data.statusName}_{uniqueTag}");
+                if (newMovementSpeed >= 0f)
+                {
+                    state.AddMovementSpeed(newMovementSpeed, $"{data.statusName}_{uniqueTag}");
+                }
+                if (newMovementSpeedModifier >= 0f)
+                {
+                    state.AddMovementSpeedModifier(newMovementSpeedModifier, $"{data.statusName}_{uniqueTag}");
+                }
             }
-            if (newMovementSpeedModifier >= 0f)
+            else
             {
-                state.RemoveMovementSpeedModifier($"{data.statusName}_{uniqueTag}");
+                if (newMovementSpeed >= 0f)
+                {
+                    state.AddMovementSpeed(newMovementSpeed, data.statusName);
+                }
+                if (newMovementSpeedModifier >= 0f)
+                {
+                    state.AddMovementSpeedModifier(newMovementSpeedModifier, data.statusName);
+                }
             }
         }
-        else
-        {
-            if (newMovementSpeed >= 0f)
-            {
-                state.RemoveMovementSpeed(data.statusName);
-            }
-            if (newMovementSpeedModifier >= 0f)
-            {
-                state.RemoveMovementSpeedModifier(data.statusName);
-            }
-        }
-        base.OnExpire(state);
-    }
 
-    public override void OnCleanse(CharacterState state)
-    {
-        if (uniqueTag != 0)
+        public override void OnExpire(CharacterState state)
         {
-            if (newMovementSpeed >= 0f)
+            if (uniqueTag != 0)
             {
-                state.RemoveMovementSpeed($"{data.statusName}_{uniqueTag}");
+                if (newMovementSpeed >= 0f)
+                {
+                    state.RemoveMovementSpeed($"{data.statusName}_{uniqueTag}");
+                }
+                if (newMovementSpeedModifier >= 0f)
+                {
+                    state.RemoveMovementSpeedModifier($"{data.statusName}_{uniqueTag}");
+                }
             }
-            if (newMovementSpeedModifier >= 0f)
+            else
             {
-                state.RemoveMovementSpeedModifier($"{data.statusName}_{uniqueTag}");
+                if (newMovementSpeed >= 0f)
+                {
+                    state.RemoveMovementSpeed(data.statusName);
+                }
+                if (newMovementSpeedModifier >= 0f)
+                {
+                    state.RemoveMovementSpeedModifier(data.statusName);
+                }
             }
+            base.OnExpire(state);
         }
-        else
+
+        public override void OnCleanse(CharacterState state)
         {
-            if (newMovementSpeed >= 0f)
+            if (uniqueTag != 0)
             {
-                state.RemoveMovementSpeed(data.statusName);
+                if (newMovementSpeed >= 0f)
+                {
+                    state.RemoveMovementSpeed($"{data.statusName}_{uniqueTag}");
+                }
+                if (newMovementSpeedModifier >= 0f)
+                {
+                    state.RemoveMovementSpeedModifier($"{data.statusName}_{uniqueTag}");
+                }
             }
-            if (newMovementSpeedModifier >= 0f)
+            else
             {
-                state.RemoveMovementSpeedModifier(data.statusName);
+                if (newMovementSpeed >= 0f)
+                {
+                    state.RemoveMovementSpeed(data.statusName);
+                }
+                if (newMovementSpeedModifier >= 0f)
+                {
+                    state.RemoveMovementSpeedModifier(data.statusName);
+                }
             }
+            base.OnCleanse(state);
         }
-        base.OnCleanse(state);
     }
 }

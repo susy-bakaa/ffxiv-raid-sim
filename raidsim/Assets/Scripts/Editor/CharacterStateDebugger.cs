@@ -1,22 +1,25 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using dev.susybaka.raidsim.Characters;
+using dev.susybaka.raidsim.Core;
 
-[RequireComponent(typeof(CharacterState))]
-public class CharacterStateDebugger : MonoBehaviour
+namespace dev.susybaka.raidsim.Editor
 {
-    public bool m_enabled = true;
-    public CharacterState characterState;
-
-    private void Awake()
+    [RequireComponent(typeof(CharacterState))]
+    public class CharacterStateDebugger : MonoBehaviour
     {
-        characterState = GetComponent<CharacterState>();
-        if (FightTimeline.Instance.log)
-            m_enabled = true;
-    }
+        public bool m_enabled = true;
+        public CharacterState characterState;
 
-    void Update()
-    {
-        Debug.Log($"[CharacterStateDebugger.{characterState.characterName} ({characterState.gameObject})] untargetable: '{characterState.untargetable.value}', disabled: '{characterState.disabled}'");
+        private void Awake()
+        {
+            characterState = GetComponent<CharacterState>();
+            if (FightTimeline.Instance.log)
+                m_enabled = true;
+        }
+
+        private void Update()
+        {
+            Debug.Log($"[CharacterStateDebugger.{characterState.characterName} ({characterState.gameObject})] untargetable: '{characterState.untargetable.value}', disabled: '{characterState.disabled}'");
+        }
     }
 }

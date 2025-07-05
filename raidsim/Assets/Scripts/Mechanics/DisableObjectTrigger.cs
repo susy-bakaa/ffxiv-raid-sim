@@ -1,84 +1,88 @@
 using UnityEngine;
 using NaughtyAttributes;
+using dev.susybaka.Shared;
 
-public class DisableObjectTrigger : MonoBehaviour
+namespace dev.susybaka.raidsim.Mechanics
 {
-    Collider m_collider;
-
-    public bool log = false;
-    [Tag]
-    public string ableToHitTag;
-    public bool initializeOnStart = true;
-    public float triggerDelay = 0f;
-
-    private int id = 0;
-    private bool colliderWaDisabled = false;
-
-    void Awake()
+    public class DisableObjectTrigger : MonoBehaviour
     {
-        m_collider = GetComponent<Collider>();
-        id = Random.Range(1000,10000);
+        Collider m_collider;
 
-        if (m_collider != null)
+        public bool log = false;
+        [Tag]
+        public string ableToHitTag;
+        public bool initializeOnStart = true;
+        public float triggerDelay = 0f;
+
+        private int id = 0;
+        private bool colliderWaDisabled = false;
+
+        private void Awake()
         {
-            if (m_collider.enabled)
+            m_collider = GetComponent<Collider>();
+            id = Random.Range(1000, 10000);
+
+            if (m_collider != null)
             {
-                colliderWaDisabled = false;
+                if (m_collider.enabled)
+                {
+                    colliderWaDisabled = false;
+                }
+                else
+                {
+                    colliderWaDisabled = true;
+                }
             }
             else
             {
                 colliderWaDisabled = true;
             }
         }
-        else
-        {
-            colliderWaDisabled = true;
-        }
-    }
 
-    void Start()
-    {
-        if (initializeOnStart)
+        private void Start()
         {
-            Initialize();
+            if (initializeOnStart)
+            {
+                Initialize();
+            }
         }
-    }
 
-    public void Initialize()
-    {
-        if (m_collider != null && triggerDelay > 0f)
+        public void Initialize()
         {
-            m_collider.enabled = false;
-            Utilities.FunctionTimer.Create(this, () => m_collider.enabled = true, triggerDelay, $"{id}_{gameObject.name}_delay", false, true);
-        }
-    }
-
-    public void ResetTrigger()
-    {
-        if (m_collider != null)
-        {
-            if (colliderWaDisabled)
+            if (m_collider != null && triggerDelay > 0f)
             {
                 m_collider.enabled = false;
-            }
-            else
-            {
-                m_collider.enabled = true;
+                Utilities.FunctionTimer.Create(this, () => m_collider.enabled = true, triggerDelay, $"{id}_{gameObject.name}_delay", false, true);
             }
         }
-    }
 
-    public void OnTriggerEnter(Collider other)
-    {
-        var otherGameObject = other.gameObject;
-
-        if (other.CompareTag(ableToHitTag))
+        public void ResetTrigger()
         {
-            otherGameObject.SetActive(false);
-
-            if (log)
+            if (m_collider != null)
             {
-                Debug.Log($"[DisableNodeTrigger] \"{otherGameObject.name}\" was hit and disabled.");
+                if (colliderWaDisabled)
+                {
+                    m_collider.enabled = false;
+                }
+                else
+                {
+                    m_collider.enabled = true;
+                }
+            }
+        }
+
+        public void OnTriggerEnter(Collider other)
+        {
+            var otherGameObject = other.gameObject;
+
+            if (other.CompareTag(ableToHitTag))
+            {
+                otherGameObject.SetActive(false);
+
+                if (log)
+                {
+                    Debug.Log($"[DisableNodeTrigger] \"{otherGameObject.name}\" was hit and disabled.");
+                }
             }
         }
     }

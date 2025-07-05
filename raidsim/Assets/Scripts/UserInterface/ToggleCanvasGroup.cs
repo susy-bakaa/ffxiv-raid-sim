@@ -1,65 +1,66 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class ToggleCanvasGroup : MonoBehaviour
+namespace dev.susybaka.raidsim.UI
 {
-    [SerializeField] private CanvasGroup copyFrom;
-    [SerializeField] private bool startOff = true;
-
-    private CanvasGroup group;
-    private bool state = false;
-
-    private void Awake()
+    public class ToggleCanvasGroup : MonoBehaviour
     {
-        group = GetComponent<CanvasGroup>();
+        [SerializeField] private CanvasGroup copyFrom;
+        [SerializeField] private bool startOff = true;
 
-        if (startOff)
+        private CanvasGroup group;
+        private bool state = false;
+
+        private void Awake()
         {
-            ToggleAlpha(false);
+            group = GetComponent<CanvasGroup>();
+
+            if (startOff)
+            {
+                ToggleAlpha(false);
+            }
         }
-    }
 
-    void Update()
-    {
-        if (copyFrom == null)
-            return;
-
-        group.alpha = copyFrom.alpha;
-
-        if (group.alpha <= 0f)
+        private void Update()
         {
-            group.blocksRaycasts = false;
-            group.interactable = false;
-        } 
-        else if (group.alpha >= 1f)
-        {
-            group.blocksRaycasts = true;
-            group.interactable = true;
+            if (copyFrom == null)
+                return;
+
+            group.alpha = copyFrom.alpha;
+
+            if (group.alpha <= 0f)
+            {
+                group.blocksRaycasts = false;
+                group.interactable = false;
+            }
+            else if (group.alpha >= 1f)
+            {
+                group.blocksRaycasts = true;
+                group.interactable = true;
+            }
         }
-    }
 
-    public void ToggleAlpha()
-    {
-        state = !state;
-        ToggleAlpha(state);
-    }
-
-    public void ToggleAlpha(bool state)
-    {
-        this.state = state;
-
-        if (this.state)
+        public void ToggleAlpha()
         {
-            group.alpha = 1f;
-            group.blocksRaycasts = true;
-            group.interactable = true;
+            state = !state;
+            ToggleAlpha(state);
         }
-        else
+
+        public void ToggleAlpha(bool state)
         {
-            group.alpha = 0f;
-            group.blocksRaycasts = false;
-            group.interactable = false;
+            this.state = state;
+
+            if (this.state)
+            {
+                group.alpha = 1f;
+                group.blocksRaycasts = true;
+                group.interactable = true;
+            }
+            else
+            {
+                group.alpha = 0f;
+                group.blocksRaycasts = false;
+                group.interactable = false;
+            }
         }
     }
 }

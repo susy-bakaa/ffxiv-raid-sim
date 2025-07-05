@@ -1,8 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class DebuggerDebuff : CleansableDebuff
+namespace dev.susybaka.raidsim.StatusEffects
 {
-    public StatusEffectData[] invulnerableToStatusEffects;
+    public class DebuggerDebuff : CleansableDebuff
+    {
+        public StatusEffectData[] invulnerableToStatusEffects;
+    }
 }

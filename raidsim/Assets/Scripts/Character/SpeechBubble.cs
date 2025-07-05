@@ -1,35 +1,37 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using dev.susybaka.Shared;
 
-public class SpeechBubble : MonoBehaviour
+namespace dev.susybaka.raidsim.Characters
 {
-    CharacterState characterState;
-
-    public float normalHeight = 75f;
-    public float nameplateHiddenHeight = 25f;
-
-    private void Awake()
+    public class SpeechBubble : MonoBehaviour
     {
-        characterState = transform.GetComponentInParents<CharacterState>();
-    }
+        CharacterState characterState;
 
-    private void Update()
-    {
-        if (characterState == null)
-            return;
+        public float normalHeight = 75f;
+        public float nameplateHiddenHeight = 25f;
 
-        if (Utilities.RateLimiter(47))
+        private void Awake()
         {
-            if (characterState != null)
+            characterState = transform.GetComponentInParents<CharacterState>();
+        }
+
+        private void Update()
+        {
+            if (characterState == null)
+                return;
+
+            if (Utilities.RateLimiter(47))
             {
-                if (characterState.hideNameplate)
+                if (characterState != null)
                 {
-                    transform.localPosition = new Vector3(0, nameplateHiddenHeight, 0);
-                }
-                else
-                {
-                    transform.localPosition = new Vector3(0, normalHeight, 0);
+                    if (characterState.hideNameplate)
+                    {
+                        transform.localPosition = new Vector3(0, nameplateHiddenHeight, 0);
+                    }
+                    else
+                    {
+                        transform.localPosition = new Vector3(0, normalHeight, 0);
+                    }
                 }
             }
         }

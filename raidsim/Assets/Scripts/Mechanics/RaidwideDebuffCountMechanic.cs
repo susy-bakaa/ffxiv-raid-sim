@@ -1,79 +1,81 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using static ActionController;
-using static GlobalData;
-using static PartyList;
-using static StatusEffectData;
+using dev.susybaka.raidsim.Core;
+using dev.susybaka.raidsim.UI;
+using static dev.susybaka.raidsim.Core.GlobalData;
+using static dev.susybaka.raidsim.StatusEffects.StatusEffectData;
+using static dev.susybaka.raidsim.UI.PartyList;
 
-public class RaidwideDebuffCountMechanic : FightMechanic
+namespace dev.susybaka.raidsim.Mechanics
 {
-    public PartyList party;
-    public List<StatusEffectCountPair> effectCountPairs = new List<StatusEffectCountPair>();
-
-    void Awake()
+    public class RaidwideDebuffCountMechanic : FightMechanic
     {
-        if (party == null)
-        {
-            party = FightTimeline.Instance.partyList;
-        }
-    }
+        public PartyList party;
+        public List<StatusEffectCountPair> effectCountPairs = new List<StatusEffectCountPair>();
 
-    public override void TriggerMechanic(ActionInfo actionInfo)
-    {
-        if (!mechanicEnabled)
-            return;
-
-        foreach (PartyMember member in party.members)
+        private void Awake()
         {
-            for (int i = 0; i < effectCountPairs.Count; i++)
+            if (party == null)
             {
-                if (member.characterState.HasEffect(effectCountPairs[i].effect.data.statusName, effectCountPairs[i].effect.tag))
+                party = FightTimeline.Instance.partyList;
+            }
+        }
+
+        public override void TriggerMechanic(ActionInfo actionInfo)
+        {
+            if (!mechanicEnabled)
+                return;
+
+            foreach (PartyMember member in party.members)
+            {
+                for (int i = 0; i < effectCountPairs.Count; i++)
                 {
-                    int results = 0;
-                    for (int j = 0; j < effectCountPairs[i].allowedEffects.Count; j++)
+                    if (member.characterState.HasEffect(effectCountPairs[i].effect.data.statusName, effectCountPairs[i].effect.tag))
                     {
-                        if (member.characterState.HasEffect(effectCountPairs[i].allowedEffects[j].data.statusName, effectCountPairs[i].allowedEffects[j].tag))
+                        int results = 0;
+                        for (int j = 0; j < effectCountPairs[i].allowedEffects.Count; j++)
                         {
-                            results++;
+                            if (member.characterState.HasEffect(effectCountPairs[i].allowedEffects[j].data.statusName, effectCountPairs[i].allowedEffects[j].tag))
+                            {
+                                results++;
+                            }
                         }
-                    }
-                    if (results < effectCountPairs[i].requiredAmount)
-                    {
-                        member.characterState.ModifyHealth(new Damage(100, true, true, Damage.DamageType.unique, Damage.ElementalAspect.unaspected, Damage.PhysicalAspect.none, Damage.DamageApplicationType.percentageFromMax, mechanicName));
+                        if (results < effectCountPairs[i].requiredAmount)
+                        {
+                            member.characterState.ModifyHealth(new Damage(100, true, true, Damage.DamageType.unique, Damage.ElementalAspect.unaspected, Damage.PhysicalAspect.none, Damage.DamageApplicationType.percentageFromMax, mechanicName));
+                        }
                     }
                 }
             }
         }
-    }
 #if UNITY_EDITOR
-    public void OnValidate()
-    {
-        for (int i = 0; i < effectCountPairs.Count; i++)
+        public void OnValidate()
         {
-            if (effectCountPairs[i].effect.data != null)
+            for (int i = 0; i < effectCountPairs.Count; i++)
             {
-                StatusEffectCountPair pair = effectCountPairs[i];
-                pair.name = effectCountPairs[i].effect.name;
-                effectCountPairs[i] = pair;
+                if (effectCountPairs[i].effect.data != null)
+                {
+                    StatusEffectCountPair pair = effectCountPairs[i];
+                    pair.name = effectCountPairs[i].effect.name;
+                    effectCountPairs[i] = pair;
+                }
             }
-        }  
-    }
+        }
 #endif
-    [System.Serializable]
-    public struct StatusEffectCountPair
-    {
-        public string name;
-        public StatusEffectInfo effect;
-        public List<StatusEffectInfo> allowedEffects;
-        public int requiredAmount;
-
-        public StatusEffectCountPair(string name, StatusEffectInfo effect, List<StatusEffectInfo> allowedEffects, int requiredAmount)
+        [System.Serializable]
+        public struct StatusEffectCountPair
         {
-            this.name = name;
-            this.effect = effect;
-            this.allowedEffects = allowedEffects;
-            this.requiredAmount = requiredAmount;
+            public string name;
+            public StatusEffectInfo effect;
+            public List<StatusEffectInfo> allowedEffects;
+            public int requiredAmount;
+
+            public StatusEffectCountPair(string name, StatusEffectInfo effect, List<StatusEffectInfo> allowedEffects, int requiredAmount)
+            {
+                this.name = name;
+                this.effect = effect;
+                this.allowedEffects = allowedEffects;
+                this.requiredAmount = requiredAmount;
+            }
         }
     }
 }

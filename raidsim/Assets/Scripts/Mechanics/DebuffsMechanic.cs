@@ -1,121 +1,124 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static StatusEffectData;
-using static GlobalData;
-using static TriggerRandomMechanic;
+using dev.susybaka.raidsim.Characters;
+using dev.susybaka.raidsim.Core;
+using static dev.susybaka.raidsim.Core.GlobalData;
+using static dev.susybaka.raidsim.StatusEffects.StatusEffectData;
 
-public class DebuffsMechanic : FightMechanic
+namespace dev.susybaka.raidsim.Mechanics
 {
-    public List<StatusEffectInfo> effects = new List<StatusEffectInfo>();
-    public List<IndexMapping> indexMapping = new List<IndexMapping>();
-    public List<RoleMapping> roleMapping = new List<RoleMapping>();
-    public int fightTimelineEventRandomResultId = -1;
-    public bool cleansEffect = false;
-    public bool ignoreRoles = false;
-    public bool useIndexMapping = false;
-    public bool useRoleMapping = false;
-
-    public override void TriggerMechanic(ActionInfo actionInfo)
+    public class DebuffsMechanic : FightMechanic
     {
-        if (!CanTrigger(actionInfo))
-            return;
+        public List<StatusEffectInfo> effects = new List<StatusEffectInfo>();
+        public List<IndexMapping> indexMapping = new List<IndexMapping>();
+        public List<RoleMapping> roleMapping = new List<RoleMapping>();
+        public int fightTimelineEventRandomResultId = -1;
+        public bool cleansEffect = false;
+        public bool ignoreRoles = false;
+        public bool useIndexMapping = false;
+        public bool useRoleMapping = false;
 
-        CharacterState state = null;
-        int r = FightTimeline.Instance.GetRandomEventResult(fightTimelineEventRandomResultId);
-
-        if (actionInfo.source != null)
+        public override void TriggerMechanic(ActionInfo actionInfo)
         {
-            state = actionInfo.source;
-        } 
-        else if (actionInfo.target != null)
-        {
-            state = actionInfo.target;
-        }
+            if (!CanTrigger(actionInfo))
+                return;
 
-        if (log)
-            Debug.Log($"{gameObject.name} character state is {state.gameObject.name}");
+            CharacterState state = null;
+            int r = FightTimeline.Instance.GetRandomEventResult(fightTimelineEventRandomResultId);
 
-        if (effects != null && effects.Count > 0)
-        {
-            if (!cleansEffect)
+            if (actionInfo.source != null)
             {
-                bool flag = false;
+                state = actionInfo.source;
+            }
+            else if (actionInfo.target != null)
+            {
+                state = actionInfo.target;
+            }
 
-                if (useIndexMapping)
-                {
-                    for (int i = 0; i < indexMapping.Count; i++)
-                    {
-                        if (indexMapping[i].previousIndex == r)
-                        {
-                            r = indexMapping[i].nextIndex;
-                            break;
-                        }
-                    }
-                    flag = true;
-                }
-                if (useRoleMapping)
-                {
-                    for (int i = 0; i < roleMapping.Count; i++)
-                    {
-                        if (roleMapping[i].role == state.role)
-                        {
-                            r += roleMapping[i].indexOffset;
-                            if (log)
-                                Debug.Log($"{gameObject.name} roleMapping role is of index {i} and is {roleMapping[i].role}, r is {r}");
-                            break;
-                        }
-                    }
-                    flag = true;
-                }
+            if (log)
+                Debug.Log($"{gameObject.name} character state is {state.gameObject.name}");
 
-                if (flag)
+            if (effects != null && effects.Count > 0)
+            {
+                if (!cleansEffect)
                 {
-                    if (!ignoreRoles)
+                    bool flag = false;
+
+                    if (useIndexMapping)
                     {
-                        if (effects[r].data.assignedRoles.Contains(state.role))
+                        for (int i = 0; i < indexMapping.Count; i++)
                         {
-                            if (log)
+                            if (indexMapping[i].previousIndex == r)
                             {
-                                Debug.Log($"{gameObject.name} effects[r] {effects[r].name} contains {state.gameObject.name} role {state.role}\nAdding effect...");
+                                r = indexMapping[i].nextIndex;
+                                break;
                             }
+                        }
+                        flag = true;
+                    }
+                    if (useRoleMapping)
+                    {
+                        for (int i = 0; i < roleMapping.Count; i++)
+                        {
+                            if (roleMapping[i].role == state.role)
+                            {
+                                r += roleMapping[i].indexOffset;
+                                if (log)
+                                    Debug.Log($"{gameObject.name} roleMapping role is of index {i} and is {roleMapping[i].role}, r is {r}");
+                                break;
+                            }
+                        }
+                        flag = true;
+                    }
+
+                    if (flag)
+                    {
+                        if (!ignoreRoles)
+                        {
+                            if (effects[r].data.assignedRoles.Contains(state.role))
+                            {
+                                if (log)
+                                {
+                                    Debug.Log($"{gameObject.name} effects[r] {effects[r].name} contains {state.gameObject.name} role {state.role}\nAdding effect...");
+                                }
+                                state.AddEffect(effects[r].data, state, false, effects[r].tag, effects[r].stacks);
+                            }
+                        }
+                        else
+                        {
                             state.AddEffect(effects[r].data, state, false, effects[r].tag, effects[r].stacks);
                         }
                     }
                     else
                     {
-                        state.AddEffect(effects[r].data, state, false, effects[r].tag, effects[r].stacks);
-                    }
-                }
-                else
-                {
-                    for (int i = 0; i < effects.Count; i++)
-                    {
-                        if (!ignoreRoles)
+                        for (int i = 0; i < effects.Count; i++)
                         {
-                            if (!effects[i].data.assignedRoles.Contains(state.role))
-                                continue;
-                        }
+                            if (!ignoreRoles)
+                            {
+                                if (!effects[i].data.assignedRoles.Contains(state.role))
+                                    continue;
+                            }
 
-                        state.AddEffect(effects[i].data, state, false, effects[i].tag, effects[i].stacks);
+                            state.AddEffect(effects[i].data, state, false, effects[i].tag, effects[i].stacks);
+                        }
                     }
                 }
             }
         }
-    }
 
-    [System.Serializable]
-    public struct RoleMapping
-    {
-        public string name;
-        public Role role;
-        public int indexOffset;
-
-        public RoleMapping(string name, Role role, int indexOffset)
+        [System.Serializable]
+        public struct RoleMapping
         {
-            this.name = name;
-            this.role = role;
-            this.indexOffset = indexOffset;
+            public string name;
+            public Role role;
+            public int indexOffset;
+
+            public RoleMapping(string name, Role role, int indexOffset)
+            {
+                this.name = name;
+                this.role = role;
+                this.indexOffset = indexOffset;
+            }
         }
     }
 }

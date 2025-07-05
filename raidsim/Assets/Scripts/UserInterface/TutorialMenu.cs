@@ -1,54 +1,55 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using dev.susybaka.raidsim.Inputs;
 
-public class TutorialMenu : MonoBehaviour
+namespace dev.susybaka.raidsim.UI
 {
-    private CanvasGroup group;
-    [SerializeField] private UserInput input;
-
-    void Awake()
+    public class TutorialMenu : HudWindow
     {
-        group = GetComponent<CanvasGroup>();
-    }
+        [SerializeField] private UserInput input;
 
-    public void Show()
-    {
-        group.alpha = 1f;
-        group.blocksRaycasts = true;
-        group.interactable = true;
+        protected override void Awake()
+        {
+            base.Awake();
+        }
 
-        if (input == null)
-            return;
+        public void Show()
+        {
+            group.alpha = 1f;
+            group.blocksRaycasts = true;
+            group.interactable = true;
 
-        input.inputEnabled = false;
-        input.movementInputEnabled = false;
-        input.zoomInputEnabled = false;
-        input.rotationInputEnabled = false;
-        input.targetRaycastInputEnabled = false;
-    }
+            if (input == null)
+                return;
 
-    public void Hide()
-    {
-        group.alpha = 0f;
-        group.blocksRaycasts = false;
-        group.interactable = false;
+            input.inputEnabled = false;
+            input.movementInputEnabled = false;
+            input.zoomInputEnabled = false;
+            input.rotationInputEnabled = false;
+            input.targetRaycastInputEnabled = false;
+        }
 
-        if (input == null)
-            return;
+        public void Hide()
+        {
+            group.alpha = 0f;
+            group.blocksRaycasts = false;
+            group.interactable = false;
 
-        input.inputEnabled = true;
-        input.movementInputEnabled = true;
-        input.zoomInputEnabled = true;
-        input.rotationInputEnabled = true;
-        input.targetRaycastInputEnabled = true;
-    }
+            if (input == null)
+                return;
 
-    public void Toggle(bool state)
-    {
-        if (!state)
-            Show();
-        else
-            Hide();
+            input.inputEnabled = true;
+            input.movementInputEnabled = true;
+            input.zoomInputEnabled = true;
+            input.rotationInputEnabled = true;
+            input.targetRaycastInputEnabled = true;
+        }
+
+        public void Toggle(bool state)
+        {
+            if (!state)
+                Show();
+            else
+                Hide();
+        }
     }
 }

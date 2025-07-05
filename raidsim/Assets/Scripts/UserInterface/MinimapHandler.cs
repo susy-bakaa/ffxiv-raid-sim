@@ -8,6 +8,9 @@ using TMPro;
 #if UNITY_EDITOR
 using NaughtyAttributes;
 #endif
+using dev.susybaka.raidsim.Core;
+using dev.susybaka.raidsim.Inputs;
+using dev.susybaka.Shared;
 
 namespace dev.susybaka.raidsim.UI
 {

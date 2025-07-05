@@ -1,32 +1,34 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using static GlobalData;
+using dev.susybaka.raidsim.Core;
+using static dev.susybaka.raidsim.Core.GlobalData;
 
-public class ChangeArenaMechanic : FightMechanic
+namespace dev.susybaka.raidsim.Mechanics
 {
-    public Vector3 newBounds;
-    public SN<bool> isCircle;
-
-    public override void TriggerMechanic(ActionInfo actionInfo)
+    public class ChangeArenaMechanic : FightMechanic
     {
-        if (!CanTrigger(actionInfo))
-            return;
+        public Vector3 newBounds;
+        public SN<bool> isCircle;
 
-        if (newBounds == Vector3.zero && isCircle == null)
+        public override void TriggerMechanic(ActionInfo actionInfo)
         {
+            if (!CanTrigger(actionInfo))
+                return;
+
+            if (newBounds == Vector3.zero && isCircle == null)
+            {
+                FightTimeline.Instance.ResetArena();
+            }
+            else
+            {
+                FightTimeline.Instance.ChangeArena(newBounds, isCircle);
+            }
+        }
+
+        public override void InterruptMechanic(ActionInfo actionInfo)
+        {
+            base.InterruptMechanic(actionInfo);
+
             FightTimeline.Instance.ResetArena();
         }
-        else
-        {
-            FightTimeline.Instance.ChangeArena(newBounds, isCircle);
-        }
-    }
-
-    public override void InterruptMechanic(ActionInfo actionInfo)
-    {
-        base.InterruptMechanic(actionInfo);
-
-        FightTimeline.Instance.ResetArena();
     }
 }

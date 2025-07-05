@@ -1,13 +1,16 @@
 using UnityEngine;
 using UnityEditor;
 
-[CustomPropertyDrawer(typeof(HiddenAttribute))]
-class HiddenDrawer : PropertyDrawer
+namespace dev.susybaka.Shared.Editor
 {
-    public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+    [CustomPropertyDrawer(typeof(HiddenAttribute))]
+    class HiddenDrawer : PropertyDrawer
     {
-        return 0f;
-    }
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        {
+            return 0f;
+        }
 
-    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) { }
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) { }
+    }
 }

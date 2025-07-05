@@ -24,7 +24,7 @@ namespace dev.susybaka.Shared.Audio
 
         private AudioSource templateSource;
 
-        void Awake()
+        private void Awake()
         {
             if (Instance != null)
             {

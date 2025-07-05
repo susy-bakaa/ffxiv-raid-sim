@@ -1,36 +1,37 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class SimpleMovement : MonoBehaviour
+namespace dev.susybaka.raidsim.Visuals
 {
-    public Vector3 target = Vector3.zero;
-    public float speed = 0.1f;
-    public bool loop = true;
-    private Vector3 originalPosition;
-    private bool movingToTarget = true;
-
-    private void Awake()
+    public class SimpleMovement : MonoBehaviour
     {
-        originalPosition = transform.localPosition;
-    }
+        public Vector3 target = Vector3.zero;
+        public float speed = 0.1f;
+        public bool loop = true;
+        private Vector3 originalPosition;
+        private bool movingToTarget = true;
 
-    private void Update()
-    {
-        if (movingToTarget)
+        private void Awake()
         {
-            transform.localPosition = Vector3.MoveTowards(transform.localPosition, target, speed * Time.deltaTime);
-            if (transform.localPosition == target)
-            {
-                movingToTarget = false;
-            }
+            originalPosition = transform.localPosition;
         }
-        else if (loop)
+
+        private void Update()
         {
-            transform.localPosition = Vector3.MoveTowards(transform.localPosition, originalPosition, speed * Time.deltaTime);
-            if (transform.localPosition == originalPosition)
+            if (movingToTarget)
             {
-                movingToTarget = true;
+                transform.localPosition = Vector3.MoveTowards(transform.localPosition, target, speed * Time.deltaTime);
+                if (transform.localPosition == target)
+                {
+                    movingToTarget = false;
+                }
+            }
+            else if (loop)
+            {
+                transform.localPosition = Vector3.MoveTowards(transform.localPosition, originalPosition, speed * Time.deltaTime);
+                if (transform.localPosition == originalPosition)
+                {
+                    movingToTarget = true;
+                }
             }
         }
     }

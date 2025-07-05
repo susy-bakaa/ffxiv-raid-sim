@@ -1,17 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using static GlobalData;
+using dev.susybaka.raidsim.Core;
+using static dev.susybaka.raidsim.Core.GlobalData;
 
-public class SetFightTimescaleMechanic : FightMechanic
+namespace dev.susybaka.raidsim.Mechanics
 {
-    public float newTimeScale = 1f;
-
-    public override void TriggerMechanic(ActionInfo actionInfo)
+    public class SetFightTimescaleMechanic : FightMechanic
     {
-        if (!CanTrigger(actionInfo))
-            return;
+        public float newTimeScale = 1f;
 
-        FightTimeline.timeScale = newTimeScale;
+        public override void TriggerMechanic(ActionInfo actionInfo)
+        {
+            if (!CanTrigger(actionInfo))
+                return;
+
+            FightTimeline.timeScale = newTimeScale;
+        }
     }
 }

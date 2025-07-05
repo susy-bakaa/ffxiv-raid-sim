@@ -1,71 +1,75 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using dev.susybaka.raidsim.Characters;
+using dev.susybaka.raidsim.UI;
+using dev.susybaka.raidsim.Visuals;
 
-public class StoreLocationEffect : StatusEffect
+namespace dev.susybaka.raidsim.StatusEffects
 {
-    public Vector3 location;
-    public GameObject effectPrefab;
-    public float fadeDuration = 0.5f;
-
-    private GameObject spawnedEffectObject;
-    private SimpleShaderFade shaderFade;
-    private SortHotbar sortHotbar;
-
-    private void Awake()
+    public class StoreLocationEffect : StatusEffect
     {
-        sortHotbar = FindObjectOfType<SortHotbar>();
-    }
+        public Vector3 location;
+        public GameObject effectPrefab;
+        public float fadeDuration = 0.5f;
 
-    public override void OnApplication(CharacterState state)
-    {
-        base.OnApplication(state);
+        private GameObject spawnedEffectObject;
+        private SimpleShaderFade shaderFade;
+        private SortHotbar sortHotbar;
 
-        location = state.transform.position;
-
-        if (effectPrefab != null)
+        private void Awake()
         {
-            spawnedEffectObject = Instantiate(effectPrefab, location, Quaternion.identity);
-            spawnedEffectObject.transform.SetParent(GameObject.Find("Mechanics").transform);
-            if (spawnedEffectObject.transform.GetChild(0).TryGetComponent(out SimpleShaderFade shaderFade))
+            sortHotbar = FindObjectOfType<SortHotbar>();
+        }
+
+        public override void OnApplication(CharacterState state)
+        {
+            base.OnApplication(state);
+
+            location = state.transform.position;
+
+            if (effectPrefab != null)
             {
-                this.shaderFade = shaderFade;
-                shaderFade.FadeIn(fadeDuration);
+                spawnedEffectObject = Instantiate(effectPrefab, location, Quaternion.identity);
+                spawnedEffectObject.transform.SetParent(GameObject.Find("Mechanics").transform);
+                if (spawnedEffectObject.transform.GetChild(0).TryGetComponent(out SimpleShaderFade shaderFade))
+                {
+                    this.shaderFade = shaderFade;
+                    shaderFade.FadeIn(fadeDuration);
+                }
+            }
+
+            if (sortHotbar != null)
+            {
+                sortHotbar.UpdateSorting();
             }
         }
 
-        if (sortHotbar != null)
+        public override void OnCleanse(CharacterState state)
         {
-            sortHotbar.UpdateSorting();
+            base.OnCleanse(state);
+            CleanObjects();
         }
-    }
 
-    public override void OnCleanse(CharacterState state)
-    {
-        base.OnCleanse(state);
-        CleanObjects();
-    }
-
-    public override void OnExpire(CharacterState state)
-    {
-        base.OnExpire(state);
-        CleanObjects();
-    }
-
-    private void CleanObjects()
-    {
-        if (spawnedEffectObject != null)
+        public override void OnExpire(CharacterState state)
         {
-            if (shaderFade != null)
+            base.OnExpire(state);
+            CleanObjects();
+        }
+
+        private void CleanObjects()
+        {
+            if (spawnedEffectObject != null)
             {
-                shaderFade.FadeOut(fadeDuration);
+                if (shaderFade != null)
+                {
+                    shaderFade.FadeOut(fadeDuration);
+                }
+                Destroy(spawnedEffectObject, fadeDuration);
             }
-            Destroy(spawnedEffectObject, fadeDuration);
-        }
 
-        if (sortHotbar != null)
-        {
-            sortHotbar.UpdateSorting();
+            if (sortHotbar != null)
+            {
+                sortHotbar.UpdateSorting();
+            }
         }
     }
 }

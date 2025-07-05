@@ -1,11 +1,9 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-namespace no00ob.WaveSurvivalGame.UserInterface
+namespace dev.susybaka.WaveSurvivalGame.UserInterface
 {
     public class SliderInputLinker : MonoBehaviour
     {

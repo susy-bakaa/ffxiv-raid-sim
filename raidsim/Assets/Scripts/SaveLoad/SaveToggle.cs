@@ -1,56 +1,60 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using dev.illa4257;
+using dev.susybaka.raidsim.Core;
+using dev.susybaka.Shared;
 
-[RequireComponent(typeof(Toggle))]
-public class SaveToggle : MonoBehaviour
+namespace dev.susybaka.raidsim.SaveLoad
 {
-    Toggle toggle;
-    int savedValue = 0;
-
-    public string group = "";
-    public string key = "UnnamedToggle";
-
-    public UnityEvent<bool> onStart;
-
-    IniStorage ini;
-    int id = 0;
-    float wait;
-
-    void Awake()
+    [RequireComponent(typeof(Toggle))]
+    public class SaveToggle : MonoBehaviour
     {
-        toggle = GetComponent<Toggle>();
-        savedValue = 0;
-        ini = new IniStorage(GlobalVariables.configPath);
-        wait = UnityEngine.Random.Range(0.15f,0.65f);
-        id = Random.Range(0, 10000);
-    }
+        Toggle toggle;
+        int savedValue = 0;
 
-    void Start()
-    {
-        if (ini.Contains(group, $"i{key}"))
+        public string group = "";
+        public string key = "UnnamedToggle";
+
+        public UnityEvent<bool> onStart;
+
+        IniStorage ini;
+        int id = 0;
+        float wait;
+
+        private void Awake()
         {
-            savedValue = ini.GetInt(group, $"i{key}");
-
-            bool result = savedValue.ToBool();
-
-            toggle.SetIsOnWithoutNotify(result);
-            toggle.onValueChanged.Invoke(result);
-            onStart.Invoke(result);
+            toggle = GetComponent<Toggle>();
+            savedValue = 0;
+            ini = new IniStorage(GlobalVariables.configPath);
+            wait = UnityEngine.Random.Range(0.15f, 0.65f);
+            id = Random.Range(0, 10000);
         }
-    }
 
-    public void SaveValue(bool value)
-    {
-        Utilities.FunctionTimer.Create(this, () => {
-            ini.Load(GlobalVariables.configPath);
+        private void Start()
+        {
+            if (ini.Contains(group, $"i{key}"))
+            {
+                savedValue = ini.GetInt(group, $"i{key}");
 
-            savedValue = value.ToInt();
-            ini.Set(group, $"i{key}", savedValue);
+                bool result = savedValue.ToBool();
 
-            ini.Save();
-        }, wait, $"SaveToggle_{id}_{toggle.gameObject.name}_savevalue_delay", false, true);
+                toggle.SetIsOnWithoutNotify(result);
+                toggle.onValueChanged.Invoke(result);
+                onStart.Invoke(result);
+            }
+        }
+
+        public void SaveValue(bool value)
+        {
+            Utilities.FunctionTimer.Create(this, () => {
+                ini.Load(GlobalVariables.configPath);
+
+                savedValue = value.ToInt();
+                ini.Set(group, $"i{key}", savedValue);
+
+                ini.Save();
+            }, wait, $"SaveToggle_{id}_{toggle.gameObject.name}_savevalue_delay", false, true);
+        }
     }
 }

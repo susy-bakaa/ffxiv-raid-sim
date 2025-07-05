@@ -1,49 +1,53 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using dev.illa4257;
+using dev.susybaka.raidsim.Core;
+using dev.susybaka.Shared;
 
-public class SaveInteger : MonoBehaviour
+namespace dev.susybaka.raidsim.SaveLoad
 {
-    int savedValue = 0;
-
-    public string group = "";
-    public string key = "UnnamedInteger";
-
-    public UnityEvent<int> onStart;
-
-    IniStorage ini;
-    int id = 0;
-    float wait;
-
-    void Awake()
+    public class SaveInteger : MonoBehaviour
     {
-        savedValue = 0;
-        ini = new IniStorage(GlobalVariables.configPath);
-        wait = UnityEngine.Random.Range(0.15f, 0.65f);
-        id = Random.Range(0, 10000);
-    }
+        int savedValue = 0;
 
-    void Start()
-    {
-        if (ini.Contains(group, $"i{key}"))
+        public string group = "";
+        public string key = "UnnamedInteger";
+
+        public UnityEvent<int> onStart;
+
+        IniStorage ini;
+        int id = 0;
+        float wait;
+
+        private void Awake()
         {
-            savedValue = ini.GetInt(group, $"i{key}");
+            savedValue = 0;
+            ini = new IniStorage(GlobalVariables.configPath);
+            wait = UnityEngine.Random.Range(0.15f, 0.65f);
+            id = Random.Range(0, 10000);
         }
 
-        onStart.Invoke(savedValue);
-    }
+        private void Start()
+        {
+            if (ini.Contains(group, $"i{key}"))
+            {
+                savedValue = ini.GetInt(group, $"i{key}");
+            }
 
-    public void SaveValue(int value)
-    {
-        string n = gameObject.name;
-        Utilities.FunctionTimer.Create(this, () => {
-            ini.Load(GlobalVariables.configPath);
+            onStart.Invoke(savedValue);
+        }
 
-            savedValue = value;
-            ini.Set(group, $"i{key}", savedValue);
+        public void SaveValue(int value)
+        {
+            string n = gameObject.name;
+            Utilities.FunctionTimer.Create(this, () => {
+                ini.Load(GlobalVariables.configPath);
 
-            ini.Save();
-        }, wait, $"SaveInteger_{id}_{n}_savevalue_delay", false, true);
+                savedValue = value;
+                ini.Set(group, $"i{key}", savedValue);
+
+                ini.Save();
+            }, wait, $"SaveInteger_{id}_{n}_savevalue_delay", false, true);
+        }
     }
 }

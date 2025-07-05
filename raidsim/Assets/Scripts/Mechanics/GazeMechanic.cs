@@ -1,90 +1,93 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using NaughtyAttributes;
-using static GlobalData;
-using static GlobalData.Damage;
-using static StatusEffectData;
+using dev.susybaka.raidsim.Characters;
+using static dev.susybaka.raidsim.Core.GlobalData.Damage;
+using static dev.susybaka.raidsim.Core.GlobalData;
+using static dev.susybaka.raidsim.StatusEffects.StatusEffectData;
 
-public class GazeMechanic : FightMechanic
+namespace dev.susybaka.raidsim.Mechanics
 {
-    public Damage damage = new Damage(100, true, true, DamageType.unique, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.percentageFromMax, "Unnamed Gaze");
-    public List<StatusEffectInfo> inflictsEffects = new List<StatusEffectInfo>();
-    public bool lethalGaze = true;
-    public Transform origin;
-    public float threshold = 45f;
-
-    [ShowNonSerializedField] private float angle;
-    private CharacterState sourceCharacter;
-
-    private void Awake()
+    public class GazeMechanic : FightMechanic
     {
-        if (origin != null)
-            sourceCharacter = origin.GetComponent<CharacterState>();
-    }
+        public Damage damage = new Damage(100, true, true, DamageType.unique, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.percentageFromMax, "Unnamed Gaze");
+        public List<StatusEffectInfo> inflictsEffects = new List<StatusEffectInfo>();
+        public bool lethalGaze = true;
+        public Transform origin;
+        public float threshold = 45f;
 
-    public override void TriggerMechanic(ActionInfo actionInfo)
-    {
-        if (!CanTrigger(actionInfo))
-            return;
+        [ShowNonSerializedField] private float angle;
+        private CharacterState sourceCharacter;
 
-        if (origin == null)
+        private void Awake()
         {
-            if (actionInfo.target != null && actionInfo.source != null)
-                origin = actionInfo.source.transform;
-            else
-                origin = transform;
-        }
-        if (sourceCharacter == null && origin != null)
-        {
-            sourceCharacter = origin.GetComponent<CharacterState>();
-        }
-        if (sourceCharacter != null)
-        {
-            damage.source = sourceCharacter;
+            if (origin != null)
+                sourceCharacter = origin.GetComponent<CharacterState>();
         }
 
-        CharacterState target = actionInfo.target ?? actionInfo.source;
-        if (target == null)
-            return;
-
-        angle = Vector3.Angle(target.transform.forward, origin.position - target.transform.position);
-
-        if (log)
-            Debug.Log($"target: '{target.gameObject.name}', Angle: '{angle}'");
-
-        if (angle < threshold)
+        public override void TriggerMechanic(ActionInfo actionInfo)
         {
-            bool damageDealt = false;
-            if (damage.value != 0 || lethalGaze)
+            if (!CanTrigger(actionInfo))
+                return;
+
+            if (origin == null)
             {
-                damageDealt = true;
-                target.ModifyHealth(damage, lethalGaze);
+                if (actionInfo.target != null && actionInfo.source != null)
+                    origin = actionInfo.source.transform;
+                else
+                    origin = transform;
             }
-            if (inflictsEffects != null && inflictsEffects.Count > 0)
+            if (sourceCharacter == null && origin != null)
             {
-                if (!damageDealt && !target.dead)
-                    target.ShowDamageFlyText(new Damage(-1, true, true, DamageType.unique, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal, damage.source, damage.name), false);
+                sourceCharacter = origin.GetComponent<CharacterState>();
+            }
+            if (sourceCharacter != null)
+            {
+                damage.source = sourceCharacter;
+            }
 
-                for (int i = 0; i < inflictsEffects.Count; i++)
+            CharacterState target = actionInfo.target ?? actionInfo.source;
+            if (target == null)
+                return;
+
+            angle = Vector3.Angle(target.transform.forward, origin.position - target.transform.position);
+
+            if (log)
+                Debug.Log($"target: '{target.gameObject.name}', Angle: '{angle}'");
+
+            if (angle < threshold)
+            {
+                bool damageDealt = false;
+                if (damage.value != 0 || lethalGaze)
                 {
-                    target.AddEffect(inflictsEffects[i].data, sourceCharacter, false, inflictsEffects[i].tag, inflictsEffects[i].stacks);
+                    damageDealt = true;
+                    target.ModifyHealth(damage, lethalGaze);
                 }
-            }
-            if (log)
-                Debug.Log($"Angle was under threshold!");
-        }
-        else
-        {
-            if (!target.dead)
-                target.ShowDamageFlyText(new Damage(0, true, true, DamageType.none, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal, damage.source, damage.name));
-            if (log)
-                Debug.Log($"Angle was over threshold!");
-        }
-    }
+                if (inflictsEffects != null && inflictsEffects.Count > 0)
+                {
+                    if (!damageDealt && !target.dead)
+                        target.ShowDamageFlyText(new Damage(-1, true, true, DamageType.unique, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal, damage.source, damage.name), false);
 
-    private void Reset()
-    {
-        damage = new Damage(100, true, true, DamageType.unique, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.percentageFromMax, "Unnamed Gaze");
+                    for (int i = 0; i < inflictsEffects.Count; i++)
+                    {
+                        target.AddEffect(inflictsEffects[i].data, sourceCharacter, false, inflictsEffects[i].tag, inflictsEffects[i].stacks);
+                    }
+                }
+                if (log)
+                    Debug.Log($"Angle was under threshold!");
+            }
+            else
+            {
+                if (!target.dead)
+                    target.ShowDamageFlyText(new Damage(0, true, true, DamageType.none, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal, damage.source, damage.name));
+                if (log)
+                    Debug.Log($"Angle was over threshold!");
+            }
+        }
+
+        private void Reset()
+        {
+            damage = new Damage(100, true, true, DamageType.unique, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.percentageFromMax, "Unnamed Gaze");
+        }
     }
 }

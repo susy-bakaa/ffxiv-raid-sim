@@ -1,82 +1,87 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Samples.RebindUI;
+using dev.illa4257;
+using dev.susybaka.raidsim.Core;
+using dev.susybaka.Shared;
 
-public class SaveRebind : MonoBehaviour
+namespace dev.susybaka.raidsim.SaveLoad
 {
-    public InputActionAsset actions;
-    string savedValue = string.Empty;
-
-    public string group = "";
-    public string key = "UnnamedRebind";
-
-    public UnityEvent<string> onEnable;
-
-    IniStorage ini;
-    int id = 0;
-    float wait;
-    private List<RebindActionUI> rebinds; 
-
-    void Awake()
+    public class SaveRebind : MonoBehaviour
     {
-        savedValue = string.Empty;
-        ini = new IniStorage(GlobalVariables.configPath);
-        wait = UnityEngine.Random.Range(0.15f, 0.65f);
-        id = Random.Range(0, 10000);
-        rebinds = new List<RebindActionUI>(GetComponentsInChildren<RebindActionUI>());
-    }
+        public InputActionAsset actions;
+        string savedValue = string.Empty;
 
-    void OnEnable()
-    {
-        LoadValue();
-    }
+        public string group = "";
+        public string key = "UnnamedRebind";
 
-    public void LoadValue()
-    {
-        if (ini.Contains(group, $"s{key}"))
-        {
-            savedValue = ini.GetString(group, $"s{key}");
-            if (!string.IsNullOrEmpty(savedValue))
-                actions.LoadBindingOverridesFromJson(savedValue);
-        }
-        onEnable.Invoke(savedValue);
-    }
+        public UnityEvent<string> onEnable;
 
-    public void SaveValue()
-    {
-        SaveValue(string.Empty);
-    }
+        IniStorage ini;
+        int id = 0;
+        float wait;
+        private List<RebindActionUI> rebinds;
 
-    public void SaveValue(string value)
-    {
-        savedValue = actions.SaveBindingOverridesAsJson();
-
-        if (!string.IsNullOrEmpty(value))
-            savedValue = value;
-
-        if (savedValue.Contains("reset_json123"))
+        private void Awake()
         {
             savedValue = string.Empty;
-            actions.RemoveAllBindingOverrides();
-            if (rebinds != null && rebinds.Count > 0)
-            {
-                foreach (var rebind in rebinds)
-                {
-                    rebind.ResetToDefault();
-                }
-            }
+            ini = new IniStorage(GlobalVariables.configPath);
+            wait = UnityEngine.Random.Range(0.15f, 0.65f);
+            id = Random.Range(0, 10000);
+            rebinds = new List<RebindActionUI>(GetComponentsInChildren<RebindActionUI>());
         }
 
-        string n = gameObject.name;
-        Utilities.FunctionTimer.Create(this, () => {
-            ini.Load(GlobalVariables.configPath);
+        private void OnEnable()
+        {
+            LoadValue();
+        }
 
-            ini.Set(group, $"s{key}", savedValue);
+        public void LoadValue()
+        {
+            if (ini.Contains(group, $"s{key}"))
+            {
+                savedValue = ini.GetString(group, $"s{key}");
+                if (!string.IsNullOrEmpty(savedValue))
+                    actions.LoadBindingOverridesFromJson(savedValue);
+            }
+            onEnable.Invoke(savedValue);
+        }
 
-            ini.Save();
-        }, wait, $"SaveRebind_{id}_{n}_savevalue_delay", false, true);
+        public void SaveValue()
+        {
+            SaveValue(string.Empty);
+        }
+
+        public void SaveValue(string value)
+        {
+            savedValue = actions.SaveBindingOverridesAsJson();
+
+            if (!string.IsNullOrEmpty(value))
+                savedValue = value;
+
+            if (savedValue.Contains("reset_json123"))
+            {
+                savedValue = string.Empty;
+                actions.RemoveAllBindingOverrides();
+                if (rebinds != null && rebinds.Count > 0)
+                {
+                    foreach (var rebind in rebinds)
+                    {
+                        rebind.ResetToDefault();
+                    }
+                }
+            }
+
+            string n = gameObject.name;
+            Utilities.FunctionTimer.Create(this, () => {
+                ini.Load(GlobalVariables.configPath);
+
+                ini.Set(group, $"s{key}", savedValue);
+
+                ini.Save();
+            }, wait, $"SaveRebind_{id}_{n}_savevalue_delay", false, true);
+        }
     }
 }

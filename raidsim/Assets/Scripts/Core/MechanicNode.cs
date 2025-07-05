@@ -1,10 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using static GlobalData;
 
-public class MechanicNode : MonoBehaviour
+namespace dev.susybaka.raidsim.Nodes
 {
-    public bool isMiddle;
-    public bool isTaken = false;
+    public class MechanicNode : MonoBehaviour
+    {
+        public bool isMiddle;
+        public bool isTaken = false;
+    }
 }

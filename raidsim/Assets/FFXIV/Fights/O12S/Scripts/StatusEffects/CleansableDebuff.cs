@@ -1,46 +1,49 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using static GlobalData;
+using dev.susybaka.raidsim.Characters;
+using dev.susybaka.Shared;
+using static dev.susybaka.raidsim.Core.GlobalData;
 
-public class CleansableDebuff : StatusEffect
+namespace dev.susybaka.raidsim.StatusEffects
 {
-    [Header("Function")]
-    public StatusEffectData[] cleanedBy;
-    public int tags = 0;
-    public bool esunable = true;
-    public bool killsOnExpire = false;
-
-    private int id = 0;
-
-    public void Reset()
+    public class CleansableDebuff : StatusEffect
     {
-        damage = new Damage(100, true, true, Damage.DamageType.unique, Damage.ElementalAspect.unaspected, Damage.PhysicalAspect.none, Damage.DamageApplicationType.percentageFromMax, string.Empty);
-    }
+        [Header("Function")]
+        public StatusEffectData[] cleanedBy;
+        public int tags = 0;
+        public bool esunable = true;
+        public bool killsOnExpire = false;
 
-    public override void OnUpdate(CharacterState state)
-    {
-        uniqueTag = tags;
-        for (int i = 0; i < cleanedBy.Length; i++)
+        private int id = 0;
+
+        public void Reset()
         {
-            if (state.HasEffect(cleanedBy[i].statusName))
+            damage = new Damage(100, true, true, Damage.DamageType.unique, Damage.ElementalAspect.unaspected, Damage.PhysicalAspect.none, Damage.DamageApplicationType.percentageFromMax, string.Empty);
+        }
+
+        public override void OnUpdate(CharacterState state)
+        {
+            uniqueTag = tags;
+            for (int i = 0; i < cleanedBy.Length; i++)
             {
-                state.RemoveEffect(data, false, state, tags, stacks);
-                return;
+                if (state.HasEffect(cleanedBy[i].statusName))
+                {
+                    state.RemoveEffect(data, false, state, tags, stacks);
+                    return;
+                }
             }
+            base.OnUpdate(state);
         }
-        base.OnUpdate(state);
-    }
 
-    public override void OnExpire(CharacterState state)
-    {
-        id = Random.Range(0, 10000);
-
-        if (killsOnExpire)
+        public override void OnExpire(CharacterState state)
         {
-            // We need to add a small delay to the health modification or else the fly text for the debuff appears twice, this is a simple unnoticable fix for it.
-            Utilities.FunctionTimer.Create(state, () => state.ModifyHealth(damage, true), 0.1f, $"{data.statusName}_{id}_killsOnExpire_ModifyHealth_Delay", false, true);
+            id = Random.Range(0, 10000);
+
+            if (killsOnExpire)
+            {
+                // We need to add a small delay to the health modification or else the fly text for the debuff appears twice, this is a simple unnoticable fix for it.
+                Utilities.FunctionTimer.Create(state, () => state.ModifyHealth(damage, true), 0.1f, $"{data.statusName}_{id}_killsOnExpire_ModifyHealth_Delay", false, true);
+            }
+            base.OnExpire(state);
         }
-        base.OnExpire(state);
     }
 }
