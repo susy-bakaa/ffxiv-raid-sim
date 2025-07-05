@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 #if UNITY_EDITOR
 using NaughtyAttributes;
 #endif
@@ -16,6 +17,8 @@ public class EnvironmentHandler : MonoBehaviour
     public string[] arenaModels;
     public GameObject[] arenas;
     public ArenaModelData[] arenaModelData;
+
+    public UnityEvent onLoad;
 
     //private Transform dynamicParent;
     private FightSelector fightSelector;
@@ -130,6 +133,8 @@ public class EnvironmentHandler : MonoBehaviour
                         arenaModelData[0].model?.SetActive(true);
                     }
                 }
+
+                onLoad.Invoke();
             }
         }
     }
