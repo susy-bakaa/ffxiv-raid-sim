@@ -53,10 +53,10 @@ namespace dev.susybaka.raidsim.Core
             fightSelector = FindObjectOfType<FightSelector>();
             //dynamicParent = GameObject.FindGameObjectWithTag("persistent").transform.Find("Environment");   
 #if UNITY_WEBPLAYER
-        if (disableFogForWebGL)
-        {
-            RenderSettings.fog = false;
-        }
+            if (disableFogForWebGL)
+            {
+                RenderSettings.fog = false;
+            }
 #endif
 #if UNITY_STANDALONE_WIN
             if (disableFogForWindows)
@@ -65,10 +65,10 @@ namespace dev.susybaka.raidsim.Core
             }
 #endif
 #if UNITY_STANDALONE_LINUX
-        if (disableFogForLinux)
-        {
-            RenderSettings.fog = false;
-        }
+            if (disableFogForLinux)
+            {
+                RenderSettings.fog = false;
+            }
 #endif
             originalArenaIndex = currentArenaIndex;
         }

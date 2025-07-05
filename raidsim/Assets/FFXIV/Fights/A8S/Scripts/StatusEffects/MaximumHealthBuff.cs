@@ -1,7 +1,6 @@
 using dev.susybaka.raidsim.Characters;
-using dev.susybaka.raidsim.StatusEffects;
 
-namespace dev.susybaka.raidsim
+namespace dev.susybaka.raidsim.StatusEffects
 {
     public class MaximumHealthBuff : StatusEffect
     {
