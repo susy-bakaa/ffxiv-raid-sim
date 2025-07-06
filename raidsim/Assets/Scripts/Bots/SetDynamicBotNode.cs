@@ -23,6 +23,7 @@ namespace dev.susybaka.raidsim.Bots
         private bool wasReverseIfPriorityLowerThan = false;
         [ShowIf("m_type", DynamicNodeType.priority)] public int priority = -1;
         private int wasPriority = -1;
+        [ShowIf("m_type", DynamicNodeType.nearest)] public bool ignoreDisabledNodes = false; // TODO: change attribute to "HideIf("m_type", DynamicNodeType.enabled)", and add support for the other types (atm only nearest and furthest is supported).
         [ShowIf("m_type", DynamicNodeType.roleBased)] public bool matchGroup = false;
         [ShowIf("showWaitTime")] public float waitTime = 0f;
         [ShowIf("showWaitTime")] public bool reduceWaitTimeFromTimeline = false;
@@ -80,12 +81,12 @@ namespace dev.susybaka.raidsim.Bots
                 case DynamicNodeType.nearest:
                     if (log)
                         Debug.Log($"[SetDynamicBotNode ({gameObject.name})] Setting node based on nearest node");
-                    SetNodeTypeDistance(timeline, targetEventIndex, true);
+                    SetNodeTypeDistance(timeline, targetEventIndex, true, ignoreDisabledNodes);
                     break;
                 case DynamicNodeType.furthest:
                     if (log)
                         Debug.Log($"[SetDynamicBotNode ({gameObject.name})] Setting node based on furthest node");
-                    SetNodeTypeDistance(timeline, targetEventIndex, false);
+                    SetNodeTypeDistance(timeline, targetEventIndex, false, ignoreDisabledNodes);
                     break;
                 case DynamicNodeType.roleBased:
                     if (log)
@@ -148,28 +149,28 @@ namespace dev.susybaka.raidsim.Bots
             }
         }
 
-        private void SetNodeTypeDistance(BotTimeline timeline, int targetEventIndex, bool nearest)
+        private void SetNodeTypeDistance(BotTimeline timeline, int targetEventIndex, bool nearest, bool ignoreDisabledNodes)
         {
             if (nearest)
             {
                 if (!childGroups)
                 {
-                    AssignNode(timeline, targetEventIndex, nodeGroup.GetNearestNode(timeline.bot.transform.position));
+                    AssignNode(timeline, targetEventIndex, nodeGroup.GetNearestNode(timeline.bot.transform.position, ignoreDisabledNodes: ignoreDisabledNodes));
                 }
                 else
                 {
-                    AssignNode(timeline, targetEventIndex, nodeGroup.GetNearestNodeFromChildren(timeline.bot.transform.position));
+                    AssignNode(timeline, targetEventIndex, nodeGroup.GetNearestNodeFromChildren(timeline.bot.transform.position, ignoreDisabledNodes: ignoreDisabledNodes));
                 }
             }
             else
             {
                 if (!childGroups)
                 {
-                    AssignNode(timeline, targetEventIndex, nodeGroup.GetFurthestNode(timeline.bot.transform.position));
+                    AssignNode(timeline, targetEventIndex, nodeGroup.GetFurthestNode(timeline.bot.transform.position, ignoreDisabledNodes: ignoreDisabledNodes));
                 }
                 else
                 {
-                    AssignNode(timeline, targetEventIndex, nodeGroup.GetFurthestNodeFromChildren(timeline.bot.transform.position));
+                    AssignNode(timeline, targetEventIndex, nodeGroup.GetFurthestNodeFromChildren(timeline.bot.transform.position, ignoreDisabledNodes: ignoreDisabledNodes));
                 }
             }
         }

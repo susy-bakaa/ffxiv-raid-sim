@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 #if UNITY_EDITOR
 using NaughtyAttributes;
 #endif
@@ -17,6 +18,8 @@ namespace dev.susybaka.raidsim.Core
         public string[] arenaModels;
         public GameObject[] arenas;
         public ArenaModelData[] arenaModelData;
+
+        public UnityEvent onLoad;
 
         //private Transform dynamicParent;
         private FightSelector fightSelector;
@@ -132,6 +135,8 @@ namespace dev.susybaka.raidsim.Core
                         }
                     }
                 }
+
+                onLoad.Invoke();
             }
         }
 

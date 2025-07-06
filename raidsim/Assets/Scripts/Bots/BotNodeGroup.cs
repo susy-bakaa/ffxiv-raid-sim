@@ -172,13 +172,17 @@ namespace dev.susybaka.raidsim.Nodes
             return lowestPriorityNode;
         }
 
-        public BotNode GetNearestNode(Vector3 position, bool ignoreOccupancy = true, bool ignoreMechanics = true)
+        public BotNode GetNearestNode(Vector3 position, bool ignoreOccupancy = true, bool ignoreMechanics = true, bool ignoreDisabledNodes = true)
         {
             BotNode nearestNode = null;
             float nearestDistance = float.MaxValue;
 
             foreach (BotNode node in nodes)
             {
+                // Skip if disabled nodes are ignored
+                if (ignoreDisabledNodes && !node.gameObject.activeSelf)
+                    continue;
+
                 // Skip if occupancy is not ignored and node is occupied
                 if (!ignoreOccupancy && node.occupied)
                     continue;
@@ -199,13 +203,17 @@ namespace dev.susybaka.raidsim.Nodes
             return nearestNode;
         }
 
-        public BotNode GetFurthestNode(Vector3 position, bool ignoreOccupancy = true, bool ignoreMechanics = true)
+        public BotNode GetFurthestNode(Vector3 position, bool ignoreOccupancy = true, bool ignoreMechanics = true, bool ignoreDisabledNodes = true)
         {
             BotNode furthestNode = null;
             float furthestDistance = 0f;
 
             foreach (BotNode node in nodes)
             {
+                // Skip if disabled nodes are ignored
+                if (ignoreDisabledNodes && !node.gameObject.activeSelf)
+                    continue;
+                
                 // Skip if occupancy is not ignored and node is occupied
                 if (!ignoreOccupancy && node.occupied)
                     continue;
@@ -380,7 +388,7 @@ namespace dev.susybaka.raidsim.Nodes
             return null;
         }
 
-        public BotNode GetNearestNodeFromChildren(Vector3 position, bool ignoreOccupancy = true, bool ignoreMechanics = true)
+        public BotNode GetNearestNodeFromChildren(Vector3 position, bool ignoreOccupancy = true, bool ignoreMechanics = true, bool ignoreDisabledNodes = true)
         {
             if (childGroups == null || childGroups.Count == 0)
             {
@@ -394,7 +402,7 @@ namespace dev.susybaka.raidsim.Nodes
 
             foreach (BotNodeGroup group in childGroups)
             {
-                BotNode node = group.GetNearestNode(position, ignoreOccupancy, ignoreMechanics);
+                BotNode node = group.GetNearestNode(position, ignoreOccupancy, ignoreMechanics, ignoreDisabledNodes);
                 if (node != null)
                 {
                     float distance = Vector3.Distance(position, node.transform.position);
@@ -412,7 +420,7 @@ namespace dev.susybaka.raidsim.Nodes
             return nearestNode;
         }
 
-        public BotNode GetFurthestNodeFromChildren(Vector3 position, bool ignoreOccupancy = true, bool ignoreMechanics = true)
+        public BotNode GetFurthestNodeFromChildren(Vector3 position, bool ignoreOccupancy = true, bool ignoreMechanics = true, bool ignoreDisabledNodes = true)
         {
             if (childGroups == null || childGroups.Count == 0)
             {
@@ -426,7 +434,7 @@ namespace dev.susybaka.raidsim.Nodes
 
             foreach (BotNodeGroup group in childGroups)
             {
-                BotNode node = group.GetFurthestNode(position, ignoreOccupancy, ignoreMechanics);
+                BotNode node = group.GetFurthestNode(position, ignoreOccupancy, ignoreMechanics, ignoreDisabledNodes);
                 if (node != null)
                 {
                     float distance = Vector3.Distance(position, node.transform.position);
