@@ -47,21 +47,21 @@ namespace dev.susybaka.raidsim.UI
                 targetController.onTarget.RemoveListener(SetTarget);
         }
 
-        public void Initialize()
+        public void Initialize(HudElementEventInfo eventInfo)
         {
             follow = true;
-            if (element != null && element.characterState != null)
+            if (eventInfo.element != null && eventInfo.element.characterState != null)
             {
                 if (!followCharacterStateTarget)
                 {
-                    if (element.characterState.statusPopupPivot != null)
-                        target = element.characterState.statusPopupPivot;
+                    if (eventInfo.element.characterState.statusPopupPivot != null)
+                        target = eventInfo.element.characterState.statusPopupPivot;
                     else
-                        target = element.characterState.transform;
+                        target = eventInfo.element.characterState.transform;
                 }
-                else if (element.characterState.targetController != null)
+                else if (eventInfo.element.characterState.targetController != null)
                 {
-                    targetController = element.characterState.targetController;
+                    targetController = eventInfo.element.characterState.targetController;
                     targetController.onTarget.AddListener(SetTarget);
                 }
             }

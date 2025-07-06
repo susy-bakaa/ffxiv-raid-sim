@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using dev.susybaka.Shared.Audio;
+using dev.susybaka.Shared.Editor;
 
 namespace dev.susybaka.raidsim.UI
 {
@@ -11,9 +12,8 @@ namespace dev.susybaka.raidsim.UI
         AudioManager audioManager;
         HudElementGroup hudElementGroup;
 
-        public string hoverSound = "ui_hover";
-        public string confirmSound = "ui_confirm";
-        public string cancelSound = "ui_cancel";
+        [SerializeField][SoundName] private string hoverSound = "ui_hover";
+        [SerializeField][SoundName] private string confirmSound = "ui_confirm";
 
         public bool limitEvents = false;
         public float eventCooldown = 1f;
@@ -22,20 +22,23 @@ namespace dev.susybaka.raidsim.UI
         private bool eventsAvailable = true;
         private bool countdown = false;
 
-        private void Awake()
+        private void Start()
         {
             audioManager = AudioManager.Instance;
             hudElementGroup = GetComponent<HudElementGroup>();
 
             hudElementGroup.onPointerEnter.AddListener(OnPointerEnter);
             hudElementGroup.onPointerExit.AddListener(OnPointerExit);
-            hudElementGroup.onClick.AddListener(OnClick);
+            hudElementGroup.onPointerClick.AddListener(OnPointerClick);
 
             timer = eventCooldown;
         }
 
         private void Update()
         {
+            if (audioManager == null)
+                return;
+
             if (limitEvents && countdown)
             {
                 timer -= Time.deltaTime;
@@ -47,9 +50,12 @@ namespace dev.susybaka.raidsim.UI
             }
         }
 
-        private void OnPointerEnter(PointerEventData data)
+        private void OnPointerEnter(HudElementEventInfo eventInfo)
         {
-            if (limitEvents)
+            if (audioManager == null)
+                return;
+
+            if (limitEvents && eventInfo.element.restrictsAudio)
             {
                 countdown = false;
                 timer = eventCooldown;
@@ -58,22 +64,40 @@ namespace dev.susybaka.raidsim.UI
             if (!eventsAvailable)
                 return;
 
-            audioManager.Play(hoverSound);
+            if (eventInfo.element.playHoverAudio)
+            {
+                audioManager.Play(hoverSound);
+            }
 
-            if (limitEvents)
+            if (limitEvents && eventInfo.element.restrictsAudio)
                 eventsAvailable = false;
         }
 
-        private void OnPointerExit(PointerEventData data)
+        private void OnPointerExit(HudElementEventInfo eventInfo)
         {
-            if (limitEvents)
+            if (audioManager == null)
+                return;
+
+            if (limitEvents && eventInfo.element.restrictsAudio)
             {
                 countdown = true;
             }
         }
 
-        private void OnClick(Button button)
+        private void OnPointerClick(HudElementEventInfo eventInfo)
         {
+            if (audioManager == null)
+                return;
+
+            if (eventInfo.element.playClickAudio)
+                audioManager.Play(confirmSound);
+        }
+
+        public void PlayConfirmSound()
+        {
+            if (audioManager == null)
+                return;
+
             audioManager.Play(confirmSound);
         }
     }

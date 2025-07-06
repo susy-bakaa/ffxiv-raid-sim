@@ -19,6 +19,7 @@ namespace dev.susybaka.raidsim.Actions
     public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     {
         CanvasGroup group;
+        HudElement element;
         CharacterState character;
         Button button;
         public enum RecastType { standard, longGcd, stackedOgcd }
@@ -96,6 +97,7 @@ namespace dev.susybaka.raidsim.Actions
         {
             button = GetComponent<Button>();
             group = GetComponent<CanvasGroup>();
+            element = GetComponent<HudElement>();
 
             chargesLeft = data.charges;
             permanentlyUnavailable = unavailable;
@@ -758,6 +760,11 @@ namespace dev.susybaka.raidsim.Actions
             if (clickHighlight == null) //(eventData == null && pointer) || 
             {
                 return;
+            }
+
+            if (element != null)
+            {
+                element.onPointerClick.Invoke(new HudElementEventInfo(element, eventData));
             }
 
             clickHighlight.transform.localScale = new Vector3(0f, 0f, 1f);

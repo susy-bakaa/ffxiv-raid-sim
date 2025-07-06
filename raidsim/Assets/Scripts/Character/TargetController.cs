@@ -9,6 +9,8 @@ using dev.susybaka.raidsim.Characters;
 using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.UI;
 using dev.susybaka.Shared;
+using dev.susybaka.Shared.Audio;
+using dev.susybaka.Shared.Editor;
 
 namespace dev.susybaka.raidsim.Targeting
 {
@@ -82,6 +84,11 @@ namespace dev.susybaka.raidsim.Targeting
         public List<HudElementColor> targetsTargetColoredHudElements;
         public Transform targetDamagePopupParent;
 
+        [Header("Audio")]
+        public bool playAudio = false;
+        [SerializeField][SoundName] private string onTargetAudio = "action_target";
+        [SerializeField][SoundName] private string onUntargetAudio = "action_untarget";
+
         private float mouseDownTime;
         private bool targetColorsUpdated;
         private bool targetsTargetColorsUpdated;
@@ -89,6 +96,10 @@ namespace dev.susybaka.raidsim.Targeting
         private bool wasMouseClick = false;
 
 #if UNITY_EDITOR
+        [Space(20)]
+#pragma warning disable CS0414 // The field 'TargetController.dummy' is assigned but its value is never used
+        [SerializeField] private int _dummy = 0;
+#pragma warning restore CS0414 // The field 'TargetController.dummy' is assigned but its value is never used
         [Button("Tab Target")]
         public void DebugTabTarget()
         {
@@ -220,7 +231,7 @@ namespace dev.susybaka.raidsim.Targeting
                 return;
             if (m_configMenu != null && m_configMenu.isOpen)
                 return;
-            if (m_configMenu != null && m_configMenu.isApplyPopupOpen)
+            if (m_configMenu != null && m_configMenu.ApplyPopup.isOpen)
                 return;
 
             if (Input.GetMouseButtonDown(0))
@@ -371,6 +382,18 @@ namespace dev.susybaka.raidsim.Targeting
             // Additional logic for targeting (e.g., UI updates) can go here.
             if (currentTarget != null && isPlayer && eventsEnabled)
                 currentTarget.onTarget.Invoke();
+
+            if (playAudio)
+            {
+                if (currentTarget != null)
+                {
+                    AudioManager.Instance.Play(onTargetAudio);      
+                }
+                else
+                {
+                    AudioManager.Instance.Play(onUntargetAudio);
+                }
+            }
         }
 
         public void CycleTarget()

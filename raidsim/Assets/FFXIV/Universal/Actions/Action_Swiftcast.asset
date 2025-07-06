@@ -23,10 +23,14 @@ MonoBehaviour:
     elementalAspect: 1
     physicalAspect: 0
     applicationType: 0
+    source: {fileID: 0}
+  causesDirectDamage: 1
   isShield: 0
   isHeal: 0
   isTargeted: 0
+  isGroundTargeted: 0
   topEnmity: 0
+  hasMovement: 0
   targetGroups: 64000000
   maxTargets: 1
   range: 0
@@ -37,6 +41,7 @@ MonoBehaviour:
   cast: 0
   recast: 60
   animationLock: 0.6
+  charges: 1
   canBeSlideCast: 1
   rollsGcd: 1
   buff: {fileID: 11400000, guid: b5257a784c306e34a81cf9476d5d2927, type: 2}
@@ -44,6 +49,13 @@ MonoBehaviour:
   debuff: {fileID: 0}
   dispelDebuffInstead: 0
   comboAction: {fileID: 0}
+  playCastingAnimationDirectly: 0
+  castingAnimationName: 
   animationName: 
   playAnimationDirectly: 0
+  playAnimationOnFinish: 0
   onAnimationFinishId: -1
+  animationDelay: 0
+  speech: 
+  speechAudio: {fileID: 8300000, guid: 43bf6776fb0706d479b352f610ea920e, type: 3}
+  jonSpeechAudio: {fileID: 0}

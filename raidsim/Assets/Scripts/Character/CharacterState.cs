@@ -17,6 +17,7 @@ using static dev.susybaka.raidsim.Core.GlobalData;
 using static dev.susybaka.raidsim.Core.GlobalData.Damage;
 using static dev.susybaka.raidsim.Core.GlobalData.Flag;
 using static dev.susybaka.raidsim.UI.PartyList;
+using dev.susybaka.Shared.Audio;
 
 namespace dev.susybaka.raidsim.Characters
 {
@@ -191,6 +192,8 @@ namespace dev.susybaka.raidsim.Characters
         private bool wasHidePartyName;
         public bool hidePartyListEntry = false;
         private bool wasHidePartyListEntry;
+        public bool playAudio = false;
+        private Transform audioParent;
 
         #region User Interface Variables
         [Header("Personal - Name")]
@@ -434,6 +437,8 @@ namespace dev.susybaka.raidsim.Characters
                     Destroy(child.gameObject);
                 }
             }
+
+            audioParent = transform.Find("Audio");
 
             wasDisabled = disabled;
             wasHideNameplate = hideNameplate;
@@ -3169,84 +3174,6 @@ namespace dev.susybaka.raidsim.Characters
             AddEffect(effect, damage, character, self, tag, stacks, duration);
         }
 
-        /*public void AddEffect(string name, CharacterState character, bool self = false, int tag = 0, int stacks = 0)
-        {
-            AddEffect(name, null, character, self, tag);
-        }
-
-        public void AddEffect(string name, Damage? damage, CharacterState character, bool self = false, int tag = 0, int stacks = 0)
-        {
-            if (!gameObject.activeSelf)
-                return;
-
-            if (health <= 0 || dead)
-                return;
-
-            string m_name = string.Empty;
-            bool refreshed = false;
-
-            if (effects[name].data.refreshStatusEffects != null && effects[name].data.refreshStatusEffects.Count > 0)
-            {
-                for (int i = 0; i < effects[name].data.refreshStatusEffects.Count; i++)
-                {
-                    m_name = effects[name].data.refreshStatusEffects[i].statusName;
-
-                    if (effects.ContainsKey(m_name))
-                    {
-                        if (!effects[m_name].data.refreshStatusEffects[i].unique)
-                            effects[m_name].Refresh(stacks, 0, -1);
-                        refreshed = true;
-                    }
-                }
-            }
-
-            if (tag > 0)
-            {
-                name = $"{name}_{tag}";
-            }
-
-            if (effects.ContainsKey(name))
-            {
-                if (!effects[name].data.unique)
-                    effects[name].Refresh(stacks);
-                refreshed = true;
-            }
-
-            if (showStatusPopups && refreshed)
-            {
-                ShowStatusEffectFlyTextWorldspace(effects[name].data, stacks + effects[name].data.appliedStacks, " + ");
-            }
-
-            if (refreshed)
-                return;
-
-            for (int i = 0; i < FightTimeline.Instance.allAvailableStatusEffects.Count; i++)
-            {
-                if (FightTimeline.Instance.allAvailableStatusEffects[i].name == name)
-                {
-                    if (effectsArray != null)
-                    {
-                        for (int k = 0; k < effectsArray.Length; k++)
-                        {
-                            if (FightTimeline.Instance.allAvailableStatusEffects[i].incompatableStatusEffects.Contains(effectsArray[k].data) || (FightTimeline.Instance.allAvailableStatusEffects[i].negative && invulnerable.value))
-                            {
-                                return;
-                            }
-                        }
-                    }
-                    GameObject newStatusEffect = Instantiate(FightTimeline.Instance.allAvailableStatusEffects[i].statusEffect, statusEffectParent);
-                    StatusEffect effect = newStatusEffect.GetComponent<StatusEffect>();
-
-                    if (damage != null)
-                    {
-                        effect.damage = new Damage((Damage)damage);
-                    }
-
-                    AddEffect(effect, damage, character, self, tag);
-                }
-            }
-        }*/
-
         public void AddEffect(StatusEffect effect, CharacterState character, bool self = false, int tag = 0, int stacks = 0, float duration = -1)
         {
             AddEffect(effect, null, character, self, tag, stacks, duration);
@@ -3404,6 +3331,14 @@ namespace dev.susybaka.raidsim.Characters
 
             if (partyList != null)
                 partyList.UpdatePrioritySorting();
+
+            if (playAudio)
+            {
+                if (!string.IsNullOrEmpty(effect.data.applySoundFx))
+                {
+                    AudioManager.Instance.PlayAt(effect.data.applySoundFx, transform.position, audioParent);
+                }
+            }
         }
 
         public void RemoveEffect(StatusEffectData data, bool expired, CharacterState character, int tag = 0, int stacks = 0)
@@ -3525,6 +3460,14 @@ namespace dev.susybaka.raidsim.Characters
 
             if (partyList != null)
                 partyList.UpdatePrioritySorting();
+
+            if (playAudio)
+            {
+                if (!string.IsNullOrEmpty(temp.data.expireSoundFx))
+                {
+                    AudioManager.Instance.PlayAt(temp.data.expireSoundFx, transform.position, audioParent);
+                }
+            }
         }
 
         public bool HasEffect(string name, int tag = 0)

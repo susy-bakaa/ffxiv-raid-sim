@@ -4,22 +4,22 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
-#if UNITY_EDITOR
 using NaughtyAttributes;
-#endif
 using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.Characters;
 using dev.susybaka.raidsim.Inputs;
 using dev.susybaka.Shared;
+using UnityEngine.Serialization;
 
 namespace dev.susybaka.raidsim.UI
 {
-    public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     {
         RectTransform rectTransform;
         CanvasGroup canvasGroup;
         UserInput input;
         HudElementPriority priorityHandler;
+        Slider slider;
 
         [Header("Sorting")]
         public int priority = 1;
@@ -54,10 +54,18 @@ namespace dev.susybaka.raidsim.UI
         public List<Outline> outlines = new List<Outline>();
         public List<Color> defaultColors = new List<Color>();
         public List<Color> alternativeColors = new List<Color>();
+        [Header("Audio")]
+        public bool restrictsAudio = true;
+        [FormerlySerializedAs("canPlayAudio")] public bool playHoverAudio = false;
+        [FormerlySerializedAs("handleButtonAudio")] public bool playClickAudio = false;
         [Header("Events")]
-        public UnityEvent onInitialize;
-        public UnityEvent<PointerEventData> onPointerEnter;
-        public UnityEvent<PointerEventData> onPointerExit;
+        public UnityEvent<HudElementEventInfo> onInitialize;
+        public UnityEvent<HudElementEventInfo> onPointerEnter;
+        public bool onPointerEnterEnabled = true;
+        public UnityEvent<HudElementEventInfo> onPointerExit;
+        public bool onPointerExitEnabled = true;
+        public UnityEvent<HudElementEventInfo> onPointerClick;
+        public bool onPointerClickEnabled = true;
 
 #if UNITY_EDITOR
         [Header("Editor")]
@@ -77,6 +85,7 @@ namespace dev.susybaka.raidsim.UI
             rectTransform = GetComponent<RectTransform>();
             canvasGroup = GetComponent<CanvasGroup>();
             priorityHandler = GetComponentInParent<HudElementPriority>();
+            slider = GetComponent<Slider>();
 
             if (transform.parent != null && transform.parent.TryGetComponent(out PartyList pList))
             {
@@ -222,7 +231,7 @@ namespace dev.susybaka.raidsim.UI
 
         public void Initialize()
         {
-            onInitialize.Invoke();
+            onInitialize.Invoke(new HudElementEventInfo(this));
         }
 
         public void ChangeColors(bool alt)
@@ -282,7 +291,10 @@ namespace dev.susybaka.raidsim.UI
                     input.targetRaycastInputEnabled = false;
             }
 
-            onPointerEnter.Invoke(eventData);
+            if (!onPointerEnterEnabled)
+                return;
+
+            onPointerEnter.Invoke(new HudElementEventInfo(this, eventData));
         }
 
         public void OnPointerExit()
@@ -306,7 +318,90 @@ namespace dev.susybaka.raidsim.UI
                     input.targetRaycastInputEnabled = true;
             }
 
-            onPointerExit.Invoke(eventData);
+            if (!onPointerExitEnabled)
+                return;
+
+            onPointerExit.Invoke(new HudElementEventInfo(this, eventData));
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (!onPointerClickEnabled)
+                return;
+
+            onPointerClick.Invoke(new HudElementEventInfo(this, eventData));
+        }
+    }
+
+    public struct HudElementEventInfo
+    {
+        public HudElement element;
+        public PointerEventData eventData;
+        public bool boolean;
+        public int integer;
+
+        public HudElementEventInfo(HudElement element, PointerEventData eventData, bool boolean, int integer)
+        {
+            this.element = element;
+            this.eventData = eventData;
+            this.boolean = boolean;
+            this.integer = integer;
+        }
+
+        public HudElementEventInfo(HudElement element, PointerEventData eventData, int integer)
+        {
+            this.element = element;
+            this.eventData = eventData;
+            this.boolean = false;
+            this.integer = integer;
+        }
+
+        public HudElementEventInfo(HudElement element, PointerEventData eventData, bool boolean)
+        {
+            this.element = element;
+            this.eventData = eventData;
+            this.boolean = boolean;
+            this.integer = 0;
+        }
+
+        public HudElementEventInfo(HudElement element, PointerEventData eventData)
+        {
+            this.element = element;
+            this.eventData = eventData;
+            this.boolean = false;
+            this.integer = 0;
+        }
+
+        public HudElementEventInfo(HudElement element, bool boolean, int integer)
+        {
+            this.element = element;
+            this.eventData = null;
+            this.boolean = boolean;
+            this.integer = integer;
+        }
+
+        public HudElementEventInfo(HudElement element, int integer)
+        {
+            this.element = element;
+            this.eventData = null;
+            this.boolean = false;
+            this.integer = integer;
+        }
+
+        public HudElementEventInfo(HudElement element, bool boolean)
+        {
+            this.element = element;
+            this.eventData = null;
+            this.boolean = boolean;
+            this.integer = 0;
+        }
+
+        public HudElementEventInfo(HudElement element)
+        {
+            this.element = element;
+            this.eventData = null;
+            this.boolean = false;
+            this.integer = 0;
         }
     }
 }

@@ -53,7 +53,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 50
+  MaxDistance: 25
   Pan2D: 0
   rolloffMode: 2
   BypassEffects: 0
@@ -63,95 +63,68 @@ AudioSource:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0.002
-      value: 1
-      inSlope: -500.20065
-      outSlope: -500.20065
+      time: 0
+      value: 1.0103302
+      inSlope: -0.11413933
+      outSlope: -0.11413933
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.26608196
     - serializedVersion: 3
-      time: 0.004
-      value: 0.5
-      inSlope: -125.05016
-      outSlope: -125.05016
+      time: 0.39747867
+      value: 0.77674866
+      inSlope: -2.2255907
+      outSlope: -2.2255907
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
-      outWeight: 0
+      inWeight: 0.16268253
+      outWeight: 0.5968612
     - serializedVersion: 3
-      time: 0.008
-      value: 0.25
-      inSlope: -31.26254
-      outSlope: -31.26254
+      time: 0.4756672
+      value: 0.42713928
+      inSlope: -5.409184
+      outSlope: -5.409184
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
-      outWeight: 0
+      inWeight: 0.27217853
+      outWeight: 0.6067375
     - serializedVersion: 3
-      time: 0.016
-      value: 0.125
-      inSlope: -7.815635
-      outSlope: -7.815635
+      time: 0.5758347
+      value: 0.1554718
+      inSlope: -1.3110209
+      outSlope: -1.3110209
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.5517401
     - serializedVersion: 3
-      time: 0.032
-      value: 0.0625
-      inSlope: -1.9539088
-      outSlope: -1.9539088
+      time: 0.7227037
+      value: 0.06468201
+      inSlope: -0.23219603
+      outSlope: -0.23219603
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.64882153
     - serializedVersion: 3
-      time: 0.064
-      value: 0.03125
-      inSlope: -0.4884772
-      outSlope: -0.4884772
+      time: 0.87879896
+      value: 0.025894165
+      inSlope: -0.2000384
+      outSlope: -0.2000384
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.128
-      value: 0.015625
-      inSlope: -0.1221193
-      outSlope: -0.1221193
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.256
-      value: 0.0078125
-      inSlope: -0.030529825
-      outSlope: -0.030529825
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.512
-      value: 0.00390625
-      inSlope: -0.0076324563
-      outSlope: -0.0076324563
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
+      outWeight: 0.5676543
     - serializedVersion: 3
       time: 1
       value: 0
-      inSlope: -0.002000801
-      outSlope: -0.002000801
+      inSlope: -0.23549113
+      outSlope: -0.23549113
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
-      outWeight: 0
+      inWeight: 0.48038426
+      outWeight: 0.28491497
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
@@ -160,7 +133,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -404,7 +377,7 @@ MonoBehaviour:
     source: {fileID: 0}
     sources: []
     hasMultipleSources: 0
-  - name: ui_hover_action
+  - name: ui_drag_action
     multipleClips: 0
     clip: {fileID: 8300000, guid: b7eccf837ba7a864e9d2145c5e82a5a3, type: 3}
     clips:
@@ -450,6 +423,240 @@ MonoBehaviour:
     pitchVariance: 0
     stereoPan: 0
     spatialBlend: 0
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: action_target
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: e1ccb7a1036c96b4294d50e553819512, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 24300002, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    mute: 0
+    bypassEffects: 1
+    bypassListenerEffects: 1
+    bypassReverbZones: 1
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0
+    stereoPan: 0
+    spatialBlend: 0
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: action_untarget
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: 2d5cbb1803c2c6b46b176f496142ba1c, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 24300002, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    mute: 0
+    bypassEffects: 1
+    bypassListenerEffects: 1
+    bypassReverbZones: 1
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0
+    stereoPan: 0
+    spatialBlend: 0
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: status_apply_positive
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: 67f73072d4bbb3644a584a08f83862e6, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 24300002, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    mute: 0
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    bypassReverbZones: 0
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0
+    stereoPan: 0
+    spatialBlend: 1
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: status_expire_positive
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: 3024d8034fc143e4e8d47ec55cce2f96, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 24300002, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    mute: 0
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    bypassReverbZones: 0
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0
+    stereoPan: 0
+    spatialBlend: 1
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: status_apply_negative
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: 93ea40ce489718440b0ace036eee61e8, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 24300002, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    mute: 0
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    bypassReverbZones: 0
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0
+    stereoPan: 0
+    spatialBlend: 1
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: status_expire_negative
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: 67f73072d4bbb3644a584a08f83862e6, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 24300002, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    mute: 0
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    bypassReverbZones: 0
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0
+    stereoPan: 0
+    spatialBlend: 1
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: status_apply_stun
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: f08f2da8902ae1c4383fca9fed7cc24f, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 24300002, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    mute: 0
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    bypassReverbZones: 0
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0
+    stereoPan: 0
+    spatialBlend: 1
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: status_apply_heavy
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: 8b26714b867f6234e8abe4ddff2a549c, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 24300002, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    mute: 0
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    bypassReverbZones: 0
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0
+    stereoPan: 0
+    spatialBlend: 1
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: status_apply_sleep
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: 642486ae9db02d040b98dccd00e7d7f3, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 24300002, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    mute: 0
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    bypassReverbZones: 0
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0
+    stereoPan: 0
+    spatialBlend: 1
     reverbZoneMix: 0
     positions:
     - {x: 0, y: 0, z: 0}

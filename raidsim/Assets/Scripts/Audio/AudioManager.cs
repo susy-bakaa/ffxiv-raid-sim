@@ -184,12 +184,62 @@ namespace dev.susybaka.Shared.Audio
             Play(sound);
         }
 
+        public void PlayAt(string sound, Vector3 position, int index = -1)
+        {
+            PlayAt(sound, position, transform, index);
+        }
+
+        public void PlayAt(string sound, Transform location, int index = -1)
+        {
+            PlayAt(sound, location.position, transform, index);
+        }
+
+        public void PlayAt(string sound, Vector3 position, Transform parent, int index = -1)
+        {
+            if (log)
+                Debug.Log("[AudioManager] Playing sound: " + sound + " of index: " + index + " at position " + position);
+
+            if (sound.StartsWith("#") || sound == "<None>")
+                return;
+
+            Sound s = Array.Find(sounds, item => item.name == sound);
+            if (s == null)
+            {
+                Debug.LogError("Sound: " + sound + " not found!");
+                return;
+            }
+
+            GameObject tempSource = new GameObject($"Source_{s.name}_Temp");
+            AudioSource source = tempSource.AddComponent<AudioSource>();
+
+            SetupSoundSource(s, source, -1);
+            source.loop = false; // Ensure temp sources do not loop
+            source.playOnAwake = false; // Ensure temp sources do not play on awake by themselves
+
+            tempSource.transform.position = position;
+            tempSource.transform.SetParent(parent);
+
+            if (s.multipleClips && index < 0)
+            {
+                source.clip = s.clips[UnityEngine.Random.Range(0, s.clips.Length)];
+            }
+            else if (index >= 0)
+            {
+                source.clip = s.clips[index];
+            }
+            source.volume = s.volume * (1f + UnityEngine.Random.Range(-s.volumeVariance / 2f, s.volumeVariance / 2f));
+            source.pitch = s.pitch * (1f + UnityEngine.Random.Range(-s.pitchVariance / 2f, s.pitchVariance / 2f));
+
+            source.Play();
+            Utilities.FunctionTimer.Create(this, () => Destroy(tempSource), Utilities.GetClipRemainingTime(source), $"PlayAt_{tempSource.name}_DeleteAfterDone", false, false);
+        }
+
         public void Play(string sound, int index = -1)
         {
             if (log)
                 Debug.Log("[AudioManager] Playing sound: " + sound + " at index: " + index);
 
-            if (sound.StartsWith("#"))
+            if (sound.StartsWith("#") || sound == "<None>")
                 return;
 
             Sound s = Array.Find(sounds, item => item.name == sound);
@@ -238,6 +288,9 @@ namespace dev.susybaka.Shared.Audio
         {
             if (log)
                 Debug.Log("[AudioManager] Stopping playback of sound: " + sound);
+
+            if (sound.StartsWith("#") || sound == "<None>")
+                return;
 
             Sound s = Array.Find(sounds, item => item.name == sound);
             if (s == null)

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEditor;
@@ -48,6 +49,9 @@ namespace dev.susybaka.Shared.Editor
             if (idx < 0)
                 idx = 0;
 
+            if (prop.stringValue == string.Empty)
+                idx = 0;
+
             // Draw popup
             idx = EditorGUI.Popup(pos, label.text, idx, _cachedNames);
 
@@ -67,8 +71,15 @@ namespace dev.susybaka.Shared.Editor
             if (mgr == null || mgr.sounds == null)
                 return new string[0];
 
+            List<string> names = new List<string>();
+
+            // Add a default "None" option
+            names.Add("<None>");
+
+            names.AddRange(mgr.sounds.Select(s => s.name));
+
             // Extract the names
-            return mgr.sounds.Select(s => s.name).ToArray();
+            return names.ToArray();
         }
     }
 }

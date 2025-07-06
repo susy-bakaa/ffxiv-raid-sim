@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using dev.susybaka.Shared.Editor;
 using static dev.susybaka.raidsim.Core.GlobalData;
 
 namespace dev.susybaka.raidsim.StatusEffects
@@ -30,6 +31,19 @@ namespace dev.susybaka.raidsim.StatusEffects
         public List<StatusEffectData> incompatableStatusEffects = new List<StatusEffectData>();
         public List<StatusEffectData> refreshStatusEffects = new List<StatusEffectData>();
         public List<Role> assignedRoles = new List<Role>();
+        [SoundName] public string applySoundFx = "status_apply_positive";
+        [SoundName] public string expireSoundFx = "status_expire_positive";
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (hidden)
+            {
+                applySoundFx = "<None>";
+                expireSoundFx = "<None>";
+            }
+        }
+#endif
 
         [System.Serializable]
         public struct StatusEffectInfo

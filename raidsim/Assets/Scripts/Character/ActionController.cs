@@ -562,6 +562,9 @@ namespace dev.susybaka.raidsim.Actions
                     autoAction.ExecuteAction(newActionInfo);
 
                     onCast.Invoke(new CastInfo(newActionInfo, instantCast, characterState.GetEffects()));
+
+                    UpdateSpeechBubble(autoAction);
+
                     if (animator != null && !string.IsNullOrEmpty(autoAction.data.animationName) && !autoAction.data.playAnimationDirectly)
                     {
                         if (autoAction.data.animationDelay > 0f)
