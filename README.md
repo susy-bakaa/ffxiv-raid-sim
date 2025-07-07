@@ -74,6 +74,11 @@ These fights are not being worked on yet and are not guranteed to be added, but 
 	- Phase 5 (The Ultima Weapon)
 		- Ultimate Predation
 		- Ultimate Annihilation
+- The Omega Protocol (Ultimate) (TOP)
+	- Phase 2 (Omega-M/F)
+		- Party Synergy ([NAUR](https://ff14.toolboxgaming.space/?id=932997905798471&preview=1#3))
+	- Phase 3 (Omega Reconfigured)
+		- Hello World ([LPDU/NAUR](https://ff14.toolboxgaming.space/?id=702399575985961&preview=1))
 
 (These ones are not guranteed and more of a MAYBE, because [another sim with bots](https://github.com/WCGH/FRU-Sim) already exists and [XIVSim](https://www.xivsim.com/game/) has support for them. Or they might not be that useful in my opinion.)
 
