@@ -1,7 +1,7 @@
 # Credits
 
 - FINAL FANTASY XIV: Online assets from the game. All in-game assets used are copyrighted and owned by Square Enix.
-- Main simulator program made by (susy_baka)[https://susybaka.dev/] with major help of (Worst Aqua Player)[https://github.com/WorstAquaPlayer].
+- Main simulator program made by [susy_baka](https://susybaka.dev/) with major help of [Worst Aqua Player](https://github.com/WorstAquaPlayer).
 - Some original code partially borrowed, heavily referenced and utilized from the Korean TEA (The Epic of Alexander) simulator. All rights reserved to the original author of that program.
 - Settings cog icon from svgrepo. [Source](https://www.svgrepo.com/svg/163563/settings-cog)
 - Unity INI file script by illa4257. [Source](https://github.com/illa4257/unity-IniStorage) 
