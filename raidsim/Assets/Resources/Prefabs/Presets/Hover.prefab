@@ -1,0 +1,133 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7333558000628463314
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7320702949994605606}
+  - component: {fileID: 956891987932839725}
+  - component: {fileID: 5979664329358310243}
+  - component: {fileID: 1301031378894125662}
+  m_Layer: 5
+  m_Name: Hover
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &7320702949994605606
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7333558000628463314}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 11.5}
+  m_SizeDelta: {x: 355, y: 33}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &956891987932839725
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7333558000628463314}
+  m_CullTransparentMesh: 1
+--- !u!114 &5979664329358310243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7333558000628463314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1301031378894125662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7333558000628463314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 801af055657c9654c94b43ada9206ccd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  priority: 1
+  hidden: 0
+  omitSorting: 0
+  characterState: {fileID: 0}
+  destroyIfMissing: 0
+  initializeOnStart: 0
+  isPartyListElement: 0
+  untargetableOverlay: {fileID: 0}
+  targetButton: {fileID: 0}
+  blocksAllInput: 0
+  blocksPosInput: 0
+  blocksRotInput: 0
+  blocksScrInput: 0
+  blocksTargetRaycasts: 0
+  doMovement: 0
+  movement: {x: 0, y: 0}
+  fadeOutTime: -1
+  fadeOutDelay: 0
+  lifeTime: -1
+  images: []
+  texts: []
+  outlines: []
+  defaultColors: []
+  alternativeColors: []
+  restrictsAudio: 1
+  playHoverAudio: 1
+  playClickAudio: 1
+  onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerEnterEnabled: 1
+  onPointerEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerExitEnabled: 1
+  onPointerExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerClickEnabled: 1
+  onPointerClick:
+    m_PersistentCalls:
+      m_Calls: []
+  dummy: 0

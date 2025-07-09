@@ -7,7 +7,9 @@ using UnityEngine.UI;
 using TMPro;
 using NaughtyAttributes;
 using dev.susybaka.raidsim.Core;
+using dev.susybaka.Shared.Audio;
 using static dev.susybaka.raidsim.Core.GlobalVariables;
+using dev.susybaka.Shared;
 
 namespace dev.susybaka.raidsim.UI
 {
@@ -24,6 +26,23 @@ namespace dev.susybaka.raidsim.UI
         private TimelineScene originalScene;
 
         private Coroutine ieLoadSceneDelayed;
+
+#if UNITY_EDITOR
+        private int previousSceneIndex = -1;
+
+        private void OnValidate()
+        {
+            if (scenes != null && scenes.Count > 0 && previousSceneIndex != currentSceneIndex)
+            {
+                if (transform.TryGetComponentInChildren(out TMP_Dropdown _dropdown))
+                {
+                    _dropdown.value = currentSceneIndex;
+                    _dropdown.RefreshShownValue();
+                    previousSceneIndex = currentSceneIndex;
+                }
+            }
+        }
+#endif
 
         private void Awake()
         {
@@ -91,6 +110,11 @@ namespace dev.susybaka.raidsim.UI
 
         public void Reload()
         {
+            if (FightTimeline.Instance != null && AudioManager.Instance != null)
+            {
+                AudioManager.Instance.Play(FightTimeline.Instance.ReloadSound, FightTimeline.Instance.AudioVolume);
+            }
+
             if (ieLoadSceneDelayed == null)
             {
                 ieLoadSceneDelayed = StartCoroutine(IE_LoadSceneDelayed(originalScene, new WaitForSeconds(loadDelay)));

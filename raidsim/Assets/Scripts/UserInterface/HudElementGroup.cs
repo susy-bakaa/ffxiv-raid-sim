@@ -9,6 +9,7 @@ namespace dev.susybaka.raidsim.UI
     public class HudElementGroup : MonoBehaviour
     {
         public bool log = false;
+        public bool setupOnStart = true;
         public bool populateAutomatically = false;
         public List<HudElement> elements = new List<HudElement>();
         [Foldout("Events")]
@@ -20,11 +21,28 @@ namespace dev.susybaka.raidsim.UI
 
         private int id = -1;
 
+#if UNITY_EDITOR
+        [Button]
+        public void SetAllAudioOnForCurrentElements()
+        {
+            if (elements == null || elements.Count < 1)
+                return;
+
+            for (int i = 0; i < elements.Count; i++)
+            {
+                elements[i].restrictsAudio = true;
+                elements[i].playClickAudio = true;
+                elements[i].playHoverAudio = true;
+            }
+        }
+#endif
+
         private void Start()
         {
             id = Random.Range(0, 10001);
 
-            Utilities.FunctionTimer.Create(this, Setup, 0.5f, $"HudElementGroup_{id}_CleanElements", true, false);
+            if (setupOnStart)
+                Utilities.FunctionTimer.Create(this, Setup, 0.5f, $"HudElementGroup_{id}_Setup_Delay", true, false);
         }
 
         private void Setup()
@@ -61,6 +79,34 @@ namespace dev.susybaka.raidsim.UI
             }
 
             elements.AddRange(filteredElements);
+        }
+
+        public void AddElement(HudElement element)
+        {
+            if (element == null || elements == null)
+                return;
+
+            if (!elements.Contains(element))
+            {
+                element.onPointerEnter.AddListener(OnPointerEnter);
+                element.onPointerExit.AddListener(OnPointerExit);
+                element.onPointerClick.AddListener(OnPointerClick);
+                elements.Add(element);
+            }
+        }
+
+        public void RemoveElement(HudElement element)
+        {
+            if (elements == null || elements.Count < 1 || element == null)
+                return;
+
+            if (elements.Contains(element))
+            {
+                element.onPointerEnter.RemoveListener(OnPointerEnter);
+                element.onPointerExit.RemoveListener(OnPointerExit);
+                element.onPointerClick.RemoveListener(OnPointerClick);
+                elements.Remove(element);
+            }
         }
 
         private void OnPointerEnter(HudElementEventInfo eventInfo)

@@ -14,9 +14,10 @@ namespace dev.susybaka.raidsim.UI
 
         [SerializeField][SoundName] private string hoverSound = "ui_hover";
         [SerializeField][SoundName] private string confirmSound = "ui_confirm";
+        [SerializeField][Range(0f, 1f)] private float audioVolume = 1f;
 
         public bool limitEvents = false;
-        public float eventCooldown = 1f;
+        public float eventCooldown = 0.3f;
 
         private float timer = 0f;
         private bool eventsAvailable = true;
@@ -66,7 +67,7 @@ namespace dev.susybaka.raidsim.UI
 
             if (eventInfo.element.playHoverAudio)
             {
-                audioManager.Play(hoverSound);
+                audioManager.Play(hoverSound, audioVolume);
             }
 
             if (limitEvents && eventInfo.element.restrictsAudio)
@@ -90,7 +91,7 @@ namespace dev.susybaka.raidsim.UI
                 return;
 
             if (eventInfo.element.playClickAudio)
-                audioManager.Play(confirmSound);
+                audioManager.Play(confirmSound, audioVolume);
         }
 
         public void PlayConfirmSound()
@@ -98,7 +99,7 @@ namespace dev.susybaka.raidsim.UI
             if (audioManager == null)
                 return;
 
-            audioManager.Play(confirmSound);
+            audioManager.Play(confirmSound, audioVolume);
         }
     }
 }

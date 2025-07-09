@@ -18,7 +18,7 @@ This simulator is mainly being built with European raiding strats from LPDU or w
 		- Gavel ([BLU](https://www.icy-veins.com/ffxiv/blue-mage-brute-justice-raid-guide))
 - AAC Light-heavyweight Tier
 	- AAC Light-heavyweight M4 (Savage) (M4S)
-		- Sunrise Sabbath ([Rinon](https://www.youtube.com/watch?v=1lrk5FbNIPc))
+		- Sunrise Sabbath ([Rinon/Hector](https://www.youtube.com/watch?v=1lrk5FbNIPc))
 		- Sunrise Sabbath ([AutoCad/Uptime](https://raidplan.io/plan/OnQXobwatopL1G8u))
 - AAC Cruiserweight Tier
 	- AAC Cruiserweight M4 (Savage) (M8S)

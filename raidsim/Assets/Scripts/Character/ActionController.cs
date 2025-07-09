@@ -14,6 +14,7 @@ using dev.susybaka.raidsim.StatusEffects;
 using dev.susybaka.raidsim.Targeting;
 using dev.susybaka.raidsim.UI;
 using dev.susybaka.Shared;
+using dev.susybaka.Shared.Audio;
 using static dev.susybaka.raidsim.Core.GlobalData;
 
 namespace dev.susybaka.raidsim.Actions
@@ -67,6 +68,11 @@ namespace dev.susybaka.raidsim.Actions
         [Header("Events")]
         public UnityEvent<CastInfo> onCast;
         public UnityEvent onResetCastBar;
+
+        [Header("Audio")]
+        public bool playAudio = false;
+        [Range(0f, 1f)] public float audioVolume = 1f;
+        private Transform audioParent;
 
 #if UNITY_EDITOR
         [Header("Editor")]
@@ -170,6 +176,11 @@ namespace dev.susybaka.raidsim.Actions
                 autoAttack = autoActions[0];
                 autoAttackTimer = autoAttack.data.recast;
             }
+            
+            audioParent = transform.Find("Audio");
+
+            if (audioParent != null)
+                speechBubbleAudio = audioParent.GetComponentInChildren<AudioSource>(true);
         }
 
         private void Update()
@@ -563,7 +574,9 @@ namespace dev.susybaka.raidsim.Actions
 
                     onCast.Invoke(new CastInfo(newActionInfo, instantCast, characterState.GetEffects()));
 
-                    UpdateSpeechBubble(autoAction);
+                    HandleSpeech(autoAction);
+                    HandleActionAudio(autoAction, false);
+                    HandleActionAudio(autoAction, true);
 
                     if (animator != null && !string.IsNullOrEmpty(autoAction.data.animationName) && !autoAction.data.playAnimationDirectly)
                     {
@@ -795,7 +808,9 @@ namespace dev.susybaka.raidsim.Actions
                     if (!action.data.isGroundTargeted)
                         HandleAnimation(action);
 
-                    UpdateSpeechBubble(action);
+                    HandleSpeech(action);
+                    HandleActionAudio(action, false);
+                    HandleActionAudio(action, true);
 
                     if (action.data.cast > 0f && instantCast && instantCastEffect != null && !action.data.isGroundTargeted)
                     {
@@ -862,7 +877,7 @@ namespace dev.susybaka.raidsim.Actions
 
                     ActionInfo newActionInfo = new ActionInfo(action, characterState, currentTarget);
                     action.onCast.Invoke(newActionInfo);
-                    StartCoroutine(IE_Cast(castTime, () => { if (!action.data.isGroundTargeted && action.data.recast > 0f && !hidden) { action.chargesLeft--; } action.ExecuteAction(newActionInfo); if (action.data.playAnimationOnFinish) { HandleAnimation(action); } }));
+                    StartCoroutine(IE_Cast(castTime, () => { if (!action.data.isGroundTargeted && action.data.recast > 0f && !hidden) { action.chargesLeft--; } action.ExecuteAction(newActionInfo); if (action.data.playAnimationOnFinish) { HandleAnimation(action); } HandleActionAudio(action, true); }));
                     onCast.Invoke(new CastInfo(newActionInfo, instantCast, characterState.GetEffects()));
 
                     if (!action.data.playAnimationOnFinish && !action.data.isGroundTargeted)
@@ -870,7 +885,8 @@ namespace dev.susybaka.raidsim.Actions
 
                     UpdateCharacterName();
                     UpdateUserInterface(newActionInfo);
-                    UpdateSpeechBubble(action);
+                    HandleSpeech(action);
+                    HandleActionAudio(action, false);
 
                     if (animator != null && !action.data.isGroundTargeted)
                     {
@@ -1103,7 +1119,7 @@ namespace dev.susybaka.raidsim.Actions
             }
         }
 
-        private void UpdateSpeechBubble(CharacterAction action)
+        private void HandleSpeech(CharacterAction action)
         {
             if (!string.IsNullOrEmpty(action.data.speech))
             {
@@ -1135,8 +1151,37 @@ namespace dev.susybaka.raidsim.Actions
             }
         }
 
+        private void HandleActionAudio(CharacterAction action, bool onExecute)
+        {
+            if (!playAudio)
+                return;
+
+            if (onExecute)
+            {
+                if (!string.IsNullOrEmpty(action.data.onExecuteAudio) && AudioManager.Instance != null)
+                {
+                    AudioManager.Instance.PlayAt(action.data.onExecuteAudio, transform.position, audioParent, audioVolume);
+                }
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(action.data.onCastAudio) && AudioManager.Instance != null)
+                {
+                    AudioManager.Instance.PlayAt(action.data.onCastAudio, transform.position, audioParent, audioVolume);
+                }
+            }
+        }
+
         private void UpdateCharacterName()
         {
+            if (characterState == null)
+                characterState = GetComponent<CharacterState>();
+            if (targetController == null)
+                targetController = GetComponent<TargetController>();
+
+            if (characterState == null)
+                return;
+
             if (hideNameWhenCasting)
             {
                 if (characterState.characterNameTextParty != null)
@@ -1149,6 +1194,26 @@ namespace dev.susybaka.raidsim.Actions
                 characterState.hidePartyName = false;
             }
             characterState.UpdateCharacterName();
+        }
+
+        public void RefreshUserInterface()
+        {
+            if (castBar != null)
+                castBarGroup = castBar.GetComponent<CanvasGroup>();
+            if (castBarParty != null)
+                castBarGroupParty = castBarParty.GetComponentInParent<CanvasGroup>();
+
+            UpdateCharacterName();
+            ResetCastBar();
+
+            if (castBarGroup != null)
+            {
+                castBarGroup.alpha = 0f;
+            }
+            if (castBarGroupParty != null)
+            {
+                castBarGroupParty.alpha = 0f;
+            }
         }
 
         private void OnDestroy()

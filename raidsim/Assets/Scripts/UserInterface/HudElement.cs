@@ -19,7 +19,7 @@ namespace dev.susybaka.raidsim.UI
         CanvasGroup canvasGroup;
         UserInput input;
         HudElementPriority priorityHandler;
-        Slider slider;
+        HudElementGroup elementGroup;
 
         [Header("Sorting")]
         public int priority = 1;
@@ -60,12 +60,13 @@ namespace dev.susybaka.raidsim.UI
         [FormerlySerializedAs("handleButtonAudio")] public bool playClickAudio = false;
         [Header("Events")]
         public UnityEvent<HudElementEventInfo> onInitialize;
-        public UnityEvent<HudElementEventInfo> onPointerEnter;
         public bool onPointerEnterEnabled = true;
-        public UnityEvent<HudElementEventInfo> onPointerExit;
+        [ShowIf("onPointerEnterEnabled")] public UnityEvent<HudElementEventInfo> onPointerEnter;
         public bool onPointerExitEnabled = true;
-        public UnityEvent<HudElementEventInfo> onPointerClick;
+        [ShowIf("onPointerExitEnabled")] public UnityEvent<HudElementEventInfo> onPointerExit;
         public bool onPointerClickEnabled = true;
+        [ShowIf("onPointerClickEnabled")] public UnityEvent<HudElementEventInfo> onPointerClick;
+
 
 #if UNITY_EDITOR
         [Header("Editor")]
@@ -85,11 +86,17 @@ namespace dev.susybaka.raidsim.UI
             rectTransform = GetComponent<RectTransform>();
             canvasGroup = GetComponent<CanvasGroup>();
             priorityHandler = GetComponentInParent<HudElementPriority>();
-            slider = GetComponent<Slider>();
+            elementGroup = Utilities.GetComponentInParents<HudElementGroup>(transform);
+
+            if (elementGroup != null && elementGroup.populateAutomatically && !elementGroup.setupOnStart)
+            {
+                elementGroup.AddElement(this);
+            }    
 
             if (transform.parent != null && transform.parent.TryGetComponent(out PartyList pList))
             {
-                pList.UpdatePartyList();
+                if (pList.SetupDone)
+                    pList.UpdatePartyList();
                 isPartyListElement = true;
                 if (untargetableOverlay == null || targetButton == null)
                 {
@@ -119,6 +126,14 @@ namespace dev.susybaka.raidsim.UI
             if (initializeOnStart)
             {
                 Initialize();
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (elementGroup != null)
+            {
+                elementGroup.RemoveElement(this);
             }
         }
 

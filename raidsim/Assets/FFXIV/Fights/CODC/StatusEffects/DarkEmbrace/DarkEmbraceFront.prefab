@@ -104,6 +104,9 @@ MonoBehaviour:
   onReduce:
     m_PersistentCalls:
       m_Calls: []
+  onAddStack:
+    m_PersistentCalls:
+      m_Calls: []
   onMaxStacks:
     m_PersistentCalls:
       m_Calls: []
@@ -122,6 +125,7 @@ MonoBehaviour:
   mechanicEnabled: 1
   mechanicName: 
   onlyTriggerOnce: 1
+  global: 0
   log: 0
   visualEffectName: VisualEffects/Countdown_Effect
   useStatusEffect: 1
@@ -199,6 +203,7 @@ MonoBehaviour:
   mechanicEnabled: 1
   mechanicName: 
   onlyTriggerOnce: 0
+  global: 0
   log: 0
   startAutomatically: 0
   delay: 2
@@ -218,12 +223,13 @@ MonoBehaviour:
           m_BoolArgument: 1
         m_CallState: 2
       - m_Target: {fileID: -2495216825696134759}
-        m_TargetAssemblyTypeName: StateTrigger, Assembly-CSharp
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Core.StateTrigger, Assembly-CSharp
         m_MethodName: CastTarget
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 11400000, guid: eb3896b593259394687949839600ad27, type: 2}
-          m_ObjectArgumentAssemblyTypeName: CharacterActionData, Assembly-CSharp
+          m_ObjectArgumentAssemblyTypeName: dev.susybaka.raidsim.Actions.CharacterActionData,
+            Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 

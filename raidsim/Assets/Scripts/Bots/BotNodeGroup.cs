@@ -8,13 +8,14 @@ namespace dev.susybaka.raidsim.Nodes
 {
     public class BotNodeGroup : MonoBehaviour
     {
+        public bool log = false;
+        public bool isDisabled = false;
         public Sector sector = Sector.N;
         public int group = 0; // 0 is unassigned, 1 is group 1, 2 is group 2 etc.
         public List<Role> allowedRoles = new List<Role>();
         private float defaultAngle = 0f;
         private List<BotNode> nodes = new List<BotNode>();
         private List<BotNodeGroup> childGroups = new List<BotNodeGroup>();
-        public bool log = false;
 
         private void Awake()
         {
@@ -62,6 +63,42 @@ namespace dev.susybaka.raidsim.Nodes
         public void CopyRotation(Transform source)
         {
             transform.eulerAngles = new Vector3(0, source.eulerAngles.y, 0);
+        }
+
+        public void DisableGroup()
+        {
+            foreach (BotNode node in nodes)
+            {
+                node.gameObject.SetActive(false);
+            }
+            foreach (BotNodeGroup group in childGroups)
+            {
+                if (group != this)
+                    group.DisableGroup();
+            }
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                transform.GetChild(i).gameObject.SetActive(false);
+            }
+            isDisabled = true;
+        }
+
+        public void EnableGroup()
+        {
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                transform.GetChild(i).gameObject.SetActive(true);
+            }
+            foreach (BotNode node in nodes)
+            {
+                node.gameObject.SetActive(true);
+            }
+            foreach (BotNodeGroup group in childGroups)
+            {
+                if (group != this)
+                    group.EnableGroup();
+            }
+            isDisabled = false;
         }
 
         public bool DoesSectorHaveNodesAvailable(Sector sector)
@@ -519,6 +556,31 @@ namespace dev.susybaka.raidsim.Nodes
             foreach (BotNodeGroup group in childGroups)
             {
                 BotNode node = group.GetEmptyNode();
+                if (node != null)
+                {
+                    return node;
+                }
+            }
+            return null;
+        }
+
+        public BotNode GetNodeByName(string name, bool active)
+        {
+            foreach (BotNode node in nodes)
+            {
+                if (node.nodeName == name && node.gameObject.activeInHierarchy)
+                {
+                    return node;
+                }
+            }
+            return null;
+        }
+
+        public BotNode GetNodeByNameFromChildren(string name, bool active)
+        {
+            foreach (BotNodeGroup group in childGroups)
+            {
+                BotNode node = group.GetNodeByName(name, active);
                 if (node != null)
                 {
                     return node;

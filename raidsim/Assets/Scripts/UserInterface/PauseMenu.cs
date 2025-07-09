@@ -8,21 +8,20 @@ using dev.susybaka.raidsim.Targeting;
 
 namespace dev.susybaka.raidsim.UI
 {
-    public class PauseMenu : MonoBehaviour
+    public class PauseMenu : HudWindow
     {
-        CanvasGroup group;
-
+        [Header("Pause Menu Settings")]
         public HudEditor hudEditor;
         public TargetController playerTargeting;
         public ActionController playerActions;
         public string menuScene = "menu";
-        public bool isOpen = false;
         public UnityEvent onPaused;
         public UnityEvent onUnpaused;
 
-        private void Awake()
+        protected override void Awake()
         {
-            group = GetComponent<CanvasGroup>();
+            base.Awake();
+            
             if (playerTargeting == null)
                 playerTargeting = GameObject.Find("Player")?.GetComponent<TargetController>();
             if (playerActions == null)
@@ -50,9 +49,7 @@ namespace dev.susybaka.raidsim.UI
 
         public void ClosePauseMenu()
         {
-            group.alpha = 0f;
-            group.blocksRaycasts = false;
-            isOpen = false;
+            CloseWindow();
             FightTimeline.Instance.TogglePause(false, "pause_menu");
             onUnpaused.Invoke();
         }
@@ -68,9 +65,7 @@ namespace dev.susybaka.raidsim.UI
             if (playerActions.isGroundTargeting)
                 return;
 
-            group.alpha = 1f;
-            group.blocksRaycasts = true;
-            isOpen = true;
+            OpenWindow();
             FightTimeline.Instance.TogglePause(true, "pause_menu");
             onPaused.Invoke();
         }

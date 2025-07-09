@@ -549,7 +549,12 @@ namespace dev.susybaka.raidsim.Characters
 
         public void Init()
         {
-            transform.position = spawnOffset;
+            Vector3 finalSpawnOffset = spawnOffset;
+
+            if (FightTimeline.Instance != null)
+                finalSpawnOffset += FightTimeline.Instance.arenaOffset;
+
+            transform.position = finalSpawnOffset;
             transform.eulerAngles = new Vector3(0f, Random.Range(0, 360), 0f);
             //cameraT.gameObject.GetComponent<ThirdPersonCamera>().RandomRotate();
         }

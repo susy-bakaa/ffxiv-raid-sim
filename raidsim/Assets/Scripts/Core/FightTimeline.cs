@@ -14,6 +14,8 @@ using dev.susybaka.raidsim.StatusEffects;
 using dev.susybaka.raidsim.Targeting;
 using dev.susybaka.raidsim.UI;
 using dev.susybaka.Shared;
+using dev.susybaka.Shared.Audio;
+using dev.susybaka.Shared.Editor;
 using static dev.susybaka.raidsim.Core.GlobalData;
 
 namespace dev.susybaka.raidsim.Core
@@ -36,6 +38,7 @@ namespace dev.susybaka.raidsim.Core
         public static float timeScale = 1f;
         public static float time { private set; get; }
         public static float deltaTime { private set; get; }
+        public Vector3 arenaOffset = Vector3.zero;
         public Vector3 arenaBounds = Vector3.zero;
         public bool isCircle;
         private Vector3 originalArenaBounds = Vector3.zero;
@@ -65,6 +68,17 @@ namespace dev.susybaka.raidsim.Core
         public Button[] disableDuringPlayback;
         public bool useAutomarker = false;
         public UnityEvent<bool> onUseAutomarkerChanged;
+
+        [Header("Audio")]
+        [SerializeField][SoundName] private string reloadSound = "ui_close";
+        [SerializeField][SoundName] private string pauseSound = "<None>";
+        [SerializeField][SoundName] private string playSound = "<None>";
+        [SerializeField][Range(0f, 1f)] private float audioVolume = 1f;
+
+        public string ReloadSound { get { return reloadSound; } }
+        public string PauseSound { get { return pauseSound; } }
+        public string PlaySound { get { return playSound; } }
+        public float AudioVolume { get { return audioVolume; } }
 
         // PRIVATE
 
@@ -134,6 +148,13 @@ namespace dev.susybaka.raidsim.Core
 
         private void OnValidate()
         {
+            if (string.IsNullOrEmpty(reloadSound))
+                reloadSound = "<None>";
+            if (string.IsNullOrEmpty(pauseSound))
+                pauseSound = "<None>";
+            if (string.IsNullOrEmpty(playSound))
+                playSound = "<None>";
+
             for (int i = 0; i < events.Count; i++)
             {
                 for (int k = 0; k < events[i].randomEventPools.Count; k++)
@@ -315,6 +336,11 @@ namespace dev.susybaka.raidsim.Core
             playing = true;
             if (iePlayTimeline == null)
                 iePlayTimeline = StartCoroutine(IE_PlayTimeline());
+
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.Play(playSound, audioVolume);
+            }
 
             if (disableBotTimelines)
                 return;
@@ -640,6 +666,10 @@ namespace dev.susybaka.raidsim.Core
                 enemyList.UpdatePartyList();
             onReset.Invoke();
             resetCalled = false;
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.Play(reloadSound, audioVolume);
+            }
         }
 
         public void WipeParty(PartyList party, string cause = "")
@@ -823,6 +853,11 @@ namespace dev.susybaka.raidsim.Core
             {
                 wasPaused = paused;
                 onPausedChanged.Invoke(paused);
+            }
+
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.Play(pauseSound, audioVolume);
             }
         }
 

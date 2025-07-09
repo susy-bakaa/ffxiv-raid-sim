@@ -277,7 +277,12 @@ namespace dev.susybaka.raidsim.Characters
 
         public void Init()
         {
-            transform.position = new Vector3(spawnOffset.x + Random.Range(-1.5f, 1.5f), spawnOffset.y, spawnOffset.z + Random.Range(-1.5f, 1.5f));
+            Vector3 finalSpawnOffset = spawnOffset;
+
+            if (FightTimeline.Instance != null)
+                finalSpawnOffset += FightTimeline.Instance.arenaOffset;
+
+            transform.position = new Vector3(finalSpawnOffset.x + Random.Range(-1.5f, 1.5f), finalSpawnOffset.y, finalSpawnOffset.z + Random.Range(-1.5f, 1.5f));
             transform.eulerAngles = new Vector3(0f, Random.Range(-360f, 360f), 0f);
         }
 

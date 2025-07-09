@@ -1,7 +1,8 @@
+using System.Linq;
 using UnityEngine;
 using UnityEditor;
-using dev.susybaka.raidsim.UI;
 using UnityEditorInternal;
+using dev.susybaka.raidsim.UI;
 
 namespace dev.susybaka.raidsim.Editor
 {
@@ -15,75 +16,94 @@ namespace dev.susybaka.raidsim.Editor
 
         void OnEnable()
         {
+            // (Re)grab references every time we enable
             scenesProp = serializedObject.FindProperty(nameof(FightSelector.scenes));
             currentIndexProp = serializedObject.FindProperty(nameof(FightSelector.currentSceneIndex));
+            CreateList();
+        }
 
-            scenesList = new ReorderableList(serializedObject, scenesProp,
-                                             true, true, true, true);
+        void OnDisable()
+        {
+            // Force rebuild on next enable if domain reload or scene load happened
+            scenesList = null;
+        }
 
-            // Header
+        // Call from OnEnable and any time we detect scenesList == null
+        void CreateList()
+        {
+            scenesList = new ReorderableList(serializedObject, scenesProp, true, true, true, true);
+
             scenesList.drawHeaderCallback = rect =>
-            {
                 EditorGUI.LabelField(rect, "Fight Scenes");
-            };
 
-            // Element height based on foldout state, with extra bottom padding
             scenesList.elementHeightCallback = index =>
             {
                 var element = scenesProp.GetArrayElementAtIndex(index);
                 float h = EditorGUIUtility.singleLineHeight;
                 float s = EditorGUIUtility.standardVerticalSpacing;
-                if (element.isExpanded)
-                    // header + scene + spacing + assetBundle + spacing + button + spacing + extra padding
-                    return h * 4 + s * 8;
-                else
-                    // just header + spacing
-                    return h + s * 2;
+                return element.isExpanded
+                    ? h * 4 + s * 18  // expanded + extra padding
+                    : h + s * 2;     // collapsed
             };
 
-            // Draw each element
             scenesList.drawElementCallback = (rect, index, isActive, isFocused) =>
             {
                 var element = scenesProp.GetArrayElementAtIndex(index);
+                if (element == null)
+                    return;  // guard
+
                 float h = EditorGUIUtility.singleLineHeight;
                 float s = EditorGUIUtility.standardVerticalSpacing;
                 float indent = 15f;
 
-                // Get scene name or fallback to index
                 var sceneProp = element.FindPropertyRelative(nameof(FightSelector.TimelineScene.scene));
                 string sceneName = string.IsNullOrEmpty(sceneProp.stringValue)
                     ? $"Scene #{index}"
                     : sceneProp.stringValue;
 
-                // Foldout header (indented to avoid overlap with drag handle)
-                Rect foldRect = new Rect(rect.x + indent, rect.y + s, rect.width - indent, h);
-                element.isExpanded = EditorGUI.Foldout(foldRect, element.isExpanded,
-                                                       sceneName, true);
+                // Foldout (indented past drag handle)
+                var foldRect = new Rect(rect.x + indent, rect.y + s, rect.width - indent, h);
+                element.isExpanded = EditorGUI.Foldout(foldRect, element.isExpanded, sceneName, true);
 
                 if (element.isExpanded)
                 {
                     // Scene field
-                    Rect sceneRect = new Rect(rect.x, rect.y + h + s * 2, rect.width, h);
-                    EditorGUI.PropertyField(sceneRect,
-                        sceneProp,
-                        new GUIContent("Scene"));
+                    var sceneRect = new Rect(rect.x, rect.y + h + s * 2, rect.width, h);
+                    EditorGUI.PropertyField(sceneRect, sceneProp, new GUIContent("Scene"));
 
                     // AssetBundle field
-                    Rect abRect = new Rect(rect.x, rect.y + (h + s) * 2 + s * 2, rect.width, h);
+                    var abRect = new Rect(rect.x, rect.y + (h + s) * 2 + s * 2, rect.width, h);
                     EditorGUI.PropertyField(abRect,
                         element.FindPropertyRelative(nameof(FightSelector.TimelineScene.assetBundle)),
                         new GUIContent("Asset Bundle"));
 
-                    // Set-current button
-                    Rect btnRect = new Rect(rect.x, rect.y + (h + s) * 3 + s * 3, rect.width, h);
+                    // “Set as Current Scene” button
+                    var btnRect = new Rect(rect.x, rect.y + (h + s) * 3 + s * 3, rect.width, h);
                     if (GUI.Button(btnRect, "Set as Current Scene"))
-                    {
                         currentIndexProp.intValue = index;
+
+                    // “Load Scene” button
+                    var loadRect = new Rect(rect.x, rect.y + (h + s) * 4 + s * 3, rect.width, h);
+                    if (GUI.Button(loadRect, "Load Scene"))
+                    {
+                        string path = EditorBuildSettings.scenes
+                            .FirstOrDefault(s => s.path.Contains(sceneProp.stringValue))
+                            ?.path;
+                        if (!string.IsNullOrEmpty(path))
+                        {
+                            if (Application.isPlaying)
+                                UnityEngine.SceneManagement.SceneManager.LoadScene(path);
+                            else
+                            {
+                                UnityEditor.SceneManagement.EditorSceneManager.SaveOpenScenes();
+                                UnityEditor.SceneManagement.EditorSceneManager.OpenScene(path);
+                                GUIUtility.ExitGUI();  // stop drawing this inspector now
+                            }
+                        }
                     }
                 }
             };
 
-            // Add callback
             scenesList.onAddCallback = list =>
             {
                 scenesProp.arraySize++;
@@ -93,21 +113,22 @@ namespace dev.susybaka.raidsim.Editor
 
         public override void OnInspectorGUI()
         {
+            // If somehow our list got disposed, rebuild it
+            if (scenesList == null)
+                CreateList();
+
             serializedObject.Update();
 
-            // Draw default fields except scenes & currentSceneIndex
+            // Draw everything except those two props
             DrawPropertiesExcluding(serializedObject,
                                     nameof(FightSelector.scenes),
                                     nameof(FightSelector.currentSceneIndex));
 
             EditorGUILayout.Space();
-            // Draw the foldable, reorderable list
             scenesList.DoLayoutList();
 
             EditorGUILayout.Space();
-            // Draw currentSceneIndex explicitly
-            EditorGUILayout.PropertyField(currentIndexProp,
-                new GUIContent("Current Scene Index"));
+            EditorGUILayout.PropertyField(currentIndexProp, new GUIContent("Current Scene Index"));
 
             serializedObject.ApplyModifiedProperties();
         }

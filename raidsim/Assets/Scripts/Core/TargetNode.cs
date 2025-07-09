@@ -201,6 +201,9 @@ namespace dev.susybaka.raidsim.Targeting
             {
                 for (int i = 0; i < highlightGroups.Length; i++)
                 {
+                    if (highlightGroups[i] == null)
+                        continue;
+
                     if (highlightGroups[i].alpha <= 0f || highlightGroups[i].alpha >= 1f)
                     {
                         if (!FightTimeline.Instance.paused)

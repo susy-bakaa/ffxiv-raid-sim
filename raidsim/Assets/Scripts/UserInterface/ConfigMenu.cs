@@ -55,8 +55,8 @@ namespace dev.susybaka.raidsim.UI
         float newCameraSensitivity = 10f;
         bool skipUpdates = false;
         bool newSkipUpdates = false;
-        [SerializeField] private CanvasGroup applyPopup;
-        public bool isApplyPopupOpen;
+        [SerializeField] private HudWindow applyPopup;
+        public HudWindow ApplyPopup { get { return applyPopup; } }
 
         bool menuVisible = false;
         bool applyPopupVisible = false;
@@ -81,13 +81,9 @@ namespace dev.susybaka.raidsim.UI
                 playerTargeting.SetConfigMenu(this);
 
             menuVisible = false;
-            group.alpha = 0f;
-            group.blocksRaycasts = false;
-            group.interactable = false;
+            CloseWindow();
             applyPopupVisible = false;
-            applyPopup.alpha = 0f;
-            applyPopup.blocksRaycasts = false;
-            applyPopup.interactable = false;
+            applyPopup.CloseWindow();
 
             if (thirdPersonCamera != null && thirdPersonCamera.freecam != null)
             {
@@ -129,17 +125,11 @@ namespace dev.susybaka.raidsim.UI
 
             if (menuVisible)
             {
-                group.alpha = 1f;
-                group.blocksRaycasts = true;
-                group.interactable = true;
-                isOpen = true;
+                OpenWindow();
             }
             else
             {
-                group.alpha = 0f;
-                group.blocksRaycasts = false;
-                group.interactable = false;
-                isOpen = false;
+                CloseWindow();
                 userInput.inputEnabled = true;
                 userInput.zoomInputEnabled = true;
                 userInput.movementInputEnabled = true;
@@ -154,17 +144,17 @@ namespace dev.susybaka.raidsim.UI
 
             if (applyPopupVisible)
             {
-                applyPopup.alpha = 1f;
-                applyPopup.blocksRaycasts = true;
-                applyPopup.interactable = true;
-                isApplyPopupOpen = true;
+                applyPopup.Group.alpha = 1f;
+                applyPopup.Group.blocksRaycasts = true;
+                applyPopup.Group.interactable = true;
+                applyPopup.OpenWindow();
             }
             else
             {
-                applyPopup.alpha = 0f;
-                applyPopup.blocksRaycasts = false;
-                applyPopup.interactable = false;
-                isApplyPopupOpen = false;
+                applyPopup.Group.alpha = 0f;
+                applyPopup.Group.blocksRaycasts = false;
+                applyPopup.Group.interactable = false;
+                applyPopup.CloseWindow();
             }
         }
 

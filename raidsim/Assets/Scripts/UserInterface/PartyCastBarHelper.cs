@@ -16,7 +16,7 @@ namespace dev.susybaka.raidsim.UI
 
         private bool alphaSet = false;
 
-        private void Awake()
+        private void Start()
         {
             element = GetComponent<HudElement>();
             character = element.characterState;

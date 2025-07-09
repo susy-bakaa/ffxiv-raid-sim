@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 #if UNITY_EDITOR
@@ -15,8 +16,14 @@ namespace dev.susybaka.raidsim.Core
 
         public int currentArenaIndex = 0;
         private int originalArenaIndex = -1;
-        public string[] arenaModels;
-        public GameObject[] arenas;
+        // Legacy variables that are not used anymore but kept for compatibility
+        // to avoid breaking existing scenes in other people's forks,
+        // these can be migrated by using the MigrateOldArenaData method in the editor
+        [Obsolete("Use arenaModelData array instead. This field is kept for compatability reasons. It may be removed in a future version.")]
+        [SerializeField, HideInInspector] public string[] arenaModels;
+        [Obsolete("Use arenaModelData array instead. This field is kept for compatability reasons. It may be removed in a future version.")]
+        [SerializeField, HideInInspector] public GameObject[] arenas;
+        // This is the new data structure that holds arena model data
         public ArenaModelData[] arenaModelData;
 
         public UnityEvent onLoad;
@@ -27,8 +34,9 @@ namespace dev.susybaka.raidsim.Core
         private bool arenaModelLoaded = false;
 
 #if UNITY_EDITOR
+#pragma warning disable CS0618 // Disable obsolete warning for arenaModels and arenas for the editor tool
         [Button]
-        public void TransferArenaData()
+        public void MigrateOldArenaData()
         {
             arenaModelData = new ArenaModelData[arenaModels.Length];
 
@@ -49,6 +57,7 @@ namespace dev.susybaka.raidsim.Core
                 arenaModelData[i] = temp;
             }
         }
+#pragma warning restore CS0618 // restore obsolete warning for the rest of the script
 #endif
 
         private void Awake()

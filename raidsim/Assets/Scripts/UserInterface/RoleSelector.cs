@@ -46,7 +46,14 @@ namespace dev.susybaka.raidsim.UI
         {
             if (autoObtainPlayer && partyList != null && partyList.members != null && partyList.members.Count > 0)
             {
-                player = partyList.members[0];
+                for (int i = 0; i < partyList.members.Count; i++)
+                {
+                    if (partyList.members[i].name == "Player")
+                    {
+                        player = partyList.members[i];
+                        return;
+                    }
+                }
             }
         }
 
@@ -106,7 +113,8 @@ namespace dev.susybaka.raidsim.UI
 
             lastSelected = value;
 
-            partyList.UpdatePartyList();
+            if (partyList.SetupDone)
+                partyList.UpdatePartyList();
         }
 
         [System.Serializable]

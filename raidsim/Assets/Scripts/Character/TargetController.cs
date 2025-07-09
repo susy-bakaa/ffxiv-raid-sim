@@ -86,6 +86,7 @@ namespace dev.susybaka.raidsim.Targeting
 
         [Header("Audio")]
         public bool playAudio = false;
+        [Range(0f, 1f)] public float audioVolume = 1f;
         [SerializeField][SoundName] private string onTargetAudio = "action_target";
         [SerializeField][SoundName] private string onUntargetAudio = "action_untarget";
 
@@ -121,9 +122,17 @@ namespace dev.susybaka.raidsim.Targeting
             m_camera = Camera.main;
 
             if (targetCastbarGroup != null)
+            {
                 targetCastbarGroup.alpha = 0f;
+                targetCastbarGroup.blocksRaycasts = false;
+                targetCastbarGroup.interactable = false;
+            }
             if (targetsTargetGroup != null)
+            {
                 targetsTargetGroup.alpha = 0f;
+                targetsTargetGroup.blocksRaycasts = false;
+                targetsTargetGroup.interactable = false;
+            }
 
             if (self == null)
             {
@@ -218,11 +227,19 @@ namespace dev.susybaka.raidsim.Targeting
                 self.UpdateUserInterface(0f, 0f);
             }
             if (targetCastbarGroup != null)
+            {
                 targetCastbarGroup.alpha = 0f;
+                targetCastbarGroup.blocksRaycasts = false;
+                targetCastbarGroup.interactable = false;
+            }
             if (targetCastbarName != null)
                 targetCastbarName.text = "Unknown Cast";
             if (targetsTargetGroup != null)
+            {
                 targetsTargetGroup.alpha = 0f;
+                targetsTargetGroup.blocksRaycasts = false;
+                targetsTargetGroup.interactable = false;
+            }
         }
 
         private void HandleMouseClick()
@@ -335,6 +352,8 @@ namespace dev.susybaka.raidsim.Targeting
                     {
                         if (m_characterState.targetStatusEffectIconGroup.alpha >= 1f)
                         {
+                            m_characterState.targetStatusEffectIconGroup.blocksRaycasts = false;
+                            m_characterState.targetStatusEffectIconGroup.interactable = false;
                             m_characterState.targetStatusEffectIconGroup.alpha = 0.99f;
                             if (!FightTimeline.Instance.paused)
                                 m_characterState.targetStatusEffectIconGroup.LeanAlpha(0f, fadeDuration);
@@ -355,6 +374,8 @@ namespace dev.susybaka.raidsim.Targeting
             {
                 self.GetActionController().autoAttackEnabled = true;
             }
+
+            bool isTargetChanged = currentTarget != target;
 
             currentTarget = target;
             if (eventsEnabled)
@@ -383,15 +404,15 @@ namespace dev.susybaka.raidsim.Targeting
             if (currentTarget != null && isPlayer && eventsEnabled)
                 currentTarget.onTarget.Invoke();
 
-            if (playAudio)
+            if (playAudio && AudioManager.Instance != null && isTargetChanged)
             {
                 if (currentTarget != null)
                 {
-                    AudioManager.Instance.Play(onTargetAudio);      
+                    AudioManager.Instance.Play(onTargetAudio, audioVolume);
                 }
                 else
                 {
-                    AudioManager.Instance.Play(onUntargetAudio);
+                    AudioManager.Instance.Play(onUntargetAudio, audioVolume);
                 }
             }
         }
@@ -666,6 +687,9 @@ namespace dev.susybaka.raidsim.Targeting
 
                 if (targetInfo != null && targetInfo.alpha <= 0f)
                 {
+                    targetInfo.blocksRaycasts = true;
+                    targetInfo.interactable = true;
+                    targetInfo.alpha = 0.01f;
                     if (!FightTimeline.Instance.paused)
                         targetInfo.LeanAlpha(1f, fadeDuration);
                     else
@@ -730,6 +754,8 @@ namespace dev.susybaka.raidsim.Targeting
                     {
                         if (m_characterState.targetStatusEffectIconGroup.alpha <= 0f)
                         {
+                            m_characterState.targetStatusEffectIconGroup.blocksRaycasts = true;
+                            m_characterState.targetStatusEffectIconGroup.interactable = true;
                             m_characterState.targetStatusEffectIconGroup.alpha = 0.01f;
                             if (!FightTimeline.Instance.paused)
                                 m_characterState.targetStatusEffectIconGroup.LeanAlpha(1f, fadeDuration);
@@ -775,6 +801,9 @@ namespace dev.susybaka.raidsim.Targeting
 
                             if (targetCastbarGroup.alpha == 0f)
                             {
+                                targetCastbarGroup.blocksRaycasts = true;
+                                targetCastbarGroup.interactable = true;
+                                targetCastbarGroup.alpha = 0.01f;
                                 if (!FightTimeline.Instance.paused)
                                     targetCastbarGroup.LeanAlpha(1f, 0.1f);
                                 else
@@ -809,7 +838,7 @@ namespace dev.susybaka.raidsim.Targeting
                             if (targetCastbar != null && targetCastbarGroup.alpha == 1f)
                             {
                                 targetCastbarGroup.alpha = 0.99f;
-                                Utilities.FunctionTimer.Create(this, () => { if (!FightTimeline.Instance.paused) { targetCastbarGroup.LeanAlpha(0f, fadeDuration); } else { targetCastbarGroup.alpha = 0f; } }, 2f, $"{m_actionController}_castBar_fade_out_if_interrupted", true);
+                                Utilities.FunctionTimer.Create(this, () => { targetCastbarGroup.blocksRaycasts = false; targetCastbarGroup.interactable = false; if (!FightTimeline.Instance.paused) { targetCastbarGroup.LeanAlpha(0f, fadeDuration); } else { targetCastbarGroup.alpha = 0f; } }, 2f, $"{m_actionController}_castBar_fade_out_if_interrupted", true);
                             }
                             Utilities.FunctionTimer.Create(this, () =>
                             {
@@ -835,6 +864,8 @@ namespace dev.susybaka.raidsim.Targeting
                         {
                             if (targetCastbar != null && targetCastbarGroup.alpha == 1f)
                             {
+                                targetCastbarGroup.blocksRaycasts = false;
+                                targetCastbarGroup.interactable = false;
                                 targetCastbarGroup.alpha = 0.99f;
                                 if (!FightTimeline.Instance.paused)
                                     targetCastbarGroup.LeanAlpha(0f, fadeDuration);
@@ -852,6 +883,8 @@ namespace dev.susybaka.raidsim.Targeting
                     }
                     else if (targetCastbarGroup.alpha >= 1f)
                     {
+                        targetCastbarGroup.blocksRaycasts = false;
+                        targetCastbarGroup.interactable = false;
                         if (!FightTimeline.Instance.paused)
                             targetCastbarGroup.LeanAlpha(0f, fadeDuration);
                         else
@@ -888,6 +921,8 @@ namespace dev.susybaka.raidsim.Targeting
                         {
                             if (targetsTargetGroup.alpha <= 0f)
                             {
+                                targetsTargetGroup.blocksRaycasts = true;
+                                targetsTargetGroup.interactable = true;
                                 targetsTargetGroup.alpha = 0.01f;
                                 if (!FightTimeline.Instance.paused)
                                     targetsTargetGroup.LeanAlpha(1f, fadeDuration);
@@ -921,6 +956,8 @@ namespace dev.susybaka.raidsim.Targeting
                         }
                         else if (targetsTargetGroup.alpha >= 1f)
                         {
+                            targetsTargetGroup.blocksRaycasts = false;
+                            targetsTargetGroup.interactable = false;
                             targetsTargetGroup.alpha = 0.99f;
                             if (!FightTimeline.Instance.paused)
                                 targetsTargetGroup.LeanAlpha(0f, fadeDuration);
@@ -941,6 +978,8 @@ namespace dev.susybaka.raidsim.Targeting
                     }
                     else if (targetsTargetGroup.alpha >= 1f)
                     {
+                        targetsTargetGroup.blocksRaycasts = false;
+                        targetsTargetGroup.interactable = false;
                         targetsTargetGroup.alpha = 0.99f;
                         if (!FightTimeline.Instance.paused)
                             targetsTargetGroup.LeanAlpha(0f, fadeDuration);
@@ -967,6 +1006,8 @@ namespace dev.susybaka.raidsim.Targeting
                     }
                     else if (targetsTargetGroup.alpha >= 1f)
                     {
+                        targetsTargetGroup.blocksRaycasts = false;
+                        targetsTargetGroup.interactable = false;
                         targetsTargetGroup.alpha = 0.99f;
                         if (!FightTimeline.Instance.paused)
                             targetsTargetGroup.LeanAlpha(0f, fadeDuration);
@@ -988,6 +1029,8 @@ namespace dev.susybaka.raidsim.Targeting
             }
             else if (targetInfo != null && targetInfo.alpha >= 1f)
             {
+                targetInfo.blocksRaycasts = false;
+                targetInfo.interactable = false;
                 targetInfo.alpha = 0.99f;
                 if (!FightTimeline.Instance.paused)
                     targetInfo.LeanAlpha(0f, fadeDuration);

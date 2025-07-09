@@ -7,11 +7,11 @@ using dev.susybaka.raidsim.SaveLoad;
 
 namespace dev.susybaka.raidsim.UI
 {
-    public class HudEditor : MonoBehaviour
+    public class HudEditor : HudWindow
     {
-        CanvasGroup group;
         UserInput userInput;
 
+        [Header("Hud Editor")]
         public PauseMenu pauseMenu;
         public bool isEditorOpen;
         public bool isMenuOpen;
@@ -44,10 +44,11 @@ namespace dev.susybaka.raidsim.UI
         }
 #endif
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             userInput = FindObjectOfType<UserInput>();
-            group = GetComponent<CanvasGroup>();
             if (pauseMenu == null)
                 pauseMenu = FindObjectOfType<PauseMenu>();
         }
@@ -118,8 +119,7 @@ namespace dev.susybaka.raidsim.UI
 
         public void CloseHudEditorMenu()
         {
-            group.alpha = 0f;
-            group.blocksRaycasts = false;
+            CloseWindow();
             isMenuOpen = false;
             onMenuClosed.Invoke();
             if (pauseMenu != null)
@@ -139,8 +139,7 @@ namespace dev.susybaka.raidsim.UI
             if (!isEditorOpen)
                 return;
 
-            group.alpha = 1f;
-            group.blocksRaycasts = true;
+            OpenWindow();
             isMenuOpen = true;
             onMenuOpened.Invoke();
             if (pauseMenu != null)

@@ -15,10 +15,13 @@ namespace dev.susybaka.raidsim.UI
     public class PartyList : MonoBehaviour
     {
         public List<PartyMember> members = new List<PartyMember>();
+        public GameObject partyMemberHudPrefab;
         public string spriteAsset = "letters_1";
         public int maxLetters = 7;
         public bool assignLetters = false;
         public bool assignRandomOrder = false;
+        public bool assignIconsAutomatically = true;
+        [HideIf("assignIconsAutomatically")] public int assignIcon = 6;
         public List<Role> priorityOrder = new List<Role>();
 
         private List<TextMeshProUGUI> names = new List<TextMeshProUGUI>();
@@ -26,29 +29,21 @@ namespace dev.susybaka.raidsim.UI
         private bool originalMembersSet = false;
         private List<PartyMember> originalMembers;
         private CharacterState playerState;
+        private TargetController playerTargeting;
         private PartyMember player;
+        private bool setupDone = false;
+        public bool SetupDone { get { return setupDone; } }
 
 #if UNITY_EDITOR
-        [Button("Relink Party Member Hud Variables")]
+        // Redundant now with the changes to partylist hud elements?
+        /*[Button("Relink Party Member Hud Variables")]
         public void RefreshPartyMemberVariables()
         {
             for (int i = 0; i < members.Count; i++)
             {
-                if (members[i].characterState != null && members[i].hudElement != null && members[i].actionController != null)
-                {
-                    members[i].characterState.characterNameTextParty = members[i].hudElement.transform.Find("Name").GetComponentInChildren<TextMeshProUGUI>();
-                    members[i].characterState.healthBarParty = members[i].hudElement.transform.Find("Health").GetComponentInChildren<Slider>();
-                    members[i].actionController.castBarParty = members[i].hudElement.transform.Find("CastBar").GetComponentInChildren<Slider>();
-                    members[i].actionController.castNameTextParty = members[i].hudElement.transform.Find("CastBar").GetComponentInChildren<TextMeshProUGUI>();
-                    TargetNode node = members[i].characterState.GetComponentInChildren<TargetNode>();
-                    if (node != null)
-                    {
-                        node.highlightGroups = new CanvasGroup[1];
-                        node.highlightGroups[0] = members[i].hudElement.transform.GetChild(0).Find("Highlight").GetComponent<CanvasGroup>();
-                    }
-                }
+                RelinkCharacterStateToHudElement(i);
             }
-        }
+        }*/
 
         private void OnValidate()
         {
@@ -73,17 +68,30 @@ namespace dev.susybaka.raidsim.UI
 
             if (playerState == null)
                 playerState = Utilities.FindAnyByName("Player").GetComponent<CharacterState>();
+            if (playerState != null)
+                playerTargeting = playerState.GetComponent<TargetController>();
+
+            if (partyMemberHudPrefab != null)
+            {
+                setupDone = false;
+                SpawnPartyListHudElements();
+            }
+            else
+                setupDone = true;
 
             names.Clear();
             for (int i = 0; i < members.Count; i++)
             {
-                names.Add(members[i].hudElement.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>());
+                names.Add(members[i].helper.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>());
             }
         }
 
         private void Start()
         {
-            if (members != null && members.Count > 0 && playerState != null)
+            if (members == null || members.Count <= 0)
+                return;
+
+            if (playerState != null)
             {
                 for (int i = 0; i < members.Count; i++)
                 {
@@ -118,6 +126,69 @@ namespace dev.susybaka.raidsim.UI
             if (assignRandomOrder)
             {
                 RandomizePartyListOrder();
+            }
+        }
+
+        private void SpawnPartyListHudElements()
+        {
+            if (transform.childCount > 0)
+            {
+                for (int i = transform.childCount - 1; i >= 0; i--)
+                {
+                    Destroy(transform.GetChild(i).gameObject);
+                }
+            }
+
+            for (int i = 0; i < members.Count; i++)
+            {
+                PartyMemberHelper memberHelper = Instantiate(partyMemberHudPrefab, transform).GetComponent<PartyMemberHelper>();
+                int index = i;
+                PartyMember member = members[i];
+                
+                memberHelper.name = $"{member.characterState.gameObject.name}_Hud";
+                memberHelper.HudElement.priority = member.letter;
+                memberHelper.HudElement.characterState = member.characterState;
+                if (memberHelper.HudElement.targetButton != null && playerTargeting != null)
+                    memberHelper.HudElement.targetButton.onClick.AddListener(() => SetPlayerTargetToPartyMember(index));
+                member.helper = memberHelper;
+                members[i] = member;
+                RelinkCharacterStateToHudElement(index);
+            }
+            setupDone = true;
+            UpdatePartyList();
+        }
+
+        private void RelinkCharacterStateToHudElement(int index)
+        {
+            if (members[index].characterState != null && members[index].helper != null && members[index].actionController != null)
+            {
+                members[index].characterState.characterNameTextParty = members[index].helper.NameText;
+                members[index].characterState.healthBarParty = members[index].helper.HealthBarSlider;
+                members[index].characterState.overShieldBarParty = members[index].helper.OverShieldBarSlider;
+                members[index].characterState.shieldBarParty = members[index].helper.ShieldBarSlider;
+                members[index].characterState.healthBarTextParty = members[index].helper.HealthBarText;
+                members[index].characterState.statusEffectIconParentParty = members[index].helper.StatusEffectHolder;
+                members[index].actionController.castBarParty = members[index].helper.CastBarSlider;
+                members[index].actionController.castNameTextParty = members[index].helper.CastNameText;
+                if (members[index].helper.PartyIcon != null)
+                {
+                    members[index].helper.PartyIcon.member = members[index].characterState;
+                    members[index].helper.PartyIcon.chooseAutomatically = assignIconsAutomatically;
+                    if (!assignIconsAutomatically)
+                        members[index].helper.PartyIcon.icon = assignIcon;
+                }
+                TargetNode node = members[index].characterState.GetComponentInChildren<TargetNode>();
+                if (node != null)
+                {
+                    node.highlightGroups = new CanvasGroup[1];
+                    node.highlightGroups[0] = members[index].helper.transform.GetChild(0).Find("Highlight").GetComponent<CanvasGroup>();
+                }
+                
+                if (!Application.isPlaying)
+                    return;
+
+                members[index].characterState.RefreshUserInterface();
+                members[index].actionController.RefreshUserInterface();
             }
         }
 
@@ -359,6 +430,9 @@ namespace dev.susybaka.raidsim.UI
 
         public void UpdatePartyList()
         {
+            if (members == null || members.Count <= 0)
+                return;
+
             int letterIndex = 0;
             for (int i = 0; i < members.Count; i++)
             {
@@ -377,10 +451,11 @@ namespace dev.susybaka.raidsim.UI
                 member.role = member.characterState.role;
                 member.sector = member.characterState.sector;
                 if (assignLetters)
-                    member.hudElement.priority = letter;
-                members[i].hudElement.gameObject.SetActive(members[i].characterState.gameObject.activeSelf);
-                if (members[i].hudElement != null)
-                    members[i].hudElement.characterState = members[i].characterState;
+                    member.helper.HudElement.priority = letter;
+                members[i].helper.HudElement.gameObject.SetActive(members[i].characterState.gameObject.activeSelf);
+                if (members[i].helper.HudElement != null)
+                    members[i].helper.HudElement.characterState = members[i].characterState;
+                member.helper.PartyIcon?.UpdateIcon();
                 members[i] = member;
 
                 if (members[i].characterState.gameObject.activeSelf)
@@ -453,6 +528,18 @@ namespace dev.susybaka.raidsim.UI
             }
         }
 
+        public void SetPlayerTargetToPartyMember(int index)
+        {
+            if (playerTargeting == null)
+                return;
+            if (members == null || members.Count < 1 || index >= members.Count || index < 0)
+                return;
+            if (members[index].targetController == null)
+                return;
+
+            playerTargeting.SetTarget(members[index].targetController.self);
+        }
+
         [System.Serializable]
         public struct PartyMember
         {
@@ -463,12 +550,12 @@ namespace dev.susybaka.raidsim.UI
             public CharacterState characterState;
             public ActionController actionController;
             public TargetController targetController;
-            public HudElement hudElement;
+            public PartyMemberHelper helper;
             public int letter;
             public Role role;
             public Sector sector;
 
-            public PartyMember(string name, PlayerController playerController, AIController aiController, BossController bossController, CharacterState characterState, ActionController actionController, TargetController targetController, HudElement hudElement, int letter)
+            public PartyMember(string name, PlayerController playerController, AIController aiController, BossController bossController, CharacterState characterState, ActionController actionController, TargetController targetController, PartyMemberHelper helper, int letter)
             {
                 this.name = name;
                 this.playerController = playerController;
@@ -477,7 +564,7 @@ namespace dev.susybaka.raidsim.UI
                 this.characterState = characterState;
                 this.actionController = actionController;
                 this.targetController = targetController;
-                this.hudElement = hudElement;
+                this.helper = helper;
                 this.letter = letter;
                 if (characterState != null)
                     role = characterState.role;

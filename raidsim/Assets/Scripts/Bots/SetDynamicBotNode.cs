@@ -8,7 +8,7 @@ namespace dev.susybaka.raidsim.Bots
 {
     public class SetDynamicBotNode : MonoBehaviour
     {
-        public enum DynamicNodeType { priority, nearest, furthest, roleBased, groupBased, enabled, unoccupied, empty }
+        public enum DynamicNodeType { priority, nearest, furthest, roleBased, groupBased, enabled, unoccupied, empty, name }
 
         public BotNodeGroup nodeGroup;
         public BotNodeGroup NodeGroupFallback;
@@ -27,6 +27,8 @@ namespace dev.susybaka.raidsim.Bots
         [ShowIf("m_type", DynamicNodeType.roleBased)] public bool matchGroup = false;
         [ShowIf("showWaitTime")] public float waitTime = 0f;
         [ShowIf("showWaitTime")] public bool reduceWaitTimeFromTimeline = false;
+        [ShowIf("m_type", DynamicNodeType.name)] public string nodeName = string.Empty;
+        [ShowIf("m_type", DynamicNodeType.name)] public bool namedNodeMustBeActive = true;
         public int targetTimelineEventIndex = -1;
         public bool childGroups = false;
         public bool log = false;
@@ -118,6 +120,11 @@ namespace dev.susybaka.raidsim.Bots
                     if (log)
                         Debug.Log($"[SetDynamicBotNode ({gameObject.name})] Setting node based on empty nodes in group");
                     SetNodeTypeEmpty(timeline, targetEventIndex);
+                    break;
+                case DynamicNodeType.name:
+                    if (log)
+                        Debug.Log($"[SetDynamicBotNode ({gameObject.name})] Setting node based on name: {nodeName}");
+                    SetNodeTypeName(timeline, targetEventIndex);
                     break;
                 default:
                     Debug.LogError($"[SetDynamicBotNode ({gameObject.name})] node type not implemented yet!");
@@ -299,6 +306,20 @@ namespace dev.susybaka.raidsim.Bots
                 {
                     node = NodeGroupFallback.GetEmptyNodeFromChildren();
                 }
+            }
+            AssignNode(timeline, targetEventIndex, node);
+        }
+
+        private void SetNodeTypeName(BotTimeline timeline, int targetEventIndex)
+        {
+            BotNode node = null;
+            if (!childGroups)
+            {
+                node = nodeGroup.GetNodeByName(nodeName, namedNodeMustBeActive);
+            }
+            else
+            {
+                node = nodeGroup.GetNodeByNameFromChildren(nodeName, namedNodeMustBeActive);
             }
             AssignNode(timeline, targetEventIndex, node);
         }

@@ -13,6 +13,7 @@ namespace dev.susybaka.raidsim.UI
 
         [SerializeField][SoundName] private string openSound = "ui_open";
         [SerializeField][SoundName] private string closeSound = "ui_close";
+        [SerializeField][Range(0f,1f)] private float audioVolume = 1f;
 
         private bool windowOpen = false;
 
@@ -34,7 +35,7 @@ namespace dev.susybaka.raidsim.UI
                 return;
 
             if (!string.IsNullOrEmpty(openSound))
-                audioManager.Play(openSound);
+                audioManager.Play(openSound, audioVolume);
 
             windowOpen = true;
         }
@@ -48,7 +49,7 @@ namespace dev.susybaka.raidsim.UI
                 return;
 
             if (!string.IsNullOrEmpty(closeSound))
-                audioManager.Play(closeSound);
+                audioManager.Play(closeSound, audioVolume);
 
             windowOpen = false;
         }

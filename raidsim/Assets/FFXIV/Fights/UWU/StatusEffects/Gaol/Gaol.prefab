@@ -152,6 +152,9 @@ MonoBehaviour:
   onReduce:
     m_PersistentCalls:
       m_Calls: []
+  onAddStack:
+    m_PersistentCalls:
+      m_Calls: []
   onMaxStacks:
     m_PersistentCalls:
       m_Calls: []
@@ -176,6 +179,8 @@ MonoBehaviour:
   targetParent: _
   targetIndex: 2
   useStatusEffectTagAsTargetIndex: 0
+  moveToTargetName: 
+  moveToSourceName: 
   localParent: 1
   hiddenActions: 0
   toggleObject: 0
@@ -199,6 +204,7 @@ MonoBehaviour:
   mechanicEnabled: 1
   mechanicName: 
   onlyTriggerOnce: 0
+  global: 0
   log: 0
   startAutomatically: 0
   delay: 5.4
@@ -254,24 +260,26 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: -6243564499739689696}
-        m_TargetAssemblyTypeName: StateTrigger, Assembly-CSharp
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Core.StateTrigger, Assembly-CSharp
         m_MethodName: CastTarget
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 11400000, guid: 9715bd2ab20b5f84f846ddd8f12c383f, type: 2}
-          m_ObjectArgumentAssemblyTypeName: CharacterActionData, Assembly-CSharp
+          m_ObjectArgumentAssemblyTypeName: dev.susybaka.raidsim.Actions.CharacterActionData,
+            Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: -6243564499739689696}
-        m_TargetAssemblyTypeName: StateTrigger, Assembly-CSharp
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Core.StateTrigger, Assembly-CSharp
         m_MethodName: CastTarget
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 11400000, guid: d0f96da0de90f4c4594c7d2a605da73a, type: 2}
-          m_ObjectArgumentAssemblyTypeName: CharacterActionData, Assembly-CSharp
+          m_ObjectArgumentAssemblyTypeName: dev.susybaka.raidsim.Actions.CharacterActionData,
+            Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -298,6 +306,8 @@ MonoBehaviour:
   targetParent: Enemies
   targetIndex: 0
   useStatusEffectTagAsTargetIndex: 1
+  moveToTargetName: 
+  moveToSourceName: 
   localParent: 0
   hiddenActions: 1
   toggleObject: 1

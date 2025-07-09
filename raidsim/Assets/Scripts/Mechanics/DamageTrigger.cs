@@ -10,6 +10,7 @@ using dev.susybaka.raidsim.Characters;
 using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.StatusEffects;
 using dev.susybaka.Shared;
+using dev.susybaka.Shared.Audio;
 using static dev.susybaka.raidsim.Core.GlobalData;
 using Random = UnityEngine.Random;
 

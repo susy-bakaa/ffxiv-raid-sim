@@ -29,6 +29,8 @@ namespace dev.susybaka.raidsim.UI
             rateLimit = Random.Range(33, 43);
             rateLimit2 = rateLimit + 5;
             image = GetComponentInChildren<Image>();
+            if (player == null)
+                player = Utilities.FindAnyByName("Player").GetComponent<CharacterState>();
             if (player != null)
                 party = player.partyList;
         }

@@ -2,6 +2,7 @@ using UnityEngine;
 using NaughtyAttributes;
 using dev.susybaka.raidsim.StatusEffects;
 using dev.susybaka.Shared;
+using dev.susybaka.Shared.Editor;
 using static dev.susybaka.raidsim.Core.GlobalData;
 
 namespace dev.susybaka.raidsim.Actions
@@ -52,6 +53,8 @@ namespace dev.susybaka.raidsim.Actions
         public string speech = string.Empty;
         public AudioClip speechAudio = null;
         public AudioClip jonSpeechAudio = null;
+        [SoundName] public string onCastAudio = "<None>";
+        [SoundName] public string onExecuteAudio = "<None>";
 
         private void Awake()
         {
@@ -68,6 +71,15 @@ namespace dev.susybaka.raidsim.Actions
         private void OnValidate()
         {
             damage = new Damage(damage, null, damage.name);
+
+            if (string.IsNullOrEmpty(onCastAudio))
+            {
+                onCastAudio = "<None>";
+            }
+            if (string.IsNullOrEmpty(onExecuteAudio))
+            {
+                onExecuteAudio = "<None>";
+            }
         }
 #endif
 

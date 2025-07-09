@@ -41,7 +41,7 @@ AudioSource:
   m_GameObject: {fileID: 1084428754994783755}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -52,10 +52,10 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 25
+  MinDistance: 25
+  MaxDistance: 50
   Pan2D: 0
-  rolloffMode: 2
+  rolloffMode: 1
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -63,68 +63,14 @@ AudioSource:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0
-      value: 1.0103302
-      inSlope: -0.11413933
-      outSlope: -0.11413933
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.26608196
-    - serializedVersion: 3
-      time: 0.39747867
-      value: 0.77674866
-      inSlope: -2.2255907
-      outSlope: -2.2255907
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.16268253
-      outWeight: 0.5968612
-    - serializedVersion: 3
-      time: 0.4756672
-      value: 0.42713928
-      inSlope: -5.409184
-      outSlope: -5.409184
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.27217853
-      outWeight: 0.6067375
-    - serializedVersion: 3
-      time: 0.5758347
-      value: 0.1554718
-      inSlope: -1.3110209
-      outSlope: -1.3110209
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.5517401
-    - serializedVersion: 3
-      time: 0.7227037
-      value: 0.06468201
-      inSlope: -0.23219603
-      outSlope: -0.23219603
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.64882153
-    - serializedVersion: 3
-      time: 0.87879896
-      value: 0.025894165
-      inSlope: -0.2000384
-      outSlope: -0.2000384
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.5676543
-    - serializedVersion: 3
       time: 1
-      value: 0
-      inSlope: -0.23549113
-      outSlope: -0.23549113
+      value: 1
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.48038426
-      outWeight: 0.28491497
+      inWeight: 0
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
@@ -227,6 +173,7 @@ MonoBehaviour:
     clips:
       array: []
     mixerGroup: {fileID: 24300002, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 4
     mute: 0
     bypassEffects: 1
     bypassListenerEffects: 1
@@ -253,6 +200,7 @@ MonoBehaviour:
     clips:
       array: []
     mixerGroup: {fileID: 24300002, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 4
     mute: 0
     bypassEffects: 1
     bypassListenerEffects: 1
@@ -279,6 +227,7 @@ MonoBehaviour:
     clips:
       array: []
     mixerGroup: {fileID: 24300002, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 1
     mute: 0
     bypassEffects: 1
     bypassListenerEffects: 1
@@ -305,6 +254,7 @@ MonoBehaviour:
     clips:
       array: []
     mixerGroup: {fileID: 24300002, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 1
     mute: 0
     bypassEffects: 1
     bypassListenerEffects: 1
@@ -331,6 +281,7 @@ MonoBehaviour:
     clips:
       array: []
     mixerGroup: {fileID: 24300002, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 4
     mute: 0
     bypassEffects: 1
     bypassListenerEffects: 1
@@ -357,6 +308,7 @@ MonoBehaviour:
     clips:
       array: []
     mixerGroup: {fileID: 24300002, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 4
     mute: 0
     bypassEffects: 1
     bypassListenerEffects: 1
@@ -383,6 +335,7 @@ MonoBehaviour:
     clips:
       array: []
     mixerGroup: {fileID: 24300002, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 4
     mute: 0
     bypassEffects: 1
     bypassListenerEffects: 1
@@ -409,6 +362,7 @@ MonoBehaviour:
     clips:
       array: []
     mixerGroup: {fileID: 24300002, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 4
     mute: 0
     bypassEffects: 1
     bypassListenerEffects: 1
@@ -435,6 +389,7 @@ MonoBehaviour:
     clips:
       array: []
     mixerGroup: {fileID: 24300002, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 4
     mute: 0
     bypassEffects: 1
     bypassListenerEffects: 1
@@ -461,6 +416,7 @@ MonoBehaviour:
     clips:
       array: []
     mixerGroup: {fileID: 24300002, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 4
     mute: 0
     bypassEffects: 1
     bypassListenerEffects: 1
@@ -486,7 +442,8 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: 67f73072d4bbb3644a584a08f83862e6, type: 3}
     clips:
       array: []
-    mixerGroup: {fileID: 24300002, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    mixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 8
     mute: 0
     bypassEffects: 0
     bypassListenerEffects: 0
@@ -498,7 +455,7 @@ MonoBehaviour:
     volume: 1
     volumeVariance: 0
     pitch: 1
-    pitchVariance: 0
+    pitchVariance: 0.1
     stereoPan: 0
     spatialBlend: 1
     reverbZoneMix: 0
@@ -512,7 +469,8 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: 3024d8034fc143e4e8d47ec55cce2f96, type: 3}
     clips:
       array: []
-    mixerGroup: {fileID: 24300002, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    mixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 8
     mute: 0
     bypassEffects: 0
     bypassListenerEffects: 0
@@ -524,7 +482,7 @@ MonoBehaviour:
     volume: 1
     volumeVariance: 0
     pitch: 1
-    pitchVariance: 0
+    pitchVariance: 0.1
     stereoPan: 0
     spatialBlend: 1
     reverbZoneMix: 0
@@ -538,7 +496,8 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: 93ea40ce489718440b0ace036eee61e8, type: 3}
     clips:
       array: []
-    mixerGroup: {fileID: 24300002, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    mixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 8
     mute: 0
     bypassEffects: 0
     bypassListenerEffects: 0
@@ -550,7 +509,7 @@ MonoBehaviour:
     volume: 1
     volumeVariance: 0
     pitch: 1
-    pitchVariance: 0
+    pitchVariance: 0.1
     stereoPan: 0
     spatialBlend: 1
     reverbZoneMix: 0
@@ -564,7 +523,8 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: 67f73072d4bbb3644a584a08f83862e6, type: 3}
     clips:
       array: []
-    mixerGroup: {fileID: 24300002, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    mixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 8
     mute: 0
     bypassEffects: 0
     bypassListenerEffects: 0
@@ -576,7 +536,7 @@ MonoBehaviour:
     volume: 1
     volumeVariance: 0
     pitch: 1
-    pitchVariance: 0
+    pitchVariance: 0.1
     stereoPan: 0
     spatialBlend: 1
     reverbZoneMix: 0
@@ -590,7 +550,8 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: f08f2da8902ae1c4383fca9fed7cc24f, type: 3}
     clips:
       array: []
-    mixerGroup: {fileID: 24300002, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    mixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 8
     mute: 0
     bypassEffects: 0
     bypassListenerEffects: 0
@@ -602,7 +563,7 @@ MonoBehaviour:
     volume: 1
     volumeVariance: 0
     pitch: 1
-    pitchVariance: 0
+    pitchVariance: 0.1
     stereoPan: 0
     spatialBlend: 1
     reverbZoneMix: 0
@@ -616,7 +577,197 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: 8b26714b867f6234e8abe4ddff2a549c, type: 3}
     clips:
       array: []
-    mixerGroup: {fileID: 24300002, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    mixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 8
+    mute: 0
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    bypassReverbZones: 0
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0.1
+    stereoPan: 0
+    spatialBlend: 1
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: status_apply_sleep
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: 642486ae9db02d040b98dccd00e7d7f3, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 8
+    mute: 0
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    bypassReverbZones: 0
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0.1
+    stereoPan: 0
+    spatialBlend: 1
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: action_cast_aoz
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: 0f7e7de5d7d311443abd6bc471c2f4ec, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 8
+    mute: 0
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    bypassReverbZones: 0
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 0.7
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0.1
+    stereoPan: 0
+    spatialBlend: 1
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: action_execute_white_wind
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: 006611328e228fc458247a111380b698, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 4
+    mute: 0
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    bypassReverbZones: 0
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0.1
+    stereoPan: 0
+    spatialBlend: 1
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: action_execute_devour
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: 3757b57b41070454481e066a6242ef11, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 4
+    mute: 0
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    bypassReverbZones: 0
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0.1
+    stereoPan: 0
+    spatialBlend: 1
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: action_execute_frogs_legs
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: 8e69e6e68c34f8740b85a01259024bc2, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 4
+    mute: 0
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    bypassReverbZones: 0
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0.1
+    stereoPan: 0
+    spatialBlend: 1
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: action_execute_sonic_boom
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: a1b2a1b148dd53e4b906640ea9999236, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 4
+    mute: 0
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    bypassReverbZones: 0
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0.1
+    stereoPan: 0
+    spatialBlend: 1
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: action_execute_mighty_guard
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: 2a4617d25523f1e4f84cb1279ff18391, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 4
     mute: 0
     bypassEffects: 0
     bypassListenerEffects: 0
@@ -637,12 +788,310 @@ MonoBehaviour:
     source: {fileID: 0}
     sources: []
     hasMultipleSources: 0
-  - name: status_apply_sleep
+  - name: action_execute_pom_cure
     multipleClips: 0
-    clip: {fileID: 8300000, guid: 642486ae9db02d040b98dccd00e7d7f3, type: 3}
+    clip: {fileID: 8300000, guid: a9804c8e38ada8d4e9095dc38bb5ff4e, type: 3}
     clips:
       array: []
-    mixerGroup: {fileID: 24300002, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    mixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 4
+    mute: 0
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    bypassReverbZones: 0
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0.1
+    stereoPan: 0
+    spatialBlend: 1
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: action_execute_gobskin
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: 37d546240833c3c4e8c38505630687b1, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 4
+    mute: 0
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    bypassReverbZones: 0
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0.1
+    stereoPan: 0
+    spatialBlend: 1
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: action_execute_diamondback
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: 5c7a53364bfd4734d8aa5b741c32a3ae, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 4
+    mute: 0
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    bypassReverbZones: 0
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0.1
+    stereoPan: 0
+    spatialBlend: 1
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: action_execute_jkick
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: bb1ba52c1693a3748bdbee2f7790e04a, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 4
+    mute: 0
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    bypassReverbZones: 0
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0.1
+    stereoPan: 0
+    spatialBlend: 1
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: action_execute_sprint
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: c3d260b02eb0a604ca2de311d0dc30ab, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 4
+    mute: 0
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    bypassReverbZones: 0
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0.1
+    stereoPan: 0
+    spatialBlend: 1
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: action_execute_swiftcast
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: 43bf6776fb0706d479b352f610ea920e, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 4
+    mute: 0
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    bypassReverbZones: 0
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0.1
+    stereoPan: 0
+    spatialBlend: 1
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: action_execute_surecast
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: 6d14f63ff1df9a0468b24281bfd83f94, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 4
+    mute: 0
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    bypassReverbZones: 0
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0.1
+    stereoPan: 0
+    spatialBlend: 1
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: action_execute_arms_length
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: af0624329b3f74348a13a1ecde6e0ed9, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 4
+    mute: 0
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    bypassReverbZones: 0
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0.1
+    stereoPan: 0
+    spatialBlend: 1
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: action_execute_thunderclap
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: 090be9c1c157fca45a2f07adcc609478, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 4
+    mute: 0
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    bypassReverbZones: 0
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0.1
+    stereoPan: 0
+    spatialBlend: 1
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: action_execute_aetherial_manipulation
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: fbc8d3da0aa498a41a18cb89572b902f, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 4
+    mute: 0
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    bypassReverbZones: 0
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0.1
+    stereoPan: 0
+    spatialBlend: 1
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: action_execute_auto_aoz
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: 461c75cea875d1948a1dd7f58b4b9d99, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 4
+    mute: 0
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    bypassReverbZones: 0
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0
+    pitch: 1
+    pitchVariance: 0.1
+    stereoPan: 0
+    spatialBlend: 1
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: action_execute_enemy_feather_rain
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: 6d05acbba40228545801ebddf59f2992, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 4
     mute: 0
     bypassEffects: 0
     bypassListenerEffects: 0
@@ -655,6 +1104,33 @@ MonoBehaviour:
     volumeVariance: 0
     pitch: 1
     pitchVariance: 0
+    stereoPan: 0
+    spatialBlend: 1
+    reverbZoneMix: 0
+    positions:
+    - {x: 0, y: 0, z: 0}
+    source: {fileID: 0}
+    sources: []
+    hasMultipleSources: 0
+  - name: aoe_hit_feather_rain
+    multipleClips: 0
+    clip: {fileID: 8300000, guid: 17859da550452424c9e1368029b685da, type: 3}
+    clips:
+      array: []
+    mixerGroup: {fileID: 3721554067154159307, guid: 4714d864b56045146997c22d95713d35, type: 2}
+    maxInstances: 4
+    mute: 0
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    bypassReverbZones: 0
+    playOnAwake: 0
+    specificScenesOnly: []
+    loop: 0
+    priority: 128
+    volume: 1
+    volumeVariance: 0.2
+    pitch: 1
+    pitchVariance: 0.2
     stereoPan: 0
     spatialBlend: 1
     reverbZoneMix: 0

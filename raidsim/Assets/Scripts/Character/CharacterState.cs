@@ -192,8 +192,6 @@ namespace dev.susybaka.raidsim.Characters
         private bool wasHidePartyName;
         public bool hidePartyListEntry = false;
         private bool wasHidePartyListEntry;
-        public bool playAudio = false;
-        private Transform audioParent;
 
         #region User Interface Variables
         [Header("Personal - Name")]
@@ -281,6 +279,11 @@ namespace dev.susybaka.raidsim.Characters
         private Coroutine ieUpdatePartyList;
         private Coroutine ieStartSetupDelayed;
         private GameObject dfUpdatePartyList;
+
+        [Header("Audio")]
+        public bool playAudio = false;
+        [Range(0f, 1f)] public float audioVolume = 1f;
+        private Transform audioParent;
         #endregion
 
 #if UNITY_EDITOR
@@ -600,9 +603,9 @@ namespace dev.susybaka.raidsim.Characters
             {
                 partyMember = partyList.GetMember(this);
 
-                if (partyMember != null && partyMember?.hudElement != null)
+                if (partyMember != null && partyMember?.helper != null)
                 {
-                    HudElement hudElement = partyMember?.hudElement;
+                    HudElement hudElement = partyMember?.helper.HudElement;
                     hudElement.hidden = hidePartyListEntry;
                 }
             }
@@ -724,7 +727,8 @@ namespace dev.susybaka.raidsim.Characters
             yield return wait;
             if (this == null || !gameObject.scene.isLoaded)
                 yield break;
-            partyList.UpdatePartyList();
+            if (partyList.SetupDone)
+                partyList.UpdatePartyList();
             ieUpdatePartyList = null;
         }
 
@@ -917,9 +921,9 @@ namespace dev.susybaka.raidsim.Characters
             }
             if (partyList != null)
             {
-                if (partyMember != null && partyMember?.hudElement != null)
+                if (partyMember != null && partyMember?.helper != null)
                 {
-                    HudElement hudElement = partyMember?.hudElement;
+                    HudElement hudElement = partyMember?.helper.HudElement;
                     hudElement.hidden = hidePartyListEntry;
                 }
             }
@@ -1153,6 +1157,208 @@ namespace dev.susybaka.raidsim.Characters
                 currentMaxHealth = defaultMaxHealth;
                 health = defaultMaxHealth;
             }, 1f, $"CharacterState_{gameObject.name}_ResetState_Health_Delay", false, false);
+        }
+
+        public void RefreshUserInterface()
+        {
+            if (healthBar != null)
+            {
+                healthBar.maxValue = currentMaxHealth;
+                healthBar.value = health;
+            }
+            if (nameplateHealthBar != null)
+            {
+                nameplateHealthBar.maxValue = currentMaxHealth;
+                nameplateHealthBar.value = health;
+
+                nameplateHealthBarGroup = nameplateHealthBar.GetComponentInParent<CanvasGroup>();
+
+                if (nameplateHealthBarGroup != null)
+                {
+                    if (showNameplateHealthBar)
+                    {
+                        if (showOnlyBelowMaxHealth && health >= currentMaxHealth)
+                        {
+                            nameplateHealthBarGroup.alpha = 0f;
+                        }
+                        else
+                        {
+                            nameplateHealthBarGroup.alpha = 1f;
+                        }
+                    }
+                    else
+                    {
+                        nameplateHealthBarGroup.alpha = 0f;
+                    }
+                }
+            }
+            if (healthBarText != null)
+            {
+                if (healthBarTextInPercentage)
+                {
+                    float healthPercentage = ((float)health / (float)currentMaxHealth) * 100f;
+                    // Set the health bar text with proper formatting
+                    if (Mathf.Approximately(healthPercentage, 100f))  // Use Mathf.Approximately for floating point comparison
+                    {
+                        healthBarText.text = "100%";
+                    }
+                    else
+                    {
+                        string result = healthPercentage.ToString("F1") + "%";
+
+                        if (health > 0)
+                        {
+                            if (result == "0%" || result == "0.0%" || result == "0.00%" || result == "00.0%" || result == "00.00%" || result == "0,0%" || result == "0,00%" || result == "00,0%" || result == "00,00%")
+                            {
+                                result = "0.1%";
+                            }
+                        }
+
+                        healthBarText.text = result;
+                    }
+                }
+                else
+                {
+                    healthBarText.text = health.ToString();
+                }
+            }
+            if (healthBarParty != null)
+            {
+                healthBarParty.maxValue = currentMaxHealth;
+                healthBarParty.value = health;
+                if (shieldBarParty != null)
+                {
+                    shieldBarParty.maxValue = currentMaxHealth;
+                    shieldBarParty.value = health + shield;
+                }
+                if (overShieldBarParty != null)
+                {
+                    overShieldBarParty.minValue = currentMaxHealth;
+                    overShieldBarParty.maxValue = currentMaxHealth + currentMaxHealth;
+                    overShieldBarParty.value = health + shield;
+                }
+            }
+            if (healthBarTextParty != null)
+            {
+                healthBarTextParty.text = health.ToString();
+            }
+            if (nameplateCharacterNameText != null)
+            {
+                string letter = "";
+
+                if (showCharacterNameLetter && characterLetter >= 0 && characterLetter <= 25)
+                {
+                    letter = $"<sprite =\"{letterSpriteAsset}\" name=\"{characterLetter}\" tint=\"FF7E95\">";
+                }
+
+                if (showCharacterAggression)
+                {
+                    string aggression = string.Empty;
+                    if (isAggressive)
+                        aggression = $"a{characterAggressionLevel}";
+                    else
+                        aggression = $"p{characterAggressionLevel}";
+
+                    if (showCharacterLevel)
+                    {
+                        nameplateCharacterNameText.text = $"<sprite=\"enemy_ranks\" name=\"{aggression}\"><b>Lv{characterLevel}</b> {GetCharacterName()}{letter}>";
+                    }
+                    else
+                    {
+                        nameplateCharacterNameText.text = $"<sprite=\"enemy_ranks\" name=\"{aggression}\"> {GetCharacterName()}{letter}";
+                    }
+                }
+                else
+                {
+                    if (showCharacterLevel)
+                    {
+                        nameplateCharacterNameText.text = $"<b>Lv{characterLevel}</b> {GetCharacterName()}{letter}";
+                    }
+                    else
+                    {
+                        nameplateCharacterNameText.text = $"{GetCharacterName()}{letter}";
+                    }
+                }
+            }
+            if (partyList != null)
+            {
+                partyMember = partyList.GetMember(this);
+
+                if (partyMember != null && partyMember?.helper != null)
+                {
+                    HudElement hudElement = partyMember?.helper.HudElement;
+                    hudElement.hidden = hidePartyListEntry;
+                }
+            }
+            if (nameplateGroup != null)
+            {
+                if (!hideNameplate)
+                {
+                    nameplateGroup.alpha = 1f;
+                }
+                else
+                {
+                    nameplateGroup.alpha = 0f;
+                }
+            }
+            if (nameplateCharacterNameTextGroup != null)
+            {
+                if (showCharacterName)
+                {
+                    nameplateCharacterNameTextGroup.alpha = 1f;
+                }
+                else
+                {
+                    nameplateCharacterNameTextGroup.LeanAlpha(0f, 0.5f);
+                }
+            }
+            if (characterNameTextParty != null)
+            {
+                string letter = "";
+
+                if (showPartyCharacterNameLetter && characterLetter >= 0 && characterLetter <= 25)
+                {
+                    letter = $"<sprite =\"{letterSpriteAsset}\" name=\"{characterLetter}\" tint=\"FF7E95\">";
+                }
+
+                if (showPartyCharacterLevel)
+                {
+                    characterNameTextParty.text = $"{letter}Lv{characterLevel} {GetCharacterName()}";
+                }
+                else
+                {
+                    characterNameTextParty.text = $"{letter}{GetCharacterName()}";
+                }
+            }
+
+            if (characterNameTextGroupParty == null && characterNameTextParty != null)
+                characterNameTextGroupParty = characterNameTextParty.transform.parent.GetComponent<CanvasGroup>();
+
+            if (characterNameTextGroupParty != null)
+            {
+                if (!hidePartyName && showPartyCharacterName)
+                {
+                    characterNameTextGroupParty.alpha = 1f;
+                }
+                else
+                {
+                    characterNameTextGroupParty.LeanAlpha(0f, 0.5f);
+                }
+            }
+            if (signMarkersGroup != null)
+            {
+                signMarkers = new List<SignMarker>();
+                signMarkers.AddRange(signMarkersGroup.GetComponentsInChildren<SignMarker>());
+
+                if (showSignMarkers)
+                {
+                    signMarkersGroup.alpha = 1f;
+                }
+                else
+                {
+                    signMarkersGroup.alpha = 0f;
+                }
+            }
         }
         #endregion
 
@@ -3292,6 +3498,8 @@ namespace dev.susybaka.raidsim.Characters
                 {
                     targetStatusEffectIconGroup = group;
                     targetStatusEffectIconGroup.alpha = 0f;
+                    targetStatusEffectIconGroup.blocksRaycasts = false;
+                    targetStatusEffectIconGroup.interactable = false;
                 }
                 newStatusEffectHolder.name = newStatusEffectHolder.name.Replace("(Clone)", "").Replace("Target_", $"{characterName.Replace(" ", "_").Replace('#', '_')}_");
                 targetStatusEffectIconParent = newStatusEffectHolder.transform;
@@ -3334,9 +3542,9 @@ namespace dev.susybaka.raidsim.Characters
 
             if (playAudio)
             {
-                if (!string.IsNullOrEmpty(effect.data.applySoundFx))
+                if (!string.IsNullOrEmpty(effect.data.applySoundFx) && AudioManager.Instance != null)
                 {
-                    AudioManager.Instance.PlayAt(effect.data.applySoundFx, transform.position, audioParent);
+                    AudioManager.Instance.PlayAt(effect.data.applySoundFx, transform.position, audioParent, audioVolume);
                 }
             }
         }
@@ -3463,9 +3671,9 @@ namespace dev.susybaka.raidsim.Characters
 
             if (playAudio)
             {
-                if (!string.IsNullOrEmpty(temp.data.expireSoundFx))
+                if (!string.IsNullOrEmpty(temp.data.expireSoundFx) && AudioManager.Instance != null)
                 {
-                    AudioManager.Instance.PlayAt(temp.data.expireSoundFx, transform.position, audioParent);
+                    AudioManager.Instance.PlayAt(temp.data.expireSoundFx, transform.position, audioParent, audioVolume);
                 }
             }
         }

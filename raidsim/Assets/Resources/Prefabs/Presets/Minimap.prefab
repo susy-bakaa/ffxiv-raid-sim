@@ -487,7 +487,22 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  restrictsAudio: 1
+  playHoverAudio: 0
+  playClickAudio: 0
   onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerEnterEnabled: 1
+  onPointerEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerExitEnabled: 1
+  onPointerExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerClickEnabled: 1
+  onPointerClick:
     m_PersistentCalls:
       m_Calls: []
   dummy: 0
@@ -815,7 +830,22 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  restrictsAudio: 1
+  playHoverAudio: 1
+  playClickAudio: 1
   onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerEnterEnabled: 1
+  onPointerEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerExitEnabled: 1
+  onPointerExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerClickEnabled: 1
+  onPointerClick:
     m_PersistentCalls:
       m_Calls: []
   dummy: 0
@@ -947,7 +977,22 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  restrictsAudio: 1
+  playHoverAudio: 0
+  playClickAudio: 0
   onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerEnterEnabled: 1
+  onPointerEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerExitEnabled: 1
+  onPointerExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerClickEnabled: 1
+  onPointerClick:
     m_PersistentCalls:
       m_Calls: []
   dummy: 0
@@ -1277,7 +1322,22 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  restrictsAudio: 1
+  playHoverAudio: 0
+  playClickAudio: 0
   onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerEnterEnabled: 1
+  onPointerEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerExitEnabled: 1
+  onPointerExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerClickEnabled: 1
+  onPointerClick:
     m_PersistentCalls:
       m_Calls: []
   dummy: 0
@@ -1409,7 +1469,22 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  restrictsAudio: 1
+  playHoverAudio: 0
+  playClickAudio: 0
   onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerEnterEnabled: 1
+  onPointerEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerExitEnabled: 1
+  onPointerExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerClickEnabled: 1
+  onPointerClick:
     m_PersistentCalls:
       m_Calls: []
   dummy: 0
@@ -1541,7 +1616,22 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  restrictsAudio: 1
+  playHoverAudio: 0
+  playClickAudio: 0
   onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerEnterEnabled: 1
+  onPointerEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerExitEnabled: 1
+  onPointerExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerClickEnabled: 1
+  onPointerClick:
     m_PersistentCalls:
       m_Calls: []
   dummy: 0
@@ -1748,7 +1838,22 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  restrictsAudio: 1
+  playHoverAudio: 0
+  playClickAudio: 0
   onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerEnterEnabled: 1
+  onPointerEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerExitEnabled: 1
+  onPointerExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerClickEnabled: 1
+  onPointerClick:
     m_PersistentCalls:
       m_Calls: []
   dummy: 0
@@ -1925,7 +2030,22 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  restrictsAudio: 1
+  playHoverAudio: 1
+  playClickAudio: 1
   onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerEnterEnabled: 1
+  onPointerEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerExitEnabled: 1
+  onPointerExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerClickEnabled: 1
+  onPointerClick:
     m_PersistentCalls:
       m_Calls: []
   dummy: 0
@@ -2033,6 +2153,8 @@ GameObject:
   - component: {fileID: 8471623277884716705}
   - component: {fileID: 3611670537726661291}
   - component: {fileID: 692497339914259333}
+  - component: {fileID: 755390597255005095}
+  - component: {fileID: 6743030130819790581}
   m_Layer: 5
   m_Name: Minimap
   m_TagString: Untagged
@@ -2129,6 +2251,50 @@ MonoBehaviour:
   onStart:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &755390597255005095
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8158486010816659161}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bf19d73ec87ef043844353ab313dfcf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  log: 0
+  setupOnStart: 1
+  populateAutomatically: 0
+  elements:
+  - {fileID: 2883701217102735125}
+  - {fileID: 3721316241946418065}
+  - {fileID: 6171924966473760032}
+  onPointerEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerClick:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &6743030130819790581
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8158486010816659161}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1401ff08f4c9f5f4884061870afcf740, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hoverSound: ui_hover
+  confirmSound: ui_confirm
+  limitEvents: 0
+  eventCooldown: 0.3
 --- !u!1 &8316969210711716067
 GameObject:
   m_ObjectHideFlags: 0
@@ -2302,7 +2468,22 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  restrictsAudio: 1
+  playHoverAudio: 1
+  playClickAudio: 1
   onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerEnterEnabled: 1
+  onPointerEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerExitEnabled: 1
+  onPointerExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerClickEnabled: 1
+  onPointerClick:
     m_PersistentCalls:
       m_Calls: []
   dummy: 0
@@ -2486,7 +2667,22 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  restrictsAudio: 1
+  playHoverAudio: 0
+  playClickAudio: 0
   onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerEnterEnabled: 1
+  onPointerEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerExitEnabled: 1
+  onPointerExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerClickEnabled: 1
+  onPointerClick:
     m_PersistentCalls:
       m_Calls: []
   dummy: 0

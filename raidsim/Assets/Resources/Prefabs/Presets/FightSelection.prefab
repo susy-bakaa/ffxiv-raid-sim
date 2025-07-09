@@ -62,24 +62,22 @@ MonoBehaviour:
     assetBundle: a8s
   - scene: sunrise_sabbath
     assetBundle: m4s
-  - scene: sunrise_sabbath1
-    assetBundle: m4s
-  - scene: gaols
-    assetBundle: uwu
-  - scene: diamond_dust
-    assetBundle: fru
-  - scene: grim_embrace
-    assetBundle: 
-  - scene: meteors
-    assetBundle: dsr
-  - scene: suppression
-    assetBundle: uwup5
   - scene: terrestrial_rage
     assetBundle: m8s
   - scene: beckon_moonlight
     assetBundle: m8s
+  - scene: grim_embrace
+    assetBundle: 
+  - scene: gaols
+    assetBundle: uwu
   - scene: predation
     assetBundle: uwup5
+  - scene: suppression
+    assetBundle: uwup5
+  - scene: meteors
+    assetBundle: dsr
+  - scene: diamond_dust
+    assetBundle: fru
   currentSceneIndex: 0
 --- !u!1001 &608874205853061803
 PrefabInstance:
@@ -91,7 +89,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 864227202019974020, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.00066755427
+      value: 0.0009520041
       objectReference: {fileID: 0}
     - target: {fileID: 2397317220443939482, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Name
@@ -103,31 +101,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Value
-      value: 8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Options.m_Options.Array.size
-      value: 14
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[4].m_Text
+      value: 'M4S: Sunrise Sabbath'
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Options.m_Options.Array.data[5].m_Text
-      value: 'M4S: Sunrise Sabbath (AutoCad)'
+      value: 'M8S: Terrestrial Rage'
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Options.m_Options.Array.data[6].m_Text
-      value: 'UWU P3: Titan Gaols'
+      value: 'M8S: Beckon Moonlight'
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Options.m_Options.Array.data[7].m_Text
-      value: 'FRU P2: Diamond Dust'
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Options.m_Options.Array.data[8].m_Text
       value: 'CODC: Grim Embrace (P1 Debuff)'
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[8].m_Text
+      value: 'UWU P3: Titan Gaols'
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Options.m_Options.Array.data[9].m_Text
-      value: 'DSR P2: Meteors'
+      value: 'UWU P5: Predation'
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Options.m_Options.Array.data[10].m_Text
@@ -135,31 +137,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Options.m_Options.Array.data[11].m_Text
-      value: 'M8S: Terrestrial Rage'
+      value: 'DSR P2: Meteors'
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Options.m_Options.Array.data[12].m_Text
-      value: 'M8S: Beckon Moonlight'
+      value: 'FRU P2: Diamond Dust'
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Options.m_Options.Array.data[13].m_Text
-      value: 'UWU P5: Predation'
+      value: 'FRU P2: Diamond Dust'
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Options.m_Options.Array.data[12].m_Color.a
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Options.m_Options.Array.data[12].m_Color.b
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Options.m_Options.Array.data[12].m_Color.g
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Options.m_Options.Array.data[12].m_Color.r
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Options.m_Options.Array.data[13].m_Color.a
@@ -199,7 +201,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5594349047633344503, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_text
-      value: 'CODC: Grim Embrace (P1 Debuff)'
+      value: Empty
       objectReference: {fileID: 0}
     - target: {fileID: 5594349047633344503, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_ActiveFontFeatures.Array.data[0]
@@ -207,7 +209,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6464313048467052032, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Size
-      value: 0.9871868
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7171332731230435304, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_AnchorMax.x

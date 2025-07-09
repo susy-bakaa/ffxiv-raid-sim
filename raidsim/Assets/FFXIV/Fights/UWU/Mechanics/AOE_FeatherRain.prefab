@@ -231,6 +231,37 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &4295003590607863149
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6292571826782804757}
+  m_Layer: 0
+  m_Name: Audio
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6292571826782804757
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4295003590607863149}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6476049605869209962}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6920432718551181877
 GameObject:
   m_ObjectHideFlags: 0
@@ -430,6 +461,7 @@ GameObject:
   - component: {fileID: 8519792468615912040}
   - component: {fileID: 5662640790838248249}
   - component: {fileID: 7320528578366170065}
+  - component: {fileID: 3702670027875487758}
   m_Layer: 0
   m_Name: AOE_FeatherRain
   m_TagString: Untagged
@@ -452,6 +484,7 @@ Transform:
   m_Children:
   - {fileID: 1650655790853268821}
   - {fileID: 37062994894609475}
+  - {fileID: 6292571826782804757}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &1094473432816434506
@@ -667,7 +700,19 @@ MonoBehaviour:
         m_CallState: 2
   onTrigger:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3702670027875487758}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Mechanics.FightMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   dummy: 0
 --- !u!114 &7320528578366170065
 MonoBehaviour:
@@ -688,6 +733,27 @@ MonoBehaviour:
   onDestroy:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &3702670027875487758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9190757016384227788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e5d2c56a1472134988f739994718df1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: FeatherRainHitSound
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  audioToPlay: aoe_hit_feather_rain
+  location: {fileID: 6476049605869209962}
+  useParent: 1
+  parent: {fileID: 6292571826782804757}
 --- !u!1001 &7489457440399482253
 PrefabInstance:
   m_ObjectHideFlags: 0

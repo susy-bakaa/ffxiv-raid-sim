@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 using TMPro;
 using dev.susybaka.raidsim.Core;
 using dev.susybaka.Shared;
@@ -9,9 +10,10 @@ namespace dev.susybaka.raidsim.UI
     {
         TMP_Dropdown dropdown;
 
+        public bool log = false;
         public int[] results;
         public int id;
-        public bool log = false;
+        public UnityEvent<int> onResultSelected;
 
         private bool setup = false;
         private int selectedValue = 0;
@@ -79,6 +81,7 @@ namespace dev.susybaka.raidsim.UI
 
                 selectedValue = value;
                 SetValue();
+                onResultSelected?.Invoke(results[selectedValue]);
             }
             else
             {
