@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using dev.susybaka.Shared.Attributes;
@@ -20,14 +21,17 @@ namespace dev.susybaka.Shared.Editor
                 return;
             }
 
-            string[] allBundles = AssetDatabase.GetAllAssetBundleNames();
+            string[] bundles = AssetDatabase.GetAllAssetBundleNames();
+            List<string> allBundles = new List<string>();
+            allBundles.Add("<None>");
+            allBundles.AddRange(bundles);
             string current = property.stringValue;
-            int idx = System.Array.IndexOf(allBundles, current);
+            int idx = allBundles.IndexOf(current);
             if (idx < 0)
                 idx = 0;
 
-            int sel = EditorGUI.Popup(position, label.text, idx, allBundles);
-            property.stringValue = allBundles.Length > 0 ? allBundles[sel] : current;
+            int sel = EditorGUI.Popup(position, label.text, idx, allBundles.ToArray());
+            property.stringValue = allBundles.Count > 0 ? allBundles[sel] : current;
         }
     }
 }

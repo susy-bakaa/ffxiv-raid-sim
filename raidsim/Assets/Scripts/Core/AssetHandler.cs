@@ -445,6 +445,12 @@ namespace dev.susybaka.raidsim.Core
 
         public bool HasBundleLoaded(string bundleName)
         {
+            if (string.IsNullOrEmpty(bundleName))
+                return false;
+
+            if (bundleName == "<None>")
+                return false;
+
             if (!bundleName.EndsWith(bundleExtension))
                 bundleName += bundleExtension;
 

@@ -53,31 +53,56 @@ MonoBehaviour:
   loadDelay: 0.5
   scenes:
   - scene: demo
-    assetBundle: 
+    assetBundles: []
   - scene: helloworld1
-    assetBundle: o12s
+    assetBundles:
+    - arena_o12s
+    - monster_final_omega
   - scene: helloworld2
-    assetBundle: o12s
+    assetBundles:
+    - arena_o12s
+    - monster_final_omega
   - scene: gavel
-    assetBundle: a8s
+    assetBundles:
+    - arena_a8s
+    - monster_brute_justice
   - scene: sunrise_sabbath
-    assetBundle: m4s
+    assetBundles:
+    - arena_m4s
+    - monster_wicked_thunder
+    - monster_wicked_thunder_p2
   - scene: terrestrial_rage
-    assetBundle: m8s
+    assetBundles:
+    - arena_m8s_p2
   - scene: beckon_moonlight
-    assetBundle: m8s
+    assetBundles:
+    - arena_m8s_p2
   - scene: grim_embrace
-    assetBundle: 
+    assetBundles: []
   - scene: gaols
-    assetBundle: uwu
+    assetBundles:
+    - arena_uwu
+    - monster_titan
   - scene: predation
-    assetBundle: uwup5
+    assetBundles:
+    - 1_arena_uwu_p5_tex
+    - arena_uwu_p5_aqua
+    - monster_garuda_aqua
+    - monster_ifrit_aqua
+    - monster_titan_aqua
+    - monster_ultima_aqua
   - scene: suppression
-    assetBundle: uwup5
+    assetBundles:
+    - 1_arena_uwu_p5_tex
+    - arena_uwu_p5
   - scene: meteors
-    assetBundle: dsr
+    assetBundles:
+    - arena_dsr
   - scene: diamond_dust
-    assetBundle: fru
+    assetBundles:
+    - arena_fru
+    - monster_shiva_eden
+    - monster_oracle_eden
   currentSceneIndex: 0
 --- !u!1001 &608874205853061803
 PrefabInstance:
@@ -89,7 +114,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 864227202019974020, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0009520041
+      value: 0.0009542709
       objectReference: {fileID: 0}
     - target: {fileID: 2397317220443939482, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Name
