@@ -1,7 +1,7 @@
 using UnityEngine;
 using NaughtyAttributes;
+using dev.susybaka.Shared.Attributes;
 using dev.susybaka.Shared.Audio;
-using dev.susybaka.Shared.Editor;
 using static dev.susybaka.raidsim.Core.GlobalData;
 
 namespace dev.susybaka.raidsim.Mechanics

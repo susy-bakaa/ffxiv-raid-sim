@@ -12,8 +12,8 @@ using dev.susybaka.raidsim.Characters;
 using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.UI;
 using dev.susybaka.Shared;
+using dev.susybaka.Shared.Attributes;
 using dev.susybaka.Shared.Audio;
-using dev.susybaka.Shared.Editor;
 
 namespace dev.susybaka.raidsim.Targeting
 {

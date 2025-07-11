@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace dev.susybaka.Shared.Editor
+namespace dev.susybaka.Shared.Attributes
 {
     public class SoundNameAttribute : PropertyAttribute
     {

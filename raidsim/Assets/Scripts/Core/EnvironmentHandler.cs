@@ -1,10 +1,8 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-#if UNITY_EDITOR
-using NaughtyAttributes;
-#endif
-using dev.susybaka.raidsim.UI;
+using dev.susybaka.Shared.Attributes;
 
 namespace dev.susybaka.raidsim.Core
 {
@@ -16,26 +14,25 @@ namespace dev.susybaka.raidsim.Core
 
         public int currentArenaIndex = 0;
         private int originalArenaIndex = -1;
+
         // Legacy variables that are not used anymore but kept for compatibility
         // to avoid breaking existing scenes in other people's forks,
-        // these can be migrated by using the MigrateOldArenaData method in the editor
+        // these can be migrated by using the MigrateOldArenaData function (button) in the editor
         [Obsolete("Use arenaModelData array instead. This field is kept for compatability reasons. It may be removed in a future version.")]
         [SerializeField, HideInInspector] public string[] arenaModels;
         [Obsolete("Use arenaModelData array instead. This field is kept for compatability reasons. It may be removed in a future version.")]
         [SerializeField, HideInInspector] public GameObject[] arenas;
+        // ---
         // This is the new data structure that holds arena model data
         public ArenaModelData[] arenaModelData;
-
         public UnityEvent onLoad;
 
-        //private Transform dynamicParent;
-        private FightSelector fightSelector;
-        private string currentFightBundleName;
-        private bool arenaModelLoaded = false;
+        private bool allArenaModelsLoaded = false;
+        private Dictionary<ArenaModelData, GameObject> loadedArenaModels = new Dictionary<ArenaModelData, GameObject>();
 
 #if UNITY_EDITOR
 #pragma warning disable CS0618 // Disable obsolete warning for arenaModels and arenas for the editor tool
-        [Button]
+        [NaughtyAttributes.Button]
         public void MigrateOldArenaData()
         {
             arenaModelData = new ArenaModelData[arenaModels.Length];
@@ -62,8 +59,6 @@ namespace dev.susybaka.raidsim.Core
 
         private void Awake()
         {
-            fightSelector = FindObjectOfType<FightSelector>();
-            //dynamicParent = GameObject.FindGameObjectWithTag("persistent").transform.Find("Environment");   
 #if UNITY_WEBPLAYER
             if (disableFogForWebGL)
             {
@@ -87,10 +82,7 @@ namespace dev.susybaka.raidsim.Core
 
         private void Start()
         {
-            if (fightSelector != null)
-            {
-                currentFightBundleName = fightSelector.CurrentScene.assetBundle;
-            }
+            loadedArenaModels = new Dictionary<ArenaModelData, GameObject>();
 
             if (FightTimeline.Instance != null)
                 FightTimeline.Instance.onReset.AddListener(ResetArenaModel);
@@ -98,20 +90,20 @@ namespace dev.susybaka.raidsim.Core
 
         private void Update()
         {
-            if (arenaModelData == null || arenaModelData.Length <= 0)
+            if (arenaModelData == null || arenaModelData.Length <= 0 || allArenaModelsLoaded)
                 return;
 
-            if (AssetHandler.Instance != null && !arenaModelLoaded)
+            if (AssetHandler.Instance != null && !allArenaModelsLoaded)
             {
-                if (AssetHandler.Instance.HasBundleLoaded(currentFightBundleName))
+                // Remove any possible temporary arena placeholders
+                if (arenaModelData != null && arenaModelData.Length > 0)
                 {
-                    arenaModelLoaded = true;
-
-                    // Remove any possible temporary arena placeholders
-                    if (arenaModelData != null && arenaModelData.Length > 0)
+                    for (int i = 0; i < arenaModelData.Length; i++)
                     {
-                        for (int i = 0; i < arenaModelData.Length; i++)
+                        if (AssetHandler.Instance.HasBundleLoaded(arenaModelData[i].bundle) && !loadedArenaModels.ContainsKey(arenaModelData[i]))
                         {
+                            allArenaModelsLoaded = true;
+
                             if (string.IsNullOrEmpty(arenaModelData[i].name))
                             {
                                 continue;
@@ -122,26 +114,28 @@ namespace dev.susybaka.raidsim.Core
                                 Destroy(arenaModelData[i].model);
                             }
 
-                            GameObject arena = AssetHandler.Instance.GetAsset(arenaModelData[i].name);
+                            GameObject arena = AssetHandler.Instance.GetAsset(arenaModelData[i].bundle, arenaModelData[i].name);
                             arena.transform.SetParent(transform);
                             arena.SetActive(false);
                             arena.transform.localPosition = arenaModelData[i].position;
                             arena.transform.localEulerAngles = arenaModelData[i].rotation;
                             arena.transform.localScale = arenaModelData[i].scale;
                             arenaModelData[i].model = arena;
+                            loadedArenaModels[arenaModelData[i]] = arenaModelData[i].model;
+                        }
+                        else if (!loadedArenaModels.ContainsKey(arenaModelData[i]))
+                        { 
+                            allArenaModelsLoaded = false;
                         }
                     }
 
-                    if (arenaModelData.Length > 0)
+                    if (originalArenaIndex >= 0 && originalArenaIndex < arenaModelData.Length)
                     {
-                        if (originalArenaIndex >= 0 && originalArenaIndex < arenaModelData.Length)
-                        {
-                            arenaModelData[originalArenaIndex].model?.SetActive(true);
-                        }
-                        else
-                        {
-                            arenaModelData[0].model?.SetActive(true);
-                        }
+                        arenaModelData[originalArenaIndex].model?.SetActive(true);
+                    }
+                    else
+                    {
+                        arenaModelData[0].model?.SetActive(true);
                     }
                 }
 
@@ -169,14 +163,16 @@ namespace dev.susybaka.raidsim.Core
         public struct ArenaModelData
         {
             public string name;
+            [AssetBundleName] public string bundle;
             public GameObject model;
             public Vector3 position;
             public Vector3 rotation;
             public Vector3 scale;
 
-            public ArenaModelData(string name, GameObject model, Vector3 position, Vector3 rotation, Vector3 scale)
+            public ArenaModelData(string name, string bundle, GameObject model, Vector3 position, Vector3 rotation, Vector3 scale)
             {
                 this.name = name;
+                this.bundle = bundle;
                 this.model = model;
                 this.position = position;
                 this.rotation = rotation;

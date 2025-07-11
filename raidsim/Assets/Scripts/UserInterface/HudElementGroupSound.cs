@@ -1,8 +1,6 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
+using dev.susybaka.Shared.Attributes;
 using dev.susybaka.Shared.Audio;
-using dev.susybaka.Shared.Editor;
 
 namespace dev.susybaka.raidsim.UI
 {

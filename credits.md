@@ -6,6 +6,7 @@
 - Settings cog icon from svgrepo. [Source](https://www.svgrepo.com/svg/163563/settings-cog)
 - Unity INI file script by illa4257. [Source](https://github.com/illa4257/unity-IniStorage) 
 - Unity find inactive GameObjects function by SO user Programmer. [Source](https://stackoverflow.com/questions/44456133/find-inactive-gameobject-by-name-tag-or-layer) 
+- NaughtyAttributes by Denis Rizov [Source](https://github.com/dbrizov/NaughtyAttributes)
 - Greggman for their better Unity WebGL template. [Source](https://github.com/greggman/better-unity-webgl-template)
 - JakeCarterAU for their tool for searching materials by shader. [Source](https://github.com/JakeCarterDPM/unity-search-material-by-shader)
 - Unity AnimatorUtility by Hasan Bayat. [Source](https://gist.github.com/hasanbayatme/f7f1d9d0f8470b718fda836f6668c215#file-animatorutility-cs)

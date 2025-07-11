@@ -3,7 +3,7 @@ using UnityEditor;
 
 namespace dev.susybaka.Shared.Editor
 {
-    public class VideoTimeTool : EditorWindow
+    public class TimeConversionToolWindow : EditorWindow
     {
         int hours;
         int minutes;
@@ -16,7 +16,11 @@ namespace dev.susybaka.Shared.Editor
         [MenuItem("Tools/Time to Float Converter")]
         public static void ShowWindow()
         {
-            GetWindow<VideoTimeTool>("Time Converter");
+            TimeConversionToolWindow window = GetWindow<TimeConversionToolWindow>("Time Converter");
+
+            // Set the icon for the window using Unity's default scene icon
+            GUIContent titleContent = new GUIContent("Time Converter", EditorGUIUtility.IconContent("d_UnityEditor.AnimationWindow").image);
+            window.titleContent = titleContent;
         }
 
         private void OnGUI()

@@ -1,8 +1,8 @@
 #if UNITY_EDITOR
+using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEditor;
-using System.IO;
-using System.Collections.Generic;
 
 namespace dev.susybaka.Shared.Editor 
 {
@@ -11,6 +11,7 @@ namespace dev.susybaka.Shared.Editor
         private string sourceFolder = "Assets";
         private string outputFolder = "Assets/StreamingAssets";
         private int selectedTargetIndex = 0;
+        private bool useCustomExtension = true;
 
         private static readonly BuildTarget[] buildTargets = new BuildTarget[]
         {
@@ -22,7 +23,11 @@ namespace dev.susybaka.Shared.Editor
         [MenuItem("Tools/AssetBundle Builder")]
         public static void ShowWindow()
         {
-            GetWindow<AssetBundleBuilderWindow>("AssetBundle Builder");
+            AssetBundleBuilderWindow window = GetWindow<AssetBundleBuilderWindow>("AssetBundle Builder");
+
+            // Set the icon for the window using Unity's default scene icon
+            GUIContent titleContent = new GUIContent("AssetBundle Builder", EditorGUIUtility.IconContent("ModelImporter Icon").image);
+            window.titleContent = titleContent;
         }
 
         private void OnGUI()
@@ -32,14 +37,22 @@ namespace dev.susybaka.Shared.Editor
             sourceFolder = EditorGUILayout.TextField("Source Folder:", sourceFolder);
             outputFolder = EditorGUILayout.TextField("Output Folder:", outputFolder);
 
-            if (GUILayout.Button("Reset to Default Output"))
+            selectedTargetIndex = EditorGUILayout.Popup("Build Target:", selectedTargetIndex, GetBuildTargetOptions());
+
+            useCustomExtension = EditorGUILayout.Toggle("Use Custom File Extension", useCustomExtension);
+
+            if (useCustomExtension)
+                GUILayout.Label($"Current Extension: {raidsim.Core.GlobalVariables.assetBundleExtension}", EditorStyles.label);
+            else
+                GUILayout.Space(17); // Just to keep the layout consistent
+
+            if (GUILayout.Button("Reset Paths to Default"))
             {
+                sourceFolder = "Assets";
                 outputFolder = "Assets/StreamingAssets";
             }
 
-            selectedTargetIndex = EditorGUILayout.Popup("Build Target:", selectedTargetIndex, GetBuildTargetOptions());
-
-            if (GUILayout.Button("Build Asset Bundles"))
+            if (GUILayout.Button("Build All Asset Bundles"))
             {
                 BuildAssetBundles();
             }
@@ -87,6 +100,29 @@ namespace dev.susybaka.Shared.Editor
                     Debug.Log($"Building for target: {target} with the following {options}");
 
                     BuildPipeline.BuildAssetBundles(outputFolder, options, target);
+
+                    if (useCustomExtension)
+                    {
+                        string extension = raidsim.Core.GlobalVariables.assetBundleExtension;
+                        string[] files = Directory.GetFiles(outputFolder);
+
+                        foreach (string filePath in files)
+                        {
+                            if (filePath.EndsWith(".manifest") || filePath.EndsWith(".meta"))
+                                continue;
+
+                            string newPath = filePath + extension;
+
+                            if (!File.Exists(newPath))
+                            {
+                                File.Move(filePath, newPath);
+                                if (File.Exists(filePath + ".manifest"))
+                                    File.Move(filePath + ".manifest", newPath + ".manifest");
+                                if (File.Exists(filePath + ".meta"))
+                                    File.Move(filePath + ".meta", newPath + ".meta");
+                            }
+                        }
+                    }
                 }
 
                 Debug.Log("Asset bundle build completed!");

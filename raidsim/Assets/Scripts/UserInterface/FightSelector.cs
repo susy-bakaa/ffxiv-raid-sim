@@ -7,9 +7,10 @@ using UnityEngine.UI;
 using TMPro;
 using NaughtyAttributes;
 using dev.susybaka.raidsim.Core;
+using dev.susybaka.Shared;
+using dev.susybaka.Shared.Attributes;
 using dev.susybaka.Shared.Audio;
 using static dev.susybaka.raidsim.Core.GlobalVariables;
-using dev.susybaka.Shared;
 
 namespace dev.susybaka.raidsim.UI
 {
@@ -140,7 +141,7 @@ namespace dev.susybaka.raidsim.UI
                 }
 
                 // Load next scene’s AssetBundle
-                AssetHandler.Instance.LoadSceneAssetBundle(scene.assetBundle);
+                AssetHandler.Instance.LoadSceneAssetBundle(scene.assetBundles);
             }
 
             SceneManager.LoadScene(scene.scene);
@@ -163,18 +164,19 @@ namespace dev.susybaka.raidsim.UI
         {
             [Scene]
             public string scene;
-            public string assetBundle;
+            [AssetBundleNames]
+            public string[] assetBundles;
 
-            public TimelineScene(string scene, string assetBundle)
+            public TimelineScene(string scene, string[] assetBundles)
             {
                 this.scene = scene;
-                this.assetBundle = assetBundle;
+                this.assetBundles = assetBundles;
             }
 
             public TimelineScene(string scene)
             {
                 this.scene = scene;
-                this.assetBundle = string.Empty;
+                this.assetBundles = new string[0];
             }
         }
     }

@@ -14,8 +14,8 @@ using dev.susybaka.raidsim.StatusEffects;
 using dev.susybaka.raidsim.Targeting;
 using dev.susybaka.raidsim.UI;
 using dev.susybaka.Shared;
+using dev.susybaka.Shared.Attributes;
 using dev.susybaka.Shared.Audio;
-using dev.susybaka.Shared.Editor;
 using static dev.susybaka.raidsim.Core.GlobalData;
 
 namespace dev.susybaka.raidsim.Core

@@ -9,6 +9,9 @@ namespace dev.susybaka.raidsim.Core
         // This value is incremented when the game gets an updated.
         // It is used by WebGL to determine if the game assets need to be redownloaded and by the auto updater for version checks for updates.
         public const int versionNumber = 5;
+        // Increment this when the scripts are changed in a way that will require a rebuild of all scenes inside bundles.
+        // (This is not in used yet but added for future reference)
+        public const int scriptingVersion = 1;
 #if UNITY_EDITOR
         public static string configPath = Application.dataPath + "/config.ini";
         public static string bgmPath = "F:/Users/Aki/Files/GitHub/ffxiv-raid-sim/raidsim/Source/Audio/bgm";
@@ -34,5 +37,6 @@ namespace dev.susybaka.raidsim.Core
         public static Vector3 minimapZoom;
         public static bool modifiedMinimapZoom = false;
         public static bool rotateMinimap = false;
+        public const string assetBundleExtension = ".pak";
     }
 }

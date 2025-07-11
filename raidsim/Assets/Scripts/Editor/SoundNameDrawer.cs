@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using dev.susybaka.Shared.Audio;
+using dev.susybaka.Shared.Attributes;
 
 namespace dev.susybaka.Shared.Editor
 {

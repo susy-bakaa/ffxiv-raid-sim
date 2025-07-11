@@ -2,7 +2,7 @@ using UnityEngine;
 using NaughtyAttributes;
 using dev.susybaka.raidsim.StatusEffects;
 using dev.susybaka.Shared;
-using dev.susybaka.Shared.Editor;
+using dev.susybaka.Shared.Attributes;
 using static dev.susybaka.raidsim.Core.GlobalData;
 
 namespace dev.susybaka.raidsim.Actions
