@@ -11,6 +11,7 @@ namespace dev.susybaka.raidsim.UI
         public bool log = false;
         public bool setupOnStart = true;
         public bool populateAutomatically = false;
+        public float setupDelay = 0.5f;
         public List<HudElement> elements = new List<HudElement>();
         [Foldout("Events")]
         public UnityEvent<HudElementEventInfo> onPointerEnter;
@@ -42,7 +43,7 @@ namespace dev.susybaka.raidsim.UI
             id = Random.Range(0, 10001);
 
             if (setupOnStart)
-                Utilities.FunctionTimer.Create(this, Setup, 0.5f, $"HudElementGroup_{id}_Setup_Delay", true, false);
+                Utilities.FunctionTimer.Create(this, Setup, setupDelay, $"HudElementGroup_{id}_Setup_Delay", true, false);
         }
 
         private void Setup()
@@ -56,9 +57,17 @@ namespace dev.susybaka.raidsim.UI
             {
                 for (int i = 0; i < elements.Count; i++)
                 {
-                    elements[i].onPointerEnter.AddListener(OnPointerEnter);
-                    elements[i].onPointerExit.AddListener(OnPointerExit);
-                    elements[i].onPointerClick.AddListener(OnPointerClick);
+                    if (elements[i] == null)
+                    {
+                        elements.RemoveAt(i);
+                        i--;
+                    }
+                    else
+                    {
+                        elements[i].onPointerEnter.AddListener(OnPointerEnter);
+                        elements[i].onPointerExit.AddListener(OnPointerExit);
+                        elements[i].onPointerClick.AddListener(OnPointerClick);
+                    }
                 }
             }
         }
@@ -79,6 +88,11 @@ namespace dev.susybaka.raidsim.UI
             }
 
             elements.AddRange(filteredElements);
+        }
+
+        public void UpdateElements()
+        {
+            Setup();
         }
 
         public void AddElement(HudElement element)

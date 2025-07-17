@@ -188,7 +188,7 @@ namespace dev.susybaka.raidsim.Mechanics
                 if (delay > 0)
                 {
                     spawned.gameObject.SetActive(false);
-                    Utilities.FunctionTimer.Create(this, () =>
+                    Utilities.FunctionTimer.Create(damageTrigger, () =>
                     {
                         spawned.gameObject.SetActive(true);
                         if (!damageTrigger.initializeOnStart)

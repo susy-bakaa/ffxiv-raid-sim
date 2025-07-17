@@ -23,6 +23,8 @@ namespace dev.susybaka.raidsim.Mechanics
 
         public string damageName = string.Empty;
         public bool inverted = false;
+        public bool isDonut = false;
+        [ShowIf("isDonut")] public float innerRadius = 0f;
         public bool log = false;
         public CharacterState owner;
         public bool autoAssignOwner = false;
@@ -76,6 +78,7 @@ namespace dev.susybaka.raidsim.Mechanics
         private bool inProgress = false;
         private bool initialized = false;
         private bool colliderWaDisabled = false;
+        private HashSet<Collider> collidersInsideTrigger = new HashSet<Collider>();
 
 #if UNITY_EDITOR
         public int dummy = 0;
@@ -84,12 +87,64 @@ namespace dev.susybaka.raidsim.Mechanics
         {
             Initialize();
         }
+
+        private void OnDrawGizmosSelected()
+        {
+            if (m_collider == null)
+                m_collider = GetComponent<Collider>();
+
+            if (isDonut && innerRadius > 0f && m_collider != null)
+            {
+                Gizmos.color = Color.yellow;
+
+                // Draw at the collider's offset position in world space
+                Vector3 offsetPosition = transform.position;
+                
+                if (m_collider is BoxCollider boxCollider)
+                {
+                    offsetPosition += boxCollider.center;
+                }
+                else if (m_collider is SphereCollider sphereCollider)
+                {
+                    offsetPosition += sphereCollider.center;
+                }
+
+                Gizmos.DrawWireSphere(offsetPosition, innerRadius);
+            }
+        }
+
+        private void OnValidate()
+        {
+            if (m_collider == null)
+                m_collider = GetComponent<Collider>();
+
+            if (isDonut && innerRadius > 0f && m_collider != null)
+            {
+                if (m_collider is BoxCollider boxCollider)
+                {
+                    if (innerRadius > boxCollider.size.x / 2f || innerRadius > boxCollider.size.z / 2f)
+                    {
+                        Debug.LogWarning($"[DamageTrigger ({gameObject.name})] Inner radius ({innerRadius}) is larger than the BoxCollider size. Adjusting to fit within the collider.");
+                        innerRadius = Mathf.Min(boxCollider.size.x / 2f, boxCollider.size.z / 2f) - 0.01f;
+                    }
+                }
+                else if (m_collider is SphereCollider sphereCollider)
+                {
+                    if (innerRadius > sphereCollider.radius)
+                    {
+                        Debug.LogWarning($"[DamageTrigger ({gameObject.name})] Inner radius ({innerRadius}) is larger than the SphereCollider radius. Adjusting to fit within the collider.");
+                        innerRadius = sphereCollider.radius - 0.01f;
+                    }
+                }
+            }
+        }
 #endif
 
         private void Awake()
         {
             m_collider = GetComponent<Collider>();
             id = Random.Range(1000, 10000);
+            collidersInsideTrigger = new HashSet<Collider>();
 
             if (m_collider != null)
             {
@@ -202,6 +257,9 @@ namespace dev.susybaka.raidsim.Mechanics
             {
                 if (other.CompareTag(ableToHitTag))
                 {
+                    if (IsCollisionInsideDonut(other.transform))
+                        return;
+
                     if (other.transform.TryGetComponentInParents(true, out CharacterState playerState))
                     {
                         if (!string.IsNullOrEmpty(canHitCharacterName))
@@ -219,6 +277,7 @@ namespace dev.susybaka.raidsim.Mechanics
                         if (!cleaves && owner != null && playerState != owner)
                             return;
 
+                        collidersInsideTrigger.Add(other);
                         currentPlayers.Add(playerState);
 
                         if (!inProgress && playerActivated && initialized)
@@ -230,6 +289,9 @@ namespace dev.susybaka.raidsim.Mechanics
             {
                 if (other.CompareTag(ableToHitTag))
                 {
+                    if (IsCollisionInsideDonut(other.transform))
+                        return;
+
                     if (other.transform.TryGetComponentInParents(true, out CharacterState playerState))
                     {
                         if (!string.IsNullOrEmpty(canHitCharacterName))
@@ -246,6 +308,7 @@ namespace dev.susybaka.raidsim.Mechanics
                         if (!cleaves && owner != null && playerState != owner)
                             return;
 
+                        collidersInsideTrigger.Remove(other);
                         currentPlayers.Remove(playerState);
                     }
                 }
@@ -263,6 +326,9 @@ namespace dev.susybaka.raidsim.Mechanics
                 {
                     if (other.CompareTag(ableToHitTag) && !inProgress && initialized)
                     {
+                        if (IsCollisionInsideDonut(other.transform))
+                            return;
+
                         if (other.transform.TryGetComponentInParents(true, out CharacterState playerState))
                         {
                             if (!string.IsNullOrEmpty(canHitCharacterName))
@@ -280,6 +346,8 @@ namespace dev.susybaka.raidsim.Mechanics
                             if (!cleaves && owner != null && playerState != owner)
                                 return;
 
+                            if (!collidersInsideTrigger.Contains(other))
+                                collidersInsideTrigger.Add(other);
                             if (!currentPlayers.Contains(playerState))
                                 currentPlayers.Add(playerState);
 
@@ -291,6 +359,9 @@ namespace dev.susybaka.raidsim.Mechanics
                     {
                         if (other.CompareTag(ableToHitTag))
                         {
+                            if (IsCollisionInsideDonut(other.transform))
+                                return;
+
                             if (other.transform.TryGetComponentInParents(true, out CharacterState playerState))
                             {
                                 if (!string.IsNullOrEmpty(canHitCharacterName))
@@ -307,11 +378,25 @@ namespace dev.susybaka.raidsim.Mechanics
                                 if (!cleaves && owner != null && playerState != owner)
                                     return;
 
+                                if (collidersInsideTrigger.Contains(other))
+                                    collidersInsideTrigger.Remove(other);
                                 if (currentPlayers.Contains(playerState))
                                     currentPlayers.Remove(playerState);
                             }
                         }
                     }
+                }
+            }
+
+            // Handle required per frame updates for donut-shaped triggers
+            if (isDonut && innerRadius > 0f)
+            {
+                if (Utilities.RateLimiter(8))
+                {
+                    if (IsCollisionInsideDonut(other.transform) && collidersInsideTrigger.Contains(other))
+                        OnTriggerExit(other);
+                    else if (!IsCollisionInsideDonut(other.transform) && !collidersInsideTrigger.Contains(other))
+                        OnTriggerEnter(other);
                 }
             }
         }
@@ -322,6 +407,9 @@ namespace dev.susybaka.raidsim.Mechanics
             {
                 if (other.CompareTag(ableToHitTag))
                 {
+                    if (IsCollisionInsideDonut(other.transform))
+                        return;
+
                     if (other.transform.TryGetComponentInParents(true, out CharacterState playerState))
                     {
                         if (!string.IsNullOrEmpty(canHitCharacterName))
@@ -339,6 +427,7 @@ namespace dev.susybaka.raidsim.Mechanics
                         if (!cleaves && owner != null && playerState != owner)
                             return;
 
+                        collidersInsideTrigger.Remove(other);
                         currentPlayers.Remove(playerState);
                     }
                 }
@@ -347,6 +436,9 @@ namespace dev.susybaka.raidsim.Mechanics
             {
                 if (other.CompareTag(ableToHitTag))
                 {
+                    if (IsCollisionInsideDonut(other.transform))
+                        return;
+
                     if (other.transform.TryGetComponentInParents(true, out CharacterState playerState))
                     {
                         if (!string.IsNullOrEmpty(canHitCharacterName))
@@ -363,6 +455,7 @@ namespace dev.susybaka.raidsim.Mechanics
                         if (!cleaves && owner != null && playerState != owner)
                             return;
 
+                        collidersInsideTrigger.Add(other);
                         currentPlayers.Add(playerState);
 
                         if (!inProgress && playerActivated && initialized)
@@ -695,6 +788,32 @@ namespace dev.susybaka.raidsim.Mechanics
 
             onFinish.Invoke(owner);
             onTrigger.Invoke(new CharacterCollection(players));
+        }
+
+        private bool IsCollisionInsideDonut(Transform other)
+        {
+            // Donut check: ignore collisions inside innerRadius
+            if (isDonut && innerRadius > 0f)
+            {
+                Vector3 center = transform.position;
+                if (m_collider is BoxCollider boxCollider)
+                {
+                    center += boxCollider.center;
+                }
+                else if (m_collider is SphereCollider sphereCollider)
+                {
+                    center += sphereCollider.center;
+                }
+                float distance = Vector3.Distance(other.transform.position, center);
+                if (distance <= innerRadius)
+                    return true; // If it's a donut and the distance is less than or equal to innerRadius, ignore the collision
+
+                return false; // If it's a donut and outside the inner radius, allow the collision
+            }
+            else
+            {
+                return false; // If not a donut or innerRadius is 0, collision is not inside the donut's inner circle, allow the collision
+            }
         }
     }
 }

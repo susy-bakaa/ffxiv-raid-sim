@@ -1,4 +1,5 @@
 using System;
+using dev.susybaka.Shared.UserInterface;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -79,7 +80,14 @@ namespace dev.susybaka.raidsim.Inputs
                     }
 #endif
                     Cursor.lockState = CursorLockMode.Locked;
-                    Cursor.visible = false;
+                    if (CursorHandler.Instance != null)
+                    {
+                        CursorHandler.Instance.visible = false;
+                    }
+                    else
+                    {
+                        Cursor.visible = false;
+                    }
                 }
                 if ((Input.GetMouseButtonUp(1) && !Input.GetMouseButton(0)) || (Input.GetMouseButtonUp(0) && !Input.GetMouseButton(1)))
                 {
@@ -98,7 +106,14 @@ namespace dev.susybaka.raidsim.Inputs
                         cursorPositionSet = false;
                     }
 #endif
-                    Cursor.visible = true;
+                    if (CursorHandler.Instance != null)
+                    {
+                        CursorHandler.Instance.visible = true;
+                    }
+                    else
+                    {
+                        Cursor.visible = true;
+                    }
                 }
             }
 

@@ -13,12 +13,14 @@ namespace dev.susybaka.raidsim.Core
         public bool disabledOnStart = false;
         public bool log = false;
 
+        public UnityEvent<float> onTriggerDestruction;
         public UnityEvent onDestroy;
 
         private float life;
         private float triggerLife;
 
         private bool triggered;
+        private bool eventTriggered;
 
         private void Awake()
         {
@@ -26,6 +28,7 @@ namespace dev.susybaka.raidsim.Core
                 state = GetComponent<CharacterState>();
 
             life = lifetime;
+            eventTriggered = false;
         }
 
         private void Start()
@@ -89,12 +92,20 @@ namespace dev.susybaka.raidsim.Core
                         DisableObject();
                     }
                 }
+
+                if (!eventTriggered)
+                {
+                    eventTriggered = true;
+                    onTriggerDestruction.Invoke(life);
+                }
             }
         }
 
         public void TriggerDestruction(float delay)
         {
             triggerLife = delay;
+            eventTriggered = true;
+            onTriggerDestruction.Invoke(delay);
         }
 
         public void OnDestroy()
@@ -116,6 +127,7 @@ namespace dev.susybaka.raidsim.Core
             triggered = false;
             life = lifetime;
             triggerLife = 0f;
+            eventTriggered = false;
         }
 
         private void DisableObjectInternal()

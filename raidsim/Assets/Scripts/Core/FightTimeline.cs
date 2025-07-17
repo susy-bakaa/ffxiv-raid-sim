@@ -328,6 +328,9 @@ namespace dev.susybaka.raidsim.Core
 
             for (int i = 0; i < disableDuringPlayback.Length; i++)
             {
+                if (disableDuringPlayback[i] == null)
+                    continue;
+
                 disableDuringPlayback[i].interactable = false;
             }
 
@@ -572,6 +575,9 @@ namespace dev.susybaka.raidsim.Core
 
             for (int i = 0; i < disableDuringPlayback.Length; i++)
             {
+                if (disableDuringPlayback[i] == null)
+                    continue;
+
                 disableDuringPlayback[i].interactable = true;
             }
             iePlayTimeline = null;
@@ -658,6 +664,9 @@ namespace dev.susybaka.raidsim.Core
             }
             for (int i = 0; i < disableDuringPlayback.Length; i++)
             {
+                if (disableDuringPlayback[i] == null)
+                    continue;
+
                 disableDuringPlayback[i].interactable = true;
             }
             if (partyList != null)

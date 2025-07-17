@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using NaughtyAttributes;
 using dev.susybaka.raidsim.Characters;
 using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.StatusEffects;
@@ -12,21 +14,31 @@ namespace dev.susybaka.raidsim.Mechanics
 {
     public class RaidwideDebuffMechanic : FightMechanic
     {
+        [Header("Raidwide Debuff Mechanic Settings")]
         public PartyList party;
         public bool autoFindParty = false;
         public bool randomizeParty = true;
         public StatusEffectInfo effect;
         public bool ignoreRoles = true;
+        public bool incrementalTag = false;
         public bool cleansEffect = false;
         public bool killsEffect = false;
-        public bool incrementalTag = false;
+        public bool togglesEffect = false;
+        [ShowIf("togglesEffect")] public bool beginsWithCleanse = false;
+        [ShowIf("togglesEffect")] public UnityEvent<bool> onToggleEffect;
 
         List<CharacterState> partyMembers;
+        private bool startingCleanseEnabled = true;
 
         private void Awake()
         {
             if (party == null && autoFindParty)
                 party = FightTimeline.Instance.partyList;
+
+            if (beginsWithCleanse)
+                startingCleanseEnabled = true;
+            else
+                startingCleanseEnabled = false;
         }
 
         public override void TriggerMechanic(ActionInfo actionInfo)
@@ -59,6 +71,7 @@ namespace dev.susybaka.raidsim.Mechanics
                     partyMembers.Shuffle();
 
                 int currentTag = effect.tag;
+                bool cleansEffect = this.cleansEffect;
 
                 // Iterate through each status effect
                 for (int i = 0; i < partyMembers.Count; i++)
@@ -75,23 +88,53 @@ namespace dev.susybaka.raidsim.Mechanics
                     if (target == null)
                         target = partyMembers[Random.Range(0, partyMembers.Count)];
 
+                    if (log)
+                        Debug.Log($"[RaidwideDebuffMechanic] Processing target {target.characterName} for effect {effect.data.statusName} with tag {currentTag} and stacks {effect.stacks}\n\nDoes target already have the debuff? {target.HasEffect(effect.data.statusName, currentTag)}\n");
+
                     if (killsEffect)
                     {
+                        if (log)
+                            Debug.Log($"[RaidwideDebuffMechanic] Trying to kill {target.characterName} if effect {effect.data.statusName} with tag {currentTag} is present");
+
                         if (target.HasEffect(effect.data.statusName, currentTag))
                         {
+                            if (log)
+                                Debug.Log($"[RaidwideDebuffMechanic] Killing {target.characterName} with effect {effect.data.statusName} and tag {currentTag}");
+
                             target.ModifyHealth(new Damage(100, true, true, Damage.DamageType.unique, Damage.ElementalAspect.unaspected, Damage.PhysicalAspect.none, Damage.DamageApplicationType.percentageFromMax, Utilities.InsertSpaceBeforeCapitals(effect.data.statusName)), true);
                         }
                     }
+                    else
+                    {
+                        if (togglesEffect)
+                        {
+                            if (!startingCleanseEnabled)
+                            {
+                                if (!target.HasEffect(effect.data.statusName, currentTag))
+                                    cleansEffect = false; // If the target does not have the effect, it cannot be cleansed
+                                else
+                                    cleansEffect = true; // If the target has the effect, it can be cleansed
+                            }
+                            else
+                            {
+                                cleansEffect = true;
+                            }
+                        }
 
-                    if (!cleansEffect && !killsEffect)
-                    {
-                        // Apply the effect to the target
-                        target.AddEffect(effect.data, from, false, currentTag, effect.stacks);
-                    }
-                    else if (cleansEffect && !killsEffect)
-                    {
-                        // Remove the effect to the target
-                        target.RemoveEffect(effect.data, false, from, currentTag, effect.stacks);
+                        if (!cleansEffect)
+                        {
+                            if (log)
+                                Debug.Log($"[RaidwideDebuffMechanic] Applying effect {effect.data.statusName} to {target.characterName} with tag {currentTag} and stacks {effect.stacks}");
+                            // Apply the effect to the target
+                            target.AddEffect(effect.data, from, false, currentTag, effect.stacks);
+                        }
+                        else if (cleansEffect)
+                        {
+                            if (log)
+                                Debug.Log($"[RaidwideDebuffMechanic] Removing effect {effect.data.statusName} from {target.characterName} with tag {currentTag} and stacks {effect.stacks}");
+                            // Remove the effect to the target
+                            target.RemoveEffect(effect.data, false, from, currentTag, effect.stacks);
+                        }
                     }
 
                     if (incrementalTag)
@@ -100,6 +143,14 @@ namespace dev.susybaka.raidsim.Mechanics
                     // Remove the effect and player from the possible options
                     partyMembers.Remove(target);
                     i--;
+                }
+
+                if (startingCleanseEnabled)
+                    startingCleanseEnabled = false; // Reset the starting cleanse state after the first mechanic execution
+
+                if (togglesEffect)
+                {
+                    onToggleEffect.Invoke(!cleansEffect);
                 }
             }
             else if (actionInfo.source != null)
@@ -112,12 +163,12 @@ namespace dev.susybaka.raidsim.Mechanics
                     }
                 }
 
-                if (!cleansEffect && !killsEffect)
+                if ((!cleansEffect || (togglesEffect && !from.HasEffect(effect.data.statusName, effect.tag))) && !killsEffect)
                 {
                     // Apply the effect to the target
                     actionInfo.source.AddEffect(effect.data, from, false, effect.tag, effect.stacks);
                 }
-                else if (!killsEffect)
+                if ((cleansEffect || (togglesEffect && from.HasEffect(effect.data.statusName, effect.tag))) && !killsEffect)
                 {
                     // Remove the effect to the target
                     actionInfo.source.RemoveEffect(effect.data, false, from, effect.tag, effect.stacks);

@@ -291,6 +291,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 1
   playClickAudio: 1
@@ -309,6 +312,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &4305950
 MonoBehaviour:
@@ -912,6 +916,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -930,6 +937,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &9965855
 MonoBehaviour:
@@ -3165,6 +3173,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: grab
+  dragCursorName: drag
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -3183,6 +3194,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &75584090
 MonoBehaviour:
@@ -3677,6 +3689,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 1
   playClickAudio: 1
@@ -3695,6 +3710,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &81326612
 MonoBehaviour:
@@ -6103,6 +6119,9 @@ MonoBehaviour:
   - {r: 0.5, g: 0.4882353, b: 0.4509804, a: 1}
   - {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
   - {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -6121,6 +6140,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &155551491
 MonoBehaviour:
@@ -6248,6 +6268,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 1
   playClickAudio: 1
@@ -6266,6 +6289,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &157401185
 MonoBehaviour:
@@ -7632,6 +7656,119 @@ MonoBehaviour:
   x: 1
   y: 1
   z: 1
+--- !u!1001 &186847836
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 7793015363685076579}
+    m_Modifications:
+    - target: {fileID: 3769963745583559737, guid: f892ac79021f9524087b1a157f57cc52, type: 3}
+      propertyPath: m_Pivot.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3769963745583559737, guid: f892ac79021f9524087b1a157f57cc52, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3769963745583559737, guid: f892ac79021f9524087b1a157f57cc52, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3769963745583559737, guid: f892ac79021f9524087b1a157f57cc52, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3769963745583559737, guid: f892ac79021f9524087b1a157f57cc52, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3769963745583559737, guid: f892ac79021f9524087b1a157f57cc52, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3769963745583559737, guid: f892ac79021f9524087b1a157f57cc52, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 3769963745583559737, guid: f892ac79021f9524087b1a157f57cc52, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3769963745583559737, guid: f892ac79021f9524087b1a157f57cc52, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3769963745583559737, guid: f892ac79021f9524087b1a157f57cc52, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3769963745583559737, guid: f892ac79021f9524087b1a157f57cc52, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3769963745583559737, guid: f892ac79021f9524087b1a157f57cc52, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3769963745583559737, guid: f892ac79021f9524087b1a157f57cc52, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3769963745583559737, guid: f892ac79021f9524087b1a157f57cc52, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3769963745583559737, guid: f892ac79021f9524087b1a157f57cc52, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3769963745583559737, guid: f892ac79021f9524087b1a157f57cc52, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -280
+      objectReference: {fileID: 0}
+    - target: {fileID: 3769963745583559737, guid: f892ac79021f9524087b1a157f57cc52, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3769963745583559737, guid: f892ac79021f9524087b1a157f57cc52, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3769963745583559737, guid: f892ac79021f9524087b1a157f57cc52, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3769963745583559737, guid: f892ac79021f9524087b1a157f57cc52, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3776382284002611966, guid: f892ac79021f9524087b1a157f57cc52, type: 3}
+      propertyPath: m_Name
+      value: NoDeath
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f892ac79021f9524087b1a157f57cc52, type: 3}
+--- !u!224 &186847837 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 3769963745583559737, guid: f892ac79021f9524087b1a157f57cc52, type: 3}
+  m_PrefabInstance: {fileID: 186847836}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &186847838 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1080767561836579712, guid: f892ac79021f9524087b1a157f57cc52, type: 3}
+  m_PrefabInstance: {fileID: 186847836}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 801af055657c9654c94b43ada9206ccd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &188275486
 GameObject:
   m_ObjectHideFlags: 0
@@ -8106,7 +8243,7 @@ MonoBehaviour:
     values:
     - name: base
       value: 1
-    logic: 1
+    logic: 0
     thresholdPercentage: 0
   dead: 0
   still: 0
@@ -8390,6 +8527,8 @@ MonoBehaviour:
   targetColoredHudElements: []
   targetsTargetColoredHudElements: []
   targetDamagePopupParent: {fileID: 0}
+  changeCursor: 0
+  combatCursor: combat
   playAudio: 0
   audioVolume: 0.15
   onTargetAudio: action_target
@@ -8405,7 +8544,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 255999098843580719, guid: 59546d19f4fc0294093dd8e6fb0b994a, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0009257088
+      value: 0.0006954651
       objectReference: {fileID: 0}
     - target: {fileID: 3157922546307045288, guid: 59546d19f4fc0294093dd8e6fb0b994a, type: 3}
       propertyPath: m_Pivot.x
@@ -9031,6 +9170,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 1
   playClickAudio: 1
@@ -9049,6 +9191,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &222826589
 MonoBehaviour:
@@ -9480,6 +9623,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: grab
+  dragCursorName: drag
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -9498,6 +9644,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &236682553
 MonoBehaviour:
@@ -9785,6 +9932,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -9803,6 +9953,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &244402482
 MonoBehaviour:
@@ -11387,6 +11538,7 @@ MonoBehaviour:
   log: 0
   setupOnStart: 1
   populateAutomatically: 1
+  setupDelay: 0.5
   elements: []
   onPointerEnter:
     m_PersistentCalls:
@@ -11792,6 +11944,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 1
   playClickAudio: 1
@@ -11810,6 +11965,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &320249912
 MonoBehaviour:
@@ -12148,6 +12304,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: grab
+  dragCursorName: drag
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -12166,6 +12325,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &324453715
 MonoBehaviour:
@@ -12824,6 +12984,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: grab
+  dragCursorName: drag
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -12842,6 +13005,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &339307750
 MonoBehaviour:
@@ -13589,7 +13753,7 @@ MonoBehaviour:
     values:
     - name: base
       value: 1
-    logic: 1
+    logic: 0
     thresholdPercentage: 0
   dead: 0
   still: 0
@@ -13873,6 +14037,8 @@ MonoBehaviour:
   targetColoredHudElements: []
   targetsTargetColoredHudElements: []
   targetDamagePopupParent: {fileID: 0}
+  changeCursor: 0
+  combatCursor: combat
   playAudio: 0
   audioVolume: 0.15
   onTargetAudio: action_target
@@ -16166,6 +16332,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -16184,6 +16353,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &400669354
 MonoBehaviour:
@@ -17352,6 +17522,108 @@ Transform:
   m_Children: []
   m_Father: {fileID: 360372277}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &430393114
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1947292136}
+    m_Modifications:
+    - target: {fileID: 3380511047781096056, guid: 0d9199f8377ddb14786076635eac310a, type: 3}
+      propertyPath: m_Name
+      value: CursorHandler
+      objectReference: {fileID: 0}
+    - target: {fileID: 4042130894665000870, guid: 0d9199f8377ddb14786076635eac310a, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4042130894665000870, guid: 0d9199f8377ddb14786076635eac310a, type: 3}
+      propertyPath: m_Pivot.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4042130894665000870, guid: 0d9199f8377ddb14786076635eac310a, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4042130894665000870, guid: 0d9199f8377ddb14786076635eac310a, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4042130894665000870, guid: 0d9199f8377ddb14786076635eac310a, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4042130894665000870, guid: 0d9199f8377ddb14786076635eac310a, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4042130894665000870, guid: 0d9199f8377ddb14786076635eac310a, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 4042130894665000870, guid: 0d9199f8377ddb14786076635eac310a, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 4042130894665000870, guid: 0d9199f8377ddb14786076635eac310a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4042130894665000870, guid: 0d9199f8377ddb14786076635eac310a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4042130894665000870, guid: 0d9199f8377ddb14786076635eac310a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4042130894665000870, guid: 0d9199f8377ddb14786076635eac310a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4042130894665000870, guid: 0d9199f8377ddb14786076635eac310a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4042130894665000870, guid: 0d9199f8377ddb14786076635eac310a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4042130894665000870, guid: 0d9199f8377ddb14786076635eac310a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4042130894665000870, guid: 0d9199f8377ddb14786076635eac310a, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4042130894665000870, guid: 0d9199f8377ddb14786076635eac310a, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4042130894665000870, guid: 0d9199f8377ddb14786076635eac310a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4042130894665000870, guid: 0d9199f8377ddb14786076635eac310a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4042130894665000870, guid: 0d9199f8377ddb14786076635eac310a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 0d9199f8377ddb14786076635eac310a, type: 3}
+--- !u!224 &430393115 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4042130894665000870, guid: 0d9199f8377ddb14786076635eac310a, type: 3}
+  m_PrefabInstance: {fileID: 430393114}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &431573138
 GameObject:
   m_ObjectHideFlags: 0
@@ -17906,6 +18178,10 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 800
       objectReference: {fileID: 0}
+    - target: {fileID: 5479315698410759142, guid: 1c158e3a1c7179f41823bc39dcde1f6f, type: 3}
+      propertyPath: m_ActiveFontFeatures.Array.data[0]
+      value: 1801810542
+      objectReference: {fileID: 0}
     - target: {fileID: 5624221183377356874, guid: 1c158e3a1c7179f41823bc39dcde1f6f, type: 3}
       propertyPath: m_Color.b
       value: 0.58431375
@@ -17966,6 +18242,10 @@ PrefabInstance:
     - target: {fileID: 6422671347705823128, guid: 1c158e3a1c7179f41823bc39dcde1f6f, type: 3}
       propertyPath: m_fontColor32.rgba
       value: 4287987455
+      objectReference: {fileID: 0}
+    - target: {fileID: 6422671347705823128, guid: 1c158e3a1c7179f41823bc39dcde1f6f, type: 3}
+      propertyPath: m_ActiveFontFeatures.Array.data[0]
+      value: 1801810542
       objectReference: {fileID: 0}
     - target: {fileID: 6743233296005586906, guid: 1c158e3a1c7179f41823bc39dcde1f6f, type: 3}
       propertyPath: m_AnchorMax.x
@@ -18233,6 +18513,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -18251,6 +18534,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &449913727
 MonoBehaviour:
@@ -18799,6 +19083,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -18817,6 +19104,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &466762512
 MonoBehaviour:
@@ -19127,6 +19415,7 @@ MonoBehaviour:
   log: 0
   setupOnStart: 1
   populateAutomatically: 0
+  setupDelay: 0.5
   elements:
   - {fileID: 1904862759}
   - {fileID: 2106867318}
@@ -19628,6 +19917,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -19646,6 +19938,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &497377962
 MonoBehaviour:
@@ -19795,6 +20088,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -19813,6 +20109,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &501342280
 MonoBehaviour:
@@ -23017,7 +23314,7 @@ MonoBehaviour:
     values:
     - name: base
       value: 1
-    logic: 1
+    logic: 0
     thresholdPercentage: 0
   dead: 0
   still: 0
@@ -23301,6 +23598,8 @@ MonoBehaviour:
   targetColoredHudElements: []
   targetsTargetColoredHudElements: []
   targetDamagePopupParent: {fileID: 0}
+  changeCursor: 0
+  combatCursor: combat
   playAudio: 0
   audioVolume: 0.15
   onTargetAudio: action_target
@@ -23602,6 +23901,59 @@ MonoBehaviour:
   x: 1
   y: 1
   z: 1
+--- !u!1 &587593000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 587593001}
+  - component: {fileID: 587593002}
+  m_Layer: 7
+  m_Name: Collider
+  m_TagString: Enemy
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &587593001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 587593000}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.25, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1235478970}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &587593002
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 587593000}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 5
+  m_Center: {x: 0, y: -1, z: 0}
 --- !u!4 &593790685 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 113801657314259943, guid: 1c158e3a1c7179f41823bc39dcde1f6f, type: 3}
@@ -24103,6 +24455,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 1
   playClickAudio: 1
@@ -24121,6 +24476,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &600451327
 MonoBehaviour:
@@ -25863,6 +26219,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: grab
+  dragCursorName: drag
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -25881,6 +26240,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &648909846
 MonoBehaviour:
@@ -26341,6 +26701,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: grab
+  dragCursorName: drag
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -26359,6 +26722,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!1 &658664118
 GameObject:
@@ -26507,6 +26871,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -26525,6 +26892,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &661941342
 MonoBehaviour:
@@ -27818,6 +28186,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 1
   playClickAudio: 1
@@ -27836,6 +28207,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &696061814
 MonoBehaviour:
@@ -27883,6 +28255,7 @@ MonoBehaviour:
   key: FreezeRNG
   defaultValue: 0
   runInAwake: 0
+  runOnReset: 0
   onStart:
     m_PersistentCalls:
       m_Calls:
@@ -28838,248 +29211,6 @@ Transform:
   - {fileID: 1461368381}
   m_Father: {fileID: 326939840}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &718428636
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 9051106228184739311}
-    m_Modifications:
-    - target: {fileID: 864227202019974020, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0.00035075095
-      objectReference: {fileID: 0}
-    - target: {fileID: 2397317220443939482, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Name
-      value: Dropdown
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Value
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Options.m_Options.Array.size
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Options.m_Options.Array.data[0].m_Text
-      value: North
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Options.m_Options.Array.data[1].m_Text
-      value: North East
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Options.m_Options.Array.data[2].m_Text
-      value: East
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Options.m_Options.Array.data[3].m_Text
-      value: South East
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Options.m_Options.Array.data[4].m_Text
-      value: South
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Options.m_Options.Array.data[5].m_Text
-      value: South West
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Options.m_Options.Array.data[6].m_Text
-      value: West
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Options.m_Options.Array.data[7].m_Text
-      value: North West
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 3827562739788269912}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
-      value: 
-      objectReference: {fileID: 718428639}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: SaveValue
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: ClockSpotSelector, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
-      value: SaveDropdown, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
-    - target: {fileID: 5594349047633344503, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_text
-      value: North
-      objectReference: {fileID: 0}
-    - target: {fileID: 6464313048467052032, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7171332731230435304, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7171332731230435304, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7171332731230435304, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: -17
-      objectReference: {fileID: 0}
-    - target: {fileID: 7845722975685229150, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7845722975685229150, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Pivot.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Pivot.y
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2397317220443939482, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      insertIndex: 4
-      addedObject: {fileID: 718428639}
-  m_SourcePrefab: {fileID: 100100000, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
---- !u!224 &718428637 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-  m_PrefabInstance: {fileID: 718428636}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &718428638 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2397317220443939482, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-  m_PrefabInstance: {fileID: 718428636}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &718428639
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 718428638}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e24b6b311b95b7849b3830a54023accf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  group: O12S
-  key: HelloWorld2ClockSpot
-  onStart:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!114 &718428640 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8679644008921814139, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-  m_PrefabInstance: {fileID: 718428636}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 718428638}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 801af055657c9654c94b43ada9206ccd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &720871347
 GameObject:
   m_ObjectHideFlags: 0
@@ -30115,7 +30246,7 @@ MonoBehaviour:
     values:
     - name: base
       value: 1
-    logic: 1
+    logic: 0
     thresholdPercentage: 0
   dead: 0
   still: 0
@@ -30399,6 +30530,8 @@ MonoBehaviour:
   targetColoredHudElements: []
   targetsTargetColoredHudElements: []
   targetDamagePopupParent: {fileID: 0}
+  changeCursor: 0
+  combatCursor: combat
   playAudio: 0
   audioVolume: 0.15
   onTargetAudio: action_target
@@ -30778,6 +30911,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: grab
+  dragCursorName: drag
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -30796,6 +30932,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &753494621
 MonoBehaviour:
@@ -31397,6 +31534,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 1
   playClickAudio: 1
@@ -31415,6 +31555,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &765333677
 MonoBehaviour:
@@ -32050,6 +32191,9 @@ MonoBehaviour:
   - {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
   - {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
   - {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -32068,6 +32212,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &783651776
 MonoBehaviour:
@@ -33507,6 +33652,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -33525,6 +33673,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &816200216
 MonoBehaviour:
@@ -33874,6 +34023,7 @@ MonoBehaviour:
   log: 0
   setupOnStart: 0
   populateAutomatically: 1
+  setupDelay: 0.5
   elements: []
   onPointerEnter:
     m_PersistentCalls:
@@ -34384,6 +34534,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 1
   playClickAudio: 1
@@ -34402,6 +34555,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &830987321
 MonoBehaviour:
@@ -34752,6 +34906,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: grab
+  dragCursorName: drag
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -34770,6 +34927,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &836206789
 MonoBehaviour:
@@ -35390,6 +35548,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: grab
+  dragCursorName: drag
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -35408,6 +35569,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &853658756
 MonoBehaviour:
@@ -36230,6 +36392,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -36248,6 +36413,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &875080675
 MonoBehaviour:
@@ -37070,9 +37236,14 @@ MonoBehaviour:
     tag: -2
     stacks: 0
   ignoreRoles: 1
+  incrementalTag: 0
   cleansEffect: 1
   killsEffect: 0
-  incrementalTag: 0
+  togglesEffect: 0
+  beginsWithCleanse: 0
+  onToggleEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &904362393
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -38293,6 +38464,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: grab
+  dragCursorName: drag
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -38311,6 +38485,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &936523348
 MonoBehaviour:
@@ -39223,6 +39398,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: grab
+  dragCursorName: drag
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -39241,6 +39419,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &950276025
 MonoBehaviour:
@@ -39953,6 +40132,7 @@ MonoBehaviour:
   log: 0
   setupOnStart: 1
   populateAutomatically: 0
+  setupDelay: 0.5
   elements:
   - {fileID: 4305949}
   - {fileID: 222826588}
@@ -41467,9 +41647,14 @@ MonoBehaviour:
     tag: 0
     stacks: 0
   ignoreRoles: 1
+  incrementalTag: 0
   cleansEffect: 1
   killsEffect: 0
-  incrementalTag: 0
+  togglesEffect: 0
+  beginsWithCleanse: 0
+  onToggleEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &1011123125
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -41496,9 +41681,14 @@ MonoBehaviour:
     tag: 0
     stacks: 0
   ignoreRoles: 1
+  incrementalTag: 0
   cleansEffect: 0
   killsEffect: 0
-  incrementalTag: 0
+  togglesEffect: 0
+  beginsWithCleanse: 0
+  onToggleEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &1011123126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -41525,9 +41715,14 @@ MonoBehaviour:
     tag: 0
     stacks: 0
   ignoreRoles: 1
+  incrementalTag: 0
   cleansEffect: 0
   killsEffect: 1
-  incrementalTag: 0
+  togglesEffect: 0
+  beginsWithCleanse: 0
+  onToggleEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &1011123127
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -42883,6 +43078,7 @@ MonoBehaviour:
   log: 0
   setupOnStart: 1
   populateAutomatically: 0
+  setupDelay: 0.5
   elements:
   - {fileID: 501342279}
   - {fileID: 244402481}
@@ -43952,7 +44148,7 @@ MonoBehaviour:
     values:
     - name: base
       value: 0
-    logic: 1
+    logic: 0
     thresholdPercentage: 0
   dead: 0
   still: 0
@@ -44177,6 +44373,8 @@ MonoBehaviour:
   targetColoredHudElements: []
   targetsTargetColoredHudElements: []
   targetDamagePopupParent: {fileID: 0}
+  changeCursor: 0
+  combatCursor: combat
   playAudio: 0
   audioVolume: 0.15
   onTargetAudio: action_target
@@ -45593,6 +45791,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -45611,6 +45812,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &1106826628
 MonoBehaviour:
@@ -46468,6 +46670,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 1
   playClickAudio: 1
@@ -46486,6 +46691,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &1131526212
 MonoBehaviour:
@@ -46695,6 +46901,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -46713,6 +46922,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &1135626523
 MonoBehaviour:
@@ -47533,6 +47743,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: grab
+  dragCursorName: drag
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -47551,6 +47764,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &1159664089
 MonoBehaviour:
@@ -47960,7 +48174,7 @@ MonoBehaviour:
     values:
     - name: base
       value: 1
-    logic: 1
+    logic: 0
     thresholdPercentage: 0
   dead: 0
   still: 0
@@ -48244,6 +48458,8 @@ MonoBehaviour:
   targetColoredHudElements: []
   targetsTargetColoredHudElements: []
   targetDamagePopupParent: {fileID: 0}
+  changeCursor: 0
+  combatCursor: combat
   playAudio: 0
   audioVolume: 0.15
   onTargetAudio: action_target
@@ -50762,6 +50978,7 @@ GameObject:
   - component: {fileID: 1235478971}
   - component: {fileID: 1235478973}
   - component: {fileID: 1235478974}
+  - component: {fileID: 1235478975}
   m_Layer: 0
   m_Name: Boss_Omega
   m_TagString: Untagged
@@ -50782,6 +50999,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 587593001}
   - {fileID: 1553358998}
   - {fileID: 575979265}
   - {fileID: 1488162030}
@@ -50893,7 +51111,7 @@ MonoBehaviour:
     values:
     - name: base
       value: 0
-    logic: 1
+    logic: 0
     thresholdPercentage: 0
   dead: 0
   still: 1
@@ -51165,11 +51383,40 @@ MonoBehaviour:
   targetColoredHudElements: []
   targetsTargetColoredHudElements: []
   targetDamagePopupParent: {fileID: 0}
+  changeCursor: 0
+  combatCursor: combat
   playAudio: 0
   audioVolume: 1
   onTargetAudio: action_target
   onUntargetAudio: action_untarget
   _dummy: 0
+--- !u!54 &1235478975
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1235478969}
+  serializedVersion: 4
+  m_Mass: 10
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 80
+  m_CollisionDetection: 1
 --- !u!1001 &1235659813
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -52391,6 +52638,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: grab
+  dragCursorName: drag
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -52409,6 +52659,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &1268251372
 MonoBehaviour:
@@ -53586,7 +53837,7 @@ MonoBehaviour:
     values:
     - name: base
       value: 1
-    logic: 1
+    logic: 0
     thresholdPercentage: 0
   dead: 0
   still: 0
@@ -53811,6 +54062,8 @@ MonoBehaviour:
   targetColoredHudElements: []
   targetsTargetColoredHudElements: []
   targetDamagePopupParent: {fileID: 0}
+  changeCursor: 0
+  combatCursor: combat
   playAudio: 0
   audioVolume: 0.15
   onTargetAudio: action_target
@@ -55933,6 +56186,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -55951,6 +56207,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &1357732345
 MonoBehaviour:
@@ -58118,6 +58375,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: grab
+  dragCursorName: drag
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -58136,6 +58396,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &1403030404
 MonoBehaviour:
@@ -58937,6 +59198,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 1
   playClickAudio: 1
@@ -58955,6 +59219,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &1416150281
 MonoBehaviour:
@@ -59722,6 +59987,7 @@ MonoBehaviour:
   log: 0
   setupOnStart: 0
   populateAutomatically: 1
+  setupDelay: 0.5
   elements: []
   onPointerEnter:
     m_PersistentCalls:
@@ -59919,6 +60185,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 1
   playClickAudio: 1
@@ -59937,6 +60206,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &1432401230
 MonoBehaviour:
@@ -61335,6 +61605,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -61353,6 +61626,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &1457275693
 MonoBehaviour:
@@ -64698,6 +64972,7 @@ MonoBehaviour:
   log: 0
   setupOnStart: 1
   populateAutomatically: 0
+  setupDelay: 0.5
   elements:
   - {fileID: 157401184}
   - {fileID: 600451326}
@@ -66741,6 +67016,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -66759,6 +67037,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!225 &1591272817
 CanvasGroup:
@@ -67523,6 +67802,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -67541,6 +67823,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &1609140575
 MonoBehaviour:
@@ -73767,6 +74050,9 @@ MonoBehaviour:
   - {r: 0.5, g: 0.4882353, b: 0.4509804, a: 1}
   - {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
   - {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -73785,6 +74071,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &1669684710
 MonoBehaviour:
@@ -74328,6 +74615,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: grab
+  dragCursorName: drag
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -74346,6 +74636,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &1682198199
 MonoBehaviour:
@@ -76114,6 +76405,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -76132,6 +76426,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &1730201507
 MonoBehaviour:
@@ -76793,6 +77088,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -76811,6 +77109,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &1736764532
 MonoBehaviour:
@@ -78761,6 +79060,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -78779,6 +79081,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &1791409412
 MonoBehaviour:
@@ -83401,7 +83704,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 864227202019974020, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000924397
+      value: 0.0006954651
       objectReference: {fileID: 0}
     - target: {fileID: 2397317220443939482, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Name
@@ -84083,6 +84386,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -84101,6 +84407,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &1919087769
 MonoBehaviour:
@@ -84583,6 +84890,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 1
   playClickAudio: 1
@@ -84601,6 +84911,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &1930853838
 MonoBehaviour:
@@ -85456,6 +85767,7 @@ RectTransform:
   - {fileID: 1104601316}
   - {fileID: 1510074868}
   - {fileID: 1716664222}
+  - {fileID: 430393115}
   m_Father: {fileID: 1860692195}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -85969,6 +86281,7 @@ MonoBehaviour:
   log: 0
   setupOnStart: 1
   populateAutomatically: 0
+  setupDelay: 0.5
   elements:
   - {fileID: 765333676}
   - {fileID: 1510852422}
@@ -87816,6 +88129,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: grab
+  dragCursorName: drag
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -87834,6 +88150,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &2009746449
 MonoBehaviour:
@@ -88364,6 +88681,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: grab
+  dragCursorName: drag
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -88382,6 +88702,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!1 &2012374803
 GameObject:
@@ -89845,6 +90166,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 1
   playClickAudio: 1
@@ -89863,6 +90187,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &2037067326
 MonoBehaviour:
@@ -90261,260 +90586,6 @@ Transform:
   - {fileID: 1246537291}
   m_Father: {fileID: 1302098124}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &2046205466
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1860080406142453482}
-    m_Modifications:
-    - target: {fileID: 864227202019974020, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0.00035075095
-      objectReference: {fileID: 0}
-    - target: {fileID: 2397317220443939482, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Name
-      value: Dropdown
-      objectReference: {fileID: 0}
-    - target: {fileID: 2692715965678967534, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_text
-      value: Debuff name
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Value
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Options.m_Options.Array.size
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Options.m_Options.Array.data[0].m_Text
-      value: Random
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Options.m_Options.Array.data[1].m_Text
-      value: COB
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Options.m_Options.Array.data[2].m_Text
-      value: CSB (Short)
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Options.m_Options.Array.data[3].m_Text
-      value: CSB (Long)
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Options.m_Options.Array.data[4].m_Text
-      value: Latent Defect (West)
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Options.m_Options.Array.data[5].m_Text
-      value: Latent Defect (Middle)
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Options.m_Options.Array.data[6].m_Text
-      value: Latent Defect (East)
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Options.m_Options.Array.data[7].m_Text
-      value: Rot
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Options.m_Options.Array.data[8].m_Text
-      value: None
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 946811854518453840}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
-      value: 
-      objectReference: {fileID: 2046205469}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: Select
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: SaveValue
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: DebuffSelector, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
-      value: SaveDropdown, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
-    - target: {fileID: 5594349047633344503, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_text
-      value: Random
-      objectReference: {fileID: 0}
-    - target: {fileID: 6464313048467052032, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7171332731230435304, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7171332731230435304, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7171332731230435304, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: -17
-      objectReference: {fileID: 0}
-    - target: {fileID: 7845722975685229150, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7845722975685229150, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Pivot.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Pivot.y
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2397317220443939482, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      insertIndex: 4
-      addedObject: {fileID: 2046205469}
-  m_SourcePrefab: {fileID: 100100000, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
---- !u!224 &2046205467 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 8403269743192309258, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-  m_PrefabInstance: {fileID: 2046205466}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &2046205468 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2397317220443939482, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-  m_PrefabInstance: {fileID: 2046205466}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &2046205469
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2046205468}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e24b6b311b95b7849b3830a54023accf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  group: O12S
-  key: HelloWorld2Debuff
-  onStart:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!114 &2046205470 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8679644008921814139, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-  m_PrefabInstance: {fileID: 2046205466}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2046205468}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 801af055657c9654c94b43ada9206ccd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2049630552
 GameObject:
   m_ObjectHideFlags: 0
@@ -90692,6 +90763,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -90710,6 +90784,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &2052179011
 MonoBehaviour:
@@ -91607,7 +91682,7 @@ MonoBehaviour:
     values:
     - name: base
       value: 1
-    logic: 1
+    logic: 0
     thresholdPercentage: 0
   dead: 0
   still: 0
@@ -91891,6 +91966,8 @@ MonoBehaviour:
   targetColoredHudElements: []
   targetsTargetColoredHudElements: []
   targetDamagePopupParent: {fileID: 0}
+  changeCursor: 0
+  combatCursor: combat
   playAudio: 0
   audioVolume: 0.15
   onTargetAudio: action_target
@@ -93344,6 +93421,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -93362,6 +93442,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!1 &2087176758
 GameObject:
@@ -93644,7 +93725,7 @@ MonoBehaviour:
     values:
     - name: base
       value: 1
-    logic: 1
+    logic: 0
     thresholdPercentage: 0
   dead: 0
   still: 0
@@ -93886,6 +93967,8 @@ MonoBehaviour:
   targetColoredHudElements: []
   targetsTargetColoredHudElements: []
   targetDamagePopupParent: {fileID: 0}
+  changeCursor: 0
+  combatCursor: combat
   playAudio: 0
   audioVolume: 0.15
   onTargetAudio: action_target
@@ -94327,7 +94410,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 864227202019974020, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000924397
+      value: 0.0006954651
       objectReference: {fileID: 0}
     - target: {fileID: 2397317220443939482, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Name
@@ -95165,6 +95248,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -95183,6 +95269,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &2129767080
 MonoBehaviour:
@@ -96132,61 +96219,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &260211664511619742
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5560083847041439034}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 801af055657c9654c94b43ada9206ccd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  priority: 1
-  hidden: 0
-  omitSorting: 0
-  characterState: {fileID: 0}
-  destroyIfMissing: 0
-  initializeOnStart: 0
-  isPartyListElement: 0
-  untargetableOverlay: {fileID: 0}
-  targetButton: {fileID: 0}
-  blocksAllInput: 0
-  blocksPosInput: 0
-  blocksRotInput: 1
-  blocksScrInput: 1
-  blocksTargetRaycasts: 1
-  doMovement: 0
-  movement: {x: 0, y: 0}
-  fadeOutTime: -1
-  fadeOutDelay: 0
-  lifeTime: -1
-  images: []
-  texts: []
-  outlines: []
-  defaultColors: []
-  alternativeColors: []
-  restrictsAudio: 1
-  playHoverAudio: 0
-  playClickAudio: 0
-  onInitialize:
-    m_PersistentCalls:
-      m_Calls: []
-  onPointerEnterEnabled: 1
-  onPointerEnter:
-    m_PersistentCalls:
-      m_Calls: []
-  onPointerExitEnabled: 1
-  onPointerExit:
-    m_PersistentCalls:
-      m_Calls: []
-  onPointerClickEnabled: 1
-  onPointerClick:
-    m_PersistentCalls:
-      m_Calls: []
-  dummy: 0
 --- !u!224 &260256709896279290
 RectTransform:
   m_ObjectHideFlags: 0
@@ -96907,97 +96939,6 @@ Transform:
   - {fileID: 2387733200056565160}
   m_Father: {fileID: 8403518492845591505}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &825460426118465204
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5560083847041439034}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_text: 'Your debuff:'
-  m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
-  m_fontSharedMaterials: []
-  m_fontMaterial: {fileID: 0}
-  m_fontMaterials: []
-  m_fontColor32:
-    serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
-  m_enableVertexGradient: 0
-  m_colorMode: 3
-  m_fontColorGradient:
-    topLeft: {r: 1, g: 1, b: 1, a: 1}
-    topRight: {r: 1, g: 1, b: 1, a: 1}
-    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
-    bottomRight: {r: 1, g: 1, b: 1, a: 1}
-  m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 0}
-  m_tintAllSprites: 0
-  m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: -1183493901
-  m_overrideHtmlColors: 0
-  m_faceColor:
-    serializedVersion: 2
-    rgba: 4294967295
-  m_fontSize: 18
-  m_fontSizeBase: 18
-  m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
-  m_fontStyle: 0
-  m_HorizontalAlignment: 4
-  m_VerticalAlignment: 512
-  m_textAlignment: 65535
-  m_characterSpacing: 0
-  m_wordSpacing: 0
-  m_lineSpacing: 0
-  m_lineSpacingMax: 0
-  m_paragraphSpacing: 0
-  m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
-  m_wordWrappingRatios: 0.4
-  m_overflowMode: 0
-  m_linkedTextComponent: {fileID: 0}
-  parentLinkedComponent: {fileID: 0}
-  m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
-  m_enableExtraPadding: 0
-  checkPaddingRequired: 0
-  m_isRichText: 1
-  m_EmojiFallbackSupport: 1
-  m_parseCtrlCharacters: 1
-  m_isOrthographic: 1
-  m_isCullingEnabled: 0
-  m_horizontalMapping: 0
-  m_verticalMapping: 0
-  m_uvLineOffset: 0
-  m_geometrySortingOrder: 0
-  m_IsTextObjectScaleStatic: 0
-  m_VertexBufferAutoSizeReduction: 0
-  m_useMaxVisibleDescender: 1
-  m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
-  m_isUsingLegacyAnimationComponent: 0
-  m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
-  m_baseMaterial: {fileID: 0}
-  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!4 &896075850883756799
 Transform:
   m_ObjectHideFlags: 0
@@ -97050,6 +96991,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 1
   playClickAudio: 1
@@ -97068,6 +97012,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!4 &923741579562642379
 Transform:
@@ -97101,56 +97046,6 @@ Transform:
   - {fileID: 8403518492845591505}
   m_Father: {fileID: 2686890239227190243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &946811854518453840
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5500946124665853396}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f57cf108749a9c6438683b9f58e5e76f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  effects:
-  - name: Random
-    data: {fileID: 0}
-    tag: 0
-    stacks: 0
-  - name: CriticalOverflowBug
-    data: {fileID: 11400000, guid: 22f0ce800856a1f4e8be8f08ef44eb85, type: 2}
-    tag: 0
-    stacks: 0
-  - name: CriticalSynchronizationBugShort
-    data: {fileID: 11400000, guid: 2a96a1892fe5c8e4ebccbd25ae9b95e0, type: 2}
-    tag: 0
-    stacks: 0
-  - name: CriticalSynchronizationBugLong
-    data: {fileID: 11400000, guid: 514b21e12ebc4db4195db93c82e96c03, type: 2}
-    tag: 0
-    stacks: 0
-  - name: LatentDefect_1
-    data: {fileID: 11400000, guid: 84282aa534f087a45b31965f4d6cbb78, type: 2}
-    tag: 1
-    stacks: 0
-  - name: LatentDefect_2
-    data: {fileID: 11400000, guid: 84282aa534f087a45b31965f4d6cbb78, type: 2}
-    tag: 2
-    stacks: 0
-  - name: LatentDefect_3
-    data: {fileID: 11400000, guid: 84282aa534f087a45b31965f4d6cbb78, type: 2}
-    tag: 3
-    stacks: 0
-  - name: CriticalUnderflowBug
-    data: {fileID: 11400000, guid: 80f589485f109614796aaeae74aae590, type: 2}
-    tag: 0
-    stacks: 0
-  - name: NoneHW
-    data: {fileID: 11400000, guid: d37a663626ed5124ea90ebacafd0df69, type: 2}
-    tag: 0
-    stacks: 0
-  target: {fileID: 1855203017}
 --- !u!224 &950376572064493063
 RectTransform:
   m_ObjectHideFlags: 0
@@ -97514,6 +97409,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 1
   playClickAudio: 1
@@ -97532,6 +97430,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!224 &1361159741371105056
 RectTransform:
@@ -97688,25 +97587,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 30}
   m_Pivot: {x: 0.5, y: 1}
---- !u!224 &1524864678836540484
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5560083847041439034}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8086613467142751074}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1639611969274444362
 GameObject:
   m_ObjectHideFlags: 0
@@ -97851,26 +97731,6 @@ Transform:
   - {fileID: 8738599066751277183}
   m_Father: {fileID: 5410713432162516338}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!224 &1860080406142453482
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5500946124665853396}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 2046205467}
-  m_Father: {fileID: 7793015363685076579}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0.5}
-  m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -465, y: 0}
-  m_SizeDelta: {x: 250, y: 30}
-  m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &1888296615959864277
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -98017,6 +97877,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -98035,6 +97898,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!222 &1924204657075158273
 CanvasRenderer:
@@ -99287,7 +99151,7 @@ MonoBehaviour:
     values:
     - name: base
       value: 1
-    logic: 1
+    logic: 0
     thresholdPercentage: 0
   dead: 0
   still: 0
@@ -99550,6 +99414,8 @@ MonoBehaviour:
   - {fileID: 779123073}
   - {fileID: 594326819}
   targetDamagePopupParent: {fileID: 1591272814}
+  changeCursor: 1
+  combatCursor: combat
   playAudio: 1
   audioVolume: 1
   onTargetAudio: action_target
@@ -100036,6 +99902,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -100054,6 +99923,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!224 &3192503925302765739
 RectTransform:
@@ -100110,6 +99980,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -100128,6 +100001,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!224 &3243755082312851806
 RectTransform:
@@ -100164,97 +100038,6 @@ Transform:
   - {fileID: 2216954717015721513}
   m_Father: {fileID: 2387733200056565160}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3273021533977152656
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4631157070821373554}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_text: 'Your clock spot:'
-  m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
-  m_fontSharedMaterials: []
-  m_fontMaterial: {fileID: 0}
-  m_fontMaterials: []
-  m_fontColor32:
-    serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
-  m_enableVertexGradient: 0
-  m_colorMode: 3
-  m_fontColorGradient:
-    topLeft: {r: 1, g: 1, b: 1, a: 1}
-    topRight: {r: 1, g: 1, b: 1, a: 1}
-    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
-    bottomRight: {r: 1, g: 1, b: 1, a: 1}
-  m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 0}
-  m_tintAllSprites: 0
-  m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: -1183493901
-  m_overrideHtmlColors: 0
-  m_faceColor:
-    serializedVersion: 2
-    rgba: 4294967295
-  m_fontSize: 18
-  m_fontSizeBase: 18
-  m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
-  m_fontStyle: 0
-  m_HorizontalAlignment: 4
-  m_VerticalAlignment: 512
-  m_textAlignment: 65535
-  m_characterSpacing: 0
-  m_wordSpacing: 0
-  m_lineSpacing: 0
-  m_lineSpacingMax: 0
-  m_paragraphSpacing: 0
-  m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
-  m_wordWrappingRatios: 0.4
-  m_overflowMode: 0
-  m_linkedTextComponent: {fileID: 0}
-  parentLinkedComponent: {fileID: 0}
-  m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
-  m_enableExtraPadding: 0
-  checkPaddingRequired: 0
-  m_isRichText: 1
-  m_EmojiFallbackSupport: 1
-  m_parseCtrlCharacters: 1
-  m_isOrthographic: 1
-  m_isCullingEnabled: 0
-  m_horizontalMapping: 0
-  m_verticalMapping: 0
-  m_uvLineOffset: 0
-  m_geometrySortingOrder: 0
-  m_IsTextObjectScaleStatic: 0
-  m_VertexBufferAutoSizeReduction: 0
-  m_useMaxVisibleDescender: 1
-  m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
-  m_isUsingLegacyAnimationComponent: 0
-  m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
-  m_baseMaterial: {fileID: 0}
-  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!4 &3273732131007993176
 Transform:
   m_ObjectHideFlags: 0
@@ -100743,26 +100526,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &3764236545963170246
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5743111102238347499}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 4121667138427211501}
-  m_Father: {fileID: 7793015363685076579}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -330, y: 0}
-  m_SizeDelta: {x: 168.7181, y: 0}
-  m_Pivot: {x: 1, y: 0.5}
 --- !u!4 &3768157014936179727
 Transform:
   m_ObjectHideFlags: 0
@@ -100779,23 +100542,6 @@ Transform:
   - {fileID: 1774821060521772184}
   m_Father: {fileID: 2216954717015721513}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &3784598781753818048
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 9051106228184739311}
-  - component: {fileID: 3827562739788269912}
-  m_Layer: 5
-  m_Name: ClockSpotSelection
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
 --- !u!4 &3796027694133560217
 Transform:
   m_ObjectHideFlags: 0
@@ -100829,55 +100575,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &3827562739788269912
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3784598781753818048}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 16ab7cc909c309d4f8e0dc37690ee071, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  partyList: {fileID: 2884399813960674742}
-  autoObtainPlayer: 0
-  player:
-    name: Player
-    playerController: {fileID: 2686890239227479567}
-    aiController: {fileID: 0}
-    bossController: {fileID: 0}
-    characterState: {fileID: 2686890239227479568}
-    actionController: {fileID: 2686890239227479569}
-    targetController: {fileID: 2686890239227479570}
-    helper: {fileID: 0}
-    letter: 0
-    role: 1
-    sector: 0
-  bots:
-  - {fileID: 2091381459}
-  - {fileID: 576133554}
-  - {fileID: 747888153}
-  - {fileID: 1166851894}
-  - {fileID: 205465901}
-  - {fileID: 354529627}
-  - {fileID: 2062939738}
-  - {fileID: 1301696014}
-  spots:
-  - {fileID: 1107966925}
-  - {fileID: 1532679629}
-  - {fileID: 1981407885}
-  - {fileID: 1699998803}
-  - {fileID: 814080345}
-  - {fileID: 2027643185}
-  - {fileID: 1975858710}
-  - {fileID: 534565895}
-  changePlayerRole: 0
-  spotRoles: 
-  changePlayerGroup: 0
-  spotGroups: 
-  defaultSpot: 0
 --- !u!1 &3833845164432324324
 GameObject:
   m_ObjectHideFlags: 0
@@ -101181,25 +100878,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3157922546307045288, guid: 59546d19f4fc0294093dd8e6fb0b994a, type: 3}
   m_PrefabInstance: {fileID: 205561900}
   m_PrefabAsset: {fileID: 0}
---- !u!224 &4121667138427211501
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4631157070821373554}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3764236545963170246}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &4149797810118825179
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -101632,6 +101310,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 1
   playClickAudio: 1
@@ -101650,6 +101331,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!1 &4485785215507623157
 GameObject:
@@ -101803,25 +101485,6 @@ GameObject:
   - component: {fileID: 8644418153965951893}
   m_Layer: 5
   m_Name: Button
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!1 &4631157070821373554
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4121667138427211501}
-  - component: {fileID: 7138510928696102176}
-  - component: {fileID: 3273021533977152656}
-  - component: {fileID: 6322099755185276905}
-  m_Layer: 5
-  m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -102268,58 +101931,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!1 &5500946124665853396
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1860080406142453482}
-  - component: {fileID: 946811854518453840}
-  m_Layer: 5
-  m_Name: DebuffSelection
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!1 &5560083847041439034
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1524864678836540484}
-  - component: {fileID: 6967060195126021047}
-  - component: {fileID: 825460426118465204}
-  - component: {fileID: 260211664511619742}
-  m_Layer: 5
-  m_Name: Text (TMP)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!1 &5586935818515756549
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8086613467142751074}
-  m_Layer: 5
-  m_Name: DebuffLabel
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
 --- !u!114 &5610451208348268404
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -102356,6 +101967,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -102374,6 +101988,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!4 &5621561724260792689
 Transform:
@@ -102402,22 +102017,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50dd14045ec62a649bc63c2d3b775b60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &5743111102238347499
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3764236545963170246}
-  m_Layer: 5
-  m_Name: ClockSpotLabel
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
 --- !u!114 &5765962326671880280
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -102680,6 +102279,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 1
   playClickAudio: 1
@@ -102698,6 +102300,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &6050033412819182561
 MonoBehaviour:
@@ -102735,6 +102338,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 1
   playClickAudio: 1
@@ -102753,6 +102359,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!222 &6136963256879556853
 CanvasRenderer:
@@ -102911,61 +102518,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &6322099755185276905
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4631157070821373554}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 801af055657c9654c94b43ada9206ccd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  priority: 1
-  hidden: 0
-  omitSorting: 0
-  characterState: {fileID: 0}
-  destroyIfMissing: 0
-  initializeOnStart: 0
-  isPartyListElement: 0
-  untargetableOverlay: {fileID: 0}
-  targetButton: {fileID: 0}
-  blocksAllInput: 0
-  blocksPosInput: 0
-  blocksRotInput: 1
-  blocksScrInput: 1
-  blocksTargetRaycasts: 1
-  doMovement: 0
-  movement: {x: 0, y: 0}
-  fadeOutTime: -1
-  fadeOutDelay: 0
-  lifeTime: -1
-  images: []
-  texts: []
-  outlines: []
-  defaultColors: []
-  alternativeColors: []
-  restrictsAudio: 1
-  playHoverAudio: 0
-  playClickAudio: 0
-  onInitialize:
-    m_PersistentCalls:
-      m_Calls: []
-  onPointerEnterEnabled: 1
-  onPointerEnter:
-    m_PersistentCalls:
-      m_Calls: []
-  onPointerExitEnabled: 1
-  onPointerExit:
-    m_PersistentCalls:
-      m_Calls: []
-  onPointerClickEnabled: 1
-  onPointerClick:
-    m_PersistentCalls:
-      m_Calls: []
-  dummy: 0
 --- !u!1001 &6375189026772677098
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -103390,14 +102942,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!222 &6967060195126021047
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5560083847041439034}
-  m_CullTransparentMesh: 1
 --- !u!1001 &7043680146292805201
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -103490,14 +103034,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!222 &7138510928696102176
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4631157070821373554}
-  m_CullTransparentMesh: 1
 --- !u!4 &7140638177851598238
 Transform:
   m_ObjectHideFlags: 0
@@ -103615,6 +103151,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -103633,6 +103172,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!1 &7278331225423418976
 GameObject:
@@ -103686,6 +103226,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -103704,6 +103247,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!1 &7317917332587311023
 GameObject:
@@ -104275,6 +103819,7 @@ MonoBehaviour:
   log: 0
   setupOnStart: 1
   populateAutomatically: 0
+  setupDelay: 0.5
   elements:
   - {fileID: 6050033412819182561}
   - {fileID: 897483612579890162}
@@ -104306,10 +103851,7 @@ RectTransform:
   - {fileID: 2020544934970218589}
   - {fileID: 5487104717616853474}
   - {fileID: 2049651049194850299}
-  - {fileID: 1860080406142453482}
-  - {fileID: 8086613467142751074}
-  - {fileID: 9051106228184739311}
-  - {fileID: 3764236545963170246}
+  - {fileID: 186847837}
   - {fileID: 436818705}
   - {fileID: 1909429000}
   - {fileID: 3710074642302029115}
@@ -104352,6 +103894,7 @@ MonoBehaviour:
   log: 0
   setupOnStart: 1
   populateAutomatically: 0
+  setupDelay: 0.5
   elements:
   - {fileID: 205561901}
   - {fileID: 8614713905310936535}
@@ -104359,8 +103902,7 @@ MonoBehaviour:
   - {fileID: 2037067325}
   - {fileID: 1322620125025418396}
   - {fileID: 8644418153965951893}
-  - {fileID: 2046205470}
-  - {fileID: 718428640}
+  - {fileID: 186847838}
   - {fileID: 696061813}
   - {fileID: 1432401229}
   - {fileID: 4445515180384039956}
@@ -104661,26 +104203,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ab7cc18d87097a14980fe0d04558a834, type: 3}
---- !u!224 &8086613467142751074
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5586935818515756549}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1524864678836540484}
-  m_Father: {fileID: 7793015363685076579}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -735, y: 0}
-  m_SizeDelta: {x: 168.7181, y: 0}
-  m_Pivot: {x: 1, y: 0.5}
 --- !u!1 &8271278265778613718
 GameObject:
   m_ObjectHideFlags: 0
@@ -105100,6 +104622,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 1
   playClickAudio: 1
@@ -105118,6 +104643,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &8644418153965951893
 MonoBehaviour:
@@ -105155,6 +104681,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 1
   playClickAudio: 1
@@ -105173,6 +104702,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!4 &8654025073755484254
 Transform:
@@ -105256,6 +104786,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 1
   playClickAudio: 1
@@ -105274,6 +104807,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!4 &8738599066751277183
 Transform:
@@ -105456,26 +104990,6 @@ Transform:
   - {fileID: 8583560567859934552}
   m_Father: {fileID: 957080945196690174}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!224 &9051106228184739311
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3784598781753818048}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 718428637}
-  m_Father: {fileID: 7793015363685076579}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0.5}
-  m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -60, y: 0}
-  m_SizeDelta: {x: 250, y: 30}
-  m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &9065600890353326725
 CanvasRenderer:
   m_ObjectHideFlags: 0

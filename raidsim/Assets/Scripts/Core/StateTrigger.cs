@@ -28,9 +28,12 @@ namespace dev.susybaka.raidsim.Core
         public bool hiddenActions = false;
         public bool toggleObject = true;
         public bool toggleCharacterState = false;
+        [ShowIf("toggleCharacterState")] public bool togglePartyListEntry = false;
         public bool toggleCharacterEffect = false;
         public bool toggleShaderEffect = false;
         [ShowIf("toggleShaderEffect")] public float fadeTime = 0.33f;
+        public bool toggleScale = false;
+        [ShowIf("toggleScale")] public bool resetScale = true;
         public bool log = false;
 
         private StatusEffect sourceStatusEffect;
@@ -38,6 +41,7 @@ namespace dev.susybaka.raidsim.Core
         private TargetController sourceTargetController;
         private ActionController sourceActionController;
         private SimpleShaderFade sourceShaderFade;
+        private SimpleScale sourceSimpleScale;
         private Transform moveToSource;
 
         private CharacterState characterState;
@@ -45,6 +49,7 @@ namespace dev.susybaka.raidsim.Core
         private TargetController targetController;
         private ActionController actionController;
         private SimpleShaderFade shaderFade;
+        private SimpleScale simpleScale;
         private Transform moveToTarget;
 
         public void Initialize(CharacterState targetCharacter)
@@ -88,6 +93,7 @@ namespace dev.susybaka.raidsim.Core
             sourceTargetController = Utilities.GetComponentInParents<TargetController>(source.transform);
             sourceActionController = Utilities.GetComponentInParents<ActionController>(source.transform);
             sourceShaderFade = Utilities.GetComponentInParents<SimpleShaderFade>(source.transform);
+            sourceSimpleScale = Utilities.GetComponentInParents<SimpleScale>(source.transform);
 
             if (sourceCharacterState == null)
                 sourceCharacterState = source.GetComponent<CharacterState>();
@@ -99,6 +105,8 @@ namespace dev.susybaka.raidsim.Core
                 sourceShaderFade = source.GetComponent<SimpleShaderFade>();
             if (sourceShaderFade != null)
                 sourceShaderFade.defaultFadeTime = fadeTime;
+            if (sourceSimpleScale == null)
+                sourceSimpleScale = source.GetComponent<SimpleScale>();
 
             if (party == null)
             {
@@ -183,10 +191,8 @@ namespace dev.susybaka.raidsim.Core
                 target.TryGetComponent(out characterEffect);
                 target.TryGetComponent(out targetController);
                 target.TryGetComponent(out actionController);
-                if (target.TryGetComponent(out shaderFade))
-                {
-                    shaderFade.defaultFadeTime = fadeTime;
-                }
+                if (target.TryGetComponent(out shaderFade)) { shaderFade.defaultFadeTime = fadeTime; }
+                target.TryGetComponent(out simpleScale);
                 if (!string.IsNullOrEmpty(moveToTargetName))
                 {
                     moveToTarget = target.transform.Find(moveToTargetName);
@@ -216,6 +222,10 @@ namespace dev.susybaka.raidsim.Core
             if (characterState != null && toggleCharacterState)
             {
                 characterState.ToggleState(state);
+                if (togglePartyListEntry)
+                {
+                    characterState.TogglePartyListEntry(state);
+                }
             }
             if (characterEffect != null && toggleCharacterEffect)
             {
@@ -230,6 +240,15 @@ namespace dev.susybaka.raidsim.Core
                     shaderFade.FadeIn(fadeTime);
                 else
                     shaderFade.FadeOut(fadeTime);
+            }
+            if (simpleScale != null && toggleScale)
+            {
+                if (state)
+                    simpleScale.Scale();
+                else if (resetScale)
+                    simpleScale.ResetScale();
+                else
+                    simpleScale.ScaleBack();
             }
             this.state = state;
         }
@@ -266,6 +285,25 @@ namespace dev.susybaka.raidsim.Core
                 {
                     bc.SetLookRotation(source.transform);
                 }
+            }
+        }
+
+        public void FaceSourceToTarget()
+        {
+            if (source != null && target != null)
+            {
+                if (source.TryGetComponent(out BossController bc))
+                {
+                    bc.SetLookRotation(target.transform);
+                }
+            }
+        }
+
+        public void CopyMoveSourceRotationToTarget()
+        {
+            if (target != null && source != null)
+            {
+                target.transform.rotation = moveToSource.rotation;
             }
         }
 

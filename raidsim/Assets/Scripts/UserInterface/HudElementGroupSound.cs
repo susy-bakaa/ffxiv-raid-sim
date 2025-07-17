@@ -40,7 +40,7 @@ namespace dev.susybaka.raidsim.UI
 
             if (limitEvents && countdown)
             {
-                timer -= Time.deltaTime;
+                timer -= Time.unscaledDeltaTime;
                 if (timer <= 0f)
                 {
                     countdown = false;

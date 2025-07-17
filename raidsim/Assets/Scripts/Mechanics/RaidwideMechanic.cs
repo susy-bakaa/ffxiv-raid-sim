@@ -27,6 +27,10 @@ namespace dev.susybaka.raidsim.Mechanics
 
             for (int i = 0; i < party.members.Count; i++)
             {
+                // TODO: Make this better but for now checking for character name should be fine and if the character is active
+                if (party.members[i].name.ToLower().Contains("hidden") || !party.members[i].characterState.gameObject.activeInHierarchy)
+                    continue;
+
                 mechanic.TriggerMechanic(new ActionInfo(actionInfo.action, actionInfo.source, party.members[i].characterState));
             }
         }

@@ -9,11 +9,13 @@ using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.Characters;
 using dev.susybaka.raidsim.Inputs;
 using dev.susybaka.Shared;
+using dev.susybaka.Shared.Attributes;
+using dev.susybaka.Shared.UserInterface;
 using UnityEngine.Serialization;
 
 namespace dev.susybaka.raidsim.UI
 {
-    public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
+    public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler, IPointerDownHandler, IPointerUpHandler
     {
         RectTransform rectTransform;
         CanvasGroup canvasGroup;
@@ -54,6 +56,9 @@ namespace dev.susybaka.raidsim.UI
         public List<Outline> outlines = new List<Outline>();
         public List<Color> defaultColors = new List<Color>();
         public List<Color> alternativeColors = new List<Color>();
+        public bool changeCursor = false;
+        [ShowIf("changeCursor")][CursorName][FormerlySerializedAs("cursorName")] public string hoverCursorName = "interact";
+        [ShowIf("changeCursor")][CursorName] public string dragCursorName = "interact";
         [Header("Audio")]
         public bool restrictsAudio = true;
         [FormerlySerializedAs("canPlayAudio")] public bool playHoverAudio = false;
@@ -66,6 +71,7 @@ namespace dev.susybaka.raidsim.UI
         [ShowIf("onPointerExitEnabled")] public UnityEvent<HudElementEventInfo> onPointerExit;
         public bool onPointerClickEnabled = true;
         [ShowIf("onPointerClickEnabled")] public UnityEvent<HudElementEventInfo> onPointerClick;
+        public bool otherPointerEventsEnabled = true;
 
 
 #if UNITY_EDITOR
@@ -78,6 +84,19 @@ namespace dev.susybaka.raidsim.UI
         {
             currentColor = !currentColor;
             ChangeColors(currentColor);
+        }
+
+        private void OnValidate()
+        {
+            if (!changeCursor)
+            {
+                hoverCursorName = "<None>";
+                dragCursorName = "<None>";
+            }
+            else if (string.IsNullOrEmpty(dragCursorName) || (dragCursorName == "<None>" && hoverCursorName != "<None>"))
+            {
+                dragCursorName = hoverCursorName;
+            }
         }
 #endif
 
@@ -309,6 +328,11 @@ namespace dev.susybaka.raidsim.UI
             if (!onPointerEnterEnabled)
                 return;
 
+            if (changeCursor && CursorHandler.Instance != null && !string.IsNullOrEmpty(hoverCursorName))
+            {
+                CursorHandler.Instance.SetCursorByName(hoverCursorName);
+            }
+
             onPointerEnter.Invoke(new HudElementEventInfo(this, eventData));
         }
 
@@ -336,6 +360,11 @@ namespace dev.susybaka.raidsim.UI
             if (!onPointerExitEnabled)
                 return;
 
+            if (changeCursor && CursorHandler.Instance != null && !string.IsNullOrEmpty(hoverCursorName))
+            {
+                CursorHandler.Instance.SetCursorByID(0); // Set back to default cursor
+            }
+
             onPointerExit.Invoke(new HudElementEventInfo(this, eventData));
         }
 
@@ -345,6 +374,28 @@ namespace dev.susybaka.raidsim.UI
                 return;
 
             onPointerClick.Invoke(new HudElementEventInfo(this, eventData));
+        }
+
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            if (!otherPointerEventsEnabled)
+                return;
+
+            if (changeCursor && CursorHandler.Instance != null && !string.IsNullOrEmpty(hoverCursorName))
+            {
+                CursorHandler.Instance.SetCursorByName(dragCursorName);
+            }
+        }
+
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            if (!otherPointerEventsEnabled)
+                return;
+
+            if (changeCursor && CursorHandler.Instance != null && !string.IsNullOrEmpty(hoverCursorName))
+            {
+                CursorHandler.Instance.SetCursorByName(hoverCursorName);
+            }
         }
     }
 

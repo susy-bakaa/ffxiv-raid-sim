@@ -185,9 +185,12 @@ MonoBehaviour:
   hiddenActions: 0
   toggleObject: 0
   toggleCharacterState: 0
+  togglePartyListEntry: 0
   toggleCharacterEffect: 1
   toggleShaderEffect: 0
   fadeTime: 0.33
+  toggleScale: 0
+  resetScale: 1
   log: 0
 --- !u!114 &6623078097055607342
 MonoBehaviour:
@@ -226,6 +229,18 @@ MonoBehaviour:
       - m_Target: {fileID: -6243564499739689696}
         m_TargetAssemblyTypeName: StateTrigger, Assembly-CSharp
         m_MethodName: MoveTargetToSource
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: -6243564499739689696}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Core.StateTrigger, Assembly-CSharp
+        m_MethodName: CopyMoveSourceRotationToTarget
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -312,7 +327,10 @@ MonoBehaviour:
   hiddenActions: 1
   toggleObject: 1
   toggleCharacterState: 1
+  togglePartyListEntry: 1
   toggleCharacterEffect: 0
   toggleShaderEffect: 0
   fadeTime: 0.33
+  toggleScale: 0
+  resetScale: 1
   log: 1

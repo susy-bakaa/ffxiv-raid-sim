@@ -92,7 +92,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8112317815527283280}
-  - component: {fileID: 853339913417740460}
+  - component: {fileID: 7784449811779701732}
+  - component: {fileID: 8687530312062835041}
+  - component: {fileID: 4521004787473338312}
   - component: {fileID: 2187645429787810668}
   - component: {fileID: 3963829342236772277}
   m_Layer: 0
@@ -118,7 +120,7 @@ Transform:
   - {fileID: 6797497596222722780}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &853339913417740460
+--- !u!114 &7784449811779701732
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,15 +129,79 @@ MonoBehaviour:
   m_GameObject: {fileID: 6186717635946809200}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a0ddd1407c93fc84b836214d78e073cb, type: 3}
+  m_Script: {fileID: 11500000, guid: 7ea01dbfc248acc40bad07e2acf8bafc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   mechanicEnabled: 1
-  mechanicName: Spawn Arena Death Wall 1
+  mechanicName: StartSpawnArenaDeathWall1
+  onlyTriggerOnce: 0
+  global: 0
   log: 0
+  onStart: 1
+  onEnable: 0
+  target: {fileID: 0}
+  onTrigger:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8687530312062835041}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Mechanics.DelayedMechanic,
+          Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 4521004787473338312}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Mechanics.DelayedMechanic,
+          Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 7783767066654462487}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleShaderFade,
+          Assembly-CSharp
+        m_MethodName: FadeIn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &8687530312062835041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6186717635946809200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c11d13ba36149154fb548fc96274895b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: SpawnArenaDeathWall1
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  startAutomatically: 0
   delay: 2.65
-  activateOnStart: 1
-  onFinish:
+  onDelayedTrigger:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2187645429787810668}
@@ -158,7 +224,42 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 0.1
+          m_FloatArgument: 0.15
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &4521004787473338312
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6186717635946809200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c11d13ba36149154fb548fc96274895b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: DespawnArenaDeathWall1
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  startAutomatically: 0
+  delay: 2.25
+  onDelayedTrigger:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7783767066654462487}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleShaderFade,
+          Assembly-CSharp
+        m_MethodName: FadeOut
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
@@ -175,21 +276,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mechanicEnabled: 1
-  mechanicName: Spawn Arena Death Wall 1
+  mechanicName: SpawnArenaDeathWallPrefab1
+  onlyTriggerOnce: 0
+  global: 0
   log: 0
   owner: {fileID: 0}
   targetController: {fileID: 0}
   damageTriggerPrefab: {fileID: 6086747913712378428, guid: cdf18a22bf6039749970ce91b3b81065, type: 3}
   enableInstead: 0
   spawnLocation: {fileID: 0}
+  copyRotation: 0
   delay: 0
   autoAssignOwner: 0
+  autoAssignLocation: 0
   useActionDamage: 0
   usePlayerHealth: 0
   useTargetControllerCurrentTargetAsLocation: 0
+  faceTarget: 0
+  rotateSource: 0
+  axis:
+    x: 0
+    y: 0
+    z: 0
   dealDamage: 1
-  increaseEnmity: 0
   damageMultiplier: 1
+  increaseEnmity: 0
+  onSpawn:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &3963829342236772277
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,7 +318,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: -1
   disableInstead: 0
+  disabledOnStart: 0
   log: 0
+  onTriggerDestruction:
+    m_PersistentCalls:
+      m_Calls: []
   onDestroy:
     m_PersistentCalls:
       m_Calls: []
@@ -217,6 +335,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6797497596222722780}
+  - component: {fileID: 7783767066654462487}
   m_Layer: 0
   m_Name: Shader
   m_TagString: Untagged
@@ -240,3 +359,21 @@ Transform:
   - {fileID: 2755905991542291532}
   m_Father: {fileID: 8112317815527283280}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7783767066654462487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7563441441158746787}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75a787e99245c054bbfc8f322d52e672, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outValue: 0
+  inValue: 1
+  defaultFadeTime: 0.5
+  outOnStart: 1
+  log: 0
+  fadeTime: 0.5

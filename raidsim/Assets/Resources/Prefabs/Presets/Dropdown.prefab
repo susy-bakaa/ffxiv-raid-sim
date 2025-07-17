@@ -197,7 +197,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 7845722975685229150}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.9999929
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -238,6 +238,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: grab
+  dragCursorName: drag
   restrictsAudio: 1
   playHoverAudio: 1
   playClickAudio: 1
@@ -256,6 +259,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!1 &1430268951485042883
 GameObject:
@@ -611,7 +615,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -870,6 +874,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 1
   playClickAudio: 1
@@ -888,6 +895,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &2546054844726190931
 MonoBehaviour:
@@ -1151,6 +1159,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: interact
+  dragCursorName: interact
   restrictsAudio: 1
   playHoverAudio: 1
   playClickAudio: 1
@@ -1169,6 +1180,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!1 &7043039296250033343
 GameObject:
@@ -1284,7 +1296,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -1454,6 +1466,9 @@ MonoBehaviour:
   outlines: []
   defaultColors: []
   alternativeColors: []
+  changeCursor: 0
+  hoverCursorName: <None>
+  dragCursorName: <None>
   restrictsAudio: 1
   playHoverAudio: 0
   playClickAudio: 0
@@ -1472,6 +1487,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!114 &3948131774496776287
 MonoBehaviour:
@@ -1528,6 +1544,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hoverSound: ui_hover
   confirmSound: ui_confirm
+  audioVolume: 1
   limitEvents: 1
   eventCooldown: 0.3
 --- !u!1 &8277150074602155070
@@ -1640,7 +1657,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000015002095}
+  m_AnchoredPosition: {x: 0, y: 0.0009271737}
   m_SizeDelta: {x: 0, y: 28}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &5724882959531284868
@@ -1682,5 +1699,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hoverSound: ui_hover
   confirmSound: ui_confirm
+  audioVolume: 1
   limitEvents: 1
   eventCooldown: 0.3

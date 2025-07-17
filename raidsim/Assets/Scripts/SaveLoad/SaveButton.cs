@@ -16,6 +16,7 @@ namespace dev.susybaka.raidsim.SaveLoad
         public string key = "UnnamedButton";
         public bool defaultValue = false;
         public bool runInAwake = false;
+        public bool runOnReset = false;
 
         public UnityEvent<bool> onStart;
 
@@ -39,9 +40,22 @@ namespace dev.susybaka.raidsim.SaveLoad
 
         private void Start()
         {
+            if (runOnReset && FightTimeline.Instance != null)
+            {
+                FightTimeline.Instance.onReset.AddListener(Begin);
+            }
+
             if (!runInAwake)
             {
                 Begin();
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (FightTimeline.Instance != null && runOnReset)
+            {
+                FightTimeline.Instance.onReset.RemoveListener(Begin);
             }
         }
 

@@ -5,12 +5,13 @@ using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.UI;
 using dev.susybaka.Shared;
 using static dev.susybaka.raidsim.UI.PartyList;
+using System.Collections;
 
 namespace dev.susybaka.raidsim.Mechanics
 {
     public class TetherTrigger : MonoBehaviour
     {
-        LineRenderer lineRenderer;
+        LineRenderer[] lineRenderers;
         public enum TetherType { nearest, furthest, preDefined }
 
         public PartyList partyList;
@@ -21,6 +22,7 @@ namespace dev.susybaka.raidsim.Mechanics
         public Vector3 endOffset;
         public float maxDistance;
         public float breakDelay = 0.5f;
+        public float visualBreakDelay = 0.75f;
         public bool initializeOnStart;
         public bool worldSpace = true;
 
@@ -31,11 +33,12 @@ namespace dev.susybaka.raidsim.Mechanics
         private bool initialized;
         private CharacterState startCharacter;
         private CharacterState endCharacter;
+        private Coroutine ieSetLineRenderersActive;
 
         private void Awake()
         {
-            lineRenderer = GetComponentInChildren<LineRenderer>();
-            lineRenderer.gameObject.SetActive(false);
+            lineRenderers = GetComponentsInChildren<LineRenderer>(true);
+            SetLineRenderersActive(false);
             if (partyList == null)
             {
                 partyList = FightTimeline.Instance.partyList;
@@ -46,9 +49,9 @@ namespace dev.susybaka.raidsim.Mechanics
             if (FightTimeline.Instance != null)
             {
                 if (endPoint != null)
-                    FightTimeline.Instance.onReset.AddListener(() => { initialized = false; lineRenderer.gameObject.SetActive(false); startCharacter = null; endCharacter = null; });
+                    FightTimeline.Instance.onReset.AddListener(ResetTether);
                 else
-                    FightTimeline.Instance.onReset.AddListener(() => { initialized = false; lineRenderer.gameObject.SetActive(false); startCharacter = null; endCharacter = null; endPoint = null; });
+                    FightTimeline.Instance.onReset.AddListener(ResetTetherFull);
             }
         }
 
@@ -72,16 +75,23 @@ namespace dev.susybaka.raidsim.Mechanics
             if (startPoint == null || endPoint == null)
                 return;
 
-            if (lineRenderer != null)
+            if (lineRenderers != null && lineRenderers.Length > 0)
             {
-                if (worldSpace)
+                foreach (LineRenderer lineRenderer in lineRenderers)
                 {
-                    lineRenderer.SetPositions(new Vector3[2] { startPoint.position + startOffset, endPoint.position + endOffset });
+                    if (lineRenderer == null)
+                        continue;
+
+                    if (worldSpace)
+                    {
+                        lineRenderer.SetPositions(new Vector3[2] { startPoint.position + startOffset, endPoint.position + endOffset });
+                    }
+                    else
+                    {
+                        lineRenderer.SetPositions(new Vector3[2] { startPoint.localPosition + startOffset, endPoint.localPosition + endOffset });
+                    }
                 }
-                else
-                {
-                    lineRenderer.SetPositions(new Vector3[2] { startPoint.localPosition + startOffset, endPoint.localPosition + endOffset });
-                }
+
             }
 
             if (maxDistance > 0f)
@@ -101,6 +111,27 @@ namespace dev.susybaka.raidsim.Mechanics
                     }
                 }
             }
+        }
+
+        public void ResetTether()
+        {
+            StopAllCoroutines();
+            initialized = false;
+            SetLineRenderersActive(false);
+            startCharacter = null;
+            endCharacter = null;
+            ieSetLineRenderersActive = null;
+        }
+
+        public void ResetTetherFull()
+        {
+            StopAllCoroutines();
+            initialized = false;
+            SetLineRenderersActive(false);
+            startCharacter = null;
+            endCharacter = null;
+            endPoint = null;
+            ieSetLineRenderersActive = null;
         }
 
         public void Initialize()
@@ -198,7 +229,7 @@ namespace dev.susybaka.raidsim.Mechanics
             if (start.gameObject.activeInHierarchy == false || end.gameObject.activeInHierarchy == false)
                 Destroy(gameObject);
 
-            lineRenderer.gameObject.SetActive(true);
+            SetLineRenderersActive(true);
             startPoint = start;
             endPoint = end;
 
@@ -222,14 +253,34 @@ namespace dev.susybaka.raidsim.Mechanics
 
         public void BreakTether()
         {
-            lineRenderer.gameObject.SetActive(false);
+            if (ieSetLineRenderersActive == null)
+                ieSetLineRenderersActive = StartCoroutine(IE_SetLineRenderersActive(false, new WaitForSeconds(visualBreakDelay)));
             Utilities.FunctionTimer.Create(this, () => onBreak.Invoke(), breakDelay, $"TetherTrigger_{this}_{GetHashCode()}_Break_Delay", false, true);
         }
 
         public void SolveTether()
         {
-            lineRenderer.gameObject.SetActive(false);
+            if (ieSetLineRenderersActive == null)
+                ieSetLineRenderersActive = StartCoroutine(IE_SetLineRenderersActive(false, new WaitForSeconds(visualBreakDelay)));
             Utilities.FunctionTimer.Create(this, () => onSolved.Invoke(), breakDelay, $"TetherTrigger_{this}_{GetHashCode()}_Solve_Delay", false, true);
+        }
+
+        private IEnumerator IE_SetLineRenderersActive(bool state, WaitForSeconds wait)
+        {
+            yield return wait;
+            SetLineRenderersActive(state);
+            ieSetLineRenderersActive = null;
+        }
+
+        private void SetLineRenderersActive(bool state)
+        {
+            foreach (LineRenderer lineRenderer in lineRenderers)
+            {
+                if (lineRenderer == null)
+                    continue;
+
+                lineRenderer.gameObject.SetActive(state);
+            }
         }
     }
 }

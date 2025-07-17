@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3147513261815809551}
   - component: {fileID: 1877332811599964845}
+  - component: {fileID: 4914644726073895474}
   m_Layer: 0
   m_Name: Shader
   m_TagString: Untagged
@@ -27,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3368379815699206801}
@@ -51,6 +52,24 @@ MonoBehaviour:
   outOnStart: 1
   log: 0
   fadeTime: 0.165
+--- !u!114 &4914644726073895474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 353181459152998389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d05cb3927fce93948a7624acfed3516d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scale: {x: 1, y: 1, z: 1}
+  setScale: 0
+  onUpdate: 0
+  overrideOriginalScale: 0
+  originalScale: {x: 0, y: 0, z: 0}
+  duration: 0.165
 --- !u!1 &466482318458114307
 GameObject:
   m_ObjectHideFlags: 0
@@ -151,6 +170,7 @@ MonoBehaviour:
   data: {fileID: 0}
   damageName: Holy Impact
   inverted: 0
+  log: 0
   owner: {fileID: 2379375092330887339}
   autoAssignOwner: 0
   ableToHitTag: object1
@@ -207,6 +227,8 @@ MonoBehaviour:
   shared: 0
   enumeration: 0
   requireOwner: 0
+  resetOnReload: 0
+  resetOwner: 0
   visualDelay: 0
   triggerDelay: 0.1
   triggerDelayVariance: 0
@@ -317,6 +339,8 @@ MonoBehaviour:
   toggleCharacterEffect: 0
   toggleShaderEffect: 1
   fadeTime: 0.165
+  toggleScale: 1
+  resetScale: 1
   log: 0
 --- !u!114 &2002084508313547980
 MonoBehaviour:
@@ -332,7 +356,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: -1
   disableInstead: 0
+  disabledOnStart: 0
   log: 0
+  onTriggerDestruction:
+    m_PersistentCalls:
+      m_Calls: []
   onDestroy:
     m_PersistentCalls:
       m_Calls: []
@@ -437,6 +465,7 @@ MonoBehaviour:
   aiController: {fileID: 0}
   bossController: {fileID: 0}
   targetController: {fileID: 0}
+  actionController: {fileID: 0}
   dashKnockbackPivot: {fileID: 0}
   characterName: HolyComet
   currentMaxHealth: 0
@@ -529,7 +558,7 @@ MonoBehaviour:
     values:
     - name: base
       value: 1
-    logic: 1
+    logic: 0
     thresholdPercentage: 0
   dead: 0
   still: 1
@@ -606,6 +635,7 @@ MonoBehaviour:
   letterSpriteAsset: letters_1_new
   role: 5
   sector: 0
+  group: 0
   isAggressive: 0
   hideNameplate: 1
   hidePartyName: 1
@@ -638,8 +668,10 @@ MonoBehaviour:
   showOnlyBelowMaxHealth: 0
   nameplateHealthBar: {fileID: 0}
   showSignMarkers: 0
+  showDeadMarker: 1
   signMarkersGroup: {fileID: 0}
   signMarkers: []
+  deadMarker: {fileID: 0}
   showPartyCharacterName: 0
   showPartyCharacterLevel: 0
   showPartyCharacterNameLetter: 0
@@ -667,6 +699,8 @@ MonoBehaviour:
   targetDamagePopupParent: {fileID: 826100032969746756}
   targetDamagePopupColor: {r: 1, g: 1, b: 1, a: 1}
   showOnlyFromCharacter: {fileID: 0}
+  playAudio: 0
+  audioVolume: 1
   inflictedEffect:
     name: 
     data: {fileID: 0}
@@ -697,7 +731,9 @@ MonoBehaviour:
   mechanicEnabled: 1
   mechanicName: Holy Impact
   onlyTriggerOnce: 1
+  global: 0
   log: 0
+  wipeName: 
   party: {fileID: 0}
   activatesWhenDead: 0
   onExecuteWipe:
@@ -753,6 +789,10 @@ GameObject:
   m_Component:
   - component: {fileID: 3041035598337241002}
   - component: {fileID: 4565364342243083311}
+  - component: {fileID: 3115372908877027705}
+  - component: {fileID: 75004638498704833}
+  - component: {fileID: 8057533992885467605}
+  - component: {fileID: 3134940153426186471}
   m_Layer: 0
   m_Name: Shader
   m_TagString: Untagged
@@ -770,7 +810,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7980649311075589911}
@@ -794,6 +834,161 @@ MonoBehaviour:
   outOnStart: 1
   log: 0
   fadeTime: 0.25
+--- !u!114 &3115372908877027705
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3636150345664641744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d05cb3927fce93948a7624acfed3516d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scale: {x: 1, y: 1, z: 1}
+  setScale: 0
+  onUpdate: 0
+  overrideOriginalScale: 0
+  originalScale: {x: 0, y: 0, z: 0}
+  duration: 0.25
+--- !u!114 &75004638498704833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3636150345664641744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d26d546f2d17f5940b930e215911f104, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: 
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  onTriggerMechanic:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4565364342243083311}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleShaderFade,
+          Assembly-CSharp
+        m_MethodName: FadeOut
+        m_Mode: 4
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 3115372908877027705}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleScale, Assembly-CSharp
+        m_MethodName: ResetScale
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &8057533992885467605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3636150345664641744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d26d546f2d17f5940b930e215911f104, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: 
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  onTriggerMechanic:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4565364342243083311}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleShaderFade,
+          Assembly-CSharp
+        m_MethodName: FadeIn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 3115372908877027705}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleScale, Assembly-CSharp
+        m_MethodName: Scale
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &3134940153426186471
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3636150345664641744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c11d13ba36149154fb548fc96274895b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: 
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  startAutomatically: 0
+  delay: 0.5
+  onDelayedTrigger:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4565364342243083311}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleShaderFade,
+          Assembly-CSharp
+        m_MethodName: FadeOut
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1250765530255443880}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Core.DestroyObject, Assembly-CSharp
+        m_MethodName: TriggerDestruction
+        m_Mode: 4
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0.75
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &3832392176772416637
 GameObject:
   m_ObjectHideFlags: 0
@@ -892,6 +1087,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {x: 0, y: 0.5, z: 0}
   speed: 30
+  OnUpdate: 1
   loop: 0
 --- !u!1 &5042625723236455201
 GameObject:
@@ -905,7 +1101,6 @@ GameObject:
   - component: {fileID: 4012254440510890344}
   - component: {fileID: 7674882987128231895}
   - component: {fileID: 1782404154017416380}
-  - component: {fileID: 1249082562248987946}
   - component: {fileID: 847593142721409752}
   - component: {fileID: 5386334008538709386}
   - component: {fileID: 5156144114805085786}
@@ -998,6 +1193,7 @@ MonoBehaviour:
   data: {fileID: 0}
   damageName: Holy Comet
   inverted: 0
+  log: 0
   owner: {fileID: 0}
   autoAssignOwner: 0
   ableToHitTag: Player
@@ -1054,6 +1250,8 @@ MonoBehaviour:
   shared: 0
   enumeration: 0
   requireOwner: 0
+  resetOnReload: 0
+  resetOwner: 0
   visualDelay: 0
   triggerDelay: 0.73
   triggerDelayVariance: 0
@@ -1073,22 +1271,10 @@ MonoBehaviour:
   onFinish:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1250765530255443880}
-        m_TargetAssemblyTypeName: DestroyObject, Assembly-CSharp
-        m_MethodName: TriggerDestruction
-        m_Mode: 4
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0.75
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1249082562248987946}
-        m_TargetAssemblyTypeName: StateTrigger, Assembly-CSharp
-        m_MethodName: ToggleTarget
-        m_Mode: 6
+      - m_Target: {fileID: 3134940153426186471}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Mechanics.FightMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1100,10 +1286,10 @@ MonoBehaviour:
   onStart:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1249082562248987946}
-        m_TargetAssemblyTypeName: StateTrigger, Assembly-CSharp
-        m_MethodName: Initialize
-        m_Mode: 0
+      - m_Target: {fileID: 75004638498704833}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Mechanics.FightMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1112,10 +1298,10 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1249082562248987946}
-        m_TargetAssemblyTypeName: StateTrigger, Assembly-CSharp
-        m_MethodName: ToggleTarget
-        m_Mode: 6
+      - m_Target: {fileID: 8057533992885467605}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Mechanics.FightMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1218,37 +1404,6 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   dummy: 0
---- !u!114 &1249082562248987946
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5042625723236455201}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d4e614f0643db6c4682d46d7fc562556, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  state: 0
-  party: {fileID: 0}
-  autoFindParty: 0
-  source: {fileID: 0}
-  target: {fileID: 3636150345664641744}
-  targetName: 
-  targetParent: 
-  targetIndex: 0
-  useStatusEffectTagAsTargetIndex: 0
-  moveToTargetName: 
-  moveToSourceName: 
-  localParent: 0
-  hiddenActions: 0
-  toggleObject: 0
-  toggleCharacterState: 0
-  toggleCharacterEffect: 0
-  toggleShaderEffect: 1
-  fadeTime: 0.25
-  log: 0
 --- !u!114 &847593142721409752
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1264,12 +1419,14 @@ MonoBehaviour:
   mechanicEnabled: 1
   mechanicName: SpawnHolyImpact
   onlyTriggerOnce: 0
+  global: 0
   log: 0
   owner: {fileID: 2379375092330887339}
   targetController: {fileID: 0}
   damageTriggerPrefab: {fileID: 466482318458114307}
   enableInstead: 1
   spawnLocation: {fileID: 2299690586870813772}
+  copyRotation: 0
   delay: 0
   autoAssignOwner: 0
   autoAssignLocation: 0
@@ -1303,6 +1460,7 @@ MonoBehaviour:
   mechanicEnabled: 1
   mechanicName: 
   onlyTriggerOnce: 0
+  global: 0
   log: 0
   target: {fileID: 7701408936820678020}
   newParent: {fileID: 0}
@@ -1337,6 +1495,7 @@ MonoBehaviour:
   mechanicEnabled: 1
   mechanicName: 
   onlyTriggerOnce: 0
+  global: 0
   log: 0
   target: {fileID: 1857252118099800284}
   newParent: {fileID: 0}
@@ -1358,7 +1517,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: -1
   disableInstead: 0
+  disabledOnStart: 0
   log: 0
+  onTriggerDestruction:
+    m_PersistentCalls:
+      m_Calls: []
   onDestroy:
     m_PersistentCalls:
       m_Calls: []
@@ -1415,6 +1578,7 @@ MonoBehaviour:
   mechanicEnabled: 1
   mechanicName: 
   onlyTriggerOnce: 1
+  global: 0
   log: 0
   startAutomatically: 0
   delay: 30
@@ -1459,7 +1623,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: -1
   disableInstead: 0
+  disabledOnStart: 0
   log: 0
+  onTriggerDestruction:
+    m_PersistentCalls:
+      m_Calls: []
   onDestroy:
     m_PersistentCalls:
       m_Calls: []
@@ -1494,6 +1662,7 @@ MonoBehaviour:
   mechanicEnabled: 1
   mechanicName: 
   onlyTriggerOnce: 0
+  global: 0
   log: 0
   damage:
     name: Holy Impact
@@ -1536,6 +1705,8 @@ MonoBehaviour:
   toggleCharacterEffect: 0
   toggleShaderEffect: 1
   fadeTime: 0.45
+  toggleScale: 0
+  resetScale: 1
   log: 0
 --- !u!1 &6625446836669473510
 GameObject:

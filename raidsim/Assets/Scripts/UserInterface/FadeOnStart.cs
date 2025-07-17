@@ -115,9 +115,27 @@ namespace dev.susybaka.raidsim.UI
             else
             {
                 if (duration > 0f)
+                    group.LeanAlpha(1f, duration);
+                else
+                    group.alpha = 1f;
+            }
+        }
+
+        public void FadeToInvisible(float delay)
+        {
+            if (delay > 0f)
+            {
+                if (ieFadeDelay == null && gameObject.scene.isLoaded && gameObject.activeSelf)
+                {
+                    ieFadeDelay = StartCoroutine(IE_FadeDelay(new WaitForSecondsRealtime(delay), false));
+                }
+            }
+            else
+            {
+                if (duration > 0f)
                     group.LeanAlpha(0f, duration);
                 else
-                    group.LeanAlpha(1f, duration);
+                    group.alpha = 0f;
             }
         }
 
@@ -136,7 +154,7 @@ namespace dev.susybaka.raidsim.UI
                 if (duration > 0f)
                     group.LeanAlpha(0f, duration);
                 else
-                    group.LeanAlpha(0f, duration);
+                    group.alpha = 0f;
             }
             ieFadeDelay = null;
         }

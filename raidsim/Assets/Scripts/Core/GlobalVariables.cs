@@ -16,11 +16,11 @@ namespace dev.susybaka.raidsim.Core
         public static string configPath = Application.dataPath + "/config.ini";
         public static string bgmPath = "F:/Users/Aki/Files/GitHub/ffxiv-raid-sim/raidsim/Source/Audio/bgm";
 #elif PLATFORM_STANDALONE_WIN
-    public static string configPath = Path.GetDirectoryName(Application.dataPath) + "/config.ini";
-    public static string bgmPath = Path.GetDirectoryName(Application.dataPath) + "/bgm";
+        public static string configPath = Path.GetDirectoryName(Application.dataPath) + "/config.ini";
+        public static string bgmPath = Path.GetDirectoryName(Application.dataPath) + "/bgm";
 #else
-    public static string configPath = Application.persistentDataPath + "/config.ini";
-    public static string bgmPath = Application.persistentDataPath + "/bgm";
+        public static string configPath = Application.persistentDataPath + "/config.ini";
+        public static string bgmPath = Application.persistentDataPath + "/bgm";
 #endif
 #if UNITY_STANDALONE_WIN
         //Import the following.
@@ -30,7 +30,11 @@ namespace dev.susybaka.raidsim.Core
         public static extern System.IntPtr FindWindow(System.String className, System.String windowName);
         public static string lastWindowName = "raidsim";
 #endif
+#if UNITY_EDITOR
+        public static bool muteBgm = true;
+#else
         public static bool muteBgm = false;
+#endif
         public static Vector3 worldBounds = new Vector3(1000, 1000, 1000);
         public static Resolution currentGameResolution; // Cached resolution for comparison
         public const long maximumDamage = 999999999999999999;

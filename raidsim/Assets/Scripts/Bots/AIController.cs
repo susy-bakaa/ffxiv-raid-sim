@@ -173,7 +173,7 @@ namespace dev.susybaka.raidsim.Characters
         {
             if (FightTimeline.Instance.isCircle)
             {
-                // Circular boundary with center at (0,0,0)
+                // Circular boundary with center at arenaOffset
                 float radius = 0;
 
                 if (FightTimeline.Instance.arenaBounds.x != 0)
@@ -185,13 +185,16 @@ namespace dev.susybaka.raidsim.Characters
                     radius = Mathf.Abs(FightTimeline.Instance.arenaBounds.z);
                 }
 
+                Vector3 center = FightTimeline.Instance.arenaOffset;
                 Vector3 horizontalPosition = new Vector3(transform.position.x, 0, transform.position.z); // Ignore Y-axis
-                float distanceFromCenter = horizontalPosition.magnitude;
+                Vector3 horizontalCenter = new Vector3(center.x, 0, center.z);
+                float distanceFromCenter = (horizontalPosition - horizontalCenter).magnitude;
 
                 if (distanceFromCenter > radius)
                 {
                     // Clamp position to the circle's edge on the horizontal plane
-                    Vector3 clampedHorizontalPosition = horizontalPosition.normalized * radius;
+                    Vector3 direction = (horizontalPosition - horizontalCenter).normalized;
+                    Vector3 clampedHorizontalPosition = horizontalCenter + direction * radius;
                     transform.position = new Vector3(
                         clampedHorizontalPosition.x,
                         transform.position.y, // Preserve current height
@@ -206,18 +209,19 @@ namespace dev.susybaka.raidsim.Characters
             {
                 transform.position = new Vector3(
                     transform.position.x,
-                    Mathf.Clamp(transform.position.y, -maxHeight, maxHeight),
+                    Mathf.Clamp(transform.position.y, -maxHeight + FightTimeline.Instance.arenaOffset.y, maxHeight + FightTimeline.Instance.arenaOffset.y),
                     transform.position.z
                 );
             }
-            else if (!FightTimeline.Instance.isCircle) // Rectangular bounds logic
+            if (!FightTimeline.Instance.isCircle) // Rectangular bounds logic
             {
                 Vector3 maxDistance = FightTimeline.Instance.arenaBounds;
+                Vector3 offset = FightTimeline.Instance.arenaOffset;
 
                 if (maxDistance.x != 0)
                 {
                     transform.position = new Vector3(
-                        Mathf.Clamp(transform.position.x, -Mathf.Abs(maxDistance.x), Mathf.Abs(maxDistance.x)),
+                        Mathf.Clamp(transform.position.x, -Mathf.Abs(maxDistance.x) + offset.x, Mathf.Abs(maxDistance.x) + offset.x),
                         transform.position.y,
                         transform.position.z
                     );
@@ -227,7 +231,7 @@ namespace dev.susybaka.raidsim.Characters
                     transform.position = new Vector3(
                         transform.position.x,
                         transform.position.y,
-                        Mathf.Clamp(transform.position.z, -Mathf.Abs(maxDistance.z), Mathf.Abs(maxDistance.z))
+                        Mathf.Clamp(transform.position.z, -Mathf.Abs(maxDistance.z) + offset.z, Mathf.Abs(maxDistance.z) + offset.z)
                     );
                 }
             }

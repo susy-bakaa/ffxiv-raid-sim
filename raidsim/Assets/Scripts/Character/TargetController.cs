@@ -14,6 +14,7 @@ using dev.susybaka.raidsim.UI;
 using dev.susybaka.Shared;
 using dev.susybaka.Shared.Attributes;
 using dev.susybaka.Shared.Audio;
+using dev.susybaka.Shared.UserInterface;
 
 namespace dev.susybaka.raidsim.Targeting
 {
@@ -83,6 +84,8 @@ namespace dev.susybaka.raidsim.Targeting
         public List<HudElementColor> targetColoredHudElements;
         public List<HudElementColor> targetsTargetColoredHudElements;
         public Transform targetDamagePopupParent;
+        public bool changeCursor = false;
+        [CursorName] public string combatCursor = "combat";
 
         [Header("Audio")]
         public bool playAudio = false;
@@ -94,6 +97,7 @@ namespace dev.susybaka.raidsim.Targeting
         private bool targetColorsUpdated;
         private bool targetsTargetColorsUpdated;
         private bool wasMouseClick = false;
+        private bool cursorWasSet = false;
 
 #if UNITY_EDITOR
         [Space(20)]
@@ -225,6 +229,9 @@ namespace dev.susybaka.raidsim.Targeting
             if (m_configMenu != null && m_configMenu.ApplyPopup.isOpen)
                 return;
 
+            Ray ray;
+            RaycastHit hit;
+
             if (Input.GetMouseButtonDown(0))
             {
                 mouseDownTime = Time.unscaledTime;
@@ -238,25 +245,92 @@ namespace dev.susybaka.raidsim.Targeting
 
                 if (clickDuration <= mouseClickThreshold)
                 {
-                    Ray ray = m_camera.ScreenPointToRay(Input.mousePosition);
+                    ray = m_camera.ScreenPointToRay(Input.mousePosition);
 
                     //Debug.Log($"Input.mousePosition {Input.mousePosition}");
 
                     Debug.DrawLine(ray.origin, ray.direction * maxTargetDistance, Color.red);
 
-                    if (Physics.Raycast(ray, out RaycastHit hit, maxTargetDistance))
+                    if (Physics.Raycast(ray, out hit, maxTargetDistance))
                     {
                         if (hit.transform.childCount > 0 && hit.transform.GetChild(hit.transform.childCount - 1).TryGetComponent(out TargetNode targetNode) && targetNode.gameObject.CompareTag("target") && targetNode.Targetable && allowedGroups.Contains(targetNode.Group))
                         {
                             wasMouseClick = true;
                             SetTarget(targetNode);
+                            if (changeCursor)
+                            {
+                                CursorHandler.Instance.SetCursorByID(0);
+                                cursorWasSet = false;
+                            }
                         }
                         else
                         {
                             wasMouseClick = true;
                             SetTarget(null);
+                            if (changeCursor)
+                            {
+                                CursorHandler.Instance.SetCursorByID(0);
+                                cursorWasSet = false;
+                            }
                         }
                     }
+                    else
+                    {
+                        SetTarget(null);
+                        if (changeCursor)
+                        {
+                            CursorHandler.Instance.SetCursorByID(0);
+                            cursorWasSet = false;
+                        }
+                    }
+                }
+                else
+                {
+                    if (changeCursor)
+                    {
+                        CursorHandler.Instance.SetCursorByID(0);
+                        cursorWasSet = false;
+                    }
+                }
+            }
+            else if (changeCursor && Utilities.RateLimiter(30) && CursorHandler.Instance != null)
+            {
+                if (currentTarget != null)
+                {
+                    if (allowedGroups.Contains(currentTarget.Group) && currentTarget.Targetable)
+                    {
+                        if (cursorWasSet)
+                        {
+                            CursorHandler.Instance.SetCursorByID(0);
+                            cursorWasSet = false;
+                        }
+                        return;
+                    }
+                }
+
+                ray = m_camera.ScreenPointToRay(Input.mousePosition);
+
+                //Debug.Log($"Input.mousePosition {Input.mousePosition}");
+
+                Debug.DrawLine(ray.origin, ray.direction * maxTargetDistance, Color.yellow);
+
+                if (Physics.Raycast(ray, out hit, maxTargetDistance))
+                {
+                    if (hit.transform.childCount > 0 && hit.transform.GetChild(hit.transform.childCount - 1).TryGetComponent(out TargetNode targetNode) && targetNode.gameObject.CompareTag("target") && targetNode.Targetable && allowedGroups.Contains(targetNode.Group))
+                    {
+                        CursorHandler.Instance.SetCursorByName(combatCursor);
+                        cursorWasSet = true;
+                    }
+                    else
+                    {
+                        CursorHandler.Instance.SetCursorByID(0);
+                        cursorWasSet = false;
+                    }
+                }
+                else
+                {
+                    CursorHandler.Instance.SetCursorByID(0);
+                    cursorWasSet = false;
                 }
             }
         }

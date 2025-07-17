@@ -82,6 +82,11 @@ namespace dev.susybaka.raidsim.Actions
         {
             PerformAction(actionToPerform);
         }
+        [Button("Reset All Actions")]
+        public void ResetAllActions()
+        {
+            ResetController();
+        }
 #endif
 
         private StatusEffect instantCastEffect;
@@ -729,12 +734,12 @@ namespace dev.susybaka.raidsim.Actions
             if (lockActionsWhenCasting && isCasting && !hidden)
                 return;
 
-            if (action.data.range > 0f && action.data.isTargeted && (distanceToTarget > action.data.range) && !hidden)
+            if ((targetController.currentTarget != null && action.data.targetGroups.Contains(targetController.self.Group)) && action.data.range > 0f && action.data.isTargeted && (distanceToTarget > action.data.range) && !hidden)
                 return;
 
             //Debug.Log($"[ActionController ({gameObject.name})] Action {action.data.actionName} passed 2. checks");
 
-            if (action.data.isTargeted && !hasTarget && !hidden)
+            if ((targetController.currentTarget != null && action.data.targetGroups.Contains(targetController.self.Group)) && action.data.isTargeted && !hasTarget && !hidden)
                 return;
 
             if (action.data.isTargeted && targetController.currentTarget != null && !action.data.targetGroups.Contains(targetController.currentTarget.Group) && !hidden)
@@ -767,13 +772,34 @@ namespace dev.susybaka.raidsim.Actions
 
             if (actionCondition)
             {
+                // Handle target of the cast
+                CharacterState currentTarget = null;
+
+                if (targetController != null && targetController.currentTarget != null)
+                {
+                    currentTarget = targetController.currentTarget.GetCharacterState();
+                }
+                if (currentTarget == null)
+                {
+                    currentTarget = characterState;
+                }
+
+                if (currentTarget.targetController != null && currentTarget.targetController.self != null && action.data.targetGroups.Length > 0 && action.data.isTargeted)
+                {
+                    if (!action.data.targetGroups.Contains(currentTarget.targetController.self.Group))
+                    {
+                        return;
+                    }
+                }
+                // ---
+
                 if (action.data.cast <= 0f || (action.data.cast > 0f && instantCast))
                 {
                     Utilities.FunctionTimer.StopTimer($"{characterState.characterName}_{this}_castBar_fade_out_if_interrupted");
                     //Utilities.FunctionTimer.StopTimer($"{this}_castBarParty_fade_out_if_interrupted");
                     Utilities.FunctionTimer.StopTimer($"{characterState.characterName}_{this}_interrupted_status");
 
-                    CharacterState currentTarget = null;
+                    /*CharacterState currentTarget = null;
 
                     if (targetController != null && targetController.currentTarget != null)
                     {
@@ -782,7 +808,7 @@ namespace dev.susybaka.raidsim.Actions
                     if (currentTarget == null)
                     {
                         currentTarget = characterState;
-                    }
+                    } */
 
                     action.data.damage = new Damage(action.data.damage, characterState);
                     if (!action.data.isGroundTargeted && action.data.recast > 0f && !hidden)
@@ -862,7 +888,7 @@ namespace dev.susybaka.raidsim.Actions
                     if (action.data.rollsGcd && action.data.recast > 0f && !action.data.isGroundTargeted)
                         action.ActivateCooldown();
 
-                    CharacterState currentTarget = null;
+                    /*CharacterState currentTarget = null;
 
                     if (targetController != null && targetController.currentTarget != null)
                     {
@@ -871,7 +897,7 @@ namespace dev.susybaka.raidsim.Actions
                     if (currentTarget == null || !action.data.isTargeted)
                     {
                         currentTarget = characterState;
-                    }
+                    }*/
 
                     action.data.damage = new Damage(action.data.damage, characterState);
 

@@ -146,7 +146,7 @@ namespace dev.susybaka.raidsim.Characters
         private Flag wasAmnesia;
         public Flag canDoActions = new Flag("canDoActions", new List<FlagValue> { new FlagValue("base", true) });
         private Flag wasCanDoActions;
-        public Flag canDie = new Flag("canDie", new List<FlagValue> { new FlagValue("base", true) }, AggregateLogic.AnyTrue);
+        public Flag canDie = new Flag("canDie", new List<FlagValue> { new FlagValue("base", true) }, AggregateLogic.AllTrue);
         private Flag wasCanDie;
         public bool dead = false;
         public bool still = false;

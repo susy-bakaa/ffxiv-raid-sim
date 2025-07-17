@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using dev.susybaka.Shared.UserInterface;
 using static dev.susybaka.raidsim.Core.GlobalData;
 using static dev.susybaka.raidsim.SaveLoad.KeepCameraRotation;
 
@@ -118,16 +119,23 @@ namespace dev.susybaka.raidsim.Inputs
                 }
                 Cursor.lockState = CursorLockMode.Confined;
 #elif UNITY_EDITOR_WIN
-            if (!cursorPositionSet)
-            {
-                cursorPosition = CursorControl.GetPosition();
-                cursorPositionSet = true;
-            }
-            Cursor.lockState = CursorLockMode.Confined;
+                if (!cursorPositionSet)
+                {
+                    cursorPosition = CursorControl.GetPosition();
+                    cursorPositionSet = true;
+                }
+                Cursor.lockState = CursorLockMode.Confined;
 #else
-            Cursor.lockState = CursorLockMode.Confined;
+                Cursor.lockState = CursorLockMode.Confined;
 #endif
-                Cursor.visible = false;
+                if (CursorHandler.Instance != null)
+                {
+                    CursorHandler.Instance.visible = false;
+                }
+                else
+                {
+                    Cursor.visible = false;
+                }
             }
             if ((Input.GetMouseButtonUp(1) && !Input.GetMouseButton(0)) || (Input.GetMouseButtonUp(0) && !Input.GetMouseButton(1)))
             {
@@ -139,15 +147,22 @@ namespace dev.susybaka.raidsim.Inputs
                     cursorPositionSet = false;
                 }
 #elif UNITY_EDITOR_WIN
-            if (cursorPositionSet)
-            {
-                CursorControl.SetPosition(cursorPosition);
-                cursorPositionSet = false;
-            }
+                if (cursorPositionSet)
+                {
+                    CursorControl.SetPosition(cursorPosition);
+                    cursorPositionSet = false;
+                }
 #endif
                 heldTime = 0;
 
-                Cursor.visible = true;
+                if (CursorHandler.Instance != null)
+                {
+                    CursorHandler.Instance.visible = true;
+                }
+                else
+                {
+                    Cursor.visible = true;
+                }
             }
             if (Input.GetMouseButton(1) || Input.GetMouseButton(0))
             {

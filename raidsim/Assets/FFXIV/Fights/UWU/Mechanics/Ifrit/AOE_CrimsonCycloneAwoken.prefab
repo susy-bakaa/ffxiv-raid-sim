@@ -130,6 +130,8 @@ MonoBehaviour:
   data: {fileID: 0}
   damageName: Crimson Cyclone
   inverted: 0
+  isDonut: 0
+  innerRadius: 0
   log: 0
   owner: {fileID: 0}
   autoAssignOwner: 0
@@ -318,6 +320,8 @@ MonoBehaviour:
   data: {fileID: 0}
   damageName: Crimson Cyclone
   inverted: 0
+  isDonut: 0
+  innerRadius: 0
   log: 0
   owner: {fileID: 0}
   autoAssignOwner: 0
@@ -470,7 +474,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 38c67a85e80da5a418104caa140634f4, type: 2}
+  - {fileID: 2100000, guid: 1deb6adede460894bb13ecc2e9e275d8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -553,7 +557,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 38c67a85e80da5a418104caa140634f4, type: 2}
+  - {fileID: 2100000, guid: 1deb6adede460894bb13ecc2e9e275d8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -660,6 +664,9 @@ MonoBehaviour:
   disableInstead: 0
   disabledOnStart: 0
   log: 0
+  onTriggerDestruction:
+    m_PersistentCalls:
+      m_Calls: []
   onDestroy:
     m_PersistentCalls:
       m_Calls: []

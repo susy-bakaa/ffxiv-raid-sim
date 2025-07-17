@@ -29,7 +29,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1619552977382613157}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4399228207698223541
@@ -63,38 +64,33 @@ MonoBehaviour:
   availableForRoles: 
   sharedRecasts: []
   comboOutlineEffects: []
-  hideWhileEffects: []
+  hideWhileEffects:
+  - {fileID: 11400000, guid: f1b27e2dcaffc474a8a7c78be2a5b63d, type: 2}
   showInsteadWithEffects: 0
-  invisibilityAlsoDisables: 0
+  invisibilityAlsoDisables: 1
   onExecute:
     m_PersistentCalls:
+      m_Calls: []
+  onCast:
+    m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4399228207698223541}
-        m_TargetAssemblyTypeName: CharacterAction, Assembly-CSharp
-        m_MethodName: ToggleState
-        m_Mode: 6
+      - m_Target: {fileID: 2326271229851544789}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Actions.CharacterAction, Assembly-CSharp
+        m_MethodName: ActivateCooldown
+        m_Mode: 4
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 0
+          m_FloatArgument: 2.5
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 3037833777112316441}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 4399228207698223541}
-        m_TargetAssemblyTypeName: CharacterAction, Assembly-CSharp
+  onInterrupt:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2326271229851544789}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Actions.CharacterAction, Assembly-CSharp
         m_MethodName: ResetCooldown
         m_Mode: 6
         m_Arguments:
@@ -105,48 +101,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 4399228207698223541}
-        m_TargetAssemblyTypeName: CharacterAction, Assembly-CSharp
-        m_MethodName: ResetAnimationLock
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: CharacterAction, Assembly-CSharp
-        m_MethodName: ToggleState
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-  onCast:
-    m_PersistentCalls:
-      m_Calls: []
-  onInterrupt:
-    m_PersistentCalls:
-      m_Calls: []
   recastType: 0
   borderStandard: {fileID: 0}
   borderDark: {fileID: 0}
@@ -161,3 +115,112 @@ MonoBehaviour:
   hudElements: []
   defaultColors: []
   unavailableColors: []
+--- !u!1001 &4528035116109042972
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4650779580949739559}
+    m_Modifications:
+    - target: {fileID: 897614462125001002, guid: 647eda573dc17634d8bc26e07ffcd97c, type: 3}
+      propertyPath: m_Name
+      value: Action_MightyGuard_Dispel
+      objectReference: {fileID: 0}
+    - target: {fileID: 2206302749731043785, guid: 647eda573dc17634d8bc26e07ffcd97c, type: 3}
+      propertyPath: onExecute.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2206302749731043785, guid: 647eda573dc17634d8bc26e07ffcd97c, type: 3}
+      propertyPath: onExecute.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2206302749731043785, guid: 647eda573dc17634d8bc26e07ffcd97c, type: 3}
+      propertyPath: onExecute.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 4399228207698223541}
+    - target: {fileID: 2206302749731043785, guid: 647eda573dc17634d8bc26e07ffcd97c, type: 3}
+      propertyPath: onExecute.m_PersistentCalls.m_Calls.Array.data[4].m_Target
+      value: 
+      objectReference: {fileID: 4399228207698223541}
+    - target: {fileID: 2206302749731043785, guid: 647eda573dc17634d8bc26e07ffcd97c, type: 3}
+      propertyPath: onExecute.m_PersistentCalls.m_Calls.Array.data[5].m_Target
+      value: 
+      objectReference: {fileID: 3037833777112316441}
+    - target: {fileID: 2206302749731043785, guid: 647eda573dc17634d8bc26e07ffcd97c, type: 3}
+      propertyPath: onExecute.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ActivateAnimationLock
+      objectReference: {fileID: 0}
+    - target: {fileID: 2206302749731043785, guid: 647eda573dc17634d8bc26e07ffcd97c, type: 3}
+      propertyPath: onExecute.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: dev.susybaka.raidsim.Actions.CharacterAction, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2206302749731043785, guid: 647eda573dc17634d8bc26e07ffcd97c, type: 3}
+      propertyPath: onExecute.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_FloatArgument
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2206302749731043785, guid: 647eda573dc17634d8bc26e07ffcd97c, type: 3}
+      propertyPath: onExecute.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 2931563156805105081, guid: 647eda573dc17634d8bc26e07ffcd97c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2931563156805105081, guid: 647eda573dc17634d8bc26e07ffcd97c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2931563156805105081, guid: 647eda573dc17634d8bc26e07ffcd97c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2931563156805105081, guid: 647eda573dc17634d8bc26e07ffcd97c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2931563156805105081, guid: 647eda573dc17634d8bc26e07ffcd97c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2931563156805105081, guid: 647eda573dc17634d8bc26e07ffcd97c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2931563156805105081, guid: 647eda573dc17634d8bc26e07ffcd97c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2931563156805105081, guid: 647eda573dc17634d8bc26e07ffcd97c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2931563156805105081, guid: 647eda573dc17634d8bc26e07ffcd97c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2931563156805105081, guid: 647eda573dc17634d8bc26e07ffcd97c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 647eda573dc17634d8bc26e07ffcd97c, type: 3}
+--- !u!4 &1619552977382613157 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2931563156805105081, guid: 647eda573dc17634d8bc26e07ffcd97c, type: 3}
+  m_PrefabInstance: {fileID: 4528035116109042972}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2326271229851544789 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2206302749731043785, guid: 647eda573dc17634d8bc26e07ffcd97c, type: 3}
+  m_PrefabInstance: {fileID: 4528035116109042972}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10af295d51be1ef478048c378d84d972, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
