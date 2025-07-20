@@ -19,7 +19,11 @@ namespace dev.susybaka.raidsim.Editor
         {
             "archive",
             "editor_only",
-            "StreamingAssets"
+            "temp",
+            "test",
+            "StreamingAssets",
+            "StandaloneWindows64",
+            "StandaloneLinux64"
         };
         public static readonly string[] DoNotShipFolders = new[]
         {
@@ -97,43 +101,6 @@ namespace dev.susybaka.raidsim.Editor
             CleanBuildDirectory(outputDir);
             Directory.CreateDirectory(outputDir);
 
-            if (ShouldRebuildAssetBundles)
-            {
-                string bundleTargetFolder = Path.Combine(BundleRoot, target.ToString());
-                BuildAssetBundles(bundleTargetFolder, target);
-
-                if (target != BuildTarget.WebGL)
-                {
-                    string destBundleFolder = Path.Combine(outputDir, $"{ExecutableName}_Data", "StreamingAssets");
-
-                    if (Directory.Exists(destBundleFolder))
-                        Directory.Delete(destBundleFolder, true);
-
-                    Directory.CreateDirectory(destBundleFolder);
-
-                    foreach (string file in Directory.GetFiles(bundleTargetFolder))
-                    {
-                        bool skip = false;
-
-                        for (int i = 0; i < DoNotShipBundles.Length; i++)
-                        {
-                            if (file.Contains(DoNotShipBundles[i]))
-                            {
-                                Debug.Log($"Skipping AssetBundle '{file}' as it is in the DoNotShipBundles list.");
-                                skip = true;
-                                break;
-                            }
-                        }
-
-                        if (skip)
-                            continue;
-
-                        string destFile = Path.Combine(destBundleFolder, Path.GetFileName(file));
-                        File.Copy(file, destFile, true);
-                    }
-                }
-            }
-
             if (target == BuildTarget.WebGL)
             {
                 QualitySettings.globalTextureMipmapLimit = 1; // 2048
@@ -175,6 +142,49 @@ namespace dev.susybaka.raidsim.Editor
                 };
 
             BuildPipeline.BuildPlayer(buildOptions);
+
+            string bundleTargetFolder = Path.Combine(BundleRoot, target.ToString());
+            
+            if (ShouldRebuildAssetBundles)
+                BuildAssetBundles(bundleTargetFolder, target);
+
+            if (target != BuildTarget.WebGL)
+            {
+                string destBundleFolder = Path.Combine(outputDir, $"{ExecutableName}_Data", "StreamingAssets");
+
+                if (Directory.Exists(destBundleFolder))
+                    Directory.Delete(destBundleFolder, true);
+
+                Directory.CreateDirectory(destBundleFolder);
+
+                foreach (string file in Directory.GetFiles(bundleTargetFolder))
+                {
+                    bool skip = false;
+
+                    for (int i = 0; i < DoNotShipBundles.Length; i++)
+                    {
+                        if (file.Contains(DoNotShipBundles[i]))
+                        {
+                            Debug.Log($"Skipping AssetBundle '{file}' as it is in the DoNotShipBundles list.");
+                            skip = true;
+                            break;
+                        }
+                    }
+
+                    if (skip)
+                        continue;
+
+                    string destFile = Path.Combine(destBundleFolder, Path.GetFileName(file));
+                    File.Copy(file, destFile, true);
+                }
+            }
+            else
+            {
+                string destBundleFolder = Path.Combine(outputDir, "StreamingAssets");
+
+                if (Directory.Exists(destBundleFolder))
+                    Directory.Delete(destBundleFolder, true);
+            }
         }
 
         private static void CleanBuildDirectory(string outputDir)
