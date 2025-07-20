@@ -12,7 +12,7 @@ namespace dev.susybaka.raidsim.Editor
     public static class CustomBuildPipeline
     {
         private static readonly string ExecutableName = "raidsim";
-        private static readonly string BuildRoot = "../Builds";//Path.GetFullPath("builds");
+        private static readonly string BuildRoot = Path.GetFullPath("builds");
         private static readonly string ChecksumFile = BuildRoot + "/checksums.sha256";
         private static readonly string BundleRoot = BuildRoot + "/bundles";
         private static readonly string[] DoNotShipBundles = new[]
@@ -65,9 +65,9 @@ namespace dev.susybaka.raidsim.Editor
 
         private static readonly (BuildTarget target, string outputFolder, string zipName)[] BuildConfigs = new[]
         {
-            (BuildTarget.StandaloneWindows64, "winbuild1", "Windows64"),
-            (BuildTarget.StandaloneLinux64,    "linuxbuild1", "Linux64"),
-            (BuildTarget.WebGL,                "webbuild1", "WebGL")
+            (BuildTarget.StandaloneWindows64, "winbuild1", "win64"),
+            (BuildTarget.StandaloneLinux64,    "linuxbuild1", "linux64"),
+            (BuildTarget.WebGL,                "webbuild1", "webgl")
         };
 
         public static void RunFullBuildPipeline()
@@ -104,7 +104,7 @@ namespace dev.susybaka.raidsim.Editor
 
                 if (target != BuildTarget.WebGL)
                 {
-                    string destBundleFolder = Path.Combine(outputDir, $"/{ExecutableName}_Data/StreamingAssets");
+                    string destBundleFolder = Path.Combine(outputDir, $"{ExecutableName}_Data", "StreamingAssets");
 
                     if (Directory.Exists(destBundleFolder))
                         Directory.Delete(destBundleFolder, true);
@@ -113,14 +113,20 @@ namespace dev.susybaka.raidsim.Editor
 
                     foreach (string file in Directory.GetFiles(bundleTargetFolder))
                     {
+                        bool skip = false;
+
                         for (int i = 0; i < DoNotShipBundles.Length; i++)
                         {
                             if (file.Contains(DoNotShipBundles[i]))
                             {
                                 Debug.Log($"Skipping AssetBundle '{file}' as it is in the DoNotShipBundles list.");
-                                continue;
+                                skip = true;
+                                break;
                             }
                         }
+
+                        if (skip)
+                            continue;
 
                         string destFile = Path.Combine(destBundleFolder, Path.GetFileName(file));
                         File.Copy(file, destFile, true);
