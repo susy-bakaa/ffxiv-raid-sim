@@ -23,7 +23,6 @@ namespace dev.susybaka.Shared.Audio
         public Sound[] sounds;
 
         private AudioSource templateSource;
-        //private Dictionary<Sound, QueuedSound> queuedSounds = new Dictionary<Sound, QueuedSound>();
         private Dictionary<Sound, int> activeSoundInstances = new Dictionary<Sound, int>();
 
         private void Awake()
@@ -99,42 +98,6 @@ namespace dev.susybaka.Shared.Audio
                 }
             }
         }
-
-        /*public void EnqueueSound(Sound sound, AudioSource source)
-        {
-            if (!queuedSounds.TryGetValue(sound, out var qSound))
-            {
-                qSound = new QueuedSound();
-                queuedSounds[sound] = qSound;
-            }
-
-            qSound.sources.Enqueue(source);
-
-            // Start processing if not already doing so
-            if (!qSound.isPlaying)
-            {
-                StartCoroutine(IE_ProcessSoundQueue(sound, qSound));
-            }
-        }
-
-        private IEnumerator IE_ProcessSoundQueue(Sound sound, QueuedSound qSound)
-        {
-            qSound.isPlaying = true;
-
-            while (qSound.sources.Count > 0)
-            {
-                AudioSource source = qSound.sources.Dequeue();
-                if (source != null)
-                {
-                    source.Play();
-                    Destroy(source.gameObject, source.clip.length);
-                    yield return new WaitForSeconds(UnityEngine.Random.Range(0.1f, 0.2f)); //source.clip.length *
-                }
-            }
-
-            qSound.isPlaying = false;
-            queuedSounds.Remove(sound);
-        }*/
 
         private void SetupSoundSource(Sound s, AudioSource source, int i = 0)
         {
@@ -279,8 +242,8 @@ namespace dev.susybaka.Shared.Audio
             source.volume *= scale;
 
             source.Play();
+            Destroy(tempSource, source.clip.length + 0.5f);
             Utilities.FunctionTimer.Create(this, () => activeSoundInstances[s] = Mathf.Max(0, activeSoundInstances[s] - 1), source.clip.length, $"AudioManager_Decrement_SoundInstance_{activeSoundInstances[s]}_Clip_{s.name}_Length_{source.clip.length}", false, false);
-            //EnqueueSound(s, source);
         }
 
         public void Play(string sound)

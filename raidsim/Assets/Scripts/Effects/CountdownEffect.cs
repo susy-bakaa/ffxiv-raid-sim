@@ -1,3 +1,4 @@
+using dev.susybaka.raidsim.Core;
 using UnityEngine;
 
 namespace dev.susybaka.raidsim.Visuals
@@ -17,6 +18,17 @@ namespace dev.susybaka.raidsim.Visuals
         {
             shaderFade = GetComponent<SimpleShaderFade>();
             mat = target.GetComponent<Renderer>().material;
+            
+            OnReset();
+
+            if (FightTimeline.Instance != null)
+            {
+                FightTimeline.Instance.onReset.AddListener(OnReset);
+            }
+        }
+
+        public void OnReset()
+        {
             if (textures != null && textures.Length > 0)
             {
                 mat.SetTexture(textureHash, textures[textures.Length - 1]);

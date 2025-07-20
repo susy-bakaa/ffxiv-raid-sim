@@ -9,6 +9,17 @@ namespace dev.susybaka.raidsim.Visuals
     public class SimpleShaderFade : MonoBehaviour
     {
         private List<Material> materials;
+        public List<Material> Materials
+        {
+            get
+            {
+                if (materials == null || materials.Count == 0)
+                {
+                    CreateLocalSharedMaterials();
+                }
+                return materials;
+            }
+        }
         public float outValue = 0f;
         public float inValue = 1f;
         public float defaultFadeTime = 0.33f;

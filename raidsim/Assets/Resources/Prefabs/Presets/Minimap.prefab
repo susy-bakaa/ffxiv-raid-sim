@@ -376,6 +376,7 @@ MonoBehaviour:
   log: 0
   setupOnStart: 1
   populateAutomatically: 1
+  setupDelay: 0.5
   elements: []
   onPointerEnter:
     m_PersistentCalls:
@@ -1031,6 +1032,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 647689668982198068}
+  - component: {fileID: 1881373821771330252}
   - component: {fileID: 6901084185822675695}
   m_Layer: 5
   m_Name: CameraCone
@@ -1059,6 +1061,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!225 &1881373821771330252
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4263815598600917796}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!114 &6901084185822675695
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2175,6 +2189,7 @@ MonoBehaviour:
   log: 0
   setupOnStart: 1
   populateAutomatically: 0
+  setupDelay: 0.5
   elements:
   - {fileID: 2883701217102735125}
   - {fileID: 3721316241946418065}

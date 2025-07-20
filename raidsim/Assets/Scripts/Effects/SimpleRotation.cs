@@ -14,7 +14,7 @@ namespace dev.susybaka.raidsim.Visuals
         {
             if (!string.IsNullOrEmpty(faceTowardsName))
             {
-                faceTowards = Utilities.FindAnyByName(faceTowardsName).transform;
+                faceTowards = Utilities.FindAnyByName(faceTowardsName)?.transform;
             }
         }
 

@@ -245,19 +245,46 @@ namespace dev.susybaka.raidsim.Core
                 return;
             }
 
-            if (currentBundles != null && currentBundles.Count > 0)
-            {
-                if (log)
-                    Debug.Log($"Unloading {currentBundles.Count} previous scene AssetBundles.");
-
-                UnloadBundles(currentBundles.Keys.ToArray());
-            }
-
             // Add the extension to all of the bundle names if not already present
             for (int i = 0; i < bundleNames.Length; i++)
             {
                 if (!bundleNames[i].EndsWith(bundleExtension))
                     bundleNames[i] += bundleExtension;
+            }
+
+            if (currentBundles != null && currentBundles.Count > 0)
+            {
+                if (log)
+                    Debug.Log($"Trying to unload all {currentBundles.Count} unused previous scene AssetBundles.");
+
+                List<string> currentBundleNames = currentBundles.Keys.ToList();
+                List<string> previousBundles = currentBundles.Keys.ToList();
+
+                for (int i = 0; i < currentBundleNames.Count; i++)
+                {
+                    if (previousBundles.Contains(currentBundleNames[i]))
+                    {
+                        if (log)
+                            Debug.Log($"Requested AssetBundle '{currentBundleNames[i]}' of index {i} is already loaded and will not be unloaded.");
+
+                        previousBundles.Remove(currentBundleNames[i]);
+                        currentBundleNames.Remove(currentBundleNames[i]);
+                        i--;
+                    }
+                }
+
+                if (log)
+                    Debug.Log($"Unloading all {previousBundles.Count} unused previous scene AssetBundles.");
+
+                if (previousBundles.Count <= 0)
+                {
+                    if (log)
+                        Debug.Log("No unused previous AssetBundles to unload.");
+                }
+                else
+                {
+                    UnloadBundles(previousBundles.ToArray());
+                }
             }
 
             if (ieLoadAssetBundle == null)
@@ -282,14 +309,6 @@ namespace dev.susybaka.raidsim.Core
                 }
                 else if (!alreadyLoaded.Contains(bundleName))
                 {
-                    // Unload the previous bundle if switching to a new one
-                    /*if (currentBundles != null && currentBundles.Count > 0)
-                    {
-                        if (log)
-                            Debug.Log($"Unloading previous AssetBundle: '{bundleName}' of index {i}");
-                        UnloadBundle(bundleName);
-                    }*/
-
                     string bundlePath = string.Empty;
 
                     if (useExternalBundles)
@@ -435,6 +454,7 @@ namespace dev.susybaka.raidsim.Core
             }
         }
 
+        // TODO: Update to only clear the cache for the specific bundle that was unloaded instead of all of the cached assets.
         public void ClearCache()
         {
             if (log)

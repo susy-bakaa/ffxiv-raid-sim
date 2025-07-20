@@ -33,6 +33,7 @@ namespace dev.susybaka.raidsim.UI
         [SerializeField] private TextMeshProUGUI coordinatesText;
         [SerializeField] private Transform coordinateTarget;
 
+        [SerializeField] private Vector3 northDirection = Vector3.forward;
         [SerializeField] private Vector2 worldSize;
         [SerializeField] private Vector2 worldMin = Vector2.zero;
         [SerializeField] private bool autoCalculateMin = true;
@@ -51,21 +52,31 @@ namespace dev.susybaka.raidsim.UI
         public bool rotateMapInstead = false;
 
         // Private fields for internal state management
+        private Vector3 currentNorthDirection = Vector3.forward;
         private Matrix4x4 transformationMatrix;
         private MinimapMode currentMiniMapMode = MinimapMode.Mini;
         private Vector2 scrollViewDefaultSize;
         private Vector2 scrollViewDefaultPosition;
+        private bool autoFlipDirection = false;
+        private bool autoFlipRotation = false;
         private Dictionary<MinimapWorldObject, MinimapIcon> miniMapWorldObjectsLookup = new Dictionary<MinimapWorldObject, MinimapIcon>();
         private const string minimapToggleKeyName = "ToggleMinimapKey";
 
         // Editor only section to recalculate the transformation matrix and handle validation checks
 #if UNITY_EDITOR
+        private Vector3 previousNorthDirection = Vector3.zero;
         private Vector2 previousWorldSize = Vector2.zero;
         private Vector2 previousWorldMin = Vector2.zero;
         [Button]
         public void RecalculateTransformationMatrix() => CalculateTransformationMatrix();
         private void OnValidate()
         {
+            if (previousNorthDirection != northDirection)
+            {
+                previousNorthDirection = northDirection;
+                EvaluateNorthInversion();
+            }
+
             if (autoCalculateMin)
                 worldMin = new Vector2(worldSize.x / 2, worldSize.y / 2) * -1;
             if ((worldSize != previousWorldSize) || (worldMin != previousWorldMin))
@@ -106,7 +117,11 @@ namespace dev.susybaka.raidsim.UI
             rotateMapInstead = GlobalVariables.rotateMinimap;
         }
 
-        private void Start() => CalculateTransformationMatrix();
+        private void Start()
+        {
+            CalculateTransformationMatrix();
+            EvaluateNorthInversion();
+        }
 
         private void Update()
         {
@@ -115,6 +130,12 @@ namespace dev.susybaka.raidsim.UI
 
             UpdateMiniMapIcons();
             CenterMapOnPlayer();
+
+            if (currentNorthDirection != northDirection)
+            {
+                currentNorthDirection = northDirection;
+                EvaluateNorthInversion();
+            }
 
             if (coordinateTarget == null)
                 return;
@@ -178,7 +199,9 @@ namespace dev.susybaka.raidsim.UI
 
             MinimapIcon icon = worldObject.ExistingIcon ?? Instantiate(minimapIconPrefab);
             if (worldObject.ExistingIcon == null)
-                icon.gameObject.name = worldObject.ObjectName + "_MinimapIcon";
+            {
+                icon.gameObject.name = $"{worldObject.ObjectName}_MinimapIcon";
+            }
             icon.transform.SetParent(contentRectTransform, false);
             icon.iconImage.sprite = worldObject.MinimapIconSprite;
             if (icon.alternativeIconImage && worldObject.MinimapIconSprite != null)
@@ -266,11 +289,15 @@ namespace dev.susybaka.raidsim.UI
             float mapScale = contentRectTransform.localScale.x;
             Vector2 playerMapPos = WorldPositionToMapPosition(playerTransform.position);
             Quaternion mapRotation = rotateMapInstead && playerCameraTransform
-                ? Quaternion.Euler(0, 0, playerCameraTransform.eulerAngles.y)
+                ? Quaternion.Euler(0, 0, GetAngleFromNorth(playerCameraTransform.forward))
                 : Quaternion.identity;
 
             Vector2 rotatedPos = mapRotation * playerMapPos;
             contentRectTransform.anchoredPosition = -rotatedPos * mapScale;
+
+            if (autoFlipDirection)
+                contentRectTransform.anchoredPosition = new Vector2(-contentRectTransform.anchoredPosition.x, contentRectTransform.anchoredPosition.y);
+
             contentRectTransform.localRotation = mapRotation;
             mapBorderRectTransform.localRotation = mapRotation;
         }
@@ -292,7 +319,7 @@ namespace dev.susybaka.raidsim.UI
 
             // Checks if the whole map is rotating or if north is locked upwards and there is no rotation applied to the map.
             Quaternion mapRotation = rotateMapInstead && playerCameraTransform
-                ? Quaternion.Euler(0, 0, playerCameraTransform.eulerAngles.y)
+                ? Quaternion.Euler(0, 0, GetAngleFromNorth(playerCameraTransform.forward))
                 : Quaternion.identity;
 
             // Get the center of the map based on the player's position
@@ -318,10 +345,17 @@ namespace dev.susybaka.raidsim.UI
                 icon.rectTransform.anchoredPosition = centerMap + finalOffset;
                 icon.isOutsideView = isClamped;
 
+                if (autoFlipDirection)
+                    icon.rectTransform.anchoredPosition = new Vector2(-icon.rectTransform.anchoredPosition.x, icon.rectTransform.anchoredPosition.y);
+
                 // Calculates and sets all of the rotations of each icon and their sub components
                 if (icon.useAlternativeIconWhenOutsideView && isClamped)
                 {
                     float angle = Mathf.Atan2(offsetToClamp.y, offsetToClamp.x) * Mathf.Rad2Deg;
+
+                    if (autoFlipDirection)
+                        angle = -angle + 180f;
+
                     float arrowRot = angle - 90f;
 
                     // So this section is a bit of a mess, but it works.
@@ -346,7 +380,7 @@ namespace dev.susybaka.raidsim.UI
                     }
                     else // If the map is rotating instead, adjustments to the rotation based on the camera's Y axis rotation are needed
                     {
-                        float camY = playerCameraTransform.eulerAngles.y;
+                        float camY = GetAngleFromNorth(playerCameraTransform.forward);
 
                         icon.arrowRectTransform.localRotation = Quaternion.Euler(0, 0, arrowRot - camY);
 
@@ -357,21 +391,21 @@ namespace dev.susybaka.raidsim.UI
 
                 // Handles setting the Y axis rotation and position based on if there are overrides or not
                 float objY = (worldObject.OverrideTransform != null && worldObject.OverrideRotation)
-                    ? worldObject.OverrideTransform.eulerAngles.y
-                    : worldObject.transform.eulerAngles.y;
+                        ? GetAngleFromNorth(worldObject.OverrideTransform.forward)
+                        : GetAngleFromNorth(worldObject.transform.forward);
 
                 // If rotateMapInstead is true, adjusts the icon's rotation based on the camera's Y axis rotation
                 // or if the object always follows its own rotation handles that
                 if (rotateMapInstead)
                 {
                     if (!worldObject.AlwaysFollowObjectRotation)
-                        icon.iconRectTransform.localRotation = Quaternion.Euler(0, 0, -playerCameraTransform.eulerAngles.y);
+                        icon.iconRectTransform.localRotation = Quaternion.Euler(0, 0, -GetAngleFromNorth(playerCameraTransform.forward));
                     else
-                        icon.iconRectTransform.localRotation = Quaternion.Euler(0, 0, -objY);
+                        icon.iconRectTransform.localRotation = Quaternion.Euler(0, 0, (autoFlipDirection ? objY : -objY));
                 }
                 else // If rotateMapInstead is false, sets the icon's rotation directly based on it's world objects Y axis rotation
                 {
-                    icon.iconRectTransform.localRotation = Quaternion.Euler(0, 0, -objY);
+                    icon.iconRectTransform.localRotation = Quaternion.Euler(0, 0, (autoFlipDirection ? objY : -objY));
                 }
 
                 // Calculates and sets all of the scales of each icon and their sub components
@@ -384,8 +418,7 @@ namespace dev.susybaka.raidsim.UI
         }
 
         private Vector2 WorldPositionToMapPosition(Vector3 worldPos)
-            => transformationMatrix.MultiplyPoint3x4(new Vector2(worldPos.x, worldPos.z));
-
+            => transformationMatrix.MultiplyPoint3x4(RotateToMinimapNorth(worldPos));
 
         /// <summary>
         /// Calculates the transformation matrix used to convert world coordinates to minimap coordinates.
@@ -400,8 +433,49 @@ namespace dev.susybaka.raidsim.UI
 #endif
             Vector2 mapSize = contentRectTransform.rect.size;
             Vector2 scaleRatio = new Vector2(mapSize.x / worldSize.x, mapSize.y / worldSize.y);
-            Vector2 translation = -worldMin * scaleRatio - mapSize * 0.5f;
+            Vector2 rotatedWorldMin = RotateToMinimapNorth(new Vector3(worldMin.x, 0, worldMin.y));
+            Vector2 translation = -rotatedWorldMin * scaleRatio - mapSize * 0.5f;
             transformationMatrix = Matrix4x4.TRS(translation, Quaternion.identity, new Vector3(scaleRatio.x, scaleRatio.y, 1f));
+        }
+
+        private float GetAngleFromNorth(Vector3 direction)
+        {
+            Vector2 dir2D = new Vector2(direction.x, direction.z).normalized;
+            Vector2 north2D = new Vector2(currentNorthDirection.x, currentNorthDirection.z).normalized;
+            float angle = Vector2.SignedAngle(north2D, dir2D);
+            return autoFlipRotation ? -angle : angle;
+        }
+
+        private Vector2 RotateToMinimapNorth(Vector3 worldPosition)
+        {
+            // Convert to 2D position
+            Vector2 worldPos2D = new Vector2(worldPosition.x, worldPosition.z);
+            Vector2 worldCenter = worldMin + worldSize * 0.5f;
+
+            // Translate to center
+            Vector2 offset = worldPos2D - worldCenter;
+
+            // Calculate rotation
+            Quaternion rotation = Quaternion.FromToRotation(currentNorthDirection.normalized, Vector3.forward);
+            Vector2 rotatedOffset = (Vector2)(rotation * new Vector3(offset.x, offset.y, 0));
+
+            // Return rotated position back in minimap space
+            return worldCenter + rotatedOffset;
+        }
+
+        private void EvaluateNorthInversion()
+        {
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+                return;
+#endif
+            bool flip = false;
+
+            if ((currentNorthDirection.x < 0f) || (currentNorthDirection.y < 0f) || (currentNorthDirection.z < 0f))
+                flip = true;
+
+            autoFlipDirection = flip;
+            autoFlipRotation = flip;
         }
     }
 }

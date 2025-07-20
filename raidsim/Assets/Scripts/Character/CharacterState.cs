@@ -3800,10 +3800,18 @@ namespace dev.susybaka.raidsim.Characters
                 icon = data.hudElement.transform.GetChild(0).GetComponent<Image>().sprite;
             }
 
+            // Bit of a goofy ahh implementation to show the extra damage type icon for DamageOvertimeDebuff's damage feed popups
+            // Could be made better in the future tbh
+            bool showExtraTypeIcon = false;
+            if (data.statusEffect.TryGetComponent(out DamageOvertimeDebuff dot))
+            {
+                showExtraTypeIcon = true;
+            }
+
             if (feed)
-                ShowFlyText(new FlyText(result, color, icon, string.Empty, character));
+                ShowFlyText(new FlyText(result, color, icon, string.Empty, character, showExtraTypeIcon));
             else
-                ShowFlyTextWorldspace(new FlyText(result, color, icon, string.Empty, character));
+                ShowFlyTextWorldspace(new FlyText(result, color, icon, string.Empty, character, false));
         }
 
         public void ShowDamageFlyText(Damage damage, bool showValue = true)
@@ -3871,7 +3879,7 @@ namespace dev.susybaka.raidsim.Characters
                 color = neutralPopupColor;
             }
 
-            ShowFlyText(new FlyText(result, color, null, source, finalDamage.source));
+            ShowFlyText(new FlyText(result, color, null, source, finalDamage.source, false));
         }
 
         /*public void ShowDamageFlyText(int value, string source)
@@ -3984,7 +3992,7 @@ namespace dev.susybaka.raidsim.Characters
                 sTm.gameObject.SetActive(false);
             }
 
-            Image image = go.transform.GetComponentInChildren<Image>();
+            Image image = go.transform.GetChild(0).GetComponent<Image>();
             if (text.icon != null)
             {
                 image.sprite = text.icon;
@@ -3993,6 +4001,14 @@ namespace dev.susybaka.raidsim.Characters
             else
             {
                 image.gameObject.SetActive(false);
+            }
+
+            // This is a bit of a goofy ahh way to conditionally show the extra damage type icon
+            // but only when they are applied instead of removed, should probably be done better in the future
+            if (text.showExtraTypeIcon && image != null && text.content.Contains('+'))
+            {
+                GameObject extraIcon = image.transform.GetChild(0).gameObject;
+                extraIcon.SetActive(true);
             }
         }
 
@@ -4040,14 +4056,16 @@ namespace dev.susybaka.raidsim.Characters
             public Sprite icon;
             public string source;
             public CharacterState character;
+            public bool showExtraTypeIcon;
 
-            public FlyText(string content, Color color, Sprite icon, string source, CharacterState character)
+            public FlyText(string content, Color color, Sprite icon, string source, CharacterState character, bool showExtraTypeIcon)
             {
                 this.content = content;
                 this.color = color;
                 this.icon = icon;
                 this.source = source;
                 this.character = character;
+                this.showExtraTypeIcon = showExtraTypeIcon;
             }
 
             public FlyText(FlyText copy, Color color)
@@ -4057,6 +4075,7 @@ namespace dev.susybaka.raidsim.Characters
                 icon = copy.icon;
                 source = copy.source;
                 character = copy.character;
+                showExtraTypeIcon = copy.showExtraTypeIcon;
             }
         }
 

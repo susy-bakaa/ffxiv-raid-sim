@@ -7,8 +7,11 @@ using UnityEngine.UI;
 
 namespace dev.susybaka.raidsim.UI 
 {
+    [RequireComponent(typeof(CanvasGroup))]
     public class MinimapIcon : MonoBehaviour
     {
+        CanvasGroup group;
+
         public RectTransform rectTransform;
         public Image iconImage;
         public RectTransform iconRectTransform;
@@ -26,6 +29,11 @@ namespace dev.susybaka.raidsim.UI
         private bool wasOutsideView = false;
         private WaitForSecondsRealtime wait = new WaitForSecondsRealtime(0.5f);
 
+        private void Awake()
+        {
+            group = GetComponent<CanvasGroup>();
+        }
+
         private IEnumerator Start()
         {
             yield return wait;
@@ -37,6 +45,7 @@ namespace dev.susybaka.raidsim.UI
                 alternativeIconRectTransform.gameObject.SetActive(false);
             if (arrowRectTransform != null)
                 arrowRectTransform.gameObject.SetActive(false);
+            group.alpha = 0f;
         }
 
         private void Update()
@@ -51,6 +60,7 @@ namespace dev.susybaka.raidsim.UI
                     alternativeIconRectTransform.gameObject.SetActive(false);
                 if (arrowRectTransform != null)
                     arrowRectTransform.gameObject.SetActive(false);
+                group.alpha = 0f;
                 return;
             }
 
@@ -94,6 +104,17 @@ namespace dev.susybaka.raidsim.UI
                         arrowRectTransform.gameObject.SetActive(false);
                 }
             }
+
+            if (group != null && worldObject != null)
+            {
+                if (worldObject.State != null && (worldObject.State.untargetable.value || worldObject.State.hidePartyListEntry))
+                {
+                    group.alpha = 0f;
+                    return;
+                }
+            }
+
+            group.alpha = 1f;
         }
     }
 }

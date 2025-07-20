@@ -81,7 +81,7 @@ namespace dev.susybaka.raidsim.Mechanics
                         Debug.Log($"[SpawnTetherTriggerMechanic ({gameObject.name})] Spawning tether trigger with delay of {delay}");
 
                     spawned.gameObject.SetActive(false);
-                    Utilities.FunctionTimer.Create(this, () =>
+                    Utilities.FunctionTimer.Create(tetherTrigger, () =>
                     {
                         spawned.gameObject.SetActive(true);
                         if (!tetherTrigger.initializeOnStart)

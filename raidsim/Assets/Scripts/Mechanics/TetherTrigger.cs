@@ -1,11 +1,12 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using dev.susybaka.raidsim.Characters;
 using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.UI;
+using dev.susybaka.raidsim.Visuals;
 using dev.susybaka.Shared;
 using static dev.susybaka.raidsim.UI.PartyList;
-using System.Collections;
 
 namespace dev.susybaka.raidsim.Mechanics
 {
@@ -34,9 +35,29 @@ namespace dev.susybaka.raidsim.Mechanics
         private CharacterState startCharacter;
         private CharacterState endCharacter;
         private Coroutine ieSetLineRenderersActive;
+        private SimpleShaderFade shaderFade;
+
+#if UNITY_EDITOR
+        [Header("Editor")]
+        public CharacterState attachToCharacter;
+        [NaughtyAttributes.Button("Initialize")]
+        public void InitializeButton()
+        {
+            if (attachToCharacter != null)
+            {
+                endPoint = attachToCharacter.transform.Find("Pivot");
+                Initialize(attachToCharacter);
+            }
+            else
+            {
+                Initialize();
+            }
+        }
+#endif
 
         private void Awake()
         {
+            shaderFade = GetComponentInChildren<SimpleShaderFade>(true);
             lineRenderers = GetComponentsInChildren<LineRenderer>(true);
             SetLineRenderersActive(false);
             if (partyList == null)
@@ -221,7 +242,15 @@ namespace dev.susybaka.raidsim.Mechanics
 
         public void FormTether(CharacterState target)
         {
-            FormTether(startPoint, target.transform.GetChild(target.transform.childCount - 2).transform);
+            Transform result = target.transform.Find("Pivot"); // target.transform.GetChild(target.transform.childCount - 2).transform
+
+            if (result == null)
+            {
+                Debug.LogWarning($"[TetherTrigger] Could not find 'Pivot' in {target.gameObject.name}. Using the target's transform instead.");
+                result = target.transform;
+            }
+
+            FormTether(startPoint, result);
         }
 
         public void FormTether(Transform start, Transform end)
@@ -233,12 +262,12 @@ namespace dev.susybaka.raidsim.Mechanics
             startPoint = start;
             endPoint = end;
 
-            if (end.parent.TryGetComponent(out CharacterState endState))
+            if (end.TryGetComponentInParents(out CharacterState endState))
             {
                 endCharacter = endState;
                 onForm.Invoke(endState);
             }
-            else if (start.parent.TryGetComponent(out CharacterState startState))
+            else if (start.TryGetComponentInParents(out CharacterState startState))
             {
                 startCharacter = startState;
                 onForm.Invoke(startState);
@@ -279,7 +308,17 @@ namespace dev.susybaka.raidsim.Mechanics
                 if (lineRenderer == null)
                     continue;
 
-                lineRenderer.gameObject.SetActive(state);
+                if (shaderFade == null)
+                {
+                    lineRenderer.gameObject.SetActive(state);
+                }
+                else
+                {
+                    if (state)
+                        shaderFade.FadeIn();
+                    else
+                        shaderFade.FadeOut();
+                }
             }
         }
     }

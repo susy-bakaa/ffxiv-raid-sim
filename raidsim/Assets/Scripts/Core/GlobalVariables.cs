@@ -6,9 +6,9 @@ namespace dev.susybaka.raidsim.Core
 {
     public static class GlobalVariables
     {
-        // This value is incremented when the game gets an updated.
+        // This value is incremented when the game gets an update.
         // It is used by WebGL to determine if the game assets need to be redownloaded and by the auto updater for version checks for updates.
-        public const int versionNumber = 5;
+        public const int versionNumber = 6;
         // Increment this when the scripts are changed in a way that will require a rebuild of all scenes inside bundles.
         // (This is not in used yet but added for future reference)
         public const int scriptingVersion = 1;

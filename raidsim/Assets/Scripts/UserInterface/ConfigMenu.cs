@@ -10,6 +10,7 @@ using dev.susybaka.raidsim.Characters;
 using dev.susybaka.raidsim.Inputs;
 using dev.susybaka.raidsim.Targeting;
 using dev.susybaka.Shared;
+using dev.susybaka.Shared.UserInterface;
 using dev.susybaka.WaveSurvivalGame.UserInterface;
 using static dev.susybaka.raidsim.Characters.PlayerController;
 
@@ -34,6 +35,7 @@ namespace dev.susybaka.raidsim.UI
         [SerializeField] private Toggle invertHorizontalCameraToggle;
         [SerializeField] private TMP_Dropdown cameraAdjustmentDropdown;
         [SerializeField] private SliderInputLinker cameraSensitivitySync;
+        [SerializeField] private ToggleLinker toggleMouseCursorType;
         [SerializeField] private Toggle skipUpdatesToggle;
         float scale = 50;
         float newScale = 50;
@@ -53,6 +55,8 @@ namespace dev.susybaka.raidsim.UI
         int newCameraAdjustment = 0;
         float cameraSensitivity = 10f;
         float newCameraSensitivity = 10f;
+        bool hardwareCursor = true;
+        bool newHardwareCursor = true;
         bool skipUpdates = false;
         bool newSkipUpdates = false;
         [SerializeField] private HudWindow applyPopup;
@@ -116,6 +120,10 @@ namespace dev.susybaka.raidsim.UI
                 if (playerController != null)
                     playerController.legacyMovement = legacy;
                 volume = volumeSliderSync.Slider.value;
+                hardwareCursor = toggleMouseCursorType.toggles[0].isOn;
+                newHardwareCursor = hardwareCursor;
+                if (CursorHandler.Instance != null)
+                    CursorHandler.Instance.useSoftwareCursor = !hardwareCursor;
             }
         }
 
@@ -266,6 +274,12 @@ namespace dev.susybaka.raidsim.UI
             newCameraSensitivity = value;
         }
 
+        public void ChangeMouseCursorType(bool value)
+        {
+            configSaved = false;
+            newHardwareCursor = value;
+        }
+
         public void ChangeSkipUpdates(bool value)
         {
             configSaved = false;
@@ -287,9 +301,7 @@ namespace dev.susybaka.raidsim.UI
             legacy = newLegacy;
             if (playerController != null)
                 playerController.legacyMovement = newLegacy;
-#if UNITY_WEBPLAYER
-        configSaved = true;
-#else
+#if !UNITY_WEBPLAYER
             fullscreen = newFullscreen;
             Screen.fullScreen = fullscreen;
             if (Screen.fullScreen)
@@ -298,6 +310,7 @@ namespace dev.susybaka.raidsim.UI
                 Screen.fullScreenMode = FullScreenMode.Windowed;
             resolution = newResolution;
             resolutionDropdown.SetResolution(resolution, Screen.fullScreen);
+#endif
             volume = newVolume;
             if (volume < 1)
             {
@@ -322,9 +335,13 @@ namespace dev.susybaka.raidsim.UI
                 thirdPersonCamera.controllerSensitivity = originalControllerSensitivity * finalSensitivity;
                 thirdPersonCamera.freecam.rotationSpeed = originalRotationSpeed * finalSensitivity;
             }
+            hardwareCursor = newHardwareCursor;
+            if (CursorHandler.Instance != null)
+                CursorHandler.Instance.useSoftwareCursor = !hardwareCursor;
+#if !UNITY_WEBPLAYER
             skipUpdates = newSkipUpdates;
-            configSaved = true;
 #endif
+            configSaved = true;
         }
 
         public void CloseSettings()
@@ -348,12 +365,10 @@ namespace dev.susybaka.raidsim.UI
             newLegacy = true;
             toggleMovement.toggles[0].SetIsOnWithoutNotify(true);
             toggleMovement.toggles[1].SetIsOnWithoutNotify(false);
-#if UNITY_WEBPLAYER
-        ApplySettings();
-        return;
-#else
+#if !UNITY_WEBPLAYER
             newFullscreen = true;
             newResolution = 0;
+#endif
             newVolume = 100f;
             volumeSliderSync.Slider.value = newVolume;
             volumeSliderSync.Sync(0);
@@ -376,9 +391,11 @@ namespace dev.susybaka.raidsim.UI
                 thirdPersonCamera.controllerSensitivity = originalControllerSensitivity;
                 thirdPersonCamera.freecam.rotationSpeed = originalRotationSpeed;
             }
+            newHardwareCursor = true;
+#if !UNITY_WEBPLAYER
             newSkipUpdates = false;
-            ApplySettings();
 #endif
+            ApplySettings();
         }
 
         public void CancelSettings()
@@ -390,14 +407,12 @@ namespace dev.susybaka.raidsim.UI
             //Debug.Log($"newLegacy {newLegacy} legacy {legacy}");
             toggleMovement.toggles[0].SetIsOnWithoutNotify(newLegacy);
             toggleMovement.toggles[1].SetIsOnWithoutNotify(!newLegacy);
-#if UNITY_WEBPLAYER
-        ApplySettings();
-        return;
-#else
+#if !UNITY_WEBPLAYER
             newFullscreen = fullscreen;
             fullscreenToggle.SetIsOnWithoutNotify(newFullscreen);
             newResolution = resolution;
             resolutionDropdown.SetResolutionWithoutNotify(newResolution, newFullscreen);
+#endif
             newVolume = volume;
             volumeSliderSync.Slider.value = newVolume;
             volumeSliderSync.Sync(0);
@@ -410,10 +425,14 @@ namespace dev.susybaka.raidsim.UI
             newCameraSensitivity = cameraSensitivity;
             cameraSensitivitySync.Slider.value = newCameraSensitivity;
             cameraSensitivitySync.Sync(0);
+            newHardwareCursor = hardwareCursor;
+            toggleMouseCursorType.toggles[0].SetIsOnWithoutNotify(newHardwareCursor);
+            toggleMouseCursorType.toggles[1].SetIsOnWithoutNotify(!newHardwareCursor);
+#if !UNITY_WEBPLAYER
             newSkipUpdates = skipUpdates;
             skipUpdatesToggle.SetIsOnWithoutNotify(newSkipUpdates);
-            ApplySettings();
 #endif
+            ApplySettings();
         }
 
 #if UNITY_EDITOR
