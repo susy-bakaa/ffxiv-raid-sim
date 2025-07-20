@@ -5,8 +5,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 using Object = UnityEngine.Object;
-using static UnityEngine.Rendering.VirtualTexturing.Debugging;
-
 #if UNITY_EDITOR
 using NaughtyAttributes;
 #endif

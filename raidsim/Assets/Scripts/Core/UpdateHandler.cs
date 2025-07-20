@@ -101,16 +101,16 @@ namespace dev.susybaka.raidsim.Updater
 #if UNITY_WEBPLAYER
             destroyed = true;
             checkForUpdatesButton.gameObject.SetActive(false);
-            Destroy(updatePromptGroup.gameObject);
-            Destroy(changelogGroup.gameObject);
+            Destroy(updatePromptWindow.gameObject);
+            Destroy(changelogWindow.gameObject);
             Destroy(gameObject);
             return;
 #elif UNITY_STANDALONE_LINUX
             Debug.LogWarning("Linux platform detected. Automatic updates not supported yet. Skipping update check.");
             destroyed = true;
             checkForUpdatesButton.gameObject.SetActive(false);
-            Destroy(updatePromptGroup.gameObject);
-            Destroy(changelogGroup.gameObject);
+            Destroy(updatePromptWindow.gameObject);
+            Destroy(changelogWindow.gameObject);
             Destroy(gameObject);
             return;
 #endif

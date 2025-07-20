@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEditor;
+using dev.susybaka.raidsim.Core;
 
 namespace dev.susybaka.Shared.Editor 
 {
@@ -15,9 +16,9 @@ namespace dev.susybaka.Shared.Editor
 
         private static readonly BuildTarget[] buildTargets = new BuildTarget[]
         {
-        BuildTarget.StandaloneWindows64,
-        BuildTarget.StandaloneLinux64,
-        BuildTarget.WebGL
+            BuildTarget.StandaloneWindows64,
+            BuildTarget.StandaloneLinux64,
+            BuildTarget.WebGL
         };
 
         [MenuItem("Tools/AssetBundle Builder")]
@@ -103,11 +104,17 @@ namespace dev.susybaka.Shared.Editor
 
                     if (useCustomExtension)
                     {
-                        string extension = raidsim.Core.GlobalVariables.assetBundleExtension;
+                        string extension = GlobalVariables.assetBundleExtension;
                         string[] files = Directory.GetFiles(outputFolder);
 
                         foreach (string filePath in files)
                         {
+                            if (filePath.EndsWith(extension) || filePath.EndsWith($"{extension}.manifest") || filePath.EndsWith($"{extension}.meta"))
+                            {
+                                File.Delete(filePath);
+                                continue;
+                            }
+
                             if (filePath.EndsWith(".manifest") || filePath.EndsWith(".meta"))
                                 continue;
 

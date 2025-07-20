@@ -35,7 +35,7 @@ namespace dev.susybaka.raidsim.SaveLoad
             {
                 string loadedString = PlayerPrefs.GetString("Config");
 
-                List<string> loadedData = new List<string>(loadedString.Split('&'));
+                System.Collections.Generic.List<string> loadedData = new System.Collections.Generic.List<string>(loadedString.Split('&'));
 
                 for (int i = 0; i < loadedData.Count; i++)
                 {

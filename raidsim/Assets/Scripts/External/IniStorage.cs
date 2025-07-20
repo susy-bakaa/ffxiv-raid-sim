@@ -3,6 +3,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+#if UNITY_WEBPLAYER
+using dev.susybaka.raidsim.SaveLoad;
+#endif
 
 namespace dev.illa4257
 {
@@ -391,17 +394,17 @@ namespace dev.illa4257
         public bool Load(string path)
         {
 #if UNITY_WEBPLAYER
-        if (SaveHandler.Instance != null)
-        {
-            string[] lines = SaveHandler.Instance.Load();
-            if (lines != null && lines.Length > 0)
+            if (SaveHandler.Instance != null)
             {
-                Load(lines);
-                return true;
+                string[] lines = SaveHandler.Instance.Load();
+                if (lines != null && lines.Length > 0)
+                {
+                    Load(lines);
+                    return true;
+                }
+                return false;
             }
             return false;
-        }
-        return false;
 #else
             Path = System.IO.Path.GetFullPath(path);
             return Load();
