@@ -241,9 +241,19 @@ namespace dev.susybaka.Shared.Audio
             float scale = 1f / Mathf.Sqrt(activeSoundInstances[s]);
             source.volume *= scale;
 
+            if (log)
+                Debug.Log($"[AudioManager] Sound {s.name} at position {position} is playing with volume {source.volume}. Active instances: {activeSoundInstances[s]}");
+
             source.Play();
             Destroy(tempSource, source.clip.length + 0.5f);
-            Utilities.FunctionTimer.Create(this, () => activeSoundInstances[s] = Mathf.Max(0, activeSoundInstances[s] - 1), source.clip.length, $"AudioManager_Decrement_SoundInstance_{activeSoundInstances[s]}_Clip_{s.name}_Length_{source.clip.length}", false, false);
+            Utilities.FunctionTimer.Create(this, () => DecrementSoundInstance(s), source.clip.length, $"AudioManager_Decrement_SoundInstance_{activeSoundInstances[s]}_Clip_{s.name}_Length_{source.clip.length}", false, false);
+        }
+
+        private void DecrementSoundInstance(Sound s)
+        {
+            activeSoundInstances[s] = Mathf.Max(0, activeSoundInstances[s] - 1);
+            if (log)
+                Debug.Log($"[AudioManager] Decremented sound instance for {s.name}. Remaining instances: {activeSoundInstances[s]}");
         }
 
         public void Play(string sound)
@@ -366,11 +376,12 @@ namespace dev.susybaka.Shared.Audio
             }
         }
 
-        [System.Serializable]
-        public class QueuedSound
+        public void ResetAllDynamicSounds()
         {
-            public Queue<AudioSource> sources = new Queue<AudioSource>();
-            public bool isPlaying = false;
+            if (log)
+                Debug.Log("[AudioManager] Resetting all dynamic sounds");
+            
+            activeSoundInstances.Clear();
         }
     }
 }

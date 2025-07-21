@@ -179,7 +179,8 @@ namespace dev.susybaka.Shared.UserInterface
             }
 
 #if !UNITY_WEBPLAYER
-            Cursor.SetCursor(cursor.texture, cursor.hotspot, CursorMode.Auto);
+            if (!useSoftwareCursor)
+                Cursor.SetCursor(cursor.texture, cursor.hotspot, CursorMode.Auto);
 #endif
 
             if (softwareCursorImage != null)

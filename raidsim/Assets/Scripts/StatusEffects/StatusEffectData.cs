@@ -35,7 +35,7 @@ namespace dev.susybaka.raidsim.StatusEffects
         [SoundName] public string expireSoundFx = "status_expire_positive";
 
 #if UNITY_EDITOR
-        private void OnValidate()
+        private void Reset()
         {
             if (hidden)
             {

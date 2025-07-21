@@ -98,6 +98,10 @@ namespace dev.susybaka.raidsim.Targeting
         private bool targetsTargetColorsUpdated;
         private bool wasMouseClick = false;
         private bool cursorWasSet = false;
+#if UNITY_WEBPLAYER
+        private float _targetInterval = 0.1f;
+        private float _nextTargetTime;
+#endif
 
 #if UNITY_EDITOR
         [Space(20)]
@@ -164,11 +168,20 @@ namespace dev.susybaka.raidsim.Targeting
 
             if (isPlayer && canMouseRaycast)
                 HandleMouseClick();
-            //HandleTabTargeting();
             if (isPlayer)
                 UpdateUserInterface();
+#if !UNITY_WEBPLAYER
             if (autoTarget)
                 Target();
+#else
+            if (!autoTarget)
+                return;
+            if (Time.unscaledTime < _nextTargetTime)
+                return;
+
+            _nextTargetTime = Time.unscaledTime + _targetInterval;
+            Target();
+#endif
         }
 
         private void OnEnable()
@@ -177,11 +190,6 @@ namespace dev.susybaka.raidsim.Targeting
             {
                 if (eventsEnabled)
                     onTarget.Invoke(currentTarget);
-            }
-            else
-            {
-                //if (eventsEnabled)
-                //onTarget.Invoke(null);
             }
         }
 
@@ -465,6 +473,7 @@ namespace dev.susybaka.raidsim.Targeting
             }
         }
 
+#if !UNITY_WEBPLAYER
         public void CycleTarget()
         {
             if (targetType == TargetType.enmity && isAi && targetList != null)
@@ -480,7 +489,39 @@ namespace dev.susybaka.raidsim.Targeting
                 _ = CycleTargetAsync(false, false);
             }
         }
+#else
+        public void CycleTarget()
+        {
+            if (targetType == TargetType.enmity && isAi && targetList != null)
+            {
+                availableTargets = FindAllTargetableNodes(true, true);
+            }
+            else if (targetType == TargetType.nearest)
+            {
+                availableTargets = FindAllTargetableNodes(true, false);
+            }
+            else if (targetType == TargetType.random && isAi && targetList != null)
+            {
+                availableTargets = FindAllTargetableNodes(false, false);
+            }
 
+            if (availableTargets.Count == 0)
+                return;
+
+            if (currentTarget == null)
+            {
+                SetTarget(availableTargets[0]);
+            }
+            else
+            {
+                int currentIndex = availableTargets.IndexOf(currentTarget);
+                int nextIndex = (currentIndex + 1) % availableTargets.Count;
+                SetTarget(availableTargets[nextIndex]);
+            }
+        }
+#endif
+
+#if !UNITY_WEBPLAYER
         private async Task CycleTargetAsync(bool sortByDistance, bool sortByEnmity)
         {
             availableTargets = await FindAllTargetableNodesAsync(sortByDistance, sortByEnmity);
@@ -498,6 +539,7 @@ namespace dev.susybaka.raidsim.Targeting
                 SetTarget(availableTargets[nextIndex]);
             }
         }
+#endif
 
         public void SetRandomTargetFromList()
         {
@@ -519,6 +561,7 @@ namespace dev.susybaka.raidsim.Targeting
             SetTarget(nodes.GetRandomItem());
         }
 
+#if !UNITY_WEBPLAYER
         public void Target()
         {
             if (targetType == TargetType.enmity && isAi && targetList != null)
@@ -548,14 +591,56 @@ namespace dev.susybaka.raidsim.Targeting
                 _ = RefreshTargetsAsync(false, false);
             }
         }
+#else
+        public void Target()
+        {
+            if (targetType == TargetType.enmity && isAi && targetList != null)
+            {
+                if (self == null)
+                    Debug.LogError($"TargetController variable 'self' cannot be null when using TargetType.enmity!");
 
+                if (onlyIfSomeoneHasEnmity && self != null && targetList.HasAnyEnmity(self.GetCharacterState()))
+                {
+                    availableTargets = FindAllTargetableNodes(true, true);
+                }
+                else if (onlyIfSomeoneHasEnmity)
+                {
+                    availableTargets.Clear();
+                }
+                else
+                {
+                    availableTargets = FindAllTargetableNodes(true, true);
+                }
+            }
+            else if (targetType == TargetType.nearest)
+            {
+                availableTargets = FindAllTargetableNodes(true, false);
+            }
+            else if (targetType == TargetType.random && isAi && targetList != null)
+            {
+                availableTargets = FindAllTargetableNodes(false, false);
+            }
+
+            if (availableTargets.Count == 0)
+            {
+                SetTarget(null);
+                return;
+            }
+
+            SetTarget(availableTargets[0]);
+        }
+#endif
+
+#if !UNITY_WEBPLAYER
         private async Task RefreshTargetsAsync(bool sortByDistance, bool sortByEnmity)
         {
             availableTargets = await FindAllTargetableNodesAsync(sortByDistance, sortByEnmity);
             if (availableTargets.Count > 0)
                 SetTarget(availableTargets[0]);
         }
+#endif
 
+#if !UNITY_WEBPLAYER
         private async Task<List<TargetNode>> FindAllTargetableNodesAsync(bool sortByDistance, bool sortByEnmity)
         {
             // Cache references on the main thread
@@ -634,6 +719,145 @@ namespace dev.susybaka.raidsim.Targeting
                     .ToList();
             });
         }
+#else
+        List<TargetNode> FindAllTargetableNodes(bool sortByDistance, bool sortByEnmity)
+        {
+            TargetNode[] allNodes = FindObjectsOfType<TargetNode>();
+            List<TargetNode> targetableNodes = new List<TargetNode>();
+
+            foreach (var node in allNodes)
+            {
+                // Retrieve CharacterState and check if the target is alive or dead based on the onlyAliveTargets setting
+                if (node.TryGetCharacterState(out CharacterState nodeCharacterState))
+                {
+                    if (onlyAliveTargets && nodeCharacterState.dead)
+                    {
+                        continue; // Skip this node as it is dead and we only want alive targets
+                    }
+                }
+                // If targeting is set to nearest and we have nodes in the trigger attached to this controllers own target node,
+                // check if the current target node is inside that trigger or skip it
+                if (targetType == TargetType.nearest && targetTriggerNodes != null && targetTriggerNodes.Count > 0)
+                {
+                    if (!targetTriggerNodes.Contains(node))
+                    {
+                        continue;
+                    }
+                }
+
+                if (node.gameObject.CompareTag("target") && (mask & (1 << node.gameObject.layer)) != 0 && node.Targetable && allowedGroups.Contains(node.Group))
+                {
+                    float distanceToNode = Vector3.Distance(transform.position, node.transform.position);
+                    if (distanceToNode <= maxTargetDistance)
+                    {
+                        Vector3 viewportPoint = m_camera.WorldToViewportPoint(node.transform.position);
+                        if (viewportPoint.z > 0 && viewportPoint.x > 0 && viewportPoint.x < 1 && viewportPoint.y > 0 && viewportPoint.y < 1)
+                        {
+                            targetableNodes.Add(node);
+                        }
+                    }
+                }
+            }
+
+            // We need to sort it automatically like this here already or the targeting is delayed and slow as fuck
+            // This is still a mess honestly
+            // Sort targets based on distance
+            targetableNodes.Sort((a, b) => Vector3.Distance(transform.position, a.transform.position)
+                                            .CompareTo(Vector3.Distance(transform.position, b.transform.position)));
+
+            if (sortByEnmity && targetList != null && self != null && self.TryGetCharacterState(out CharacterState selfCharacterState))
+            {
+                List<CharacterState> targets = targetList.GetEnmityList(selfCharacterState);
+
+                if (targets != null && targets.Count > 0)
+                {
+                    targetableNodes.Sort((a, b) =>
+                    {
+                        bool aHasState = a.TryGetCharacterState(out CharacterState stateA);
+                        bool bHasState = b.TryGetCharacterState(out CharacterState stateB);
+
+                        if (aHasState && bHasState)
+                        {
+                            int indexA = targets.IndexOf(stateA);
+                            int indexB = targets.IndexOf(stateB);
+
+                            // Ensure valid indices, if state is not found, it should be lowest priority
+                            if (indexA == -1)
+                                indexA = int.MaxValue;
+                            if (indexB == -1)
+                                indexB = int.MaxValue;
+
+                            return indexA.CompareTo(indexB);
+                        }
+                        else if (aHasState)
+                        {
+                            // a has state, b does not, so a should come before b
+                            return -1;
+                        }
+                        else if (bHasState)
+                        {
+                            // b has state, a does not, so b should come before a
+                            return 1;
+                        }
+                        else
+                        {
+                            // Neither a nor b has state, consider them equal
+                            return 0;
+                        }
+                    });
+                }
+            }
+            else if (sortByDistance)
+            {
+                // Filter available targets based on if we only want ones from a specified target list.
+                if (isAi && targetList != null)
+                {
+                    for (int i = 0; i < targetableNodes.Count; i++)
+                    {
+                        if (targetableNodes[i].TryGetCharacterState(out CharacterState result))
+                        {
+                            if (!targetList.HasCharacterState(result))
+                            {
+                                targetableNodes.RemoveAt(i);
+                                i--;
+                            }
+                        }
+
+                        //Debug.Log($"node {targetableNodes[i].gameObject.name}");
+                    }
+                }
+
+                // Sort targets based on distance
+                targetableNodes.Sort((a, b) => Vector3.Distance(transform.position, a.transform.position)
+                                                .CompareTo(Vector3.Distance(transform.position, b.transform.position)));
+            }
+            else
+            {
+                // Filter available targets based on if we only want ones from a specified target list.
+                if (isAi && targetList != null)
+                {
+                    for (int i = 0; i < targetableNodes.Count; i++)
+                    {
+                        if (targetableNodes[i].TryGetCharacterState(out CharacterState result))
+                        {
+                            if (!targetList.HasCharacterState(result))
+                            {
+                                targetableNodes.RemoveAt(i);
+                                i--;
+                            }
+                        }
+
+                        //Debug.Log($"node {targetableNodes[i].gameObject.name}");
+                    }
+                }
+
+                // Sort targets randomly
+                targetableNodes.Shuffle();
+            }
+
+            return targetableNodes;
+        }
+#endif
 
         public void SetAutoTargeting(bool state)
         {
