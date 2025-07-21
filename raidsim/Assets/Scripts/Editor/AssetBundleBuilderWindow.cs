@@ -71,6 +71,11 @@ namespace dev.susybaka.Shared.Editor
             {
                 Directory.CreateDirectory(outputFolder);
             }
+            else // This folder might have other files as well but at the moment it only contains asset bundles,
+            {    // so we can safely delete it and recreate it to ensure a clean build.
+                Directory.Delete(outputFolder, true);
+                Directory.CreateDirectory(outputFolder);
+            }
 
             try
             {

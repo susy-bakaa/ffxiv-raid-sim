@@ -22,8 +22,8 @@ namespace dev.susybaka.raidsim.Editor
             "temp",
             "test",
             "StreamingAssets",
-            "StandaloneWindows64",
-            "StandaloneLinux64"
+            "StandaloneWindows64.", // We need to add '.' to these or it skips everything as the folder has the same name as the bundle file, 
+            "StandaloneLinux64."    // which means this filter won't unfortunately work without some kind of file extension. Should probably be fixed in the future.
         };
         public static readonly string[] DoNotShipFolders = new[]
         {
@@ -34,11 +34,7 @@ namespace dev.susybaka.raidsim.Editor
         };
         public static readonly string[] DoNotShipFiles = new[]
         {
-            "config.ini",
-            "debug.bat",
-            "fps.bat",
-            "debug.sh",
-            "fps.sh"
+            "config.ini"
         };
         public static readonly string[] PreserveFiles = new[]
         {
@@ -62,6 +58,7 @@ namespace dev.susybaka.raidsim.Editor
             "temp"
         };
 
+        public static bool ShouldRebuildProgram = true;
         public static bool ShouldRebuildAssetBundles = true;
         public static bool useCustomExtension = true;
         public static string ManualUnityVersion = "1.0.0";
@@ -69,16 +66,21 @@ namespace dev.susybaka.raidsim.Editor
 
         private static readonly (BuildTarget target, string outputFolder, string zipName)[] BuildConfigs = new[]
         {
-            (BuildTarget.StandaloneWindows64, "winbuild1", "win64"),
-            (BuildTarget.StandaloneLinux64,    "linuxbuild1", "linux64"),
-            (BuildTarget.WebGL,                "webbuild1", "webgl")
+            (BuildTarget.StandaloneWindows64, "winbuild", "win64"),
+            (BuildTarget.StandaloneLinux64,    "linuxbuild", "linux64"),
+            (BuildTarget.WebGL,                "webbuild", "webgl")
         };
 
         public static void RunFullBuildPipeline()
         {
+            // Ensure we begin from windows build target
+            EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64);
+
+            // Set the version and bundle version
             PlayerSettings.bundleVersion = ManualUnityVersion;
             GlobalVariables.versionNumber = ManualVersionNumber;
 
+            // Execute each build configuration
             foreach (var (target, folder, zip) in BuildConfigs)
             {
                 try
@@ -91,6 +93,11 @@ namespace dev.susybaka.raidsim.Editor
                 }
             }
 
+            // Reset things we changed for some builds
+            QualitySettings.globalTextureMipmapLimit = 0; // 4096
+            PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Standalone, $"dev.susybaka.{ExecutableName}.windows");
+            EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64);
+
             PackageBuilds();
         }
 
@@ -98,8 +105,11 @@ namespace dev.susybaka.raidsim.Editor
         {
             string outputDir = Path.Combine(BuildRoot, folderName);
 
-            CleanBuildDirectory(outputDir);
-            Directory.CreateDirectory(outputDir);
+            if (ShouldRebuildProgram)
+            {
+                CleanBuildDirectory(outputDir);
+                Directory.CreateDirectory(outputDir);
+            }
 
             if (target == BuildTarget.WebGL)
             {
@@ -134,14 +144,17 @@ namespace dev.susybaka.raidsim.Editor
             }
 
             BuildPlayerOptions buildOptions = new()
-                {
-                    scenes = EditorBuildSettingsScene.GetActiveSceneList(EditorBuildSettings.scenes),
-                    locationPathName = locationPathName,
-                    target = target,
-                    options = BuildOptions.CleanBuildCache
-                };
+            {
+                scenes = EditorBuildSettingsScene.GetActiveSceneList(EditorBuildSettings.scenes),
+                locationPathName = locationPathName,
+                target = target,
+                options = BuildOptions.CleanBuildCache
+            };
 
-            BuildPipeline.BuildPlayer(buildOptions);
+            if (ShouldRebuildProgram)
+            {
+                BuildPipeline.BuildPlayer(buildOptions);
+            }
 
             string bundleTargetFolder = Path.Combine(BundleRoot, target.ToString());
             
@@ -156,6 +169,8 @@ namespace dev.susybaka.raidsim.Editor
                     Directory.Delete(destBundleFolder, true);
 
                 Directory.CreateDirectory(destBundleFolder);
+
+                Debug.Log($"Copying {Directory.GetFiles(bundleTargetFolder).Length} AssetBundles from '{bundleTargetFolder}' to '{destBundleFolder}'");
 
                 foreach (string file in Directory.GetFiles(bundleTargetFolder))
                 {
@@ -328,6 +343,7 @@ namespace dev.susybaka.raidsim.Editor
     
     public class CustomBuildPipelineWindow : EditorWindow
     {
+        private bool rebuildProgram = true;
         private bool rebuildBundles = true;
         private bool useCustomExtension = true;
         private string unityVersion = "1.0.0";
@@ -350,6 +366,7 @@ namespace dev.susybaka.raidsim.Editor
         {
             GUILayout.Label("Build Pipeline Settings", EditorStyles.boldLabel);
 
+            rebuildProgram = EditorGUILayout.Toggle("Rebuild Program", rebuildProgram);
             unityVersion = EditorGUILayout.TextField("Unity Version", unityVersion);
             versionNumber = EditorGUILayout.IntField("Global Version Number", versionNumber);
             rebuildBundles = EditorGUILayout.Toggle("Rebuild Asset Bundles", rebuildBundles);
@@ -362,6 +379,7 @@ namespace dev.susybaka.raidsim.Editor
 
             if (GUILayout.Button("Run Full Build Pipeline"))
             {
+                CustomBuildPipeline.ShouldRebuildProgram = rebuildProgram;
                 CustomBuildPipeline.ShouldRebuildAssetBundles = rebuildBundles;
                 CustomBuildPipeline.useCustomExtension = useCustomExtension;
                 CustomBuildPipeline.ManualUnityVersion = unityVersion;

@@ -401,11 +401,11 @@ namespace dev.susybaka.raidsim.UI
                     if (!worldObject.AlwaysFollowObjectRotation)
                         icon.iconRectTransform.localRotation = Quaternion.Euler(0, 0, -GetAngleFromNorth(playerCameraTransform.forward));
                     else
-                        icon.iconRectTransform.localRotation = Quaternion.Euler(0, 0, (autoFlipDirection ? objY : -objY));
+                        icon.iconRectTransform.localRotation = Quaternion.Euler(0, 0, (autoFlipDirection ? -objY : objY));
                 }
                 else // If rotateMapInstead is false, sets the icon's rotation directly based on it's world objects Y axis rotation
                 {
-                    icon.iconRectTransform.localRotation = Quaternion.Euler(0, 0, (autoFlipDirection ? objY : -objY));
+                    icon.iconRectTransform.localRotation = Quaternion.Euler(0, 0, (autoFlipDirection ? -objY : objY));
                 }
 
                 // Calculates and sets all of the scales of each icon and their sub components
