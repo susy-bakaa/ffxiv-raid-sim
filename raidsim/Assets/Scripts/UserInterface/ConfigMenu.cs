@@ -120,10 +120,12 @@ namespace dev.susybaka.raidsim.UI
                 if (playerController != null)
                     playerController.legacyMovement = legacy;
                 volume = volumeSliderSync.Slider.value;
+#if !UNITY_WEBPLAYER
                 hardwareCursor = toggleMouseCursorType.toggles[0].isOn;
                 newHardwareCursor = hardwareCursor;
                 if (CursorHandler.Instance != null)
                     CursorHandler.Instance.useSoftwareCursor = !hardwareCursor;
+#endif
             }
         }
 
@@ -220,7 +222,7 @@ namespace dev.susybaka.raidsim.UI
         public void ChangeFullscreenMode(bool value)
         {
 #if UNITY_WEBPLAYER
-        return;
+            return;
 #else
             configSaved = false;
             newFullscreen = value;
@@ -230,7 +232,7 @@ namespace dev.susybaka.raidsim.UI
         public void ChangeResolution(Int32 resolutionIndex)
         {
 #if UNITY_WEBPLAYER
-        return;
+            return;
 #else
             configSaved = false;
             newResolution = resolutionIndex;
@@ -276,8 +278,12 @@ namespace dev.susybaka.raidsim.UI
 
         public void ChangeMouseCursorType(bool value)
         {
+#if UNITY_WEBPLAYER
+            return;
+#else
             configSaved = false;
             newHardwareCursor = value;
+#endif
         }
 
         public void ChangeSkipUpdates(bool value)
@@ -335,10 +341,10 @@ namespace dev.susybaka.raidsim.UI
                 thirdPersonCamera.controllerSensitivity = originalControllerSensitivity * finalSensitivity;
                 thirdPersonCamera.freecam.rotationSpeed = originalRotationSpeed * finalSensitivity;
             }
+#if !UNITY_WEBPLAYER
             hardwareCursor = newHardwareCursor;
             if (CursorHandler.Instance != null)
                 CursorHandler.Instance.useSoftwareCursor = !hardwareCursor;
-#if !UNITY_WEBPLAYER
             skipUpdates = newSkipUpdates;
 #endif
             configSaved = true;
@@ -391,8 +397,8 @@ namespace dev.susybaka.raidsim.UI
                 thirdPersonCamera.controllerSensitivity = originalControllerSensitivity;
                 thirdPersonCamera.freecam.rotationSpeed = originalRotationSpeed;
             }
-            newHardwareCursor = true;
 #if !UNITY_WEBPLAYER
+            newHardwareCursor = true;
             newSkipUpdates = false;
 #endif
             ApplySettings();
@@ -425,10 +431,10 @@ namespace dev.susybaka.raidsim.UI
             newCameraSensitivity = cameraSensitivity;
             cameraSensitivitySync.Slider.value = newCameraSensitivity;
             cameraSensitivitySync.Sync(0);
+#if !UNITY_WEBPLAYER
             newHardwareCursor = hardwareCursor;
             toggleMouseCursorType.toggles[0].SetIsOnWithoutNotify(newHardwareCursor);
             toggleMouseCursorType.toggles[1].SetIsOnWithoutNotify(!newHardwareCursor);
-#if !UNITY_WEBPLAYER
             newSkipUpdates = skipUpdates;
             skipUpdatesToggle.SetIsOnWithoutNotify(newSkipUpdates);
 #endif

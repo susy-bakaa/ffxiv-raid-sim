@@ -58,20 +58,31 @@ namespace dev.susybaka.Shared.UserInterface
                     idLookup.Add(cursor.id, cursor);
             }
 
+#if UNITY_WEBPLAYER
+            Cursor.visible = false;
+            useSoftwareCursor = true; // Force software cursor on WebGL
+#else
             SetCursorByID(0); // Default cursor
             SetSoftwareCursorVisibility(useSoftwareCursor);
+#endif
         }
 
         private void Update()
         {
+#if UNITY_WEBPLAYER
+            Cursor.visible = false;
+            useSoftwareCursor = true; // Force software cursor on WebGL
+#endif
             if (useSoftwareCursor)
             {
                 if (softwareCursorCanvasGroup != null)
                 {
+#if !UNITY_WEBPLAYER
                     if (!forceShowHardwareCursor)
                         Cursor.visible = false;
                     else
                         Cursor.visible = true;
+#endif
 
                     if (visible)
                     {
@@ -97,10 +108,12 @@ namespace dev.susybaka.Shared.UserInterface
                 {
                     softwareCursorCanvasGroup.alpha = 0f;
 
+#if !UNITY_WEBPLAYER
                     if (!forceShowHardwareCursor)
                         Cursor.visible = visible;
                     else
                         Cursor.visible = true;
+#endif
                 }
             }
         }
@@ -115,6 +128,10 @@ namespace dev.susybaka.Shared.UserInterface
 
         public void SetSoftwareCursorVisibility(bool visible)
         {
+#if UNITY_WEBPLAYER
+            useSoftwareCursor = true; // Force software cursor on WebGL
+            return;
+#endif
             useSoftwareCursor = visible;
         }
 
@@ -161,7 +178,9 @@ namespace dev.susybaka.Shared.UserInterface
                 return;
             }
 
+#if !UNITY_WEBPLAYER
             Cursor.SetCursor(cursor.texture, cursor.hotspot, CursorMode.Auto);
+#endif
 
             if (softwareCursorImage != null)
             {
