@@ -363,6 +363,17 @@ namespace dev.susybaka.raidsim.UI
             }
         }
 
+        public void ForceCloseSettings()
+        {
+            menuVisible = true;
+
+            if (!configSaved)
+                CancelSettings();
+
+            ToggleApplyPopup(false);
+            ToggleConfigMenu();
+        }
+
         public void DefaultSettings()
         {
             newScale = 50f;

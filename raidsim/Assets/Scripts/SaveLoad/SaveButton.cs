@@ -17,6 +17,7 @@ namespace dev.susybaka.raidsim.SaveLoad
         public bool defaultValue = false;
         public bool runInAwake = false;
         public bool runOnReset = false;
+        public bool useTimelineGroup = false;
 
         public UnityEvent<bool> onStart;
 
@@ -24,8 +25,21 @@ namespace dev.susybaka.raidsim.SaveLoad
         int id = 0;
         float wait;
 
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (useTimelineGroup)
+                group = string.Empty;
+        }
+#endif
+
         private void Awake()
         {
+            if (useTimelineGroup && FightTimeline.Instance != null)
+            {
+                group = FightTimeline.Instance.timelineAbbreviation;
+            }
+
             button = GetComponent<Button>();
             savedValue = 0;
             ini = new IniStorage(GlobalVariables.configPath);

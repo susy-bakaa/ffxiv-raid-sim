@@ -46,6 +46,7 @@ namespace dev.susybaka.raidsim.Core
 
         [Header("Current")]
         public string timelineName = "Unnamed fight timeline";
+        public string timelineAbbreviation = string.Empty;
         public bool playing = false;
         public bool paused = false;
         public List<string> pausedBy = new List<string>();

@@ -8,9 +8,12 @@ namespace dev.susybaka.raidsim.UI
 {
     public class HudElementGroup : MonoBehaviour
     {
+        HudElement thisElement;
+
         public bool log = false;
         public bool setupOnStart = true;
         public bool populateAutomatically = false;
+        public bool restrictToTopLevel = false;
         public float setupDelay = 0.5f;
         public List<HudElement> elements = new List<HudElement>();
         [Foldout("Events")]
@@ -40,6 +43,8 @@ namespace dev.susybaka.raidsim.UI
 
         private void Start()
         {
+            thisElement = GetComponent<HudElement>();
+
             id = Random.Range(0, 10001);
 
             if (setupOnStart)
@@ -77,13 +82,32 @@ namespace dev.susybaka.raidsim.UI
             elements.Clear();
 
             HudElement[] foundElements = GetComponentsInChildren<HudElement>(true);
-            List<HudElement> filteredElements = new List<HudElement>(foundElements.Length);
+            List<HudElement> filteredElements = new List<HudElement>();
+
+            if (log)
+                Debug.Log($"[HudElementGroup] Found {foundElements.Length} child elements");
 
             for (int i = 0; i < foundElements.Length; i++)
             {
-                if (foundElements[i] != this.GetComponent<HudElement>())
+                if (foundElements[i] != thisElement)
                 {
-                    filteredElements.Add(foundElements[i]);
+                    if (log)
+                        Debug.Log($"[HudElementGroup] Child element '{foundElements[i].gameObject.name}' of index {i} is not attached to the same transform as group");
+
+                    if (!restrictToTopLevel)
+                    {
+                        if (log)
+                            Debug.Log($"[HudElementGroup] Child element '{foundElements[i].gameObject.name}' of index {i} was added!");
+
+                        filteredElements.Add(foundElements[i]);
+                    } // Kinda messy way to check if the element is a child of this group, but it works for now, maybe improve it later
+                    else if (restrictToTopLevel && (foundElements[i].transform.parent == transform || foundElements[i].transform.parent.parent == transform))
+                    {
+                        if (log)
+                            Debug.Log($"[HudElementGroup] Child element '{foundElements[i].gameObject.name}' of index {i} passed parent checks and was added!");
+
+                        filteredElements.Add(foundElements[i]);
+                    }
                 }
             }
 

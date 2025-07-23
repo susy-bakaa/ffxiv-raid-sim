@@ -389,10 +389,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5880e1e686aac8f4c86dfa433a88c938, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  group: Global
+  group: 
   key: AutoAttackEnabled
   defaultValue: 0
   runInAwake: 0
+  runOnReset: 0
+  useTimelineGroup: 1
   onStart:
     m_PersistentCalls:
       m_Calls:
@@ -465,6 +467,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!1 &2712703506316413308
 GameObject:

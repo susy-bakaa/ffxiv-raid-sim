@@ -16,14 +16,28 @@ namespace dev.susybaka.raidsim.SaveLoad
 
         public string group = "";
         public string key = "UnnamedDropdown";
+        public bool useTimelineGroup = false;
 
         public UnityEvent<int> onStart;
 
         IniStorage ini;
         int id = 0;
 
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (useTimelineGroup)
+                group = string.Empty;
+        }
+#endif
+
         private void Awake()
         {
+            if (useTimelineGroup && FightTimeline.Instance != null)
+            {
+                group = FightTimeline.Instance.timelineAbbreviation;
+            }
+
             id = Random.Range(0, 10000);
             dropdown = GetComponent<TMP_Dropdown>();
             savedValue = 0;

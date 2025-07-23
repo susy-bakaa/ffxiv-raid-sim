@@ -1,6 +1,9 @@
+using System.Collections.Generic;
+using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
-using NaughtyAttributes;
+using static dev.susybaka.raidsim.Core.GlobalData;
+using static dev.susybaka.raidsim.Core.GlobalData.Flag;
 
 namespace dev.susybaka.raidsim.UI
 {
@@ -12,6 +15,7 @@ namespace dev.susybaka.raidsim.UI
 
         [Header("Base Hud Window")]
         public bool isOpen = false;
+        public Flag isInteractable = new Flag("isInteractable", new List<FlagValue> { new FlagValue("base", true) }, AggregateLogic.AllTrue);
 
         [Foldout("Events")]
         public UnityEvent onOpen;
@@ -31,10 +35,9 @@ namespace dev.susybaka.raidsim.UI
             }
 
             isOpen = true;
-
+            isInteractable.SetFlag("closeWindow", true);
+            UpdateInteractableState();
             group.alpha = 1f;
-            group.blocksRaycasts = true;
-            group.interactable = true;
 
             onOpen.Invoke();
         }
@@ -47,12 +50,40 @@ namespace dev.susybaka.raidsim.UI
             }
 
             isOpen = false;
-
+            isInteractable.SetFlag("closeWindow", false);
+            UpdateInteractableState();
             group.alpha = 0f;
-            group.blocksRaycasts = false;
-            group.interactable = false;
 
             onClose.Invoke();
+        }
+
+        public void EnableInteractions()
+        {
+            isInteractable.SetFlag("enableInteractions", true);
+            UpdateInteractableState();
+        }
+
+        public void DisableInteractions()
+        {
+            isInteractable.SetFlag("enableInteractions", false);
+            UpdateInteractableState();
+        }
+
+        private void UpdateInteractableState()
+        {
+            if (group == null)
+                return;
+
+            if (isInteractable.value)
+            {
+                group.interactable = true;
+                group.blocksRaycasts = true;
+            }
+            else
+            {
+                group.interactable = false;
+                group.blocksRaycasts = false;
+            }
         }
     }
 }
