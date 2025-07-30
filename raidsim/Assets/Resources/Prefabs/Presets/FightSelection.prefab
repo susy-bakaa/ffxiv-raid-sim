@@ -74,11 +74,13 @@ MonoBehaviour:
     assetBundle: dsr
   - scene: suppression
     assetBundle: uwup5
-  - scene: terrestrial_rage_clock
-    assetBundle: m8s
   - scene: terrestrial_rage
     assetBundle: m8s
+  - scene: terrestrial_rage_game8
+    assetBundle: m8s
   - scene: beckon_moonlight
+    assetBundle: m8s
+  - scene: beckon_moonlight_game8
     assetBundle: m8s
   currentSceneIndex: 0
 --- !u!1001 &608874205853061803
@@ -91,7 +93,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 864227202019974020, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000366621
+      value: 0.0009754238
       objectReference: {fileID: 0}
     - target: {fileID: 2397317220443939482, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Name
@@ -111,7 +113,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Options.m_Options.Array.size
-      value: 14
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Options.m_Options.Array.data[5].m_Text
@@ -135,14 +137,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Options.m_Options.Array.data[11].m_Text
-      value: 'M8S: Terrestrial Rage (Clock)'
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
-      propertyPath: m_Options.m_Options.Array.data[12].m_Text
       value: 'M8S: Terrestrial Rage (Rinon)'
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[12].m_Text
+      value: 'M8S: Terrestrial Rage (Game8)'
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Options.m_Options.Array.data[13].m_Text
+      value: 'M8S: Beckon Moonlight (Quad)'
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[14].m_Text
+      value: 'M8S: Beckon Moonlight (Game8)'
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[15].m_Text
       value: 'M8S: Beckon Moonlight'
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
@@ -194,6 +204,38 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[14].m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[14].m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[14].m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[14].m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[15].m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[15].m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[15].m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[15].m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4672412435200640172, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -227,7 +269,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6464313048467052032, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Size
-      value: 1
+      value: 0.8190412
       objectReference: {fileID: 0}
     - target: {fileID: 7171332731230435304, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_AnchorMax.x
