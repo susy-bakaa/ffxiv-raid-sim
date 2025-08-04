@@ -1,78 +1,82 @@
-using System.Collections;
 using System.Collections.Generic;
-using NaughtyAttributes;
 using UnityEngine;
-using static ActionController;
-using static GlobalData;
+using NaughtyAttributes;
+using dev.susybaka.raidsim.Characters;
+using dev.susybaka.raidsim.Core;
+using dev.susybaka.raidsim.UI;
+using static dev.susybaka.raidsim.Core.GlobalData;
 
-[RequireComponent(typeof(FollowTransform))]
-public class FollowCharacterMechanic : FightMechanic
+namespace dev.susybaka.raidsim.Mechanics
 {
-    FollowTransform followTransform;
-
-    [HideIf("useActionInfoInstead")] public PartyList party;
-    [HideIf("useActionInfoInstead")] public bool autoFindParty = true;
-    [HideIf("useActionInfoInstead")] public int memberIndex = -1;
-    [HideIf("useActionInfoInstead")] public bool useRandomMember = true;
-    public bool useActionInfoInstead = false;
-
-    void Awake()
+    [RequireComponent(typeof(FollowTransform))]
+    public class FollowCharacterMechanic : FightMechanic
     {
-        followTransform = GetComponent<FollowTransform>();
+        FollowTransform followTransform;
 
-        if (useActionInfoInstead)
+        [HideIf("useActionInfoInstead")] public PartyList party;
+        [HideIf("useActionInfoInstead")] public bool autoFindParty = true;
+        [HideIf("useActionInfoInstead")] public int memberIndex = -1;
+        [HideIf("useActionInfoInstead")] public bool useRandomMember = true;
+        public bool useActionInfoInstead = false;
+
+        private void Awake()
         {
-            party = null;
-            autoFindParty = false;
-            memberIndex = -1;
-            useRandomMember = false;
-        }
+            followTransform = GetComponent<FollowTransform>();
 
-        if (party == null && autoFindParty)
-            party = FightTimeline.Instance.partyList;
-    }
-
-    public override void TriggerMechanic(ActionInfo actionInfo)
-    {
-        if (!CanTrigger(actionInfo))
-            return;
-
-        Transform finalTarget = null;
-
-        if (party != null && memberIndex > -1)
-        {
-            List<CharacterState> members = new List<CharacterState>(party.GetActiveMembers());
-
-            int member = 0;
-
-            if (useRandomMember)
+            if (useActionInfoInstead)
             {
-                member = Random.Range(0, members.Count);
-            }
-            else if (memberIndex > -1 && memberIndex < members.Count)
-            {
-                member = memberIndex;
+                party = null;
+                autoFindParty = false;
+                memberIndex = -1;
+                useRandomMember = false;
             }
 
-            finalTarget = members[member].transform;
+            if (party == null && autoFindParty)
+                party = FightTimeline.Instance.partyList;
         }
-        else if (useActionInfoInstead)
+
+        public override void TriggerMechanic(ActionInfo actionInfo)
         {
-            if (actionInfo.source != null)
+            if (!CanTrigger(actionInfo))
+                return;
+
+            Transform finalTarget = null;
+
+            if (party != null && memberIndex > -1)
             {
-                finalTarget = actionInfo.source.transform;
-            } 
-            else if (actionInfo.target != null)
-            {
-                finalTarget = actionInfo.target.transform;
+                List<CharacterState> members = new List<CharacterState>(party.GetActiveMembers());
+
+                int member = 0;
+
+                if (useRandomMember)
+                {
+                    member = Random.Range(0, members.Count);
+                }
+                else if (memberIndex > -1 && memberIndex < members.Count)
+                {
+                    member = memberIndex;
+                }
+
+                finalTarget = members[member].transform;
             }
+            else if (useActionInfoInstead)
+            {
+                if (actionInfo.source != null)
+                {
+                    finalTarget = actionInfo.source.transform;
+                }
+                else if (actionInfo.target != null)
+                {
+                    finalTarget = actionInfo.target.transform;
+                }
+            }
+
+            followTransform.target = finalTarget;
         }
 
-        followTransform.target = finalTarget;
-    }
-
-    public override void InterruptMechanic(ActionInfo actionInfo)
-    {
-        followTransform.target = null;
+        public override void InterruptMechanic(ActionInfo actionInfo)
+        {
+            followTransform.target = null;
+        }
     }
 }

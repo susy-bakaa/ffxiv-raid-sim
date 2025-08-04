@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7859146354814195880}
   - component: {fileID: 7892076693015989111}
   - component: {fileID: 6121034487358213761}
+  - component: {fileID: 5064155266763052402}
   m_Layer: 0
   m_Name: Part4
   m_TagString: Untagged
@@ -28,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.3826832, z: -0, w: 0.9238797}
   m_LocalPosition: {x: 0, y: -0.25, z: 0}
-  m_LocalScale: {x: 3, y: 0.5, z: 80}
+  m_LocalScale: {x: 3, y: 0.5, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7179781035555523447}
@@ -83,6 +84,26 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5064155266763052402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1105576690045719675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d05cb3927fce93948a7624acfed3516d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scale: {x: 3, y: 0.5, z: 80}
+  setScale: 0
+  onUpdate: 0
+  overrideOriginalScale: 0
+  originalScale: {x: 0, y: 0, z: 0}
+  duration: 0.35
+  _setReset: 1
+  _holdTime: 2
 --- !u!1 &1666703276857897578
 GameObject:
   m_ObjectHideFlags: 0
@@ -93,6 +114,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7179781035555523447}
   - component: {fileID: 1554934116188708596}
+  - component: {fileID: 7166356974324147182}
+  - component: {fileID: 4478245213907555496}
   m_Layer: 0
   m_Name: HitEffect
   m_TagString: Untagged
@@ -133,10 +156,146 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outValue: 0
   inValue: 1
-  defaultFadeTime: 0.33
+  defaultFadeTime: 0.25
   outOnStart: 1
   log: 0
-  fadeTime: 0.5
+  fadeTime: 0.25
+--- !u!114 &7166356974324147182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1666703276857897578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d26d546f2d17f5940b930e215911f104, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: ResetScale
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  onTriggerMechanic:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5234379344848777082}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleScale, Assembly-CSharp
+        m_MethodName: ResetScale
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 936423178382200317}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleScale, Assembly-CSharp
+        m_MethodName: ResetScale
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2147068207574067097}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleScale, Assembly-CSharp
+        m_MethodName: ResetScale
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 5064155266763052402}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleScale, Assembly-CSharp
+        m_MethodName: ResetScale
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &4478245213907555496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1666703276857897578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d26d546f2d17f5940b930e215911f104, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: Scale
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  onTriggerMechanic:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5234379344848777082}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleScale, Assembly-CSharp
+        m_MethodName: Scale
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 936423178382200317}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleScale, Assembly-CSharp
+        m_MethodName: Scale
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2147068207574067097}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleScale, Assembly-CSharp
+        m_MethodName: Scale
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 5064155266763052402}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleScale, Assembly-CSharp
+        m_MethodName: Scale
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &2131412203951158817
 GameObject:
   m_ObjectHideFlags: 0
@@ -613,9 +772,49 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 5321481326025741570}
-        m_TargetAssemblyTypeName: SimpleShaderFade, Assembly-CSharp
-        m_MethodName: FadeIn
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleShaderFade,
+          Assembly-CSharp
+        m_MethodName: FadeOut
         m_Mode: 4
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1554934116188708596}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleShaderFade,
+          Assembly-CSharp
+        m_MethodName: FadeOut
+        m_Mode: 4
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 7166356974324147182}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Mechanics.CombinedFightMechanic,
+          Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 5321481326025741570}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleShaderFade,
+          Assembly-CSharp
+        m_MethodName: FadeIn
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -659,9 +858,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 5321481326025741570}
-        m_TargetAssemblyTypeName: SimpleShaderFade, Assembly-CSharp
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleShaderFade,
+          Assembly-CSharp
         m_MethodName: FadeOut
-        m_Mode: 4
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -671,14 +871,28 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 1554934116188708596}
-        m_TargetAssemblyTypeName: SimpleShaderFade, Assembly-CSharp
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleShaderFade,
+          Assembly-CSharp
         m_MethodName: FadeIn
-        m_Mode: 4
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0.25
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 4478245213907555496}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Mechanics.CombinedFightMechanic,
+          Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
@@ -729,9 +943,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1554934116188708596}
-        m_TargetAssemblyTypeName: SimpleShaderFade, Assembly-CSharp
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleShaderFade,
+          Assembly-CSharp
         m_MethodName: FadeOut
-        m_Mode: 4
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -756,6 +971,9 @@ MonoBehaviour:
   disableInstead: 0
   disabledOnStart: 0
   log: 0
+  onTriggerDestruction:
+    m_PersistentCalls:
+      m_Calls: []
   onDestroy:
     m_PersistentCalls:
       m_Calls: []
@@ -831,7 +1049,7 @@ MonoBehaviour:
   defaultFadeTime: 0.33
   outOnStart: 1
   log: 0
-  fadeTime: 0.5
+  fadeTime: 0.33
 --- !u!1 &5831330431242141492
 GameObject:
   m_ObjectHideFlags: 0
@@ -843,6 +1061,7 @@ GameObject:
   - component: {fileID: 6117897601637555884}
   - component: {fileID: 6766265036425804772}
   - component: {fileID: 9070062844351680627}
+  - component: {fileID: 5234379344848777082}
   m_Layer: 0
   m_Name: Part1
   m_TagString: Untagged
@@ -860,7 +1079,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -0.25, z: 0}
-  m_LocalScale: {x: 3, y: 0.5, z: 80}
+  m_LocalScale: {x: 3, y: 0.5, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7179781035555523447}
@@ -915,6 +1134,26 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5234379344848777082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5831330431242141492}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d05cb3927fce93948a7624acfed3516d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scale: {x: 3, y: 0.5, z: 80}
+  setScale: 0
+  onUpdate: 0
+  overrideOriginalScale: 0
+  originalScale: {x: 0, y: 0, z: 0}
+  duration: 0.35
+  _setReset: 1
+  _holdTime: 2
 --- !u!1 &6589010501926123022
 GameObject:
   m_ObjectHideFlags: 0
@@ -961,6 +1200,7 @@ GameObject:
   - component: {fileID: 561642695955930380}
   - component: {fileID: 2282371283566340710}
   - component: {fileID: 6901786302065732059}
+  - component: {fileID: 936423178382200317}
   m_Layer: 0
   m_Name: Part2
   m_TagString: Untagged
@@ -978,7 +1218,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: -0.25, z: 0}
-  m_LocalScale: {x: 3, y: 0.5, z: 80}
+  m_LocalScale: {x: 3, y: 0.5, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7179781035555523447}
@@ -1033,6 +1273,26 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &936423178382200317
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7049017711957095046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d05cb3927fce93948a7624acfed3516d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scale: {x: 3, y: 0.5, z: 80}
+  setScale: 0
+  onUpdate: 0
+  overrideOriginalScale: 0
+  originalScale: {x: 0, y: 0, z: 0}
+  duration: 0.35
+  _setReset: 1
+  _holdTime: 2
 --- !u!1 &7479074342899049185
 GameObject:
   m_ObjectHideFlags: 0
@@ -1233,6 +1493,7 @@ GameObject:
   - component: {fileID: 5033507847905321961}
   - component: {fileID: 2701715943452056414}
   - component: {fileID: 348600255423256461}
+  - component: {fileID: 2147068207574067097}
   m_Layer: 0
   m_Name: Part3
   m_TagString: Untagged
@@ -1250,7 +1511,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.3826837, z: -0, w: 0.9238795}
   m_LocalPosition: {x: 0, y: -0.25, z: 0}
-  m_LocalScale: {x: 3, y: 0.5, z: 80}
+  m_LocalScale: {x: 3, y: 0.5, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7179781035555523447}
@@ -1305,6 +1566,26 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &2147068207574067097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7600817373441770866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d05cb3927fce93948a7624acfed3516d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scale: {x: 3, y: 0.5, z: 80}
+  setScale: 0
+  onUpdate: 0
+  overrideOriginalScale: 0
+  originalScale: {x: 0, y: 0, z: 0}
+  duration: 0.35
+  _setReset: 1
+  _holdTime: 2
 --- !u!1 &9193964934008938093
 GameObject:
   m_ObjectHideFlags: 0

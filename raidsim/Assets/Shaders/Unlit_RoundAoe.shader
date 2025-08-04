@@ -47,7 +47,7 @@ Shader "Custom/Unlit/RoundAoe"
         [HideInInspector]
         _DoubleSided ("Double Sided", Float) = 2.0
     }
-    CustomEditor "susy_baka.Raidsim.Editor.RoundAoeShaderInspector"
+    CustomEditor "dev.susybaka.raidsim.Editor.RoundAoeShaderInspector"
     SubShader
     {
         Tags { "Queue" = "Transparent" }

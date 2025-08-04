@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 
-namespace susy_baka.Shared.Utils.Editor
+namespace dev.susybaka.Shared.Editor
 {
     public class SceneLoaderWindow : EditorWindow
     {

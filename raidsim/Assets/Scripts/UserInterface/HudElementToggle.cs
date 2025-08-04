@@ -1,25 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class HudElementToggle : MonoBehaviour
+namespace dev.susybaka.raidsim.UI
 {
-    public CanvasGroup referenceGroup;
-    public CanvasGroup targetGroup;
-    public bool copy;
-    public bool inverse;
-
-    void Update()
+    public class HudElementToggle : MonoBehaviour
     {
-        if (referenceGroup != null && targetGroup != null)
+        public CanvasGroup referenceGroup;
+        public CanvasGroup targetGroup;
+        public bool copy;
+        public bool inverse;
+
+        private void Update()
         {
-            if (copy && inverse)
+            if (referenceGroup != null && targetGroup != null)
             {
-                targetGroup.alpha = 1f - referenceGroup.alpha;
-            }
-            else if (copy)
-            {
-                targetGroup.alpha = referenceGroup.alpha;
+                if (copy && inverse)
+                {
+                    targetGroup.alpha = 1f - referenceGroup.alpha;
+                }
+                else if (copy)
+                {
+                    targetGroup.alpha = referenceGroup.alpha;
+                }
             }
         }
     }

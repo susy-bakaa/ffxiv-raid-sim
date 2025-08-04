@@ -1,36 +1,37 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectRotation : MonoBehaviour
+namespace dev.susybaka.raidsim.Visuals
 {
-    public bool freezeX;
-    public bool freezeY;
-    public bool freezeZ;
-    public bool setAutomatically = true;
-    public Vector3 targetRotation;
-
-    void Awake()
+    public class ObjectRotation : MonoBehaviour
     {
-        if (setAutomatically)
+        public bool freezeX;
+        public bool freezeY;
+        public bool freezeZ;
+        public bool setAutomatically = true;
+        public Vector3 targetRotation;
+
+        private void Awake()
         {
-            targetRotation = transform.rotation.eulerAngles;
+            if (setAutomatically)
+            {
+                targetRotation = transform.rotation.eulerAngles;
+            }
         }
-    }
 
-    void Update()
-    {
-        Quaternion currentRotation = transform.rotation;
+        private void Update()
+        {
+            Quaternion currentRotation = transform.rotation;
 
-        Vector3 currentEulerAngles = currentRotation.eulerAngles;
+            Vector3 currentEulerAngles = currentRotation.eulerAngles;
 
-        if (freezeX)
-            currentEulerAngles.x = targetRotation.x;
-        if (freezeY)
-            currentEulerAngles.y = targetRotation.y;
-        if (freezeZ)
-            currentEulerAngles.z = targetRotation.z;
+            if (freezeX)
+                currentEulerAngles.x = targetRotation.x;
+            if (freezeY)
+                currentEulerAngles.y = targetRotation.y;
+            if (freezeZ)
+                currentEulerAngles.z = targetRotation.z;
 
-        transform.rotation = Quaternion.Euler(currentEulerAngles);
+            transform.rotation = Quaternion.Euler(currentEulerAngles);
+        }
     }
 }

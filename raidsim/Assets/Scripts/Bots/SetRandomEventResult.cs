@@ -1,26 +1,28 @@
-using System.Collections;
-using System.Collections.Generic;
-using NaughtyAttributes;
 using UnityEngine;
+using NaughtyAttributes;
+using dev.susybaka.raidsim.Core;
 
-public class SetRandomEventResult : MonoBehaviour
+namespace dev.susybaka.raidsim.Events
 {
-    [Label("ID"), MinValue(0)]
-    public int id = 0;
-    [MinValue(0)]
-    public int result = 0;
-
-    public void SetResult(int result)
+    public class SetRandomEventResult : MonoBehaviour
     {
-        this.result = result;
-        SetResult();
-    }
+        [Label("ID"), MinValue(0)]
+        public int id = 0;
+        [MinValue(0)]
+        public int result = 0;
 
-    public void SetResult()
-    {
-        if (FightTimeline.Instance != null)
+        public void SetResult(int result)
         {
-            FightTimeline.Instance.SetRandomEventResult(id, result);
+            this.result = result;
+            SetResult();
+        }
+
+        public void SetResult()
+        {
+            if (FightTimeline.Instance != null)
+            {
+                FightTimeline.Instance.SetRandomEventResult(id, result);
+            }
         }
     }
 }

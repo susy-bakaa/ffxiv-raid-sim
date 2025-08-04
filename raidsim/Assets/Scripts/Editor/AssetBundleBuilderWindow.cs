@@ -1,109 +1,159 @@
 #if UNITY_EDITOR
+using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEditor;
-using System.IO;
-using System.Collections.Generic;
+using dev.susybaka.raidsim.Core;
 
-public class AssetBundleBuilderWindow : EditorWindow
+namespace dev.susybaka.Shared.Editor 
 {
-    private string sourceFolder = "Assets";
-    private string outputFolder = "Assets/StreamingAssets";
-    private int selectedTargetIndex = 0;
-
-    private static readonly BuildTarget[] buildTargets = new BuildTarget[]
+    public class AssetBundleBuilderWindow : EditorWindow
     {
-        BuildTarget.StandaloneWindows64,
-        BuildTarget.StandaloneLinux64,
-        BuildTarget.WebGL,
-        BuildTarget.StandaloneOSX,
-    };
+        private string sourceFolder = "Assets";
+        private string outputFolder = "Assets/StreamingAssets";
+        private int selectedTargetIndex = 0;
+        private bool useCustomExtension = true;
 
-    [MenuItem("Tools/AssetBundle Builder")]
-    public static void ShowWindow()
-    {
-        GetWindow<AssetBundleBuilderWindow>("AssetBundle Builder");
-    }
-
-    private void OnGUI()
-    {
-        GUILayout.Label("AssetBundle Build Settings", EditorStyles.boldLabel);
-
-        sourceFolder = EditorGUILayout.TextField("Source Folder:", sourceFolder);
-        outputFolder = EditorGUILayout.TextField("Output Folder:", outputFolder);
-
-        if (GUILayout.Button("Reset to Default Output"))
+        private static readonly BuildTarget[] buildTargets = new BuildTarget[]
         {
-            outputFolder = "Assets/StreamingAssets";
+            BuildTarget.StandaloneWindows64,
+            BuildTarget.StandaloneLinux64,
+            BuildTarget.WebGL
+        };
+
+        [MenuItem("Tools/AssetBundle Builder")]
+        public static void ShowWindow()
+        {
+            AssetBundleBuilderWindow window = GetWindow<AssetBundleBuilderWindow>("AssetBundle Builder");
+
+            // Set the icon for the window using Unity's default scene icon
+            GUIContent titleContent = new GUIContent("AssetBundle Builder", EditorGUIUtility.IconContent("ModelImporter Icon").image);
+            window.titleContent = titleContent;
         }
 
-        selectedTargetIndex = EditorGUILayout.Popup("Build Target:", selectedTargetIndex, GetBuildTargetOptions());
-
-        if (GUILayout.Button("Build Asset Bundles"))
+        private void OnGUI()
         {
-            BuildAssetBundles();
-        }
-    }
+            GUILayout.Label("AssetBundle Build Settings", EditorStyles.boldLabel);
 
-    private void BuildAssetBundles()
-    {
-        if (!Directory.Exists(sourceFolder))
-        {
-            Debug.LogError("Invalid source folder: " + sourceFolder);
-            return;
-        }
+            sourceFolder = EditorGUILayout.TextField("Source Folder:", sourceFolder);
+            outputFolder = EditorGUILayout.TextField("Output Folder:", outputFolder);
 
-        if (!Directory.Exists(outputFolder))
-        {
-            Directory.CreateDirectory(outputFolder);
-        }
+            selectedTargetIndex = EditorGUILayout.Popup("Build Target:", selectedTargetIndex, GetBuildTargetOptions());
 
-        try
-        {
-            List<BuildTarget> targetsToBuild = new List<BuildTarget>();
+            useCustomExtension = EditorGUILayout.Toggle("Use Custom File Extension", useCustomExtension);
 
-            if (selectedTargetIndex == 0) // Current Build Target
+            if (useCustomExtension)
+                GUILayout.Label($"Current Extension: {raidsim.Core.GlobalVariables.assetBundleExtension}", EditorStyles.label);
+            else
+                GUILayout.Space(17); // Just to keep the layout consistent
+
+            if (GUILayout.Button("Reset Paths to Default"))
             {
-                targetsToBuild.Add(EditorUserBuildSettings.activeBuildTarget);
-            }
-            else if (selectedTargetIndex == 1) // All Predefined Targets
-            {
-                targetsToBuild.AddRange(buildTargets);
-            }
-            else // Specific Target
-            {
-                targetsToBuild.Add(buildTargets[selectedTargetIndex - 2]);
+                sourceFolder = "Assets";
+                outputFolder = "Assets/StreamingAssets";
             }
 
-            foreach (BuildTarget target in targetsToBuild)
+            if (GUILayout.Button("Build All Asset Bundles"))
             {
-                BuildAssetBundleOptions options = BuildAssetBundleOptions.None;
+                BuildAssetBundles();
+            }
+        }
 
-                if (target == BuildTarget.WebGL)
+        private void BuildAssetBundles()
+        {
+            if (!Directory.Exists(sourceFolder))
+            {
+                Debug.LogError("Invalid source folder: " + sourceFolder);
+                return;
+            }
+
+            if (!Directory.Exists(outputFolder))
+            {
+                Directory.CreateDirectory(outputFolder);
+            }
+            else // This folder might have other files as well but at the moment it only contains asset bundles,
+            {    // so we can safely delete it and recreate it to ensure a clean build.
+                Directory.Delete(outputFolder, true);
+                Directory.CreateDirectory(outputFolder);
+            }
+
+            try
+            {
+                List<BuildTarget> targetsToBuild = new List<BuildTarget>();
+
+                if (selectedTargetIndex == 0) // Current Build Target
                 {
-                    options = BuildAssetBundleOptions.ChunkBasedCompression;
+                    targetsToBuild.Add(EditorUserBuildSettings.activeBuildTarget);
+                }
+                else if (selectedTargetIndex == 1) // All Predefined Targets
+                {
+                    targetsToBuild.AddRange(buildTargets);
+                }
+                else // Specific Target
+                {
+                    targetsToBuild.Add(buildTargets[selectedTargetIndex - 2]);
                 }
 
-                Debug.Log($"Building for target: {target} with the following {options}");
+                foreach (BuildTarget target in targetsToBuild)
+                {
+                    BuildAssetBundleOptions options = BuildAssetBundleOptions.None;
 
-                BuildPipeline.BuildAssetBundles(outputFolder, options, target);
+                    if (target == BuildTarget.WebGL)
+                    {
+                        options = BuildAssetBundleOptions.ChunkBasedCompression;
+                    }
+
+                    Debug.Log($"Building for target: {target} with the following {options}");
+
+                    BuildPipeline.BuildAssetBundles(outputFolder, options, target);
+
+                    if (useCustomExtension)
+                    {
+                        string extension = GlobalVariables.assetBundleExtension;
+                        string[] files = Directory.GetFiles(outputFolder);
+
+                        foreach (string filePath in files)
+                        {
+                            if (filePath.EndsWith(extension) || filePath.EndsWith($"{extension}.manifest") || filePath.EndsWith($"{extension}.meta"))
+                            {
+                                File.Delete(filePath);
+                                continue;
+                            }
+
+                            if (filePath.EndsWith(".manifest") || filePath.EndsWith(".meta"))
+                                continue;
+
+                            string newPath = filePath + extension;
+
+                            if (!File.Exists(newPath))
+                            {
+                                File.Move(filePath, newPath);
+                                if (File.Exists(filePath + ".manifest"))
+                                    File.Move(filePath + ".manifest", newPath + ".manifest");
+                                if (File.Exists(filePath + ".meta"))
+                                    File.Move(filePath + ".meta", newPath + ".meta");
+                            }
+                        }
+                    }
+                }
+
+                Debug.Log("Asset bundle build completed!");
             }
+            catch (System.Exception e)
+            {
+                Debug.LogError("Asset bundle build failed: " + e);
+            }
+        }
 
-            Debug.Log("Asset bundle build completed!");
-        }
-        catch (System.Exception e)
+        private string[] GetBuildTargetOptions()
         {
-            Debug.LogError("Asset bundle build failed: " + e);
+            List<string> options = new List<string> { "Current", "All" };
+            foreach (var target in buildTargets)
+            {
+                options.Add(target.ToString());
+            }
+            return options.ToArray();
         }
-    }
-
-    private string[] GetBuildTargetOptions()
-    {
-        List<string> options = new List<string> { "Current", "All" };
-        foreach (var target in buildTargets)
-        {
-            options.Add(target.ToString());
-        }
-        return options.ToArray();
     }
 }
 #endif

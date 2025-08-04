@@ -1,7 +1,7 @@
-using UnityEditor;
 using UnityEngine;
+using UnityEditor;
 
-namespace susy_baka.WaveSurvivalGame.Editor
+namespace dev.susybaka.WaveSurvivalGame.Editor
 {
     public class TextEntryDialog : EditorWindow
     {
@@ -31,7 +31,7 @@ namespace susy_baka.WaveSurvivalGame.Editor
             return dialog.m_entryFieldResult;
         }
 
-        void OnGUI()
+        private void OnGUI()
         {
             if (Event.current != null && Event.current.isKey)
             {
@@ -95,7 +95,7 @@ namespace susy_baka.WaveSurvivalGame.Editor
             }
         }
 
-        void Accepted()
+        private void Accepted()
         {
             if (!string.IsNullOrEmpty(m_entryFieldResult))
             {
@@ -103,7 +103,7 @@ namespace susy_baka.WaveSurvivalGame.Editor
             }
         }
 
-        void Cancelled()
+        private void Cancelled()
         {
             m_entryFieldResult = m_entry;
             Close();

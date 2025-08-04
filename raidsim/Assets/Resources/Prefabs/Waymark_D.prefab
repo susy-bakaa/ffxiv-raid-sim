@@ -211,6 +211,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b339c46b1dec4042ae2260aded4f31e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  x: 1
+  y: 1
+  z: 1
 --- !u!1 &6940182238708117431
 GameObject:
   m_ObjectHideFlags: 0
@@ -220,6 +223,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1776673688848601368}
+  - component: {fileID: 8724444719492394467}
   m_Layer: 0
   m_Name: Waymark_D
   m_TagString: Untagged
@@ -244,6 +248,28 @@ Transform:
   - {fileID: 5357832406993527419}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8724444719492394467
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6940182238708117431}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93cdb0feb58ddda4abb508444dcbd899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectName: 
+  useAlternativeIconWhenOutsideView: 1
+  minimapIconSprite: {fileID: 21300000, guid: 35195d478ea8e6e438fb0a0d7a7d6c84, type: 3}
+  minimapArrowSprite: {fileID: 429886968, guid: 3c5c72a0abec3314baae3e9a5c1c42f7, type: 3}
+  existingIcon: {fileID: 0}
+  overrideTransform: {fileID: 0}
+  overridePosition: 0
+  overrideRotation: 0
+  alwaysFollowObjectRotation: 0
+  priority: 2
 --- !u!1 &7024470402164148195
 GameObject:
   m_ObjectHideFlags: 0
@@ -289,6 +315,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b339c46b1dec4042ae2260aded4f31e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  x: 1
+  y: 1
+  z: 1
 --- !u!1 &7709799039213567519
 GameObject:
   m_ObjectHideFlags: 0

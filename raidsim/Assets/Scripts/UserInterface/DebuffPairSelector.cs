@@ -1,29 +1,32 @@
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using static StatusEffectData;
+using TMPro;
+using dev.susybaka.raidsim.Core;
+using dev.susybaka.raidsim.Mechanics;
+using static dev.susybaka.raidsim.StatusEffects.StatusEffectData;
 
-public class DebuffPairSelector : MonoBehaviour
+namespace dev.susybaka.raidsim.UI
 {
-    TMP_Dropdown dropdown;
-
-    public StatusEffectInfoArray[] effects;
-    public RaidwideDebuffPairsMechanic target;
-
-    void Start()
+    public class DebuffPairSelector : MonoBehaviour
     {
-        dropdown = GetComponentInChildren<TMP_Dropdown>();
-        Select(0);
-    }
+        TMP_Dropdown dropdown;
 
-    void Update()
-    {
-        dropdown.interactable = !FightTimeline.Instance.playing;
-    }
+        public StatusEffectInfoArray[] effects;
+        public RaidwideDebuffPairsMechanic target;
 
-    public void Select(int value)
-    {
-        target.playerEffect = effects[value];
+        private void Start()
+        {
+            dropdown = GetComponentInChildren<TMP_Dropdown>();
+            Select(0);
+        }
+
+        private void Update()
+        {
+            dropdown.interactable = !FightTimeline.Instance.playing;
+        }
+
+        public void Select(int value)
+        {
+            target.playerEffect = effects[value];
+        }
     }
 }

@@ -1,53 +1,55 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.Serialization;
-using static GlobalData;
+using dev.susybaka.raidsim.Characters;
+using static dev.susybaka.raidsim.Core.GlobalData;
 
-public class DisableEnemyMechanic : FightMechanic
+namespace dev.susybaka.raidsim.Mechanics
 {
-    public List<CharacterState> enemies = new List<CharacterState>();
-    public bool setNameplate = false;
-    public bool setTargetable = false;
-    [FormerlySerializedAs("inverted")] public bool enableInstead = false;
-    public bool destroyInstead = false;
-
-    public override void TriggerMechanic(ActionInfo actionInfo)
+    public class DisableEnemyMechanic : FightMechanic
     {
-        if (!CanTrigger(actionInfo))
-            return;
+        public List<CharacterState> enemies = new List<CharacterState>();
+        public bool setNameplate = false;
+        public bool setTargetable = false;
+        [FormerlySerializedAs("inverted")] public bool enableInstead = false;
+        public bool destroyInstead = false;
 
-        if (enemies != null && enemies.Count > 0)
+        public override void TriggerMechanic(ActionInfo actionInfo)
         {
-            for (int i = 0; i < enemies.Count; i++)
-            {
-                if (!enableInstead)
-                {
-                    if (setNameplate)
-                        enemies[i].ToggleNameplate(false);
-                    if (setTargetable)
-                        enemies[i].ToggleTargetable(false);
+            if (!CanTrigger(actionInfo))
+                return;
 
-                    if (!destroyInstead)
+            if (enemies != null && enemies.Count > 0)
+            {
+                for (int i = 0; i < enemies.Count; i++)
+                {
+                    if (!enableInstead)
                     {
-                        enemies[i].disabled = true;
-                        enemies[i].gameObject.SetActive(false);
+                        if (setNameplate)
+                            enemies[i].ToggleNameplate(false);
+                        if (setTargetable)
+                            enemies[i].ToggleTargetable(false);
+
+                        if (!destroyInstead)
+                        {
+                            enemies[i].disabled = true;
+                            enemies[i].gameObject.SetActive(false);
+                        }
+                        else
+                        {
+                            enemies[i].disabled = true;
+                            Destroy(enemies[i].gameObject, 0.1f);
+                        }
                     }
                     else
                     {
-                        enemies[i].disabled = true;
-                        Destroy(enemies[i].gameObject, 0.1f);
-                    }
-                }
-                else
-                {
-                    if (setNameplate)
-                        enemies[i].ToggleNameplate(true);
-                    if (setTargetable)
-                        enemies[i].ToggleTargetable(true);
+                        if (setNameplate)
+                            enemies[i].ToggleNameplate(true);
+                        if (setTargetable)
+                            enemies[i].ToggleTargetable(true);
 
-                    enemies[i].disabled = false;
-                    enemies[i].gameObject.SetActive(true);
+                        enemies[i].disabled = false;
+                        enemies[i].gameObject.SetActive(true);
+                    }
                 }
             }
         }

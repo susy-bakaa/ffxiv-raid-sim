@@ -1,48 +1,52 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using dev.illa4257;
+using dev.susybaka.raidsim.Core;
+using dev.susybaka.Shared;
 
-[RequireComponent(typeof(Slider))]
-public class SaveSlider : MonoBehaviour
+namespace dev.susybaka.raidsim.SaveLoad
 {
-    Slider slider;
-    float savedValue = 100;
-
-    public string group = "";
-    public string key = "UnnamedSlider";
-
-    public UnityEvent<float> onStart;
-
-    IniStorage ini;
-
-    void Awake()
+    [RequireComponent(typeof(Slider))]
+    public class SaveSlider : MonoBehaviour
     {
-        slider = GetComponent<Slider>();
-        savedValue = 100f;
-        ini = new IniStorage(GlobalVariables.configPath);
-    }
+        Slider slider;
+        float savedValue = 100;
 
-    void Start()
-    {
-        if (ini.Contains(group, $"f{key}"))
+        public string group = "";
+        public string key = "UnnamedSlider";
+
+        public UnityEvent<float> onStart;
+
+        IniStorage ini;
+
+        private void Awake()
         {
-            savedValue = ini.GetFloat(group, $"f{key}");
-
-            slider.value = savedValue;
-            slider.onValueChanged.Invoke(savedValue);
-            onStart.Invoke(savedValue);
+            slider = GetComponent<Slider>();
+            savedValue = 100f;
+            ini = new IniStorage(GlobalVariables.configPath);
         }
-    }
 
-    public void SaveValue(float value)
-    {
-        ini.Load(GlobalVariables.configPath);
+        private void Start()
+        {
+            if (ini.Contains(group, $"f{key}"))
+            {
+                savedValue = ini.GetFloat(group, $"f{key}");
 
-        savedValue = value;
-        ini.Set(group, $"f{key}", savedValue);
+                slider.value = savedValue;
+                slider.onValueChanged.Invoke(savedValue);
+                onStart.Invoke(savedValue);
+            }
+        }
 
-        Utilities.FunctionTimer.Create(this, () => ini.Save(), 0.5f, $"{group}_{key}_slider_savevalue_delay", true, false);
+        public void SaveValue(float value)
+        {
+            ini.Load(GlobalVariables.configPath);
+
+            savedValue = value;
+            ini.Set(group, $"f{key}", savedValue);
+
+            Utilities.FunctionTimer.Create(this, () => ini.Save(), 0.5f, $"{group}_{key}_slider_savevalue_delay", true, false);
+        }
     }
 }

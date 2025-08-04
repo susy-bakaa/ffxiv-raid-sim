@@ -1,23 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
+using TMPro;
 
-public class FullscreenTracker : MonoBehaviour
+namespace dev.susybaka.raidsim.UI.Development
 {
-    private TextMeshProUGUI tm;
-    [SerializeField] private bool trackModeInstead = false;
-
-    private void Awake()
+    public class FullscreenTracker : MonoBehaviour
     {
-        tm = GetComponent<TextMeshProUGUI>();
-    }
+        private TextMeshProUGUI tm;
+        [SerializeField] private bool trackModeInstead = false;
 
-    private void Update()
-    {
-        if (trackModeInstead)
-            tm.text = "Fullscreen Mode: " + Screen.fullScreenMode.ToString();
-        else
-            tm.text = "Fullscreen: " + Screen.fullScreen.ToString();
+        private void Awake()
+        {
+            tm = GetComponent<TextMeshProUGUI>();
+        }
+
+        private void Update()
+        {
+            if (trackModeInstead)
+                tm.text = "Fullscreen Mode: " + Screen.fullScreenMode.ToString();
+            else
+                tm.text = "Fullscreen: " + Screen.fullScreen.ToString();
+        }
     }
 }

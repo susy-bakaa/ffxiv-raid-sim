@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 2754461483256575742}
   - component: {fileID: 2772597486481100537}
   - component: {fileID: 3929581795022539515}
-  - component: {fileID: 8341653783367857995}
   m_Layer: 0
   m_Name: Quad
   m_TagString: Untagged
@@ -29,11 +28,10 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0.70710707, y: -0, z: -0, w: 0.70710653}
   m_LocalPosition: {x: 0, y: 0.01, z: 0}
-  m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 636613669570970136}
-  m_Father: {fileID: 1217515202929166284}
+  m_Children: []
+  m_Father: {fileID: 5007722758359893317}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!33 &2772597486481100537
 MeshFilter:
@@ -85,13 +83,67 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &8341653783367857995
+--- !u!1 &2315099126973262177
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5007722758359893317}
+  - component: {fileID: 574121902259345735}
+  - component: {fileID: 3793200099086614941}
+  - component: {fileID: 6046921265072796336}
+  m_Layer: 0
+  m_Name: Shader
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5007722758359893317
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2315099126973262177}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2754461483256575742}
+  - {fileID: 636613669570970136}
+  m_Father: {fileID: 1217515202929166284}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &574121902259345735
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 573654114151118385}
+  m_GameObject: {fileID: 2315099126973262177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75a787e99245c054bbfc8f322d52e672, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outValue: 0
+  inValue: 1
+  defaultFadeTime: 0.3
+  outOnStart: 1
+  log: 0
+  fadeTime: 0.3
+--- !u!114 &3793200099086614941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2315099126973262177}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5915d13c9f619384aa89ceec1bf34b29, type: 3}
@@ -99,11 +151,56 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tweenType: 1
   tweenDuration: 0.3
-  onStart: 1
-  tweenScale: {x: 8.25, y: 8.25, z: 1}
+  onStart: 0
+  tweenScale: {x: 8.25, y: 8.25, z: 8.25}
   onFinish:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &6046921265072796336
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2315099126973262177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d26d546f2d17f5940b930e215911f104, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: 
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  onTriggerMechanic:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 574121902259345735}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleShaderFade,
+          Assembly-CSharp
+        m_MethodName: FadeIn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 3793200099086614941}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.TweenObject, Assembly-CSharp
+        m_MethodName: TriggerTween
+        m_Mode: 4
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: -1
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &4391861377361624336
 GameObject:
   m_ObjectHideFlags: 0
@@ -130,12 +227,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4391861377361624336}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0.70710707, y: -0, z: -0, w: 0.70710653}
+  m_LocalPosition: {x: 0, y: 0.01, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2754461483256575742}
+  m_Father: {fileID: 5007722758359893317}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!33 &6128683019478355504
 MeshFilter:
@@ -221,7 +318,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2754461483256575742}
+  - {fileID: 5007722758359893317}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &3435234071426015781
@@ -287,9 +384,11 @@ MonoBehaviour:
   data: {fileID: 0}
   damageName: Explosion
   inverted: 0
+  log: 0
   owner: {fileID: 0}
   autoAssignOwner: 0
   ableToHitTag: Player
+  canHitCharacterName: 
   damage:
     name: Explosion
     value: -5000
@@ -299,6 +398,31 @@ MonoBehaviour:
     elementalAspect: 1
     physicalAspect: 0
     applicationType: 0
+    source: {fileID: 0}
+  damageFalloff:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   enmity: 0
   increaseEnmity: 0
   topEnmity: 0
@@ -306,19 +430,29 @@ MonoBehaviour:
   self: 0
   dealsDamage: 1
   passDamage: 0
+  proximityBased: 0
   isAShield: 0
   cleaves: 1
+  cancelsMovement: 0
   ignoresOwner: 0
+  ignoreSnapshot: 0
   playerActivated: 0
+  updateLive: 0
   shared: 0
   enumeration: 0
+  requireOwner: 0
+  resetOnReload: 0
+  resetOwner: 0
   visualDelay: 0
   triggerDelay: 1
+  triggerDelayVariance: 0
   damageApplicationDelay: 0
   cooldown: 30
   playersRequired: 0
+  damageMultiplierPerMissingPlayer: 1
   currentPlayers: []
   appliedEffects: []
+  appliedEffectsOnFail: []
   onHit:
     m_PersistentCalls:
       m_Calls:
@@ -340,6 +474,19 @@ MonoBehaviour:
   onFinish:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 574121902259345735}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleShaderFade,
+          Assembly-CSharp
+        m_MethodName: FadeOut
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 7821429421088923007}
         m_TargetAssemblyTypeName: DestroyObject, Assembly-CSharp
         m_MethodName: TriggerDestruction
@@ -352,12 +499,31 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onStart:
+    m_PersistentCalls:
+      m_Calls: []
   onSpawn:
     m_PersistentCalls:
       m_Calls: []
+  onInitialize:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6046921265072796336}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Mechanics.FightMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onTrigger:
     m_PersistentCalls:
       m_Calls: []
+  dummy: 0
 --- !u!114 &7821429421088923007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -372,7 +538,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: 0
   disableInstead: 0
+  disabledOnStart: 0
   log: 0
+  onDestroy:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &7716594569317342350
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -387,8 +557,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mechanicEnabled: 1
   mechanicName: Steam Gasket Final Punishment Cleanse
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
   party: {fileID: 0}
   autoFindParty: 0
+  randomizeParty: 1
   effect:
     name: FinalPunishment_1
     data: {fileID: 11400000, guid: 24a3513861d4d044cb912cce40b9d67d, type: 2}
@@ -397,3 +571,4 @@ MonoBehaviour:
   ignoreRoles: 1
   cleansEffect: 1
   killsEffect: 0
+  incrementalTag: 0

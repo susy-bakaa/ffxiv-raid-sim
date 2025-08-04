@@ -1,29 +1,30 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static BotTimeline;
 
-public class BotTimelineChoice : MonoBehaviour
+namespace dev.susybaka.raidsim.Bots
 {
-    public List<BotTimeline> availableTimelines = new List<BotTimeline>();
-    public bool ChooseDisabled = true;
-
-    public void Choose(BotTimeline timeline)
+    public class BotTimelineChoice : MonoBehaviour
     {
-        if (availableTimelines == null || availableTimelines.Count < 1)
-            return;
+        public List<BotTimeline> availableTimelines = new List<BotTimeline>();
+        public bool ChooseDisabled = true;
 
-        if (ChooseDisabled)
+        public void Choose(BotTimeline timeline)
         {
-            for (int i = 0; i < availableTimelines.Count; i++)
+            if (availableTimelines == null || availableTimelines.Count < 1)
+                return;
+
+            if (ChooseDisabled)
             {
-                if (!availableTimelines[i].bot.gameObject.activeSelf)
+                for (int i = 0; i < availableTimelines.Count; i++)
                 {
-                    availableTimelines[i].bot = timeline.bot;
-                    availableTimelines[i].bot.botTimeline = availableTimelines[i];
-                    availableTimelines[i].SetReducedWaitTime(0.1f);
-                    availableTimelines[i].StartTimeline();
-                    return;
+                    if (!availableTimelines[i].bot.gameObject.activeSelf)
+                    {
+                        availableTimelines[i].bot = timeline.bot;
+                        availableTimelines[i].bot.botTimeline = availableTimelines[i];
+                        availableTimelines[i].SetReducedWaitTime(0.1f);
+                        availableTimelines[i].StartTimeline();
+                        return;
+                    }
                 }
             }
         }

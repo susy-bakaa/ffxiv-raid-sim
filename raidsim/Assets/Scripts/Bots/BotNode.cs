@@ -1,93 +1,95 @@
-using System.Collections;
 using System.Collections.Generic;
-using NaughtyAttributes;
 using UnityEngine;
-using static GlobalData;
+using NaughtyAttributes;
+using static dev.susybaka.raidsim.Core.GlobalData;
 
-public class BotNode : MonoBehaviour
+namespace dev.susybaka.raidsim.Nodes
 {
-    public string nodeName;
-    [Tag] public string targetTag;
-    public bool occupied = false;
-    public MechanicNode mechanicNode;
-    public bool hasMechanic;
-    public List<SectorPriority> sectorPriorities = new List<SectorPriority>();
-    public List<int> groupPriorities = new List<int>();
-    public List<Role> allowedRoles = new List<Role>();
-
-    void Awake()
+    public class BotNode : MonoBehaviour
     {
-        nodeName = gameObject.name;    
-    }
+        public string nodeName;
+        [Tag] public string targetTag;
+        public bool occupied = false;
+        public MechanicNode mechanicNode;
+        public bool hasMechanic;
+        public List<SectorPriority> sectorPriorities = new List<SectorPriority>();
+        public List<int> groupPriorities = new List<int>();
+        public List<Role> allowedRoles = new List<Role>();
 
-    void Update()
-    {
-        if (mechanicNode != null)
+        private void Awake()
         {
-            hasMechanic = mechanicNode.isTaken;
+            nodeName = gameObject.name;
         }
-    }
 
-    public void UpdateNode()
-    {
-        if (!string.IsNullOrEmpty(targetTag))
+        private void Update()
         {
-            Transform target = GameObject.FindGameObjectWithTag(targetTag).transform;
-            if (target != null)
+            if (mechanicNode != null)
             {
-                transform.position = target.position;
+                hasMechanic = mechanicNode.isTaken;
             }
         }
-    }
 
-    public int GetHighestPriorityAvailableForSector(Sector sector)
-    {
-        int highestPriority = int.MinValue;
-        foreach (SectorPriority priority in sectorPriorities)
+        public void UpdateNode()
         {
-            if (priority.sector == sector && priority.priority > highestPriority)
+            if (!string.IsNullOrEmpty(targetTag))
             {
-                highestPriority = priority.priority;
+                Transform target = GameObject.FindGameObjectWithTag(targetTag).transform;
+                if (target != null)
+                {
+                    transform.position = target.position;
+                }
             }
         }
-        return highestPriority;
-    }
 
-    public int GetLowestPriorityAvailableForSector(Sector sector)
-    {
-        int lowestPriority = int.MaxValue;
-        foreach (SectorPriority priority in sectorPriorities)
+        public int GetHighestPriorityAvailableForSector(Sector sector)
         {
-            if (priority.sector == sector && priority.priority < lowestPriority)
+            int highestPriority = int.MinValue;
+            foreach (SectorPriority priority in sectorPriorities)
             {
-                lowestPriority = priority.priority;
+                if (priority.sector == sector && priority.priority > highestPriority)
+                {
+                    highestPriority = priority.priority;
+                }
             }
+            return highestPriority;
         }
-        return lowestPriority;
-    }
 
-    public bool IsSectorAvailable(Sector sector)
-    {
-        foreach (SectorPriority priority in sectorPriorities)
+        public int GetLowestPriorityAvailableForSector(Sector sector)
         {
-            if (priority.sector == sector)
+            int lowestPriority = int.MaxValue;
+            foreach (SectorPriority priority in sectorPriorities)
             {
-                return true;
+                if (priority.sector == sector && priority.priority < lowestPriority)
+                {
+                    lowestPriority = priority.priority;
+                }
             }
+            return lowestPriority;
         }
-        return false;
-    }
 
-    [System.Serializable]
-    public struct SectorPriority
-    {
-        public Sector sector;
-        public int priority;
-
-        public SectorPriority(Sector sector, int priority)
+        public bool IsSectorAvailable(Sector sector)
         {
-            this.sector = sector;
-            this.priority = priority;
+            foreach (SectorPriority priority in sectorPriorities)
+            {
+                if (priority.sector == sector)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        [System.Serializable]
+        public struct SectorPriority
+        {
+            public Sector sector;
+            public int priority;
+
+            public SectorPriority(Sector sector, int priority)
+            {
+                this.sector = sector;
+                this.priority = priority;
+            }
         }
     }
 }

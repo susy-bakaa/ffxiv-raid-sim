@@ -1,58 +1,60 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TargetTrigger : MonoBehaviour
+namespace dev.susybaka.raidsim.Targeting
 {
-    TargetNode node;
-
-    Dictionary<GameObject, TargetController> players;
-
-    void Awake()
+    public class TargetTrigger : MonoBehaviour
     {
-        node = transform.parent.GetComponent<TargetNode>();
-        players = new Dictionary<GameObject, TargetController>();
-    }
+        TargetNode node;
 
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player"))
+        Dictionary<GameObject, TargetController> players;
+
+        private void Awake()
         {
-            if (players.TryGetValue(other.gameObject, out TargetController cachedController))
+            node = transform.parent.GetComponent<TargetNode>();
+            players = new Dictionary<GameObject, TargetController>();
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if (other.CompareTag("Player"))
             {
-                if (node != null)
+                if (players.TryGetValue(other.gameObject, out TargetController cachedController))
                 {
-                    node.AddNodeToController(cachedController.self);
+                    if (node != null)
+                    {
+                        node.AddNodeToController(cachedController.self);
+                    }
                 }
-            }
-            else if (other.transform.parent.TryGetComponent(out TargetController controller))
-            {
-                if (node != null)
+                else if (other.transform.parent.TryGetComponent(out TargetController controller))
                 {
-                    players.TryAdd(other.gameObject, controller);
-                    node.AddNodeToController(controller.self);
+                    if (node != null)
+                    {
+                        players.TryAdd(other.gameObject, controller);
+                        node.AddNodeToController(controller.self);
+                    }
                 }
             }
         }
-    }
 
-    void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Player"))
+        private void OnTriggerExit(Collider other)
         {
-            if (players.TryGetValue(other.gameObject, out TargetController cachedController))
+            if (other.CompareTag("Player"))
             {
-                if (node != null)
+                if (players.TryGetValue(other.gameObject, out TargetController cachedController))
                 {
-                    node.RemoveNodeFromController(cachedController.self);
+                    if (node != null)
+                    {
+                        node.RemoveNodeFromController(cachedController.self);
+                    }
                 }
-            }
-            else if (other.transform.parent.TryGetComponent(out TargetController controller))
-            {
-                if (node != null)
+                else if (other.transform.parent.TryGetComponent(out TargetController controller))
                 {
-                    players.TryAdd(other.gameObject, controller);
-                    node.RemoveNodeFromController(controller.self);
+                    if (node != null)
+                    {
+                        players.TryAdd(other.gameObject, controller);
+                        node.RemoveNodeFromController(controller.self);
+                    }
                 }
             }
         }

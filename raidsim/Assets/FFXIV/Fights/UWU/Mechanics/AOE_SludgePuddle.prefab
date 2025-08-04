@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4711082468278471189}
   - component: {fileID: 1510878434381666725}
   - component: {fileID: 4851384760365293921}
+  - component: {fileID: 5147490567109748258}
   m_Layer: 0
   m_Name: AOE_SludgePuddle
   m_TagString: Untagged
@@ -34,8 +35,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 2678621308970652967}
   - {fileID: 2915383006615591117}
-  - {fileID: 5136484912606680332}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &6965319914517882890
@@ -101,9 +102,11 @@ MonoBehaviour:
   data: {fileID: 0}
   damageName: Sludge
   inverted: 0
+  log: 0
   owner: {fileID: 0}
   autoAssignOwner: 0
   ableToHitTag: Player
+  canHitCharacterName: 
   damage:
     name: Sludge
     value: 100
@@ -113,6 +116,7 @@ MonoBehaviour:
     elementalAspect: 7
     physicalAspect: 0
     applicationType: 2
+    source: {fileID: 0}
   damageFalloff:
     serializedVersion: 2
     m_Curve:
@@ -154,13 +158,19 @@ MonoBehaviour:
   updateLive: 1
   shared: 0
   enumeration: 0
+  requireOwner: 0
+  resetOnReload: 0
+  resetOwner: 0
   visualDelay: 0
   triggerDelay: 0
+  triggerDelayVariance: 0
   damageApplicationDelay: 0.25
   cooldown: 0
   playersRequired: 0
+  damageMultiplierPerMissingPlayer: 1
   currentPlayers: []
   appliedEffects: []
+  appliedEffectsOnFail: []
   onHit:
     m_PersistentCalls:
       m_Calls: []
@@ -168,6 +178,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   onFinish:
+    m_PersistentCalls:
+      m_Calls: []
+  onStart:
     m_PersistentCalls:
       m_Calls: []
   onSpawn:
@@ -185,9 +198,26 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onInitialize:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6970043525772885550}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleShaderFade,
+          Assembly-CSharp
+        m_MethodName: FadeIn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onTrigger:
     m_PersistentCalls:
       m_Calls: []
+  dummy: 0
 --- !u!114 &1510878434381666725
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -203,6 +233,7 @@ MonoBehaviour:
   mechanicEnabled: 1
   mechanicName: Activate
   onlyTriggerOnce: 0
+  global: 0
   log: 0
   startAutomatically: 0
   delay: 1.5
@@ -247,10 +278,112 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: 30
   disableInstead: 0
+  disabledOnStart: 0
   log: 0
+  onTriggerDestruction:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5147490567109748258}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Mechanics.FightMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onDestroy:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &5147490567109748258
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6742332979191397708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c11d13ba36149154fb548fc96274895b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: FadeOut
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  startAutomatically: 0
+  delay: 29
+  onDelayedTrigger:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6970043525772885550}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleShaderFade,
+          Assembly-CSharp
+        m_MethodName: FadeOut
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!1 &7720540421223923352
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2678621308970652967}
+  - component: {fileID: 6970043525772885550}
+  m_Layer: 0
+  m_Name: Shader
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2678621308970652967
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7720540421223923352}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 5136484912606680332}
+  m_Father: {fileID: 3385012875986305748}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6970043525772885550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7720540421223923352}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75a787e99245c054bbfc8f322d52e672, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outValue: 0
+  inValue: 1
+  defaultFadeTime: 0.75
+  outOnStart: 1
+  log: 0
+  fadeTime: 0.75
 --- !u!1 &7977669350737385318
 GameObject:
   m_ObjectHideFlags: 0
@@ -321,9 +454,11 @@ MonoBehaviour:
   data: {fileID: 0}
   damageName: AetheriallyCharged
   inverted: 0
+  log: 0
   owner: {fileID: 0}
   autoAssignOwner: 0
   ableToHitTag: Boss
+  canHitCharacterName: 
   damage:
     name: AetheriallyCharged
     value: 0
@@ -333,6 +468,7 @@ MonoBehaviour:
     elementalAspect: 1
     physicalAspect: 0
     applicationType: 0
+    source: {fileID: 0}
   damageFalloff:
     serializedVersion: 2
     m_Curve:
@@ -374,14 +510,20 @@ MonoBehaviour:
   updateLive: 1
   shared: 0
   enumeration: 0
+  requireOwner: 0
+  resetOnReload: 0
+  resetOwner: 0
   visualDelay: 0
   triggerDelay: 0
+  triggerDelayVariance: 0
   damageApplicationDelay: 0.25
   cooldown: 10
   playersRequired: 0
+  damageMultiplierPerMissingPlayer: 1
   currentPlayers: []
   appliedEffects:
   - {fileID: 11400000, guid: bbdacf56729e9554099896fe87e50e59, type: 2}
+  appliedEffectsOnFail: []
   onHit:
     m_PersistentCalls:
       m_Calls: []
@@ -403,12 +545,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onStart:
+    m_PersistentCalls:
+      m_Calls: []
   onSpawn:
+    m_PersistentCalls:
+      m_Calls: []
+  onInitialize:
     m_PersistentCalls:
       m_Calls: []
   onTrigger:
     m_PersistentCalls:
       m_Calls: []
+  dummy: 0
 --- !u!114 &3389621262861281551
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -423,7 +572,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: -1
   disableInstead: 1
+  disabledOnStart: 0
   log: 0
+  onTriggerDestruction:
+    m_PersistentCalls:
+      m_Calls: []
   onDestroy:
     m_PersistentCalls:
       m_Calls: []
@@ -433,7 +586,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 3385012875986305748}
+    m_TransformParent: {fileID: 2678621308970652967}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: d14962111b86dc940ac928c5ed23a037, type: 3}
       propertyPath: m_LocalScale.x
@@ -469,11 +622,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d14962111b86dc940ac928c5ed23a037, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d14962111b86dc940ac928c5ed23a037, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d14962111b86dc940ac928c5ed23a037, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -498,7 +651,7 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: d14962111b86dc940ac928c5ed23a037, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: cd36e4b7014219442b427bcafb872b49, type: 2}
+      objectReference: {fileID: 2100000, guid: 51846f6a91a7f014796e5df8e0d63bcd, type: 2}
     - target: {fileID: 919132149155446097, guid: d14962111b86dc940ac928c5ed23a037, type: 3}
       propertyPath: m_Name
       value: aoe_circle_thick

@@ -1,42 +1,44 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using dev.susybaka.Shared;
 
-public class SimpleRotation : MonoBehaviour
+namespace dev.susybaka.raidsim.Visuals
 {
-    public Vector3 rotation;
-    public bool setRotation = false;
-    public string faceTowardsName;
-    public Transform faceTowards;
-
-    private void Awake()
+    public class SimpleRotation : MonoBehaviour
     {
-        if (!string.IsNullOrEmpty(faceTowardsName))
-        {
-            faceTowards = Utilities.FindAnyByName(faceTowardsName).transform;
-        }
-    }
+        public Vector3 rotation;
+        public bool setRotation = false;
+        public string faceTowardsName;
+        public Transform faceTowards;
 
-    void Update()
-    {
-        if (faceTowards == null)
+        private void Awake()
         {
-            if (!setRotation)
+            if (!string.IsNullOrEmpty(faceTowardsName))
             {
-                if (rotation != Vector3.zero)
+                faceTowards = Utilities.FindAnyByName(faceTowardsName)?.transform;
+            }
+        }
+
+        private void Update()
+        {
+            if (faceTowards == null)
+            {
+                if (!setRotation)
                 {
-                    transform.Rotate(rotation * Time.deltaTime);
+                    if (rotation != Vector3.zero)
+                    {
+                        transform.Rotate(rotation * Time.deltaTime);
+                    }
+                }
+                else
+                {
+                    transform.eulerAngles = rotation;
                 }
             }
             else
             {
-                transform.eulerAngles = rotation;
+                transform.LookAt(faceTowards);
+                transform.eulerAngles = new Vector3(0f, transform.eulerAngles.y, 0f);
             }
-        }
-        else
-        {
-            transform.LookAt(faceTowards);
-            transform.eulerAngles = new Vector3(0f, transform.eulerAngles.y, 0f);
         }
     }
 }

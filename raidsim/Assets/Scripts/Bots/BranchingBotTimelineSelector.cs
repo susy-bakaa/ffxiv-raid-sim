@@ -1,48 +1,51 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using static GlobalData;
+using dev.susybaka.raidsim.Core;
+using static dev.susybaka.raidsim.Core.GlobalData;
 
-public class BranchingBotTimelineSelector : MonoBehaviour
+namespace dev.susybaka.raidsim.Bots
 {
-    [Min(-1)] public int fightTimelineRandomEventResultId = -1;
-    public List<UnityEvent<BotTimeline>> availableResults = new List<UnityEvent<BotTimeline>>();
-    public bool useIndexMapping = false;
-    public List<IndexMapping> indexMapping = new List<IndexMapping>();
-
-    public void Choose(BotTimeline timeline)
+    public class BranchingBotTimelineSelector : MonoBehaviour
     {
-        if (fightTimelineRandomEventResultId < 0 || availableResults == null || availableResults.Count <= 0)
-        {
-            Debug.LogError("Invalid random event index: " + fightTimelineRandomEventResultId);
-            return;
-        }
+        [Min(-1)] public int fightTimelineRandomEventResultId = -1;
+        public List<UnityEvent<BotTimeline>> availableResults = new List<UnityEvent<BotTimeline>>();
+        public bool useIndexMapping = false;
+        public List<IndexMapping> indexMapping = new List<IndexMapping>();
 
-        if (FightTimeline.Instance == null)
-            return;
-
-        if (FightTimeline.Instance.TryGetRandomEventResult(fightTimelineRandomEventResultId, out int r))
+        public void Choose(BotTimeline timeline)
         {
-            if (useIndexMapping && indexMapping != null && indexMapping.Count > 0)
+            if (fightTimelineRandomEventResultId < 0 || availableResults == null || availableResults.Count <= 0)
             {
-                foreach (IndexMapping mapping in indexMapping)
-                {
-                    if (mapping.previousIndex == r)
-                    {
-                        r = mapping.nextIndex;
-                        break;
-                    }
-                }
-            }
-            
-            if (r < 0 || r >= availableResults.Count)
-            {
-                Debug.LogError($"[ChooseDynamicBotNode ({gameObject.name})] Resulting index {r} is out of bounds for available dynamic nodes count: {availableResults.Count}");
+                Debug.LogError("Invalid random event index: " + fightTimelineRandomEventResultId);
                 return;
             }
 
-            availableResults[r].Invoke(timeline);
+            if (FightTimeline.Instance == null)
+                return;
+
+            if (FightTimeline.Instance.TryGetRandomEventResult(fightTimelineRandomEventResultId, out int r))
+            {
+                if (useIndexMapping && indexMapping != null && indexMapping.Count > 0)
+                {
+                    foreach (IndexMapping mapping in indexMapping)
+                    {
+                        if (mapping.previousIndex == r)
+                        {
+                            r = mapping.nextIndex;
+                            break;
+                        }
+                    }
+                }
+
+                if (r < 0 || r >= availableResults.Count)
+                {
+                    Debug.LogError($"[ChooseDynamicBotNode ({gameObject.name})] Resulting index {r} is out of bounds for available dynamic nodes count: {availableResults.Count}");
+                    return;
+                }
+
+                availableResults[r].Invoke(timeline);
+            }
         }
     }
 }

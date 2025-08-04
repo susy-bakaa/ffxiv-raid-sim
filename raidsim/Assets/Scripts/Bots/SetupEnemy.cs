@@ -1,36 +1,40 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static PartyList;
+using dev.susybaka.raidsim.Core;
+using dev.susybaka.raidsim.Targeting;
+using static dev.susybaka.raidsim.UI.PartyList;
 
-public class SetupEnemy : MonoBehaviour
+namespace dev.susybaka.raidsim.Events
 {
-    public List<TargetNode> enemyTargets = new List<TargetNode>();
-    public bool chooseBasedOnRandomEventResult = true;
-    public int randomEventResultId = -1;
-
-    public void SetupEnemyTarget(PartyMember enemy)
+    public class SetupEnemy : MonoBehaviour
     {
-        if (enemy.targetController != null)
+        public List<TargetNode> enemyTargets = new List<TargetNode>();
+        public bool chooseBasedOnRandomEventResult = true;
+        public int randomEventResultId = -1;
+
+        public void SetupEnemyTarget(PartyMember enemy)
         {
-            if (chooseBasedOnRandomEventResult)
+            if (enemy.targetController != null)
             {
-                if (enemyTargets != null && enemyTargets.Count > 0)
+                if (chooseBasedOnRandomEventResult)
                 {
-                    int r = FightTimeline.Instance.GetRandomEventResult(randomEventResultId);
-                    if (r > -1 && r < enemyTargets.Count)
+                    if (enemyTargets != null && enemyTargets.Count > 0)
                     {
-                        enemy.targetController.SetTarget(enemyTargets[r]);
-                    }
-                    else
-                    {
-                        enemy.targetController.SetTarget(enemyTargets[0]);
+                        int r = FightTimeline.Instance.GetRandomEventResult(randomEventResultId);
+                        if (r > -1 && r < enemyTargets.Count)
+                        {
+                            enemy.targetController.SetTarget(enemyTargets[r]);
+                        }
+                        else
+                        {
+                            enemy.targetController.SetTarget(enemyTargets[0]);
+                        }
                     }
                 }
-            }
-            else if (enemyTargets != null && enemyTargets.Count > 0)
-            {
-                enemy.targetController.SetTarget(enemyTargets[0]);
+                else if (enemyTargets != null && enemyTargets.Count > 0)
+                {
+                    enemy.targetController.SetTarget(enemyTargets[0]);
+                }
             }
         }
     }

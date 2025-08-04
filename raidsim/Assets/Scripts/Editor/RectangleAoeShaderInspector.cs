@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace susy_baka.Raidsim.Editor
+namespace dev.susybaka.raidsim.Editor
 {
     public class RectangleAoeShaderInspector : ShaderGUI
     {

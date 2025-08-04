@@ -1,50 +1,51 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class TweenObject : MonoBehaviour
+namespace dev.susybaka.raidsim.Visuals
 {
-    GameObject m_object;
-
-    public LeanTweenType tweenType = LeanTweenType.linear;
-    public float tweenDuration;
-    public bool onStart;
-    public Vector3 tweenScale = Vector3.zero;
-
-    public UnityEvent onFinish;
-
-    void Awake()
+    public class TweenObject : MonoBehaviour
     {
-        m_object = gameObject;
-    }
+        GameObject m_object;
 
-    void Start()
-    {
-        if (onStart)
+        public LeanTweenType tweenType = LeanTweenType.linear;
+        public float tweenDuration;
+        public bool onStart;
+        public Vector3 tweenScale = Vector3.zero;
+
+        public UnityEvent onFinish;
+
+        private void Awake()
         {
-            if (tweenScale != Vector3.zero)
-            {                
-                LeanTween.scale(m_object, tweenScale, tweenDuration).setEase(tweenType).setOnComplete(() => onFinish.Invoke());
+            m_object = gameObject;
+        }
+
+        private void Start()
+        {
+            if (onStart)
+            {
+                if (tweenScale != Vector3.zero)
+                {
+                    LeanTween.scale(m_object, tweenScale, tweenDuration).setEase(tweenType).setOnComplete(() => onFinish.Invoke());
+                }
             }
         }
-    }
 
-    void Update()
-    {
-        
-    }
-
-    public void TriggerTween(float duration = -1)
-    {
-        if (duration < 0)
+        private void Update()
         {
-            duration = tweenDuration;
+
         }
 
-        if (tweenScale != Vector3.zero)
+        public void TriggerTween(float duration = -1)
         {
-            LeanTween.scale(m_object, tweenScale, duration).setEase(tweenType).setOnComplete(() => onFinish.Invoke());
+            if (duration < 0)
+            {
+                duration = tweenDuration;
+            }
+
+            if (tweenScale != Vector3.zero)
+            {
+                LeanTween.scale(m_object, tweenScale, duration).setEase(tweenType).setOnComplete(() => onFinish.Invoke());
+            }
         }
     }
 }

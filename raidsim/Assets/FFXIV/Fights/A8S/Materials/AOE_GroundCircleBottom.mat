@@ -25,23 +25,11 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _BumpMap:
+    - _Alpha_Mask:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _DetailAlbedoMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _DetailMask:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _DetailNormalMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _EmissionMap:
+    - _Layer:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -49,24 +37,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: f3477f2dbee51d94d8eb934bf159bdcd, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _MainTex:
-        m_Texture: {fileID: 2800000, guid: f3477f2dbee51d94d8eb934bf159bdcd, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _MetallicGlossMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _OcclusionMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _ParallaxMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _ALPHA_MASK_UV2: 0
+    - _Alpha: 0
     - _Alpha_Clip: 0.5
     - _Angle: 54.7
     - _AngularOutline: 0.0075
@@ -117,15 +91,22 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
+    - _Alpha_Mask_Offset: {r: 0, g: 0, b: 0, a: 0}
+    - _Alpha_Mask_Tiling: {r: 1, g: 1, b: 0, a: 0}
     - _BorderColor: {r: 1, g: 0.60784316, b: 0, a: 1}
     - _CircleColor: {r: 1, g: 0.7921569, b: 0, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GlowTintColor: {r: 1, g: 0.60784316, b: 0, a: 1}
     - _InnerTintColor: {r: 1, g: 0.7921569, b: 0, a: 1}
+    - _Layer_Offset: {r: 0, g: 0, b: 0, a: 0}
+    - _Layer_Scroll_Speed: {r: 0, g: 0, b: 0, a: 0}
+    - _Layer_Tiling: {r: 1, g: 1, b: 0, a: 0}
+    - _Layer_Tint: {r: 1, g: 1, b: 1, a: 0}
     - _NewOutlineTintColor: {r: 1, g: 0.60784316, b: 0, a: 1}
     - _Offset: {r: -0.05, g: -0.05, b: 0, a: 0}
     - _OutlineTintColor: {r: 1, g: 0.736676, b: 0, a: 1}
+    - _Scroll_Speed: {r: 0, g: 0, b: 0, a: 0}
     - _Tiling: {r: 1.1, g: 1.1, b: 0, a: 0}
     - _Tint: {r: 0, g: 0, b: 0, a: 0}
     - _TintColor: {r: 0, g: 0, b: 0, a: 1}

@@ -49,7 +49,7 @@ Shader "Custom/Unlit/RectangleAoe"
         [HideInInspector]
         _DoubleSided ("Double Sided", Float) = 2.0
     }
-    CustomEditor "susy_baka.Raidsim.Editor.RectangleAoeShaderInspector"
+    CustomEditor "dev.susybaka.raidsim.Editor.RectangleAoeShaderInspector"
     SubShader
     {
         Tags { "Queue" = "Transparent" }

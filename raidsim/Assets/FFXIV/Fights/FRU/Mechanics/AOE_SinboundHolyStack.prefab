@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 9205733846693184491}
   - component: {fileID: 1660201767568116326}
+  - component: {fileID: 7407434671835150392}
+  - component: {fileID: 3530122741652431952}
   m_Layer: 0
   m_Name: Shader
   m_TagString: Untagged
@@ -26,8 +28,8 @@ Transform:
   m_GameObject: {fileID: 4413458207799693792}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 12.5, z: 0}
+  m_LocalScale: {x: 0.01, y: 1, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4835741409788894808}
@@ -47,10 +49,46 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outValue: 0
   inValue: 1
-  defaultFadeTime: 0.33
+  defaultFadeTime: 0.25
   outOnStart: 0
   log: 0
-  fadeTime: 0.5
+  fadeTime: 0.25
+--- !u!114 &7407434671835150392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4413458207799693792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d05cb3927fce93948a7624acfed3516d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scale: {x: 1, y: 1, z: 1}
+  setScale: 0
+  onUpdate: 0
+  overrideOriginalScale: 0
+  originalScale: {x: 0, y: 0, z: 0}
+  duration: 0.25
+  _setReset: 1
+  _holdTime: 2
+--- !u!114 &3530122741652431952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4413458207799693792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b28bfb826d8d1b149a6f8e629145f9fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {x: 0, y: 0, z: 0}
+  speed: 0.2
+  OnUpdate: 0
+  loop: 0
 --- !u!1 &7362895001492720655
 GameObject:
   m_ObjectHideFlags: 0
@@ -137,7 +175,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 4.5
+  m_Radius: 3
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &57255878685220673
 MonoBehaviour:
@@ -263,15 +301,64 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 7407434671835150392}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleScale, Assembly-CSharp
+        m_MethodName: ResetScale
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 3530122741652431952}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleMovement, Assembly-CSharp
+        m_MethodName: ResetPosition
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 1660201767568116326}
-        m_TargetAssemblyTypeName: SimpleShaderFade, Assembly-CSharp
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleShaderFade,
+          Assembly-CSharp
         m_MethodName: FadeIn
-        m_Mode: 4
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0.15
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 7407434671835150392}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleScale, Assembly-CSharp
+        m_MethodName: Scale
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 3530122741652431952}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleMovement, Assembly-CSharp
+        m_MethodName: Move
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
@@ -370,14 +457,27 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1660201767568116326}
-        m_TargetAssemblyTypeName: SimpleShaderFade, Assembly-CSharp
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleShaderFade,
+          Assembly-CSharp
         m_MethodName: FadeOut
-        m_Mode: 4
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0.15
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 7407434671835150392}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Visuals.SimpleScale, Assembly-CSharp
+        m_MethodName: ScaleBack
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
@@ -401,7 +501,7 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 0.2
+          m_FloatArgument: 0.5
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
@@ -421,6 +521,9 @@ MonoBehaviour:
   disableInstead: 0
   disabledOnStart: 0
   log: 0
+  onTriggerDestruction:
+    m_PersistentCalls:
+      m_Calls: []
   onDestroy:
     m_PersistentCalls:
       m_Calls: []
@@ -446,6 +549,7 @@ MonoBehaviour:
   damageTriggerPrefab: {fileID: 7223107739074392820, guid: f251c5eeafa60da458711467064c96eb, type: 3}
   enableInstead: 0
   spawnLocation: {fileID: 8630972995688642863}
+  copyRotation: 0
   delay: 0
   autoAssignOwner: 0
   autoAssignLocation: 0
@@ -474,15 +578,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: d14962111b86dc940ac928c5ed23a037, type: 3}
       propertyPath: m_LocalScale.x
-      value: 29
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d14962111b86dc940ac928c5ed23a037, type: 3}
       propertyPath: m_LocalScale.y
-      value: 29
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d14962111b86dc940ac928c5ed23a037, type: 3}
       propertyPath: m_LocalScale.z
-      value: 100
+      value: 1500
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d14962111b86dc940ac928c5ed23a037, type: 3}
       propertyPath: m_LocalPosition.x
@@ -490,7 +594,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d14962111b86dc940ac928c5ed23a037, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.15
+      value: 29
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d14962111b86dc940ac928c5ed23a037, type: 3}
       propertyPath: m_LocalPosition.z
@@ -535,7 +639,7 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: d14962111b86dc940ac928c5ed23a037, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 28470ea558d869147a2d5c72931256a5, type: 2}
+      objectReference: {fileID: 2100000, guid: efc4dcc6c9f8e2748aae3d0c4a525726, type: 2}
     - target: {fileID: 919132149155446097, guid: d14962111b86dc940ac928c5ed23a037, type: 3}
       propertyPath: m_Name
       value: aoe_circle_thick

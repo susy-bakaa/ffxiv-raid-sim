@@ -1,40 +1,42 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class SetActive : MonoBehaviour
+namespace dev.susybaka.raidsim
 {
-    [SerializeField] private GameObject[] gameObjects;
-    [SerializeField] private bool state;
-    [SerializeField] private float delay = 0.1f;
-
-    private Coroutine ieSetActive;
-
-    private void Start()
+    public class SetActive : MonoBehaviour
     {
-        if (delay > 0f)
+        [SerializeField] private GameObject[] gameObjects;
+        [SerializeField] private bool state;
+        [SerializeField] private float delay = 0.1f;
+
+        private Coroutine ieSetActive;
+
+        private void Start()
         {
-            if (ieSetActive == null)
-                ieSetActive = StartCoroutine(IE_SetActive(new WaitForSeconds(delay)));
+            if (delay > 0f)
+            {
+                if (ieSetActive == null)
+                    ieSetActive = StartCoroutine(IE_SetActive(new WaitForSeconds(delay)));
+            }
+            else
+            {
+                SetActiveInternal();
+            }
         }
-        else
+
+        private IEnumerator IE_SetActive(WaitForSeconds wait)
         {
+            yield return wait;
             SetActiveInternal();
+            ieSetActive = null;
         }
-    }
 
-    private IEnumerator IE_SetActive(WaitForSeconds wait)
-    {
-        yield return wait;
-        SetActiveInternal();
-        ieSetActive = null;
-    }
-
-    private void SetActiveInternal()
-    {
-        foreach (GameObject go in gameObjects)
+        private void SetActiveInternal()
         {
-            go.SetActive(state);
+            foreach (GameObject go in gameObjects)
+            {
+                go.SetActive(state);
+            }
         }
     }
 }

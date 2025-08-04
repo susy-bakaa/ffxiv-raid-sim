@@ -1,53 +1,55 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using static GlobalData;
+using dev.susybaka.raidsim.Core;
+using static dev.susybaka.raidsim.Core.GlobalData;
 
-public class AutomaticMechanic : FightMechanic
+namespace dev.susybaka.raidsim.Mechanics
 {
-    public bool onStart;
-    public bool onEnable;
-    public GameObject target;
-    public UnityEvent<ActionInfo> onTrigger;
-
-    private bool _triggered = false;
-
-    private void Start()
+    public class AutomaticMechanic : FightMechanic
     {
-        _triggered = false;
+        public bool onStart;
+        public bool onEnable;
+        public GameObject target;
+        public UnityEvent<ActionInfo> onTrigger;
 
-        if (onStart && FightTimeline.Instance != null)
-            FightTimeline.Instance.onReset.AddListener(TriggerMechanic);
+        private bool _triggered = false;
 
-        if (onStart)
-            TriggerMechanic(new ActionInfo(null, null, null));
-    }
-
-    private void Update()
-    {
-        if (onEnable && target != null && !_triggered)
+        private void Start()
         {
-            if (target.scene.isLoaded && target.activeSelf)
-            {
+            _triggered = false;
+
+            if (onStart && FightTimeline.Instance != null)
+                FightTimeline.Instance.onReset.AddListener(TriggerMechanic);
+
+            if (onStart)
                 TriggerMechanic(new ActionInfo(null, null, null));
-            }
-        } 
-        else if (onEnable && target != null && _triggered)
+        }
+
+        private void Update()
         {
-            if (target.scene.isLoaded && !target.activeSelf)
+            if (onEnable && target != null && !_triggered)
             {
-                _triggered = false;
+                if (target.scene.isLoaded && target.activeSelf)
+                {
+                    TriggerMechanic(new ActionInfo(null, null, null));
+                }
+            }
+            else if (onEnable && target != null && _triggered)
+            {
+                if (target.scene.isLoaded && !target.activeSelf)
+                {
+                    _triggered = false;
+                }
             }
         }
-    }
 
-    public override void TriggerMechanic(ActionInfo actionInfo)
-    {
-        if (!CanTrigger(actionInfo))
-            return;
+        public override void TriggerMechanic(ActionInfo actionInfo)
+        {
+            if (!CanTrigger(actionInfo))
+                return;
 
-        _triggered = true;
-        onTrigger.Invoke(actionInfo);
+            _triggered = true;
+            onTrigger.Invoke(actionInfo);
+        }
     }
 }

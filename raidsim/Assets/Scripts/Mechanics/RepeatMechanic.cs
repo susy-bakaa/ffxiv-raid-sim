@@ -1,58 +1,60 @@
 using System.Collections;
-using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Events;
 #if UNITY_EDITOR
 using NaughtyAttributes;
 #endif
-using UnityEngine;
-using UnityEngine.Events;
-using static GlobalData;
+using static dev.susybaka.raidsim.Core.GlobalData;
 
-public class RepeatMechanic : FightMechanic
+namespace dev.susybaka.raidsim.Mechanics
 {
-    public int repeatCount = 3;
-    public float waitDuration = 1.0f;
-    public FightMechanic mechanicToTrigger;
-    public bool skipLastWait = false;
-    public UnityEvent<ActionInfo> onFinish;
+    public class RepeatMechanic : FightMechanic
+    {
+        public int repeatCount = 3;
+        public float waitDuration = 1.0f;
+        public FightMechanic mechanicToTrigger;
+        public bool skipLastWait = false;
+        public UnityEvent<ActionInfo> onFinish;
 
-    private Coroutine ieRepeat;
+        private Coroutine ieRepeat;
 
 #if UNITY_EDITOR
-    [Button("Start Mechanic")]
-    public void StartMechanic()
-    {
-        TriggerMechanic(new ActionInfo());
-    }
+        [Button("Start Mechanic")]
+        public void StartMechanic()
+        {
+            TriggerMechanic(new ActionInfo());
+        }
 #endif
 
-    public override void TriggerMechanic(ActionInfo actionInfo)
-    {
-        if (CanTrigger(actionInfo) && ieRepeat == null)
+        public override void TriggerMechanic(ActionInfo actionInfo)
         {
-            ieRepeat = StartCoroutine(IE_Repeat(actionInfo));
-        }
-    }
-
-    public override void InterruptMechanic(ActionInfo actionInfo)
-    {
-        StopAllCoroutines();
-        ieRepeat = null;
-    }
-
-    private IEnumerator IE_Repeat(ActionInfo actionInfo)
-    {
-        for (int i = 0; i < repeatCount; i++)
-        {
-            if (mechanicToTrigger != null)
+            if (CanTrigger(actionInfo) && ieRepeat == null)
             {
-                mechanicToTrigger.TriggerMechanic();
-            }
-            if ((i < repeatCount - 1) || !skipLastWait)
-            {
-                yield return new WaitForSeconds(waitDuration);
+                ieRepeat = StartCoroutine(IE_Repeat(actionInfo));
             }
         }
-        onFinish.Invoke(actionInfo);
-        ieRepeat = null;
+
+        public override void InterruptMechanic(ActionInfo actionInfo)
+        {
+            StopAllCoroutines();
+            ieRepeat = null;
+        }
+
+        private IEnumerator IE_Repeat(ActionInfo actionInfo)
+        {
+            for (int i = 0; i < repeatCount; i++)
+            {
+                if (mechanicToTrigger != null)
+                {
+                    mechanicToTrigger.TriggerMechanic();
+                }
+                if ((i < repeatCount - 1) || !skipLastWait)
+                {
+                    yield return new WaitForSeconds(waitDuration);
+                }
+            }
+            onFinish.Invoke(actionInfo);
+            ieRepeat = null;
+        }
     }
 }

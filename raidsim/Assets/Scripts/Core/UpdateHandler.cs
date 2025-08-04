@@ -11,9 +11,13 @@ using UnityEngine.UI;
 using TMPro;
 using NaughtyAttributes;
 using LogicUI.FancyTextRendering;
+using dev.susybaka.raidsim.Core;
+using dev.susybaka.raidsim.UI;
+using dev.susybaka.Shared;
 using Debug = UnityEngine.Debug;
 
-namespace susy_baka.raidsim.Updater
+
+namespace dev.susybaka.raidsim.Updater
 {
     public class UpdateHandler : MonoBehaviour
     {
@@ -28,7 +32,7 @@ namespace susy_baka.raidsim.Updater
         [SerializeField, Label("Latest Update ID")] private int latestUpdateId = -1;
         [Header("User Interface - Prompt")]
         [SerializeField] private double updateInterval = 0.5;
-        [SerializeField] private CanvasGroup updatePromptGroup;
+        [SerializeField] private HudWindow updatePromptWindow;
         [SerializeField] private GameObject askPrompt;
         [SerializeField] private TextMeshProUGUI updatePromptText;
         [SerializeField] private GameObject downloadPrompt;
@@ -40,7 +44,7 @@ namespace susy_baka.raidsim.Updater
         [SerializeField] private Button restartButton;
         [SerializeField] private Button cancelButton;
         [Header("User Interface - Changelog")]
-        [SerializeField] private CanvasGroup changelogGroup;
+        [SerializeField] private HudWindow changelogWindow;
         [SerializeField] private MarkdownRenderer changelogText;
         [SerializeField] private TextMeshProUGUI changelogTitle;
         [SerializeField] private Button changelogCloseButton;
@@ -87,7 +91,7 @@ namespace susy_baka.raidsim.Updater
         private bool downloadAborted = false;
         private bool updatePromptVisible = false;
 
-        void Start()
+        private void Start()
         {
             updateId = GlobalVariables.versionNumber;
 #if UNITY_EDITOR
@@ -100,16 +104,16 @@ namespace susy_baka.raidsim.Updater
 #if UNITY_WEBPLAYER
             destroyed = true;
             checkForUpdatesButton.gameObject.SetActive(false);
-            Destroy(updatePromptGroup.gameObject);
-            Destroy(changelogGroup.gameObject);
+            Destroy(updatePromptWindow.gameObject);
+            Destroy(changelogWindow.gameObject);
             Destroy(gameObject);
             return;
 #elif UNITY_STANDALONE_LINUX
             Debug.LogWarning("Linux platform detected. Automatic updates not supported yet. Skipping update check.");
             destroyed = true;
             checkForUpdatesButton.gameObject.SetActive(false);
-            Destroy(updatePromptGroup.gameObject);
-            Destroy(changelogGroup.gameObject);
+            Destroy(updatePromptWindow.gameObject);
+            Destroy(changelogWindow.gameObject);
             Destroy(gameObject);
             return;
 #endif
@@ -145,7 +149,7 @@ namespace susy_baka.raidsim.Updater
                 Debug.Log("Skipping update check.");
         }
 
-        void Update()
+        private void Update()
         {
             if (destroyed)
                 return;
@@ -180,7 +184,7 @@ namespace susy_baka.raidsim.Updater
             }
         }
 
-        void OnDestroy()
+        private void OnDestroy()
         {
             destroyed = true;
 
@@ -199,9 +203,7 @@ namespace susy_baka.raidsim.Updater
 
             showDownloadSpeed = false;
 
-            updatePromptGroup.alpha = 1f;
-            updatePromptGroup.interactable = true;
-            updatePromptGroup.blocksRaycasts = true;
+            updatePromptWindow.OpenWindow();
         }
 
         public void HideUpdatePrompt()
@@ -211,9 +213,7 @@ namespace susy_baka.raidsim.Updater
 
             updatePromptVisible = false;
 
-            updatePromptGroup.alpha = 0f;
-            updatePromptGroup.interactable = false;
-            updatePromptGroup.blocksRaycasts = false;
+            updatePromptWindow.CloseWindow();
 
             HideChangelog();
 
@@ -233,12 +233,10 @@ namespace susy_baka.raidsim.Updater
             if (destroyed)
                 return;
 
-            updatePromptGroup.interactable = false;
-            updatePromptGroup.blocksRaycasts = false;
+            updatePromptWindow.Group.interactable = false;
+            updatePromptWindow.Group.blocksRaycasts = false;
 
-            changelogGroup.alpha = 1f;
-            changelogGroup.interactable = true;
-            changelogGroup.blocksRaycasts = true;
+            changelogWindow.OpenWindow();
         }
 
         public void HideChangelog()
@@ -248,13 +246,11 @@ namespace susy_baka.raidsim.Updater
 
             if (updatePromptVisible)
             {
-                updatePromptGroup.interactable = true;
-                updatePromptGroup.blocksRaycasts = true;
+                updatePromptWindow.Group.interactable = true;
+                updatePromptWindow.Group.blocksRaycasts = true;
             }
 
-            changelogGroup.alpha = 0f;
-            changelogGroup.interactable = false;
-            changelogGroup.blocksRaycasts = false;
+            changelogWindow.CloseWindow();
         }
 
         public void SetSkipUpdates(bool value)

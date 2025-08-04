@@ -1,154 +1,183 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using NaughtyAttributes;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using static GlobalVariables;
+using TMPro;
+using NaughtyAttributes;
+using dev.susybaka.raidsim.Core;
+using dev.susybaka.Shared;
+using dev.susybaka.Shared.Attributes;
+using dev.susybaka.Shared.Audio;
+using static dev.susybaka.raidsim.Core.GlobalVariables;
 
-public class FightSelector : MonoBehaviour
+namespace dev.susybaka.raidsim.UI
 {
-    TMP_Dropdown dropdown;
-    Button loadButton;
-    [SerializeField] private string loadButtonName = "LoadFight";
-    public float loadDelay = 2f;
-    public List<TimelineScene> scenes = new List<TimelineScene>();
-    public int currentSceneIndex = 0;
-    private TimelineScene currentScene;
-    public TimelineScene CurrentScene => currentScene;
-    private TimelineScene originalScene;
-
-    private Coroutine ieLoadSceneDelayed;
-
-    private void Awake()
+    public class FightSelector : MonoBehaviour
     {
-        foreach (Transform child in transform.parent)
+        TMP_Dropdown dropdown;
+        Button loadButton;
+        [SerializeField] private string loadButtonName = "LoadFight";
+        public float loadDelay = 2f;
+        public List<TimelineScene> scenes = new List<TimelineScene>();
+        public int currentSceneIndex = 0;
+        private TimelineScene currentScene;
+        public TimelineScene CurrentScene => currentScene;
+        private TimelineScene originalScene;
+
+        private Coroutine ieLoadSceneDelayed;
+
+#if UNITY_EDITOR
+        private int previousSceneIndex = -1;
+
+        private void OnValidate()
         {
-            if (child.gameObject.name == loadButtonName)
+            if (scenes != null && scenes.Count > 0 && previousSceneIndex != currentSceneIndex)
             {
-                loadButton = child.GetComponentInChildren<Button>();
-                break;
+                if (transform.TryGetComponentInChildren(out TMP_Dropdown _dropdown))
+                {
+                    _dropdown.value = currentSceneIndex;
+                    _dropdown.RefreshShownValue();
+                    previousSceneIndex = currentSceneIndex;
+                }
             }
-        }
-
-        currentScene = scenes[currentSceneIndex];
-        originalScene = currentScene;
-    }
-
-    void Start()
-    {
-        dropdown = GetComponentInChildren<TMP_Dropdown>();
-        //Select(0);
-
-        if (Application.isEditor)
-            return;
-
-#if UNITY_STANDALONE_WIN
-        try
-        {
-            var windowPtr = FindWindow(null, GlobalVariables.lastWindowName);
-            if (windowPtr == IntPtr.Zero)
-            {
-                Debug.LogError("Window handle not found. Skipping SetWindowText.");
-            }
-            else
-            {
-                string windowName = $"raidsim - {GetFightName()}";
-                SetWindowText(windowPtr, windowName);
-                GlobalVariables.lastWindowName = windowName;
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"Error setting window title: {ex}");
         }
 #endif
-    }
 
-    void Update()
-    {
-        if (FightTimeline.Instance == null)
-            return;
-
-        dropdown.interactable = !FightTimeline.Instance.playing;
-        loadButton.interactable = !FightTimeline.Instance.playing;
-    }
-
-    public void Select(int value)
-    {
-        if (scenes.Count < (value + 1))
+        private void Awake()
         {
-            Debug.Log("Fight not implemented yet.");
-            return;
-        }
-        currentScene = scenes[value];
-    }
-
-    public void Reload()
-    {
-        if (ieLoadSceneDelayed == null)
-        {
-            ieLoadSceneDelayed = StartCoroutine(IE_LoadSceneDelayed(originalScene, new WaitForSeconds(loadDelay)));
-        }
-    }
-
-    public void Load()
-    {
-        if (ieLoadSceneDelayed == null)
-        {
-            ieLoadSceneDelayed = StartCoroutine(IE_LoadSceneDelayed(currentScene, new WaitForSeconds(loadDelay)));
-        }
-    }
-
-    private void OnLoad(TimelineScene scene)
-    {
-        if (AssetHandler.Instance != null)
-        {
-            // Clear the cache before loading a new scene, since otherwise scenes sharing a bundle will cause issues
-            if (SceneManager.GetActiveScene().path != scene.scene && SceneManager.GetActiveScene().name != scene.scene)
+            foreach (Transform child in transform.parent)
             {
-                AssetHandler.Instance.ClearCache();
+                if (child.gameObject.name == loadButtonName)
+                {
+                    loadButton = child.GetComponentInChildren<Button>();
+                    break;
+                }
             }
 
-            // Load next scene’s AssetBundle
-            AssetHandler.Instance.LoadSceneAssetBundle(scene.assetBundle);
+            currentScene = scenes[currentSceneIndex];
+            originalScene = currentScene;
         }
 
-        SceneManager.LoadScene(scene.scene);
-    }
-
-    private string GetFightName()
-    {
-        return FightTimeline.Instance.timelineName;
-    }
-
-    private IEnumerator IE_LoadSceneDelayed(TimelineScene scene, WaitForSeconds wait)
-    {
-        yield return wait;
-        ieLoadSceneDelayed = null;
-        OnLoad(scene);
-    }
-
-    [System.Serializable]
-    public struct TimelineScene
-    {
-        [Scene]
-        public string scene;
-        public string assetBundle;
-
-        public TimelineScene(string scene, string assetBundle)
+        private void Start()
         {
-            this.scene = scene;
-            this.assetBundle = assetBundle;
+            dropdown = GetComponentInChildren<TMP_Dropdown>();
+            //Select(0);
+
+            if (Application.isEditor)
+                return;
+
+#if UNITY_STANDALONE_WIN
+            try
+            {
+                var windowPtr = FindWindow(null, GlobalVariables.lastWindowName);
+                if (windowPtr == IntPtr.Zero)
+                {
+                    Debug.LogError("Window handle not found. Skipping SetWindowText.");
+                }
+                else
+                {
+                    string windowName = $"raidsim - {GetFightName()}";
+                    SetWindowText(windowPtr, windowName);
+                    GlobalVariables.lastWindowName = windowName;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error setting window title: {ex}");
+            }
+#endif
         }
 
-        public TimelineScene(string scene)
+        private void Update()
         {
-            this.scene = scene;
-            this.assetBundle = string.Empty;
+            if (FightTimeline.Instance == null)
+                return;
+
+            dropdown.interactable = !FightTimeline.Instance.playing;
+            loadButton.interactable = !FightTimeline.Instance.playing;
+        }
+
+        public void Select(int value)
+        {
+            if (scenes.Count < (value + 1))
+            {
+                Debug.Log("Fight not implemented yet.");
+                return;
+            }
+            currentScene = scenes[value];
+        }
+
+        public void Reload()
+        {
+            if (FightTimeline.Instance != null && AudioManager.Instance != null)
+            {
+                AudioManager.Instance.Play(FightTimeline.Instance.ReloadSound, FightTimeline.Instance.AudioVolume);
+            }
+
+            if (ieLoadSceneDelayed == null)
+            {
+                ieLoadSceneDelayed = StartCoroutine(IE_LoadSceneDelayed(originalScene, new WaitForSeconds(loadDelay)));
+            }
+        }
+
+        public void Load()
+        {
+            if (ieLoadSceneDelayed == null)
+            {
+                ieLoadSceneDelayed = StartCoroutine(IE_LoadSceneDelayed(currentScene, new WaitForSeconds(loadDelay)));
+            }
+        }
+
+        private void OnLoad(TimelineScene scene)
+        {
+            if (AssetHandler.Instance != null)
+            {
+                // Clear the cache before loading a new scene, since otherwise scenes sharing a bundle will cause issues
+                if (SceneManager.GetActiveScene().path != scene.scene && SceneManager.GetActiveScene().name != scene.scene)
+                {
+                    AssetHandler.Instance.ClearCache();
+                }
+
+                // Load next scene’s AssetBundle
+                AssetHandler.Instance.LoadSceneAssetBundle(scene.assetBundles);
+            }
+
+            SceneManager.LoadScene(scene.scene);
+        }
+
+        private string GetFightName()
+        {
+            return FightTimeline.Instance.timelineName;
+        }
+
+        private IEnumerator IE_LoadSceneDelayed(TimelineScene scene, WaitForSeconds wait)
+        {
+            yield return wait;
+            ieLoadSceneDelayed = null;
+            OnLoad(scene);
+        }
+
+        [System.Serializable]
+        public struct TimelineScene
+        {
+            [Scene]
+            public string scene;
+            [AssetBundleNames]
+            public string[] assetBundles;
+
+            public TimelineScene(string scene, string[] assetBundles)
+            {
+                this.scene = scene;
+                this.assetBundles = assetBundles;
+            }
+
+            public TimelineScene(string scene)
+            {
+                this.scene = scene;
+                this.assetBundles = new string[0];
+            }
         }
     }
 }

@@ -1,16 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class ClearChildren : MonoBehaviour
+namespace dev.susybaka.raidsim
 {
-    public bool onAwake = true;
-
-    void Awake()
+    public class ClearChildren : MonoBehaviour
     {
-        foreach (Transform child in transform)
+        public bool onAwake = true;
+
+        private void Awake()
         {
-            Destroy(child.gameObject);
+            foreach (Transform child in transform)
+            {
+                Destroy(child.gameObject);
+            }
         }
     }
 }

@@ -1,231 +1,325 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using static PartyList;
-using static UnityEngine.GraphicsBuffer;
+using dev.susybaka.raidsim.Characters;
+using dev.susybaka.raidsim.Core;
+using dev.susybaka.raidsim.UI;
+using dev.susybaka.raidsim.Visuals;
+using dev.susybaka.Shared;
+using static dev.susybaka.raidsim.UI.PartyList;
 
-public class TetherTrigger : MonoBehaviour
+namespace dev.susybaka.raidsim.Mechanics
 {
-    LineRenderer lineRenderer;
-    public enum TetherType { nearest, furthest, preDefined }
-
-    public PartyList partyList;
-    public TetherType tetherType = TetherType.nearest;
-    public Transform startPoint;
-    public Vector3 startOffset;
-    public Transform endPoint;
-    public Vector3 endOffset;
-    public float maxDistance;
-    public float breakDelay = 0.5f;
-    public bool initializeOnStart;
-    public bool worldSpace = true;
-
-    public UnityEvent<CharacterState> onForm;
-    public UnityEvent onBreak;
-    public UnityEvent onSolved;
-
-    private bool initialized;
-    private CharacterState startCharacter;
-    private CharacterState endCharacter;
-
-    void Awake()
+    public class TetherTrigger : MonoBehaviour
     {
-        lineRenderer = GetComponentInChildren<LineRenderer>();
-        lineRenderer.gameObject.SetActive(false);
-        if (partyList == null)
+        LineRenderer[] lineRenderers;
+        public enum TetherType { nearest, furthest, preDefined }
+
+        public PartyList partyList;
+        public TetherType tetherType = TetherType.nearest;
+        public Transform startPoint;
+        public Vector3 startOffset;
+        public Transform endPoint;
+        public Vector3 endOffset;
+        public float maxDistance;
+        public float breakDelay = 0.5f;
+        public float visualBreakDelay = 0.75f;
+        public bool initializeOnStart;
+        public bool worldSpace = true;
+
+        public UnityEvent<CharacterState> onForm;
+        public UnityEvent onBreak;
+        public UnityEvent onSolved;
+
+        private bool initialized;
+        private CharacterState startCharacter;
+        private CharacterState endCharacter;
+        private Coroutine ieSetLineRenderersActive;
+        private SimpleShaderFade shaderFade;
+
+#if UNITY_EDITOR
+        [Header("Editor")]
+        public CharacterState attachToCharacter;
+        [NaughtyAttributes.Button("Initialize")]
+        public void InitializeButton()
         {
-            partyList = FightTimeline.Instance.partyList;
-        }
-
-        initialized = false;
-
-        if (FightTimeline.Instance != null)
-        {
-            if (endPoint != null)
-                FightTimeline.Instance.onReset.AddListener(() => { initialized = false; lineRenderer.gameObject.SetActive(false); startCharacter = null; endCharacter = null; });
-            else
-                FightTimeline.Instance.onReset.AddListener(() => { initialized = false; lineRenderer.gameObject.SetActive(false); startCharacter = null; endCharacter = null; endPoint = null; });
-        }
-    }
-
-    void Start()
-    {
-        if (initializeOnStart)
-        {
-            Initialize();
-        }
-    }
-
-    void OnDisable()
-    {
-        initialized = false;
-        startCharacter = null;
-        endCharacter = null;
-    }
-
-    void Update()
-    {
-        if (startPoint == null || endPoint == null) 
-            return;
-
-        if (lineRenderer != null)
-        {
-            if (worldSpace)
+            if (attachToCharacter != null)
             {
-                lineRenderer.SetPositions(new Vector3[2] { startPoint.position + startOffset, endPoint.position + endOffset });
+                endPoint = attachToCharacter.transform.Find("Pivot");
+                Initialize(attachToCharacter);
             }
             else
             {
-                lineRenderer.SetPositions(new Vector3[2] { startPoint.localPosition + startOffset, endPoint.localPosition + endOffset });
+                Initialize();
+            }
+        }
+#endif
+
+        private void Awake()
+        {
+            shaderFade = GetComponentInChildren<SimpleShaderFade>(true);
+            lineRenderers = GetComponentsInChildren<LineRenderer>(true);
+            SetLineRenderersActive(false);
+            if (partyList == null)
+            {
+                partyList = FightTimeline.Instance.partyList;
+            }
+
+            initialized = false;
+
+            if (FightTimeline.Instance != null)
+            {
+                if (endPoint != null)
+                    FightTimeline.Instance.onReset.AddListener(ResetTether);
+                else
+                    FightTimeline.Instance.onReset.AddListener(ResetTetherFull);
             }
         }
 
-        if (maxDistance > 0f)
+        private void Start()
         {
-            if (worldSpace)
+            if (initializeOnStart)
             {
-                if (Vector3.Distance(startPoint.position, endPoint.position) > maxDistance)
-                {
-                    BreakTether();
-                }
-            }
-            else
-            {
-                if (Vector3.Distance(startPoint.localPosition, endPoint.localPosition) > maxDistance)
-                {
-                    BreakTether();
-                }
+                Initialize();
             }
         }
-    }
 
-    public void Initialize()
-    {
-        if (!initialized)
+        private void OnDisable()
         {
-            FormTether();
-            initialized = true;
+            initialized = false;
+            startCharacter = null;
+            endCharacter = null;
         }
-    }
 
-    public void Initialize(CharacterState target)
-    {
-        if (!initialized)
+        private void Update()
         {
-            FormTether(target);
-            initialized = true;
-        }
-    }
+            if (startPoint == null || endPoint == null)
+                return;
 
-    public void FormTether()
-    {
-        switch (tetherType)
-        {
-            default:
+            if (lineRenderers != null && lineRenderers.Length > 0)
             {
-                CharacterState closestMember = null;
-                float closestDistance = float.MaxValue;
-
-                foreach (PartyMember member in partyList.members)
+                foreach (LineRenderer lineRenderer in lineRenderers)
                 {
-                    float distance = Vector3.Distance(transform.position, member.characterState.transform.position);
-                    if (distance < closestDistance)
+                    if (lineRenderer == null)
+                        continue;
+
+                    if (worldSpace)
                     {
-                        closestDistance = distance;
-                        closestMember = member.characterState;
+                        lineRenderer.SetPositions(new Vector3[2] { startPoint.position + startOffset, endPoint.position + endOffset });
+                    }
+                    else
+                    {
+                        lineRenderer.SetPositions(new Vector3[2] { startPoint.localPosition + startOffset, endPoint.localPosition + endOffset });
                     }
                 }
 
-                // Assuming a certain threshold for tethering, e.g., 1 unit
-                //float tetherThreshold = 1.0f;
-                //if (closestMember != null && closestDistance < tetherThreshold)
-                //{
-                //    FormTether(closestMember);
-                //}
-                FormTether(closestMember);
-                break;
             }
-            case TetherType.furthest:
-            {
-                CharacterState furthestMember = null;
-                float furthestDistance = 0f;
 
-                foreach (PartyMember member in partyList.members)
+            if (maxDistance > 0f)
+            {
+                if (worldSpace)
                 {
-                    float distance = Vector3.Distance(transform.position, member.characterState.transform.position);
-                    if (distance > furthestDistance)
+                    if (Vector3.Distance(startPoint.position, endPoint.position) > maxDistance)
                     {
-                        furthestDistance = distance;
-                        furthestMember = member.characterState;
+                        BreakTether();
                     }
-                }
-
-                // Assuming a certain threshold for tethering, e.g., 1 unit
-                //float tetherThreshold = 1.0f;
-                //if (furthestMember != null && furthestDistance > tetherThreshold)
-                //{
-                //    FormTether(furthestMember);
-                //}
-                FormTether(furthestMember);
-                break;
-            }
-            case TetherType.preDefined:
-            {
-                if (startPoint != null && endPoint != null)
-                {
-                    FormTether(startPoint, endPoint);
                 }
                 else
                 {
-                    SolveTether();
+                    if (Vector3.Distance(startPoint.localPosition, endPoint.localPosition) > maxDistance)
+                    {
+                        BreakTether();
+                    }
                 }
-                break;
             }
         }
-    }
 
-    public void FormTether(CharacterState target)
-    {
-        FormTether(startPoint, target.transform.GetChild(target.transform.childCount - 2).transform);
-    }
-
-    public void FormTether(Transform start, Transform end)
-    {
-        if (start.gameObject.activeInHierarchy == false || end.gameObject.activeInHierarchy == false)
-            Destroy(gameObject);
-
-        lineRenderer.gameObject.SetActive(true);
-        startPoint = start;
-        endPoint = end;
-
-        if (end.parent.TryGetComponent(out CharacterState endState))
+        public void ResetTether()
         {
-            endCharacter = endState;
-            onForm.Invoke(endState);
-        }
-        else if (start.parent.TryGetComponent(out CharacterState startState))
-        {
-            startCharacter = startState;
-            onForm.Invoke(startState);
-        }
-        else
-        {
-            endCharacter = null;
+            StopAllCoroutines();
+            initialized = false;
+            SetLineRenderersActive(false);
             startCharacter = null;
-            onForm.Invoke(null);
+            endCharacter = null;
+            ieSetLineRenderersActive = null;
         }
-    }
 
-    public void BreakTether()
-    {
-        lineRenderer.gameObject.SetActive(false);
-        Utilities.FunctionTimer.Create(this, () => onBreak.Invoke(), breakDelay, $"TetherTrigger_{this}_{GetHashCode()}_Break_Delay", false, true);
-    }
+        public void ResetTetherFull()
+        {
+            StopAllCoroutines();
+            initialized = false;
+            SetLineRenderersActive(false);
+            startCharacter = null;
+            endCharacter = null;
+            endPoint = null;
+            ieSetLineRenderersActive = null;
+        }
 
-    public void SolveTether()
-    {
-        lineRenderer.gameObject.SetActive(false);
-        Utilities.FunctionTimer.Create(this, () => onSolved.Invoke(), breakDelay, $"TetherTrigger_{this}_{GetHashCode()}_Solve_Delay", false, true);
+        public void Initialize()
+        {
+            if (!initialized)
+            {
+                FormTether();
+                initialized = true;
+            }
+        }
+
+        public void Initialize(CharacterState target)
+        {
+            if (!initialized)
+            {
+                FormTether(target);
+                initialized = true;
+            }
+        }
+
+        public void FormTether()
+        {
+            switch (tetherType)
+            {
+                default:
+                {
+                    CharacterState closestMember = null;
+                    float closestDistance = float.MaxValue;
+
+                    foreach (PartyMember member in partyList.members)
+                    {
+                        float distance = Vector3.Distance(transform.position, member.characterState.transform.position);
+                        if (distance < closestDistance)
+                        {
+                            closestDistance = distance;
+                            closestMember = member.characterState;
+                        }
+                    }
+
+                    // Assuming a certain threshold for tethering, e.g., 1 unit
+                    //float tetherThreshold = 1.0f;
+                    //if (closestMember != null && closestDistance < tetherThreshold)
+                    //{
+                    //    FormTether(closestMember);
+                    //}
+                    FormTether(closestMember);
+                    break;
+                }
+                case TetherType.furthest:
+                {
+                    CharacterState furthestMember = null;
+                    float furthestDistance = 0f;
+
+                    foreach (PartyMember member in partyList.members)
+                    {
+                        float distance = Vector3.Distance(transform.position, member.characterState.transform.position);
+                        if (distance > furthestDistance)
+                        {
+                            furthestDistance = distance;
+                            furthestMember = member.characterState;
+                        }
+                    }
+
+                    // Assuming a certain threshold for tethering, e.g., 1 unit
+                    //float tetherThreshold = 1.0f;
+                    //if (furthestMember != null && furthestDistance > tetherThreshold)
+                    //{
+                    //    FormTether(furthestMember);
+                    //}
+                    FormTether(furthestMember);
+                    break;
+                }
+                case TetherType.preDefined:
+                {
+                    if (startPoint != null && endPoint != null)
+                    {
+                        FormTether(startPoint, endPoint);
+                    }
+                    else
+                    {
+                        SolveTether();
+                    }
+                    break;
+                }
+            }
+        }
+
+        public void FormTether(CharacterState target)
+        {
+            Transform result = target.transform.Find("Pivot"); // target.transform.GetChild(target.transform.childCount - 2).transform
+
+            if (result == null)
+            {
+                Debug.LogWarning($"[TetherTrigger] Could not find 'Pivot' in {target.gameObject.name}. Using the target's transform instead.");
+                result = target.transform;
+            }
+
+            FormTether(startPoint, result);
+        }
+
+        public void FormTether(Transform start, Transform end)
+        {
+            if (start.gameObject.activeInHierarchy == false || end.gameObject.activeInHierarchy == false)
+                Destroy(gameObject);
+
+            SetLineRenderersActive(true);
+            startPoint = start;
+            endPoint = end;
+
+            if (end.TryGetComponentInParents(out CharacterState endState))
+            {
+                endCharacter = endState;
+                onForm.Invoke(endState);
+            }
+            else if (start.TryGetComponentInParents(out CharacterState startState))
+            {
+                startCharacter = startState;
+                onForm.Invoke(startState);
+            }
+            else
+            {
+                endCharacter = null;
+                startCharacter = null;
+                onForm.Invoke(null);
+            }
+        }
+
+        public void BreakTether()
+        {
+            if (ieSetLineRenderersActive == null)
+                ieSetLineRenderersActive = StartCoroutine(IE_SetLineRenderersActive(false, new WaitForSeconds(visualBreakDelay)));
+            Utilities.FunctionTimer.Create(this, () => onBreak.Invoke(), breakDelay, $"TetherTrigger_{this}_{GetHashCode()}_Break_Delay", false, true);
+        }
+
+        public void SolveTether()
+        {
+            if (ieSetLineRenderersActive == null)
+                ieSetLineRenderersActive = StartCoroutine(IE_SetLineRenderersActive(false, new WaitForSeconds(visualBreakDelay)));
+            Utilities.FunctionTimer.Create(this, () => onSolved.Invoke(), breakDelay, $"TetherTrigger_{this}_{GetHashCode()}_Solve_Delay", false, true);
+        }
+
+        private IEnumerator IE_SetLineRenderersActive(bool state, WaitForSeconds wait)
+        {
+            yield return wait;
+            SetLineRenderersActive(state);
+            ieSetLineRenderersActive = null;
+        }
+
+        private void SetLineRenderersActive(bool state)
+        {
+            foreach (LineRenderer lineRenderer in lineRenderers)
+            {
+                if (lineRenderer == null)
+                    continue;
+
+                if (shaderFade == null)
+                {
+                    lineRenderer.gameObject.SetActive(state);
+                }
+                else
+                {
+                    if (state)
+                        shaderFade.FadeIn();
+                    else
+                        shaderFade.FadeOut();
+                }
+            }
+        }
     }
 }

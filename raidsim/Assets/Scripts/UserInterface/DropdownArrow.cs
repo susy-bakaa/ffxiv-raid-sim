@@ -1,50 +1,53 @@
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
+using TMPro;
+using dev.susybaka.raidsim.Inputs;
+using dev.susybaka.Shared;
 
-[RequireComponent(typeof(TMP_Dropdown))]
-public class DropdownArrow : MonoBehaviour
+namespace dev.susybaka.raidsim.UI
 {
-    TMP_Dropdown dropdown;
-
-    public GameObject standard;
-    public GameObject expanded;
-    public UserInput userInput;
-
-    private bool inputSet = false;
-
-    void Awake()
+    [RequireComponent(typeof(TMP_Dropdown))]
+    public class DropdownArrow : MonoBehaviour
     {
-        dropdown = GetComponent<TMP_Dropdown>();
-        if (userInput == null)
-            userInput = FindObjectOfType<UserInput>();
-    }
+        TMP_Dropdown dropdown;
 
-    void Update()
-    {
-        if (Utilities.RateLimiter(27))
+        public GameObject standard;
+        public GameObject expanded;
+        public UserInput userInput;
+
+        private bool inputSet = false;
+
+        private void Awake()
         {
-            if (dropdown.IsExpanded)
+            dropdown = GetComponent<TMP_Dropdown>();
+            if (userInput == null)
+                userInput = FindObjectOfType<UserInput>();
+        }
+
+        private void Update()
+        {
+            if (Utilities.RateLimiter(27))
             {
-                standard.SetActive(false);
-                expanded.SetActive(true);
-                if (userInput != null)
+                if (dropdown.IsExpanded)
                 {
-                    userInput.rotationInputEnabled = false;
-                    userInput.zoomInputEnabled = false;
+                    standard.SetActive(false);
+                    expanded.SetActive(true);
+                    if (userInput != null)
+                    {
+                        userInput.rotationInputEnabled = false;
+                        userInput.zoomInputEnabled = false;
+                    }
+                    inputSet = false;
                 }
-                inputSet = false;
-            }
-            else
-            {
-                expanded.SetActive(false);
-                standard.SetActive(true);
-                if (userInput != null && !inputSet)
+                else
                 {
-                    userInput.rotationInputEnabled = true;
-                    userInput.zoomInputEnabled = true;
-                    inputSet = true;
+                    expanded.SetActive(false);
+                    standard.SetActive(true);
+                    if (userInput != null && !inputSet)
+                    {
+                        userInput.rotationInputEnabled = true;
+                        userInput.zoomInputEnabled = true;
+                        inputSet = true;
+                    }
                 }
             }
         }

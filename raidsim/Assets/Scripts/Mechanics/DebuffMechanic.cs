@@ -1,90 +1,90 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static GlobalData;
-using static StatusEffectData;
+using static dev.susybaka.raidsim.Core.GlobalData;
+using static dev.susybaka.raidsim.StatusEffects.StatusEffectData;
 
-public class DebuffMechanic : FightMechanic
+namespace dev.susybaka.raidsim.Mechanics
 {
-    public StatusEffectInfo effect;
-    public bool applyToTarget = true;
-    public bool cleans = false;
-    public bool allowSubStatuses = false;
-
-    public override void TriggerMechanic(ActionInfo actionInfo)
+    public class DebuffMechanic : FightMechanic
     {
-        if (!CanTrigger(actionInfo))
-            return;
+        public StatusEffectInfo effect;
+        public bool applyToTarget = true;
+        public bool cleans = false;
+        public bool allowSubStatuses = false;
 
-        if (applyToTarget)
+        public override void TriggerMechanic(ActionInfo actionInfo)
         {
-            if (actionInfo.target != null)
+            if (!CanTrigger(actionInfo))
+                return;
+
+            if (applyToTarget)
             {
-                if (log)
+                if (actionInfo.target != null)
                 {
-                    Debug.Log($"[DebuffMechanic] '{effect.data.statusName}' applied to '{actionInfo.target.characterName}'");
-                }
-
-                if (!cleans)
-                {
-                    for (int i = 0; i < effect.data.incompatableStatusEffects.Count; i++)
+                    if (log)
                     {
-                        if (actionInfo.target.HasEffect(effect.data.incompatableStatusEffects[i].statusName))
-                        {
-                            return;
-                        }
+                        Debug.Log($"[DebuffMechanic] '{effect.data.statusName}' applied to '{actionInfo.target.characterName}'");
                     }
-                    actionInfo.target.AddEffect(effect.data, actionInfo.target, false, effect.tag, effect.stacks);
-                }
-                else
-                {
-                    actionInfo.target.RemoveEffect(effect.data, false, actionInfo.target, effect.tag, effect.stacks);
 
-                    if (allowSubStatuses)
+                    if (!cleans)
                     {
-                        if (effect.data.refreshStatusEffects != null && effect.data.refreshStatusEffects.Count > 0)
+                        for (int i = 0; i < effect.data.incompatableStatusEffects.Count; i++)
                         {
-                            for (int i = 0; i < effect.data.refreshStatusEffects.Count; i++)
+                            if (actionInfo.target.HasEffect(effect.data.incompatableStatusEffects[i].statusName))
                             {
-                                if (actionInfo.target.HasEffect(effect.data.refreshStatusEffects[i].statusName))
+                                return;
+                            }
+                        }
+                        actionInfo.target.AddEffect(effect.data, actionInfo.target, false, effect.tag, effect.stacks);
+                    }
+                    else
+                    {
+                        actionInfo.target.RemoveEffect(effect.data, false, actionInfo.target, effect.tag, effect.stacks);
+
+                        if (allowSubStatuses)
+                        {
+                            if (effect.data.refreshStatusEffects != null && effect.data.refreshStatusEffects.Count > 0)
+                            {
+                                for (int i = 0; i < effect.data.refreshStatusEffects.Count; i++)
                                 {
-                                    actionInfo.target.RemoveEffect(effect.data.refreshStatusEffects[i], false, actionInfo.target, effect.tag, effect.stacks);
+                                    if (actionInfo.target.HasEffect(effect.data.refreshStatusEffects[i].statusName))
+                                    {
+                                        actionInfo.target.RemoveEffect(effect.data.refreshStatusEffects[i], false, actionInfo.target, effect.tag, effect.stacks);
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
-        else
-        {
-            if (actionInfo.source != null)
+            else
             {
-                if (!cleans)
+                if (actionInfo.source != null)
                 {
-                    for (int i = 0; i < effect.data.incompatableStatusEffects.Count; i++)
+                    if (!cleans)
                     {
-                        if (actionInfo.source.HasEffect(effect.data.incompatableStatusEffects[i].statusName))
+                        for (int i = 0; i < effect.data.incompatableStatusEffects.Count; i++)
                         {
-                            return;
-                        }
-                    }
-                    actionInfo.source.AddEffect(effect.data, actionInfo.source, false, effect.tag, effect.stacks);
-                }
-                else
-                {
-                    actionInfo.source.RemoveEffect(effect.data, false, actionInfo.source, effect.tag, effect.stacks);
-
-                    if (allowSubStatuses)
-                    {
-                        if (effect.data.refreshStatusEffects != null && effect.data.refreshStatusEffects.Count > 0)
-                        {
-                            for (int i = 0; i < effect.data.refreshStatusEffects.Count; i++)
+                            if (actionInfo.source.HasEffect(effect.data.incompatableStatusEffects[i].statusName))
                             {
-                                if (actionInfo.source.HasEffect(effect.data.refreshStatusEffects[i].statusName))
+                                return;
+                            }
+                        }
+                        actionInfo.source.AddEffect(effect.data, actionInfo.source, false, effect.tag, effect.stacks);
+                    }
+                    else
+                    {
+                        actionInfo.source.RemoveEffect(effect.data, false, actionInfo.source, effect.tag, effect.stacks);
+
+                        if (allowSubStatuses)
+                        {
+                            if (effect.data.refreshStatusEffects != null && effect.data.refreshStatusEffects.Count > 0)
+                            {
+                                for (int i = 0; i < effect.data.refreshStatusEffects.Count; i++)
                                 {
-                                    actionInfo.source.RemoveEffect(effect.data.refreshStatusEffects[i], false, actionInfo.source, effect.tag, effect.stacks);
+                                    if (actionInfo.source.HasEffect(effect.data.refreshStatusEffects[i].statusName))
+                                    {
+                                        actionInfo.source.RemoveEffect(effect.data.refreshStatusEffects[i], false, actionInfo.source, effect.tag, effect.stacks);
+                                    }
                                 }
                             }
                         }

@@ -1,41 +1,42 @@
-using System.Collections;
 using System.Collections.Generic;
-using NaughtyAttributes;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HudElementColor : MonoBehaviour
+namespace dev.susybaka.raidsim.UI
 {
-    public enum ColorType { main, highlight, background }
-
-    public ColorType colorType;
-    public Color currentColor;
-    public Image image;
-    public TextMeshProUGUI text;
-    public Outline outline;
-
-    void Awake()
+    public class HudElementColor : MonoBehaviour
     {
-        if (image != null)
-            currentColor = image.color;
-        if (text != null)
-            currentColor = text.color;
-        if (outline != null)
-            currentColor = outline.effectColor;
-    }
+        public enum ColorType { main, highlight, background }
 
-    public void SetColor(List<Color> colors)
-    {
-        Color newColor = colors[(int)colorType];
+        public ColorType colorType;
+        public Color currentColor;
+        public Image image;
+        public TextMeshProUGUI text;
+        public Outline outline;
 
-        currentColor = newColor;
+        private void Awake()
+        {
+            if (image != null)
+                currentColor = image.color;
+            if (text != null)
+                currentColor = text.color;
+            if (outline != null)
+                currentColor = outline.effectColor;
+        }
 
-        if (image != null)
-            image.color = newColor;
-        if (text  != null) 
-            text.color = newColor;
-        if (outline != null)
-            outline.effectColor = newColor;
+        public void SetColor(List<Color> colors)
+        {
+            Color newColor = colors[(int)colorType];
+
+            currentColor = newColor;
+
+            if (image != null)
+                image.color = newColor;
+            if (text != null)
+                text.color = newColor;
+            if (outline != null)
+                outline.effectColor = newColor;
+        }
     }
 }

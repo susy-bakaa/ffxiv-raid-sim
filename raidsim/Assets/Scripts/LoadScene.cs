@@ -1,14 +1,17 @@
-using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using NaughtyAttributes;
 
-public class LoadScene : MonoBehaviour
+namespace dev.susybaka.raidsim
 {
-    [SerializeField, Scene] private string scene;
-
-    void Start()
+    public class LoadScene : MonoBehaviour
     {
-        //Utilities.FunctionTimer.CleanUp();
-        SceneManager.LoadScene(scene);
+        [SerializeField, Scene] private string scene;
+
+        private void Start()
+        {
+            //Utilities.FunctionTimer.CleanUp();
+            SceneManager.LoadScene(scene);
+        }
     }
 }

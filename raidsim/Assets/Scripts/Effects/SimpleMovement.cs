@@ -1,36 +1,62 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class SimpleMovement : MonoBehaviour
+namespace dev.susybaka.raidsim.Visuals
 {
-    public Vector3 target = Vector3.zero;
-    public float speed = 0.1f;
-    public bool loop = true;
-    private Vector3 originalPosition;
-    private bool movingToTarget = true;
-
-    private void Awake()
+    public class SimpleMovement : MonoBehaviour
     {
-        originalPosition = transform.localPosition;
-    }
+        public Vector3 target = Vector3.zero;
+        public float speed = 0.1f;
+        public bool OnUpdate = true;
+        public bool loop = true;
+        private Vector3 originalPosition;
+        private bool movingToTarget = true;
 
-    private void Update()
-    {
-        if (movingToTarget)
+        private void Awake()
         {
-            transform.localPosition = Vector3.MoveTowards(transform.localPosition, target, speed * Time.deltaTime);
-            if (transform.localPosition == target)
+            movingToTarget = true;
+            originalPosition = transform.localPosition;
+        }
+
+        private void Update()
+        {       
+            if (!OnUpdate)
+                return;
+
+            if (movingToTarget)
             {
-                movingToTarget = false;
+                transform.localPosition = Vector3.MoveTowards(transform.localPosition, target, speed * Time.deltaTime);
+                if (transform.localPosition == target)
+                {
+                    movingToTarget = false;
+                }
+            }
+            else if (loop)
+            {
+                transform.localPosition = Vector3.MoveTowards(transform.localPosition, originalPosition, speed * Time.deltaTime);
+                if (transform.localPosition == originalPosition)
+                {
+                    movingToTarget = true;
+                }
             }
         }
-        else if (loop)
+
+        public void ResetPosition()
         {
-            transform.localPosition = Vector3.MoveTowards(transform.localPosition, originalPosition, speed * Time.deltaTime);
-            if (transform.localPosition == originalPosition)
+            transform.localPosition = originalPosition;
+            movingToTarget = true;
+        }
+
+        public void Move()
+        {
+            if (speed > 0f && movingToTarget)
             {
-                movingToTarget = true;
+                LeanTween.moveLocal(gameObject, target, speed);
+                movingToTarget = false;
+            }
+            else if (movingToTarget)
+            {
+                transform.localPosition = target;
+                movingToTarget = false;
             }
         }
     }

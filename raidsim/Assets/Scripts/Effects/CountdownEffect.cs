@@ -1,107 +1,119 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using dev.susybaka.raidsim.Core;
 using UnityEngine;
 
-public class CountdownEffect : MonoBehaviour
+namespace dev.susybaka.raidsim.Visuals
 {
-    public Transform target;
-    public int userShaderFadeMaterial = -1;
-    public Texture[] textures;
-
-    private SimpleShaderFade shaderFade;
-    private bool visible = false;
-    private Material mat;
-    private int textureHash = Shader.PropertyToID("_Main");
-
-    private void Start()
+    public class CountdownEffect : MonoBehaviour
     {
-        shaderFade = GetComponent<SimpleShaderFade>();
-        mat = target.GetComponent<Renderer>().material;
-        if (textures != null && textures.Length > 0)
+        public Transform target;
+        public int userShaderFadeMaterial = -1;
+        public Texture[] textures;
+
+        private SimpleShaderFade shaderFade;
+        private bool visible = false;
+        private Material mat;
+        private int textureHash = Shader.PropertyToID("_Main");
+
+        private void Start()
         {
-            mat.SetTexture(textureHash, textures[textures.Length - 1]);
-        }
-        if (shaderFade != null)
-        {
-            shaderFade.FadeOut(0f);
-            visible = false;
-        }
-        else
-        {
-            foreach (Transform child in transform)
+            shaderFade = GetComponent<SimpleShaderFade>();
+            mat = target.GetComponent<Renderer>().material;
+            
+            OnReset();
+
+            if (FightTimeline.Instance != null)
             {
-                child.gameObject.SetActive(false);
+                FightTimeline.Instance.onReset.AddListener(OnReset);
             }
         }
-    }
 
-    public void SetTexture(float time)
-    {
-        if (textures != null && textures.Length > 0)
+        public void OnReset()
         {
-            int index = Mathf.RoundToInt(time - 1f);
-            //Debug.Log($"index {index} time {time}");
-            SetTexture(index);
-        }
-    }
-
-    public void SetTexture(int index)
-    {
-        if (textures != null && textures.Length > 0 && index < textures.Length && index > -1)
-        {
-            mat.SetTexture(textureHash, textures[index]);
-            //Debug.Log($"SetTexture {index}");
-            if (!visible)
+            if (textures != null && textures.Length > 0)
             {
-                if (shaderFade != null)
-                {
-                    shaderFade.FadeIn(0.25f);
-                }
-                else
-                {
-                    foreach (Transform child in transform)
-                    {
-                        child.gameObject.SetActive(true);
-                    }
-                }
-                visible = true;
+                mat.SetTexture(textureHash, textures[textures.Length - 1]);
             }
-        } 
-        else if (textures != null && (index < 0 || index >= textures.Length))
-        {
-            if (visible)
+            if (shaderFade != null)
             {
-                if (shaderFade != null)
-                {
-                    shaderFade.FadeOut(0.25f);
-                }
-                else
-                {
-                    foreach (Transform child in transform)
-                    {
-                        child.gameObject.SetActive(false);
-                    }
-                }
+                shaderFade.FadeOut(0f);
                 visible = false;
             }
-        }
-        else
-        {
-            if (visible)
+            else
             {
-                if (shaderFade != null)
+                foreach (Transform child in transform)
                 {
-                    shaderFade.FadeOut(0.25f);
+                    child.gameObject.SetActive(false);
                 }
-                else
+            }
+        }
+
+        public void SetTexture(float time)
+        {
+            if (textures != null && textures.Length > 0)
+            {
+                int index = Mathf.RoundToInt(time - 1f);
+                //Debug.Log($"index {index} time {time}");
+                SetTexture(index);
+            }
+        }
+
+        public void SetTexture(int index)
+        {
+            if (textures != null && textures.Length > 0 && index < textures.Length && index > -1)
+            {
+                mat.SetTexture(textureHash, textures[index]);
+                //Debug.Log($"SetTexture {index}");
+                if (!visible)
                 {
-                    foreach (Transform child in transform)
+                    if (shaderFade != null)
                     {
-                        child.gameObject.SetActive(false);
+                        shaderFade.FadeIn(0.25f);
                     }
+                    else
+                    {
+                        foreach (Transform child in transform)
+                        {
+                            child.gameObject.SetActive(true);
+                        }
+                    }
+                    visible = true;
                 }
-                visible = false;
+            }
+            else if (textures != null && (index < 0 || index >= textures.Length))
+            {
+                if (visible)
+                {
+                    if (shaderFade != null)
+                    {
+                        shaderFade.FadeOut(0.25f);
+                    }
+                    else
+                    {
+                        foreach (Transform child in transform)
+                        {
+                            child.gameObject.SetActive(false);
+                        }
+                    }
+                    visible = false;
+                }
+            }
+            else
+            {
+                if (visible)
+                {
+                    if (shaderFade != null)
+                    {
+                        shaderFade.FadeOut(0.25f);
+                    }
+                    else
+                    {
+                        foreach (Transform child in transform)
+                        {
+                            child.gameObject.SetActive(false);
+                        }
+                    }
+                    visible = false;
+                }
             }
         }
     }

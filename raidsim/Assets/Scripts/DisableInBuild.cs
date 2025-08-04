@@ -1,24 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
-public class DisableInBuild : MonoBehaviour
+namespace dev.susybaka.raidsim
 {
-    Button button;
-    Toggle toggle;
-    TMP_Dropdown dropdown;
-    public bool disableForWebGL = true;
-    public bool disableForWinStandalone = false;
-    public bool disableForLinuxStandalone = false;
-    public bool toggleGameObject = false;
-
-    private void Awake()
+    public class DisableInBuild : MonoBehaviour
     {
-        button = GetComponent<Button>();
-        toggle = GetComponent<Toggle>();
-        dropdown = GetComponent<TMP_Dropdown>();
+        Button button;
+        Toggle toggle;
+        TMP_Dropdown dropdown;
+        public bool disableForWebGL = true;
+        public bool disableForWinStandalone = false;
+        public bool disableForLinuxStandalone = false;
+        public bool toggleGameObject = false;
+
+        private void Awake()
+        {
+            button = GetComponent<Button>();
+            toggle = GetComponent<Toggle>();
+            dropdown = GetComponent<TMP_Dropdown>();
 
 #if UNITY_WEBPLAYER
         if (disableForWebGL)
@@ -47,17 +47,18 @@ public class DisableInBuild : MonoBehaviour
         }
 #endif
 #if UNITY_STANDALONE_WIN
-        if (disableForWinStandalone)
-        {
-            if (button != null)
-                button.interactable = false;
-            else if (toggle != null)
-                toggle.interactable = false;
-            else if (dropdown != null)
-                dropdown.interactable = false;
-            if (toggleGameObject)
-                gameObject.SetActive(false);
-        }
+            if (disableForWinStandalone)
+            {
+                if (button != null)
+                    button.interactable = false;
+                else if (toggle != null)
+                    toggle.interactable = false;
+                else if (dropdown != null)
+                    dropdown.interactable = false;
+                if (toggleGameObject)
+                    gameObject.SetActive(false);
+            }
 #endif
+        }
     }
 }

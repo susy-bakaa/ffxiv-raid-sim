@@ -1,23 +1,25 @@
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
+using TMPro;
+using dev.susybaka.raidsim.Core;
 
-public class ResolutionTracker : MonoBehaviour
+namespace dev.susybaka.raidsim.UI.Development
 {
-    private TextMeshProUGUI tm;
-    [SerializeField] private bool useCurrentGameResolution = true;
-
-    private void Awake()
+    public class ResolutionTracker : MonoBehaviour
     {
-        tm = GetComponent<TextMeshProUGUI>();
-    }
+        private TextMeshProUGUI tm;
+        [SerializeField] private bool useCurrentGameResolution = true;
 
-    private void Update()
-    {
-        if (useCurrentGameResolution)
-            tm.text = "Resolution Game: " + GlobalVariables.currentGameResolution.width + "x" + GlobalVariables.currentGameResolution.height + " " + GlobalVariables.currentGameResolution.refreshRateRatio;
-        else
-            tm.text = "Resolution Screen: " + Screen.currentResolution.width + "x" + Screen.currentResolution.height + " " + Screen.currentResolution.refreshRateRatio;
+        private void Awake()
+        {
+            tm = GetComponent<TextMeshProUGUI>();
+        }
+
+        private void Update()
+        {
+            if (useCurrentGameResolution)
+                tm.text = "Resolution Game: " + GlobalVariables.currentGameResolution.width + "x" + GlobalVariables.currentGameResolution.height + " " + GlobalVariables.currentGameResolution.refreshRateRatio;
+            else
+                tm.text = "Resolution Screen: " + Screen.currentResolution.width + "x" + Screen.currentResolution.height + " " + Screen.currentResolution.refreshRateRatio;
+        }
     }
 }

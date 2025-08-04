@@ -1,37 +1,38 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(CanvasGroup))]
-public class FadeCanvasGroup : MonoBehaviour
+namespace dev.susybaka.raidsim.UI
 {
-    private CanvasGroup group;
-    [SerializeField] private float fadeDuration = 0.2f;
-
-    private void Awake()
+    [RequireComponent(typeof(CanvasGroup))]
+    public class FadeCanvasGroup : MonoBehaviour
     {
-        group = GetComponent<CanvasGroup>();
-    }
+        private CanvasGroup group;
+        [SerializeField] private float fadeDuration = 0.2f;
 
-    public void FadeToggle()
-    {
-        if (group.alpha < 1f)
+        private void Awake()
         {
-            FadeIn();
+            group = GetComponent<CanvasGroup>();
         }
-        else
+
+        public void FadeToggle()
         {
-            FadeOut();
+            if (group.alpha < 1f)
+            {
+                FadeIn();
+            }
+            else
+            {
+                FadeOut();
+            }
         }
-    }
 
-    public void FadeIn()
-    {
-        group.LeanAlpha(1f, fadeDuration);
-    }
+        public void FadeIn()
+        {
+            group.LeanAlpha(1f, fadeDuration);
+        }
 
-    public void FadeOut()
-    {
-        group.LeanAlpha(0f, fadeDuration);
+        public void FadeOut()
+        {
+            group.LeanAlpha(0f, fadeDuration);
+        }
     }
 }

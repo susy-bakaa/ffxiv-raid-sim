@@ -1,233 +1,242 @@
 using UnityEngine;
 using UnityEngine.Events;
+using dev.susybaka.raidsim.Actions;
+using dev.susybaka.raidsim.Characters;
+using dev.susybaka.raidsim.Core;
 
-public class TargetNode : MonoBehaviour
+namespace dev.susybaka.raidsim.Targeting
 {
-    private SphereCollider sphereCollider;
-    private CapsuleCollider capsuleCollider;
-
-    [SerializeField] private CharacterState characterState;
-    [SerializeField] private ActionController actionController;
-    [SerializeField] private TargetController targetController;
-    [SerializeField] private bool allowAutomaticSetup = true;
-    [SerializeField] private bool targetable;
-    public bool Targetable { get { return characterState != null ? !characterState.untargetable.value : targetable; } }
-    [SerializeField] private int group;
-    public int Group { get { return group; } }
-    public float hitboxRadius = 0f;
-
-    public UnityEvent onTarget;
-    public UnityEvent onDetarget;
-
-    public CanvasGroup[] highlightGroups;
-
-    void Awake()
+    public class TargetNode : MonoBehaviour
     {
-        sphereCollider = GetComponent<SphereCollider>();
-        capsuleCollider = GetComponent<CapsuleCollider>();
+        private SphereCollider sphereCollider;
+        private CapsuleCollider capsuleCollider;
 
-        if (capsuleCollider != null && hitboxRadius <= 0f)
-            hitboxRadius = capsuleCollider.radius;
-        if (sphereCollider != null && hitboxRadius <= 0f)
-            hitboxRadius = sphereCollider.radius;
+        [SerializeField] private CharacterState characterState;
+        [SerializeField] private ActionController actionController;
+        [SerializeField] private TargetController targetController;
+        [SerializeField] private bool allowAutomaticSetup = true;
+        [SerializeField] private bool targetable;
+        public bool Targetable { get { return characterState != null ? !characterState.untargetable.value : targetable; } }
+        [SerializeField] private int group;
+        public int Group { get { return group; } }
+        public float hitboxRadius = 0f;
 
-        SetupCharacterState();
-        SetupActionController();
-        SetupTargetController();
-    }
+        public UnityEvent onTarget;
+        public UnityEvent onDetarget;
 
-    void Update()
-    {
-        if (characterState != null)
+        public CanvasGroup[] highlightGroups;
+
+        private void Awake()
         {
-            targetable = !characterState.untargetable.value;
-        }
-    }
+            sphereCollider = GetComponent<SphereCollider>();
+            capsuleCollider = GetComponent<CapsuleCollider>();
 
-    public bool TryGetCharacterState(out CharacterState characterState)
-    {
-        if (this.characterState == null)
-        {
+            if (capsuleCollider != null && hitboxRadius <= 0f)
+                hitboxRadius = capsuleCollider.radius;
+            if (sphereCollider != null && hitboxRadius <= 0f)
+                hitboxRadius = sphereCollider.radius;
+
             SetupCharacterState();
-        }
-
-        characterState = this.characterState;
-
-        return characterState != null;
-    }
-
-    public bool TryGetActionController(out ActionController actionController)
-    {
-        if (this.actionController == null)
-        {
             SetupActionController();
-        }
-
-        actionController = this.actionController;
-
-        return actionController != null;
-    }
-
-    public bool TryGetTargetController(out TargetController targetController)
-    {
-        if (this.targetController == null)
-        {
             SetupTargetController();
         }
 
-        targetController = this.targetController;
-
-        return targetController != null;
-    }
-
-    public CharacterState GetCharacterState()
-    {
-        return characterState ?? SetupCharacterState();
-    }
-
-    public ActionController GetActionController()
-    {
-        return actionController ?? SetupActionController();
-    }
-
-    public TargetController GetTargetController()
-    {
-        return targetController ?? SetupTargetController();
-    }
-
-    private CharacterState SetupCharacterState()
-    {
-        if (!allowAutomaticSetup)
-            return characterState;
-
-        if (characterState == null)
+        private void Update()
         {
-            if (TryGetComponent(out CharacterState resultSelf))
+            if (characterState != null)
             {
-                characterState = resultSelf;
-            }
-            else if (transform.parent.TryGetComponent(out CharacterState resultParent))
-            {
-                characterState = resultParent;
-            }
-            else if (transform.root.TryGetComponent(out CharacterState resultRoot))
-            {
-                characterState = resultRoot;
+                targetable = !characterState.untargetable.value;
             }
         }
 
-        return characterState;
-    }
-
-    private ActionController SetupActionController()
-    {
-        if (!allowAutomaticSetup)
-            return actionController;
-
-        if (actionController == null)
+        public bool TryGetCharacterState(out CharacterState characterState)
         {
-            if (TryGetComponent(out ActionController resultSelf))
+            if (this.characterState == null)
             {
-                actionController = resultSelf;
+                SetupCharacterState();
             }
-            else if (transform.parent.TryGetComponent(out ActionController resultParent))
-            {
-                actionController = resultParent;
-            }
-            else if (transform.root.TryGetComponent(out ActionController resultRoot))
-            {
-                actionController = resultRoot;
-            }
+
+            characterState = this.characterState;
+
+            return characterState != null;
         }
 
-        return actionController;
-    }
-
-    private TargetController SetupTargetController()
-    {
-        if (!allowAutomaticSetup)
-            return targetController;
-
-        if (actionController == null)
+        public bool TryGetActionController(out ActionController actionController)
         {
-            if (TryGetComponent(out TargetController resultSelf))
+            if (this.actionController == null)
             {
-                targetController = resultSelf;
+                SetupActionController();
             }
-            else if (transform.parent.TryGetComponent(out TargetController resultParent))
-            {
-                targetController = resultParent;
-            }
-            else if (transform.root.TryGetComponent(out TargetController resultRoot))
-            {
-                targetController = resultRoot;
-            }
+
+            actionController = this.actionController;
+
+            return actionController != null;
         }
 
-        return targetController;
-    }
-
-    public bool IsNodeInGroup(int group)
-    {
-        if (this != null)
+        public bool TryGetTargetController(out TargetController targetController)
         {
-            if (this.Group == group)
-                return true;
-        }
-        return false;
-    }
-
-    public bool IsNodeInGroups(int[] groups)
-    {
-        for (int i = 0; i < groups.Length; i++)
-        {
-            if (IsNodeInGroup(groups[i]))
+            if (this.targetController == null)
             {
-                return true;
+                SetupTargetController();
             }
+
+            targetController = this.targetController;
+
+            return targetController != null;
         }
 
-        return false;
-    }
-
-    public void UpdateUserInterface(float alpha, float duration)
-    {
-        if (highlightGroups != null && highlightGroups.Length > 0)
+        public CharacterState GetCharacterState()
         {
-            for (int i = 0; i < highlightGroups.Length; i++)
+            return characterState ?? SetupCharacterState();
+        }
+
+        public ActionController GetActionController()
+        {
+            return actionController ?? SetupActionController();
+        }
+
+        public TargetController GetTargetController()
+        {
+            return targetController ?? SetupTargetController();
+        }
+
+        private CharacterState SetupCharacterState()
+        {
+            if (!allowAutomaticSetup)
+                return characterState;
+
+            if (characterState == null)
             {
-                if (highlightGroups[i].alpha <= 0f || highlightGroups[i].alpha >= 1f)
+                if (TryGetComponent(out CharacterState resultSelf))
                 {
-                    if (!FightTimeline.Instance.paused)
-                        highlightGroups[i].LeanAlpha(alpha, duration);
-                    else
-                        highlightGroups[i].alpha = alpha;
+                    characterState = resultSelf;
+                }
+                else if (transform.parent.TryGetComponent(out CharacterState resultParent))
+                {
+                    characterState = resultParent;
+                }
+                else if (transform.root.TryGetComponent(out CharacterState resultRoot))
+                {
+                    characterState = resultRoot;
+                }
+            }
+
+            return characterState;
+        }
+
+        private ActionController SetupActionController()
+        {
+            if (!allowAutomaticSetup)
+                return actionController;
+
+            if (actionController == null)
+            {
+                if (TryGetComponent(out ActionController resultSelf))
+                {
+                    actionController = resultSelf;
+                }
+                else if (transform.parent.TryGetComponent(out ActionController resultParent))
+                {
+                    actionController = resultParent;
+                }
+                else if (transform.root.TryGetComponent(out ActionController resultRoot))
+                {
+                    actionController = resultRoot;
+                }
+            }
+
+            return actionController;
+        }
+
+        private TargetController SetupTargetController()
+        {
+            if (!allowAutomaticSetup)
+                return targetController;
+
+            if (actionController == null)
+            {
+                if (TryGetComponent(out TargetController resultSelf))
+                {
+                    targetController = resultSelf;
+                }
+                else if (transform.parent.TryGetComponent(out TargetController resultParent))
+                {
+                    targetController = resultParent;
+                }
+                else if (transform.root.TryGetComponent(out TargetController resultRoot))
+                {
+                    targetController = resultRoot;
+                }
+            }
+
+            return targetController;
+        }
+
+        public bool IsNodeInGroup(int group)
+        {
+            if (this != null)
+            {
+                if (this.Group == group)
+                    return true;
+            }
+            return false;
+        }
+
+        public bool IsNodeInGroups(int[] groups)
+        {
+            for (int i = 0; i < groups.Length; i++)
+            {
+                if (IsNodeInGroup(groups[i]))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public void UpdateUserInterface(float alpha, float duration)
+        {
+            if (highlightGroups != null && highlightGroups.Length > 0)
+            {
+                for (int i = 0; i < highlightGroups.Length; i++)
+                {
+                    if (highlightGroups[i] == null)
+                        continue;
+
+                    if (highlightGroups[i].alpha <= 0f || highlightGroups[i].alpha >= 1f)
+                    {
+                        if (!FightTimeline.Instance.paused)
+                            highlightGroups[i].LeanAlpha(alpha, duration);
+                        else
+                            highlightGroups[i].alpha = alpha;
+                    }
                 }
             }
         }
-    }
 
-    public void AddNodeToController(TargetNode node)
-    {
-        if (targetController == null)
-            SetupTargetController();
+        public void AddNodeToController(TargetNode node)
+        {
+            if (targetController == null)
+                SetupTargetController();
 
-        if (targetController == null)
-            return;
+            if (targetController == null)
+                return;
 
-        if (!targetController.targetTriggerNodes.Contains(node))
-            targetController.targetTriggerNodes.Add(node);
-    }
+            if (!targetController.targetTriggerNodes.Contains(node))
+                targetController.targetTriggerNodes.Add(node);
+        }
 
-    public void RemoveNodeFromController(TargetNode node)
-    {
-        if (targetController == null)
-            SetupTargetController();
+        public void RemoveNodeFromController(TargetNode node)
+        {
+            if (targetController == null)
+                SetupTargetController();
 
-        if (targetController == null)
-            return;
+            if (targetController == null)
+                return;
 
-        if (targetController.targetTriggerNodes.Contains(node))
-            targetController.targetTriggerNodes.Remove(node);
+            if (targetController.targetTriggerNodes.Contains(node))
+                targetController.targetTriggerNodes.Remove(node);
+        }
     }
 }

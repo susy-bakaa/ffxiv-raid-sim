@@ -1,42 +1,102 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class SaveHandler : MonoBehaviour
+namespace dev.susybaka.raidsim.SaveLoad
 {
-    public static SaveHandler Instance;
-
-    private string[] saveData;
-
-    void Awake()
+    public class SaveHandler : MonoBehaviour
     {
-#if UNITY_WEBPLAYER
-        if (Instance == null)
+        public static SaveHandler Instance;
+
+        private string[] saveData;
+#if UNITY_EDITOR
+        public string[] SaveData;
+        public string[] SavedData;
+        public string savedDataString;
+
+        [NaughtyAttributes.Button]
+        public void TestSave()
         {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
+            SaveToPlayerPrefs();
         }
-        else
-        {
-            Destroy(gameObject);
-        }
-#else
-        Debug.Log("Not a WebGL build -> SaveHandler was destroyed!");
-        Destroy(gameObject);
-        return;     
 #endif
-    }
 
-    public void Write(string[] lines)
-    {
-        if (lines != null && lines.Length > 0)
+        private void Awake()
         {
-            saveData = lines;
-        }
-    }
+#if UNITY_WEBPLAYER
+            if (Instance == null)
+            {
+                Instance = this;
+                DontDestroyOnLoad(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+            if (PlayerPrefs.HasKey("Config"))
+            {
+                string loadedString = PlayerPrefs.GetString("Config");
 
-    public string[] Load()
-    {
-        return saveData;
+                System.Collections.Generic.List<string> loadedData = new System.Collections.Generic.List<string>(loadedString.Split('&'));
+
+                for (int i = 0; i < loadedData.Count; i++)
+                {
+                    if (loadedData[i] == "%")
+                    {
+                        loadedData[i] = string.Empty;
+                    }
+                }
+
+                saveData = loadedData.ToArray();
+            }
+#else
+            Debug.Log("Not a WebGL build -> SaveHandler was destroyed!");
+            Destroy(gameObject);
+            return;
+#endif
+        }
+
+#if UNITY_EDITOR
+        private void Update()
+        {
+            SaveData = saveData;
+        }
+#endif
+
+        private void SaveToPlayerPrefs()
+        {
+            string[] dataToSave = new string[saveData.Length];
+
+            for (int i = 0; i < dataToSave.Length; i++)
+            {
+                dataToSave[i] = saveData[i];
+
+                if (string.IsNullOrEmpty(dataToSave[i]))
+                {
+                    dataToSave[i] = "%";
+                }
+            }
+
+#if UNITY_EDITOR
+            SavedData = dataToSave;
+            savedDataString = string.Join('&', dataToSave);
+#endif
+
+            PlayerPrefs.SetString("Config", string.Join('&', dataToSave));
+            PlayerPrefs.Save();
+        }
+
+        public void Write(string[] lines)
+        {
+            if (lines != null && lines.Length > 0)
+            {
+                saveData = lines;
+            }
+
+            SaveToPlayerPrefs();
+        }
+
+        public string[] Load()
+        {
+            return saveData;
+        }
     }
 }

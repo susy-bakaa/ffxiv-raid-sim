@@ -1,76 +1,77 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
+using dev.susybaka.raidsim.Inputs;
 
-[RequireComponent(typeof(ThirdPersonCamera))]
-public class KeepCameraRotation : MonoBehaviour
+namespace dev.susybaka.raidsim.SaveLoad
 {
-    ThirdPersonCamera thirdPersonCamera;
-
-    public static KeepCameraRotation instance;
-
-    public static Vector3 SavedPosition = Vector3.zero;
-    public static Quaternion SavedRotation = Quaternion.identity;
-    public static float savedDistanceFromTarget = 0f;
-    private static bool saved = false;
-
-    public bool saveAutomatically = true;
-
-    private void Awake()
+    [RequireComponent(typeof(ThirdPersonCamera))]
+    public class KeepCameraRotation : MonoBehaviour
     {
-        instance = this;
-        thirdPersonCamera = GetComponent<ThirdPersonCamera>();
-    }
+        ThirdPersonCamera thirdPersonCamera;
 
-    private void Start()
-    {
-        if (saved)
-            LoadCamera();
-    }
+        public static KeepCameraRotation instance;
 
-    private void OnDisable()
-    {
-        if (saveAutomatically)
+        public static Vector3 SavedPosition = Vector3.zero;
+        public static Quaternion SavedRotation = Quaternion.identity;
+        public static float savedDistanceFromTarget = 0f;
+        private static bool saved = false;
+
+        public bool saveAutomatically = true;
+
+        private void Awake()
         {
-            SaveCamera();
+            instance = this;
+            thirdPersonCamera = GetComponent<ThirdPersonCamera>();
         }
-    }
 
-    public static void LoadCamera()
-    {
-        CameraSaveData data = new CameraSaveData(SavedPosition, SavedRotation, savedDistanceFromTarget);
-        if (instance != null)
+        private void Start()
         {
-            instance.transform.position = SavedPosition;
-            instance.transform.rotation = SavedRotation;
-            instance.thirdPersonCamera.dstFromTarget = savedDistanceFromTarget;
-            instance.thirdPersonCamera.SetCameraTransform(data);
+            if (saved)
+                LoadCamera();
         }
-    }
 
-    public static void SaveCamera()
-    {
-        if (instance != null)
+        private void OnDisable()
         {
-            SavedPosition = instance.transform.position;
-            SavedRotation = instance.transform.rotation;
-            savedDistanceFromTarget = instance.thirdPersonCamera.dstFromTarget;
-            saved = true;
+            if (saveAutomatically)
+            {
+                SaveCamera();
+            }
         }
-    }
 
-    public struct CameraSaveData
-    {
-        public Vector3 position;
-        public Quaternion rotation;
-        public float distance;
-
-        public CameraSaveData(Vector3 position, Quaternion rotation, float distance)
+        public static void LoadCamera()
         {
-            this.position = position;
-            this.rotation = rotation;
-            this.distance = distance;
+            CameraSaveData data = new CameraSaveData(SavedPosition, SavedRotation, savedDistanceFromTarget);
+            if (instance != null)
+            {
+                instance.transform.position = SavedPosition;
+                instance.transform.rotation = SavedRotation;
+                instance.thirdPersonCamera.dstFromTarget = savedDistanceFromTarget;
+                instance.thirdPersonCamera.SetCameraTransform(data);
+            }
+        }
+
+        public static void SaveCamera()
+        {
+            if (instance != null)
+            {
+                SavedPosition = instance.transform.position;
+                SavedRotation = instance.transform.rotation;
+                savedDistanceFromTarget = instance.thirdPersonCamera.dstFromTarget;
+                saved = true;
+            }
+        }
+
+        public struct CameraSaveData
+        {
+            public Vector3 position;
+            public Quaternion rotation;
+            public float distance;
+
+            public CameraSaveData(Vector3 position, Quaternion rotation, float distance)
+            {
+                this.position = position;
+                this.rotation = rotation;
+                this.distance = distance;
+            }
         }
     }
 }
