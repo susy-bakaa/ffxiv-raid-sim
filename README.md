@@ -22,10 +22,11 @@ This simulator is mainly being built with European raiding strats from LPDU or w
 		- Sunrise Sabbath ([AutoCad/Uptime](https://raidplan.io/plan/OnQXobwatopL1G8u))
 - AAC Cruiserweight Tier
 	- AAC Cruiserweight M4 (Savage) (M8S)
-		- Terrestrial Rage ([Clock](https://wtfdig.info/72/m8s#84ddog::clock:::::))
 		- Terrestrial Rage ([Rinon](https://wtfdig.info/72/m8s#84ddog))
 		- Terrestrial Rage ([Half Rinon](https://wtfdig.info/72/m8s#84ddog::halfr:::::))
+		- Terrestrial Rage ([Game8](https://game8.jp/ff14/681843))
 		- Beckon Moonlight ([Quad](https://raidplan.io/plan/WFsLBku1C9Iyxneu))
+		- Beckon Moonlight ([Game8](https://game8.jp/ff14/681843))
 - The Weapon's Refrain (Ultimate) (UWU)
 	- Phase 3 (Titan)
 		- Gaols ([LPDU](https://www.youtube.com/watch?v=PwEVH50b-rg))
