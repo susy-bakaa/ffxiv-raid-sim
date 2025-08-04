@@ -66,6 +66,9 @@ namespace dev.susybaka.raidsim.Updater
 #elif UNITY_WEBGL
         private const string platform = "webgl";
         private const int checksumFileLine = 2;
+#elif UNITY_STANDALONE_OSX
+        private const string platform = "osx";
+        private const int checksumFileLine = 3;
 #endif
         private bool skipUpdates = false;
         private string zipFilePath;
