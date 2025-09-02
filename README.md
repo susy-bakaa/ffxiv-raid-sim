@@ -2,7 +2,9 @@
 
 A singleplayer raid and fight mechanic simulator with bots, made in the Unity game engine from scratch, for the critically acclaimed MMORPG Final Fantasy XIV: Online by Square Enix. This program will get more timelines and fights added to it as I develop it further. I will also accept any external thirdparty contributions possibly developed by others. Current main focus is Blue Mage specific plans for older fights and mechanics with various ultimate mechanics missing from other simulators thrown in to the mix, with maybe an occasional savage mechanic if I feel like it.
 
-If you want to keep up with development, have any questions or want to contribute yourself, join the [discord server](https://discord.gg/wepQtPfC6D).
+If you want to keep up with development, have any questions or want to contribute yourself, join the discord server.
+
+[![Discord](https://img.shields.io/discord/1387796604232269965?color=5865F2&label=discord&logo=discord&logoColor=white)](https://discord.gg/wepQtPfC6D)
 
 # Supported fights
 
@@ -100,7 +102,8 @@ These fights are not being worked on yet and are not guranteed to be added, but 
 
 # Installation
 
-Download Latest Build: [Windows x64](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.6.2/raidsim_v.0.6.2_win64.zip) [Linux x64](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.6.2/raidsim_v.0.6.2_linux64.zip)
+Download Latest Build: ![Static Badge](https://img.shields.io/badge/Windows_x64-Download-green?link=https%3A%2F%2Fgithub.com%2Fsusy-bakaa%2Fffxiv-raid-sim%2Freleases%2Fdownload%2Fv.0.6.2%2Fraidsim_v.0.6.2_win64.zip)
+ ![Static Badge](https://img.shields.io/badge/Linux_x64-Download-blue?link=https%3A%2F%2Fgithub.com%2Fsusy-bakaa%2Fffxiv-raid-sim%2Freleases%2Fdownload%2Fv.0.6.2%2Fraidsim_v.0.6.2_linux64.zip)
 
 You have two options when it comes to using this program, either open the [web version](https://susybaka.dev/unityweb/raidsim/index.html) or just head over to the [releases section](https://github.com/susy-bakaa/ffxiv-raid-sim/releases) and download the latest archive file for your respective operating system. They are both the same exact program and version except the web one lacks controller support due to Unity not having it for WebGL games. For the standalone version, you need to extract the .Zip archive with some tool such as 7zip and then open up the raidsim.exe or raidsim.x86_64 to launch the program. The build available for Linux is not well tested so it might have some issues. If you instead want to download the source code or expand upon this program, check the git instructions down below and/or contact me on Discord @no00ob or Twitter [@susyy_bakaa](https://x.com/susyy_bakaa) and I will get back to you.
 
