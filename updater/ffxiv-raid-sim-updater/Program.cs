@@ -42,34 +42,16 @@ namespace susy_baka.raidsim.Updater
             string updaterWin = Path.Combine(gameDir, "updater.exe");
             string updaterLin = Path.Combine(gameDir, "updater");
             string oldUpdaterWin = Path.Combine(gameDir, "updater.old.exe");
+            string stageDir = Path.Combine(gameDir, ".updater"); // Windows staging for updater.exe
+            DirectoryInfo stageDirInfo = Directory.CreateDirectory(stageDir);
+            stageDirInfo.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
 
             Console.WriteLine($"Closing the game (PID: {gamePID})...");
             KillProcessByPID(gamePID);
 
-            // Prepare self-replacement
-            if (IsWindows)
+            // Linux: We can safely unlink (delete) the running binary directly before extraction.
+            if (IsLinux)
             {
-                // Windows: Rename the current updater.exe before extracting so it can be overwritten.
-                if (File.Exists(updaterWin))
-                {
-                    try
-                    {
-                        if (File.Exists(oldUpdaterWin))
-                            File.Delete(oldUpdaterWin);
-
-                        File.Move(updaterWin, oldUpdaterWin);
-                        Console.WriteLine("Renamed updater.exe -> updater.old.exe for replacement.");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Failed to rename updater.exe: {ex.Message}");
-                        return 4;
-                    }
-                }
-            }
-            else if (IsLinux)
-            {
-                // Linux: We can safely unlink (delete) the running binary directly before extraction.
                 try
                 {
                     if (File.Exists(updaterLin))
@@ -87,18 +69,15 @@ namespace susy_baka.raidsim.Updater
 
             // Extract the update
             Console.WriteLine("Extracting update...");
-            if (ExtractZipWithProgress(zipPath, gameDir))
+            if (ExtractZipWithProgress(zipPath, gameDir, stageDir, out var stagedUpdaterPath))
             {
                 Console.WriteLine("\nUpdate applied successfully.");
 
                 // Linux: restore executable permissions (zip may not preserve them)
                 if (IsLinux)
                 {
-                    // Preferred name "raidsim"
                     TryChmodX(Path.Combine(gameDir, "updater"));
                     TryChmodX(Path.Combine(gameDir, "raidsim"));
-
-                    // Fallbacks
                     foreach (var bin in Directory.GetFiles(gameDir, "*.x86_64"))
                         TryChmodX(bin);
                     foreach (var sh in Directory.GetFiles(gameDir, "*.sh"))
@@ -108,12 +87,12 @@ namespace susy_baka.raidsim.Updater
                 Console.WriteLine("Cleaning up zip...");
                 TryDelete(zipPath);
 
-                // Relaunch the game
+                // ---- Relaunch game
                 try
                 {
                     string gameExePath = FindGameExecutable(gameDir);
                     Console.WriteLine($"Restarting game: {Path.GetFileName(gameExePath)}");
-                    Thread.Sleep(2000);
+                    Thread.Sleep(2500);
                     StartProcess(gameExePath, gameDir);
                 }
                 catch (Exception ex)
@@ -121,12 +100,13 @@ namespace susy_baka.raidsim.Updater
                     Console.WriteLine($"Failed to restart game: {ex.Message}");
                 }
 
-                // Windows: cleanup old updater via generated batch script
-                if (IsWindows && File.Exists(oldUpdaterWin))
+                // Windows: if we staged a new updater.exe, replace it via a batch script AFTER we exit
+                if (IsWindows && !string.IsNullOrEmpty(stagedUpdaterPath) && File.Exists(stagedUpdaterPath))
                 {
-                    Console.WriteLine("Scheduling cleanup of old updater...");
-                    string bat = Path.Combine(gameDir, "updater.bat");
-                    File.WriteAllText(bat, GenerateCleanupBatchScript());
+                    string destUpdater = Path.Combine(gameDir, "updater.exe");
+                    string bat = Path.Combine(gameDir, "updater_replace.bat");
+                    File.WriteAllText(bat, GenerateCleanupBatchScript(stagedUpdaterPath, destUpdater, stageDir));
+
                     try
                     {
                         Process.Start(new ProcessStartInfo(bat)
@@ -138,7 +118,7 @@ namespace susy_baka.raidsim.Updater
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Failed to start cleanup script: {ex.Message}");
+                        Console.WriteLine($"Failed to start replace script: {ex.Message}");
                     }
                 }
             }
@@ -185,8 +165,9 @@ namespace susy_baka.raidsim.Updater
         }
 
         // Extraction of the zip with progress
-        static bool ExtractZipWithProgress(string zipPath, string extractPath)
+        static bool ExtractZipWithProgress(string zipPath, string extractPath, string windowsUpdaterStageDir, out string? stagedUpdaterPath)
         {
+            stagedUpdaterPath = null;
             try
             {
                 using (ZipArchive archive = ZipFile.OpenRead(zipPath))
@@ -196,23 +177,30 @@ namespace susy_baka.raidsim.Updater
 
                     foreach (var entry in archive.Entries)
                     {
-                        // Skip directory entries explicitly
-                        if (string.IsNullOrEmpty(entry.Name))
+                        bool isDirEntry = string.IsNullOrEmpty(entry.Name);
+                        bool isWindowsUpdaterExe = IsWindows &&
+                            entry.Name.Equals("updater.exe", StringComparison.OrdinalIgnoreCase);
+
+                        // Decide where to place this entry:
+                        string targetRoot = (isWindowsUpdaterExe ? windowsUpdaterStageDir : extractPath);
+                        string targetPath = Path.Combine(targetRoot, entry.FullName);
+
+                        if (isDirEntry)
                         {
-                            // Ensure directory exists
-                            string dirPathOnly = Path.Combine(extractPath, entry.FullName);
-                            Directory.CreateDirectory(dirPathOnly);
+                            Directory.CreateDirectory(targetPath);
                         }
                         else
                         {
-                            string filePath = Path.Combine(extractPath, entry.FullName);
-                            string? directoryPath = Path.GetDirectoryName(filePath);
+                            string? directoryPath = Path.GetDirectoryName(targetPath);
                             if (!string.IsNullOrEmpty(directoryPath))
                                 Directory.CreateDirectory(directoryPath);
 
-                            entry.ExtractToFile(filePath, true);
-                            extractedFiles++;
+                            entry.ExtractToFile(targetPath, true);
 
+                            if (isWindowsUpdaterExe)
+                                stagedUpdaterPath = targetPath;
+
+                            extractedFiles++;
                             int progress = (int)((extractedFiles / (double)totalFiles) * 100);
                             Console.Write($"\rExtracting: [{new string('#', progress / 2)}{new string('-', 50 - (progress / 2))}] {progress}%");
                         }
@@ -297,14 +285,18 @@ namespace susy_baka.raidsim.Updater
         }
 
         // Windows cleanup batch script to remove the old updater
-        static string GenerateCleanupBatchScript()
+        static string GenerateCleanupBatchScript(string stagedUpdaterPath, string destUpdaterPath, string stageDir)
         {
-            // Wait a bit for this process to exit, then delete the old updater & self-delete.
-            return @"
+            // Wait a bit for this updater process to fully exit,
+            // copy staged updater over the original, remove stage dir, then self-delete.
+            return $@"
             @echo off
+            setlocal
             timeout /t 3 /nobreak >nul
-            del ""updater.old.exe""
+            copy /y ""{stagedUpdaterPath}"" ""{destUpdaterPath}"" >nul
+            rd /s /q ""{stageDir}""
             del ""%~f0""
+            endlocal
             exit";
         }
     }
