@@ -75,7 +75,7 @@ namespace dev.susybaka.raidsim.Core
             {
                 currentSharedBundles = new Dictionary<string, AssetBundle>();
 
-                LoadCommonAssetBundle();
+                StartCoroutine(IE_LoadCommonBundlesDelayed(new WaitForSecondsRealtime(2f)));
             }
             if (currentBundles == null || currentBundles.Keys.Count <= 0)
             {
@@ -84,6 +84,12 @@ namespace dev.susybaka.raidsim.Core
         }
 
         #region Common AssetBundles
+        private IEnumerator IE_LoadCommonBundlesDelayed(WaitForSecondsRealtime wait)
+        {
+            yield return wait;
+            LoadCommonAssetBundle();
+        }
+
         public void LoadCommonAssetBundle()
         {
             if (log)
@@ -154,6 +160,13 @@ namespace dev.susybaka.raidsim.Core
             {
                 if (log)
                     Debug.Log($"Requested common AssetBundle '{bundleName}' is already loaded!");
+                ieLoadSharedAssetBundle = null;
+                yield break;
+            }
+
+            if (ConnectionHandler.Instance != null && !ConnectionHandler.Instance.connectedToServer && useExternalBundles)
+            {
+                Debug.LogWarning($"Loading Aborted, cannot load common AssetBundle '{bundleName}' from external source while the server is offline!");
                 ieLoadSharedAssetBundle = null;
                 yield break;
             }
@@ -307,6 +320,13 @@ namespace dev.susybaka.raidsim.Core
                 }
                 else if (!alreadyLoaded.Contains(bundleName))
                 {
+                    if (ConnectionHandler.Instance != null && !ConnectionHandler.Instance.connectedToServer && useExternalBundles)
+                    {
+                        Debug.LogWarning($"Loading Aborted, cannot load AssetBundle '{bundleName}' from external source while the server is offline!");
+                        ieLoadAssetBundle = null;
+                        yield break;
+                    }
+
                     string bundlePath = string.Empty;
 
                     if (useExternalBundles)
