@@ -2,114 +2,189 @@
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace susy_baka.raidsim.Updater
 {
     class Program
     {
-        static void Main(string[] args)
+        // OS helpers
+        static bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+        static bool IsLinux => RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+
+        static int Main(string[] args)
         {
             if (args.Length < 2)
             {
-                Console.WriteLine("Usage: updater.exe <ZipFilePath> <GamePID>");
-                Thread.Sleep(3500);
-                return;
+                Console.WriteLine("Usage: updater <ZipFilePath> <GamePID>");
+                Thread.Sleep(4000);
+                return 1;
             }
 
-            string zipPath = args[0];   // Path to the downloaded ZIP file
-            int gamePID = int.Parse(args[1]);   // Process ID of the running game
+            string zipPath = args[0]; // Path to the downloaded zip file
+            if (!File.Exists(zipPath))
+            {
+                Console.WriteLine($"Zip not found: {zipPath}");
+                Thread.Sleep(4000);
+                return 2;
+            }
+
+            if (!int.TryParse(args[1], out int gamePID))
+            {
+                Console.WriteLine($"Invalid GamePID: {args[1]}");
+                Thread.Sleep(4000);
+                return 3;
+            }
+
             string gameDir = AppDomain.CurrentDomain.BaseDirectory; // Game directory
-            string updaterPath = Path.Combine(gameDir, "updater.exe");
-            string updaterDllPath = Path.Combine(gameDir, "updater.dll");
-            string updaterConfigPath = Path.Combine(gameDir, "updater.runtimeconfig.json");
-            string oldUpdaterPath = Path.Combine(gameDir, "updater.old.exe");
-            string oldUpdaterDllPath = Path.Combine(gameDir, "updater.old.dll");
-            string oldUpdaterConfigPath = Path.Combine(gameDir, "updater.runtimeconfig.old.json");
-            string batchScriptPath = Path.Combine(gameDir, "updater.bat");
+            string updaterWin = Path.Combine(gameDir, "updater.exe");
+            string updaterLin = Path.Combine(gameDir, "updater");
+            string oldUpdaterWin = Path.Combine(gameDir, "updater.old.exe");
 
             Console.WriteLine($"Closing the game (PID: {gamePID})...");
             KillProcessByPID(gamePID);
 
-            // Rename the current updater.exe before extracting
-            if (File.Exists(updaterPath))
+            // Prepare self-replacement
+            if (IsWindows)
             {
+                // Windows: Rename the current updater.exe before extracting so it can be overwritten.
+                if (File.Exists(updaterWin))
+                {
+                    try
+                    {
+                        if (File.Exists(oldUpdaterWin))
+                            File.Delete(oldUpdaterWin);
+
+                        File.Move(updaterWin, oldUpdaterWin);
+                        Console.WriteLine("Renamed updater.exe -> updater.old.exe for replacement.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Failed to rename updater.exe: {ex.Message}");
+                        return 4;
+                    }
+                }
+            }
+            else if (IsLinux)
+            {
+                // Linux: We can safely unlink (delete) the running binary directly before extraction.
                 try
                 {
-                    if (File.Exists(oldUpdaterPath))
-                        File.Delete(oldUpdaterPath);
-                    if (File.Exists(oldUpdaterDllPath))
-                        File.Delete(oldUpdaterDllPath);
-                    if (File.Exists(oldUpdaterConfigPath))
-                        File.Delete(oldUpdaterConfigPath);
-                    File.Move(updaterPath, oldUpdaterPath);
-                    File.Move(updaterDllPath, oldUpdaterDllPath);
-                    File.Move(updaterConfigPath, oldUpdaterConfigPath);
-                    Console.WriteLine("Renamed updater.exe to updater.old.exe for replacement.");
+                    if (File.Exists(updaterLin))
+                    {
+                        File.Delete(updaterLin);
+                        Console.WriteLine("Deleted running 'updater' to free the path.");
+                    }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Failed to rename updater.exe: {ex.Message}");
-                    return;
+                    Console.WriteLine($"Warning: failed to delete updater before extraction: {ex.Message}");
+                    // Not fatal in this case, so continue, since the path may already be free.
                 }
             }
 
+            // Extract the update
             Console.WriteLine("Extracting update...");
             if (ExtractZipWithProgress(zipPath, gameDir))
             {
-                Console.WriteLine("Update applied successfully.");
-                Console.WriteLine("Cleaning up...");
+                Console.WriteLine("\nUpdate applied successfully.");
 
+                // Linux: restore executable permissions (zip may not preserve them)
+                if (IsLinux)
+                {
+                    // Preferred name "raidsim"
+                    TryChmodX(Path.Combine(gameDir, "updater"));
+                    TryChmodX(Path.Combine(gameDir, "raidsim"));
+
+                    // Fallbacks
+                    foreach (var bin in Directory.GetFiles(gameDir, "*.x86_64"))
+                        TryChmodX(bin);
+                    foreach (var sh in Directory.GetFiles(gameDir, "*.sh"))
+                        TryChmodX(sh);
+                }
+
+                Console.WriteLine("Cleaning up zip...");
+                TryDelete(zipPath);
+
+                // Relaunch the game
                 try
                 {
-                    File.Delete(zipPath);
-                    Console.WriteLine("ZIP file deleted.");
+                    string gameExePath = FindGameExecutable(gameDir);
+                    Console.WriteLine($"Restarting game: {Path.GetFileName(gameExePath)}");
+                    Thread.Sleep(2000);
+                    StartProcess(gameExePath, gameDir);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Failed to delete ZIP file: {ex.Message}");
+                    Console.WriteLine($"Failed to restart game: {ex.Message}");
                 }
 
-                Console.WriteLine("Restarting game...");
-                string gameExePath = Path.Combine(gameDir, "raidsim.exe");
-                Thread.Sleep(3500);
-                Process.Start(gameExePath);
+                // Windows: cleanup old updater via generated batch script
+                if (IsWindows && File.Exists(oldUpdaterWin))
+                {
+                    Console.WriteLine("Scheduling cleanup of old updater...");
+                    string bat = Path.Combine(gameDir, "updater.bat");
+                    File.WriteAllText(bat, GenerateCleanupBatchScript());
+                    try
+                    {
+                        Process.Start(new ProcessStartInfo(bat)
+                        {
+                            UseShellExecute = true,
+                            WindowStyle = ProcessWindowStyle.Hidden,
+                            WorkingDirectory = gameDir
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Failed to start cleanup script: {ex.Message}");
+                    }
+                }
             }
             else
             {
-                Console.WriteLine("Update failed.");
+                Console.WriteLine("Update failed during extraction.");
+                Thread.Sleep(4000);
+                return 5;
             }
 
-            Console.WriteLine("Creating cleanup script for old updater...");
-            File.WriteAllText(batchScriptPath, GenerateCleanupBatchScript());
-
-            ProcessStartInfo psi = new ProcessStartInfo(batchScriptPath)
-            {
-                UseShellExecute = true,
-                WindowStyle = ProcessWindowStyle.Hidden
-            };
-            Process.Start(psi);
-
             Console.WriteLine("Closing Updater...");
-            Thread.Sleep(2000);
-            Environment.Exit(0);
+            Thread.Sleep(4000);
+            return 0;
         }
 
+        // Process helpers
         static void KillProcessByPID(int pid)
         {
             try
             {
-                Process gameProcess = Process.GetProcessById(pid);
-                gameProcess.Kill();
-                gameProcess.WaitForExit();
+                var proc = Process.GetProcessById(pid);
+                proc.Kill();
+                proc.WaitForExit();
                 Console.WriteLine("Game process terminated.");
+            }
+            catch (ArgumentException)
+            {
+                Console.WriteLine("Game process already not running.");
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Failed to terminate process: {e.Message}");
+                Console.WriteLine($"Failed to terminate game process: {e.Message}");
             }
         }
 
+        static void StartProcess(string exePath, string workingDir)
+        {
+            var psi = new ProcessStartInfo(exePath)
+            {
+                UseShellExecute = false,
+                WorkingDirectory = workingDir
+            };
+            Process.Start(psi);
+        }
+
+        // Extraction of the zip with progress
         static bool ExtractZipWithProgress(string zipPath, string extractPath)
         {
             try
@@ -121,20 +196,26 @@ namespace susy_baka.raidsim.Updater
 
                     foreach (var entry in archive.Entries)
                     {
-                        string filePath = Path.Combine(extractPath, entry.FullName);
-                        string? directoryPath = Path.GetDirectoryName(filePath);
-
-                        if (!string.IsNullOrEmpty(directoryPath))
+                        // Skip directory entries explicitly
+                        if (string.IsNullOrEmpty(entry.Name))
                         {
-                            Directory.CreateDirectory(directoryPath);
+                            // Ensure directory exists
+                            string dirPathOnly = Path.Combine(extractPath, entry.FullName);
+                            Directory.CreateDirectory(dirPathOnly);
                         }
+                        else
+                        {
+                            string filePath = Path.Combine(extractPath, entry.FullName);
+                            string? directoryPath = Path.GetDirectoryName(filePath);
+                            if (!string.IsNullOrEmpty(directoryPath))
+                                Directory.CreateDirectory(directoryPath);
 
-                        entry.ExtractToFile(filePath, true);
-                        extractedFiles++;
+                            entry.ExtractToFile(filePath, true);
+                            extractedFiles++;
 
-                        // Progress bar
-                        int progress = (int)(((float)extractedFiles / totalFiles) * 100);
-                        Console.Write($"\rExtracting: [{new string('#', progress / 2)}{new string('-', 50 - (progress / 2))}] {progress}%");
+                            int progress = (int)((extractedFiles / (double)totalFiles) * 100);
+                            Console.Write($"\rExtracting: [{new string('#', progress / 2)}{new string('-', 50 - (progress / 2))}] {progress}%");
+                        }
                     }
                 }
 
@@ -148,14 +229,81 @@ namespace susy_baka.raidsim.Updater
             }
         }
 
+        // Platform-specific helpers
+        static string FindGameExecutable(string gameDir)
+        {
+            if (IsWindows)
+            {
+                string win = Path.Combine(gameDir, "raidsim.exe");
+                if (File.Exists(win))
+                    return win;
+                throw new FileNotFoundException("Expected file 'raidsim.exe' not found.");
+            }
+            else if (IsLinux)
+            {
+                // Prefer plain "raidsim"
+                string linuxPreferred = Path.Combine(gameDir, "raidsim");
+                if (File.Exists(linuxPreferred))
+                    return linuxPreferred;
+
+                // Fallback to Unity's default binary naming
+                var linuxDefault = Directory.GetFiles(gameDir, "*.x86_64").FirstOrDefault();
+                if (linuxDefault != null)
+                    return linuxDefault;
+
+                throw new FileNotFoundException("Expected file 'raidsim' (or raidsim.x86_64) not found.");
+            }
+
+            throw new PlatformNotSupportedException("Unsupported platform.");
+        }
+
+        static void TryChmodX(string path)
+        {
+            try
+            {
+                if (!File.Exists(path))
+                    return;
+
+                var psi = new ProcessStartInfo("chmod", $"+x \"{path}\"")
+                {
+                    UseShellExecute = false,
+                    RedirectStandardError = true,
+                    RedirectStandardOutput = true
+                };
+                var p = Process.Start(psi);
+                p?.WaitForExit();
+                Console.WriteLine($"chmod +x {Path.GetFileName(path)}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"chmod failed for {path}: {ex.Message}");
+            }
+        }
+
+        static void TryDelete(string path)
+        {
+            try
+            {
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                    Console.WriteLine($"Deleted: {Path.GetFileName(path)}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to delete {path}: {ex.Message}");
+            }
+        }
+
+        // Windows cleanup batch script to remove the old updater
         static string GenerateCleanupBatchScript()
         {
+            // Wait a bit for this process to exit, then delete the old updater & self-delete.
             return @"
             @echo off
-            timeout /t 4 /nobreak >nul
+            timeout /t 3 /nobreak >nul
             del ""updater.old.exe""
-            del ""updater.old.dll""
-            del ""updater.runtimeconfig.old.json""
             del ""%~f0""
             exit";
         }

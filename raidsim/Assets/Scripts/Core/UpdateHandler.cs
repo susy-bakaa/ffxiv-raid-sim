@@ -108,14 +108,6 @@ namespace dev.susybaka.raidsim.Updater
             Destroy(changelogWindow.gameObject);
             Destroy(gameObject);
             return;
-#elif UNITY_STANDALONE_LINUX
-            Debug.LogWarning("Linux platform detected. Automatic updates not supported yet. Skipping update check.");
-            destroyed = true;
-            checkForUpdatesButton.gameObject.SetActive(false);
-            Destroy(updatePromptWindow.gameObject);
-            Destroy(changelogWindow.gameObject);
-            Destroy(gameObject);
-            return;
 #endif
             newestVersion = Application.version;
             newestVersion = newestVersion.TrimEnd('\r', '\n', ' ');
