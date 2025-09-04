@@ -286,6 +286,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {x: 0, y: 0.5, z: 0}
   speed: 1
+  OnUpdate: 1
   loop: 1
 --- !u!114 &3603234220165810802
 MonoBehaviour:
@@ -299,11 +300,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a28db2d27dd9cb84aabe2558c51f578e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  freeze:
+    x: 1
+    y: 1
+    z: 1
+  setAutomatically: 1
+  target: {fileID: 0}
+  targetRotation: {x: -90, y: 0, z: 0}
   freezeX: 1
   freezeY: 1
   freezeZ: 1
-  setAutomatically: 1
-  targetRotation: {x: -90, y: 0, z: 0}
 --- !u!1 &7110941629906564898
 GameObject:
   m_ObjectHideFlags: 0

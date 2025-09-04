@@ -17,6 +17,7 @@ namespace dev.susybaka.raidsim.UI
 {
     public class HudElement : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler, IPointerDownHandler, IPointerUpHandler
     {
+        Selectable selectable;
         RectTransform rectTransform;
         CanvasGroup canvasGroup;
         UserInput input;
@@ -42,6 +43,8 @@ namespace dev.susybaka.raidsim.UI
         public bool blocksRotInput = false;
         public bool blocksScrInput = false;
         public bool blocksTargetRaycasts = false;
+        private bool interactable = true;
+        public bool Interactable { get { return interactable; } }
         [Header("Animation")]
         public bool doMovement = false;
         public Vector2 movement = Vector2.zero;
@@ -102,6 +105,7 @@ namespace dev.susybaka.raidsim.UI
 
         private void Awake()
         {
+            selectable = GetComponent<Selectable>();
             rectTransform = GetComponent<RectTransform>();
             canvasGroup = GetComponent<CanvasGroup>();
             priorityHandler = GetComponentInParent<HudElementPriority>();
@@ -158,6 +162,8 @@ namespace dev.susybaka.raidsim.UI
 
         private void Update()
         {
+            interactable = (selectable != null) ? selectable.interactable : true;
+
             if (isPartyListElement)
             {
                 if (Utilities.RateLimiter(13))

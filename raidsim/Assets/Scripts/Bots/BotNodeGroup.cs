@@ -15,6 +15,7 @@ namespace dev.susybaka.raidsim.Nodes
         public List<Role> allowedRoles = new List<Role>();
         private float defaultAngle = 0f;
         private List<BotNode> nodes = new List<BotNode>();
+        public List<BotNode> Nodes { get { return nodes; } }
         private List<BotNodeGroup> childGroups = new List<BotNodeGroup>();
 
         private void Awake()

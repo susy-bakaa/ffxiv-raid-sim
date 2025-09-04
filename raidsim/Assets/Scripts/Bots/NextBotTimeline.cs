@@ -15,32 +15,32 @@ namespace dev.susybaka.raidsim.Bots
     {
         public enum choiceType { statusEffect, fightTimelineEventRandomResult, partyListPriority, none }
 
-        [ShowIf("TypeEnum", choiceType.statusEffect)] public List<StatusEffectInfo> effects = new List<StatusEffectInfo>();
-        [ShowIf("TypeEnum", choiceType.statusEffect)] public List<CharacterState> otherBots = new List<CharacterState>();
+        [ShowIf(nameof(TypeEnum), choiceType.statusEffect)] public List<StatusEffectInfo> effects = new List<StatusEffectInfo>();
+        [ShowIf(nameof(TypeEnum), choiceType.statusEffect)] public List<CharacterState> otherBots = new List<CharacterState>();
         private List<CharacterState> originalOtherBots = new List<CharacterState>();
-        [ShowIf("TypeEnum", choiceType.statusEffect)] public List<BotTimeline> otherBotsFromTimelines = new List<BotTimeline>();
-        [HideIf("TypeEnum", choiceType.none)] public List<IndexMapping> indexMapping = new List<IndexMapping>();
-        [HideIf("TypeEnum", choiceType.none)] public List<IndexMapping> indexMapping2 = new List<IndexMapping>();
-        [HideIf("TypeEnum", choiceType.none)] public int fightTimelineEventRandomResultId = -1;
-        [HideIf("TypeEnum", choiceType.none)] public int fightTimelineEventRandomResultId2 = -1;
+        [ShowIf(nameof(TypeEnum), choiceType.statusEffect)] public List<BotTimeline> otherBotsFromTimelines = new List<BotTimeline>();
+        [HideIf(nameof(TypeEnum), choiceType.none)] public List<IndexMapping> indexMapping = new List<IndexMapping>();
+        [HideIf(nameof(TypeEnum), choiceType.none)] public List<IndexMapping> indexMapping2 = new List<IndexMapping>();
+        [HideIf(nameof(TypeEnum), choiceType.none)] public int fightTimelineEventRandomResultId = -1;
+        [HideIf(nameof(TypeEnum), choiceType.none)] public int fightTimelineEventRandomResultId2 = -1;
         public List<BotTimeline> timelines = new List<BotTimeline>();
         public choiceType type = choiceType.statusEffect;
         private choiceType TypeEnum { get { return type; } }
-        [ShowIf("TypeEnum", choiceType.partyListPriority)] public PartyList partyList;
-        [HideIf("TypeEnum", choiceType.none)] public bool fallbackToLast = false;
-        [ShowIf("TypeEnum", choiceType.statusEffect)] public bool allowSubStatuses = false;
-        [ShowIf("TypeEnum", choiceType.statusEffect)] public bool checkOtherBotsInstead = false;
-        [ShowIf("TypeEnum", choiceType.statusEffect)] public bool combineWithRandomEventResult = false;
-        [ShowIf("TypeEnum", choiceType.statusEffect)] public bool useIndexMappingForEffects = false;
-        [ShowIf("checkOtherBotsInstead")] public bool useIndexMappingForOtherBots = false;
-        [ShowIf("TypeEnum", choiceType.partyListPriority)] public bool useStatusEffectForPriorityCheck = false;
-        [ShowIf("TypeEnum", choiceType.partyListPriority)] public bool looseStatusCheck = false;
-        [ShowIf("TypeEnum", choiceType.fightTimelineEventRandomResult)] public bool useDoubleEventCheck = false;
-        [HideIf("TypeEnum", choiceType.none)] public bool useIndexMapping = false;
-        [ShowIf("TypeEnum", choiceType.none)] public bool random = false;
-        [ShowIf("checkOtherBotsInstead")] public bool useOtherBotIndexAsIndexMapping = false;
-        [ShowIf("checkOtherBotsInstead")] public bool useOtherBotIndexAsFinalIndex = false;
-        [ShowIf("checkOtherBotsInstead")] public bool fallBackToPlayerForInactiveBots = true;
+        [ShowIf(nameof(TypeEnum), choiceType.partyListPriority)] public PartyList partyList;
+        [HideIf(nameof(TypeEnum), choiceType.none)] public bool fallbackToLast = false;
+        [ShowIf(nameof(TypeEnum), choiceType.statusEffect)] public bool allowSubStatuses = false;
+        [ShowIf(nameof(TypeEnum), choiceType.statusEffect)] public bool checkOtherBotsInstead = false;
+        [ShowIf(nameof(TypeEnum), choiceType.statusEffect)] public bool combineWithRandomEventResult = false;
+        [ShowIf(nameof(TypeEnum), choiceType.statusEffect)] public bool useIndexMappingForEffects = false;
+        [ShowIf(nameof(checkOtherBotsInstead))] public bool useIndexMappingForOtherBots = false;
+        [ShowIf(nameof(TypeEnum), choiceType.partyListPriority)] public bool useStatusEffectForPriorityCheck = false;
+        [ShowIf(nameof(TypeEnum), choiceType.partyListPriority)] public bool looseStatusCheck = false;
+        [ShowIf(nameof(TypeEnum), choiceType.fightTimelineEventRandomResult)] public bool useDoubleEventCheck = false;
+        [HideIf(nameof(TypeEnum), choiceType.none)] public bool useIndexMapping = false;
+        [ShowIf(nameof(TypeEnum), choiceType.none)] public bool random = false;
+        [ShowIf(nameof(checkOtherBotsInstead))] public bool useOtherBotIndexAsIndexMapping = false;
+        [ShowIf(nameof(checkOtherBotsInstead))] public bool useOtherBotIndexAsFinalIndex = false;
+        [ShowIf(nameof(checkOtherBotsInstead))] public bool fallBackToPlayerForInactiveBots = true;
         public bool strictMatch = false;
         public bool endIfDisabled = true;
         public bool forceEnd = false;
@@ -187,18 +187,22 @@ namespace dev.susybaka.raidsim.Bots
 
                         if (useIndexMapping)
                         {
-                            for (int i = 0; i < indexMapping.Count; i++)
+                            // first
+                            if (indexMapping != null && indexMapping.Count > 0)
                             {
-                                if (indexMapping[i].previousIndex == r)
+                                for (int i = 0; i < indexMapping.Count; i++)
                                 {
-                                    r = indexMapping[i].nextIndex;
-                                    if (log || bot.log)
-                                        Debug.Log($"[{gameObject.name}] --- Index Mapping {indexMapping[i].name} of index {i} will result in next index of {r}");
-                                    break;
+                                    if (indexMapping[i].previousIndex == r)
+                                    {
+                                        r = indexMapping[i].nextIndex;
+                                        if (log || bot.log)
+                                            Debug.Log($"[{gameObject.name}] --- Index Mapping {indexMapping[i].name} of index {i} will result in next index of {r}");
+                                        break;
+                                    }
                                 }
                             }
                             // second
-                            if (useDoubleEventCheck)
+                            if (useDoubleEventCheck && indexMapping2 != null && indexMapping2.Count > 0)
                             {
                                 for (int i = 0; i < indexMapping2.Count; i++)
                                 {
@@ -315,7 +319,7 @@ namespace dev.susybaka.raidsim.Bots
             {
                 int result = i;
 
-                if (useIndexMapping && useIndexMappingForEffects)
+                if (useIndexMapping && useIndexMappingForEffects && indexMapping != null && indexMapping.Count > 0)
                 {
                     for (int j = 0; j < indexMapping.Count; j++)
                     {
@@ -328,7 +332,7 @@ namespace dev.susybaka.raidsim.Bots
                 }
                 if (combineWithRandomEventResult && fightTimelineEventRandomResultId > -1)
                 {
-                    if (useIndexMapping && !useIndexMappingForEffects)
+                    if (useIndexMapping && !useIndexMappingForEffects && indexMapping != null && indexMapping.Count > 0)
                     {
                         for (int j = 0; j < indexMapping.Count; j++)
                         {
@@ -346,7 +350,7 @@ namespace dev.susybaka.raidsim.Bots
                 }
                 if (checkOtherBotsInstead && useIndexMappingForOtherBots && otherBots != null && otherBots.Count > 0 && otherBots.Contains(state))
                 {
-                    if (!useOtherBotIndexAsIndexMapping)
+                    if (!useOtherBotIndexAsIndexMapping && indexMapping != null && indexMapping.Count > 0)
                     {
                         for (int j = 0; j < indexMapping.Count; j++)
                         {
@@ -378,7 +382,7 @@ namespace dev.susybaka.raidsim.Bots
             {
                 int result = i;
 
-                if (useIndexMapping && useIndexMappingForEffects)
+                if (useIndexMapping && useIndexMappingForEffects && indexMapping != null && indexMapping.Count > 0)
                 {
                     for (int j = 0; j < indexMapping.Count; j++)
                     {
@@ -391,7 +395,7 @@ namespace dev.susybaka.raidsim.Bots
                 }
                 if (combineWithRandomEventResult && fightTimelineEventRandomResultId > -1)
                 {
-                    if (useIndexMapping && !useIndexMappingForEffects)
+                    if (useIndexMapping && !useIndexMappingForEffects && indexMapping != null && indexMapping.Count > 0)
                     {
                         for (int j = 0; j < indexMapping.Count; j++)
                         {
@@ -409,7 +413,7 @@ namespace dev.susybaka.raidsim.Bots
                 }
                 if (checkOtherBotsInstead && useIndexMappingForOtherBots && otherBots != null && otherBots.Count > 0 && otherBots.Contains(state))
                 {
-                    if (!useOtherBotIndexAsIndexMapping)
+                    if (!useOtherBotIndexAsIndexMapping && indexMapping != null && indexMapping.Count > 0)
                     {
                         for (int j = 0; j < indexMapping.Count; j++)
                         {

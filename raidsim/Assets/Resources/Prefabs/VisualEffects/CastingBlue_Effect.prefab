@@ -49,6 +49,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotation: {x: 0, y: 100, z: 0}
+  setRotation: 0
+  faceTowardsName: 
+  faceTowards: {fileID: 0}
 --- !u!1001 &4365378194477869789
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -142,11 +145,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a28db2d27dd9cb84aabe2558c51f578e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  freeze:
+    x: 1
+    y: 1
+    z: 1
+  setAutomatically: 1
+  target: {fileID: 0}
+  targetRotation: {x: 0, y: 0, z: 0}
   freezeX: 1
   freezeY: 1
   freezeZ: 1
-  setAutomatically: 1
-  targetRotation: {x: 0, y: 0, z: 0}
 --- !u!4 &4259922749501967670 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 2e9461fbabcf2af4fb2e71b3694f7217, type: 3}
@@ -245,11 +253,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a28db2d27dd9cb84aabe2558c51f578e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  freeze:
+    x: 1
+    y: 1
+    z: 1
+  setAutomatically: 1
+  target: {fileID: 0}
+  targetRotation: {x: 0, y: 0, z: 0}
   freezeX: 1
   freezeY: 1
   freezeZ: 1
-  setAutomatically: 1
-  targetRotation: {x: 0, y: 0, z: 0}
 --- !u!4 &5314197811736632605 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 2e9461fbabcf2af4fb2e71b3694f7217, type: 3}
@@ -353,11 +366,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a28db2d27dd9cb84aabe2558c51f578e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  freeze:
+    x: 1
+    y: 1
+    z: 1
+  setAutomatically: 1
+  target: {fileID: 0}
+  targetRotation: {x: 0, y: 0, z: 0}
   freezeX: 1
   freezeY: 1
   freezeZ: 1
-  setAutomatically: 1
-  targetRotation: {x: 0, y: 0, z: 0}
 --- !u!1001 &7424293249691364702
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -456,8 +474,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a28db2d27dd9cb84aabe2558c51f578e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  freeze:
+    x: 1
+    y: 1
+    z: 1
+  setAutomatically: 1
+  target: {fileID: 0}
+  targetRotation: {x: 0, y: 0, z: 0}
   freezeX: 1
   freezeY: 1
   freezeZ: 1
-  setAutomatically: 1
-  targetRotation: {x: 0, y: 0, z: 0}

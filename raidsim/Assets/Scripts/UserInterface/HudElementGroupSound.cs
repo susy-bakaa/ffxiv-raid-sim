@@ -1,6 +1,7 @@
-using UnityEngine;
+using System.Reflection;
 using dev.susybaka.Shared.Attributes;
 using dev.susybaka.Shared.Audio;
+using UnityEngine;
 
 namespace dev.susybaka.raidsim.UI
 {
@@ -63,7 +64,7 @@ namespace dev.susybaka.raidsim.UI
             if (!eventsAvailable)
                 return;
 
-            if (eventInfo.element.playHoverAudio)
+            if (eventInfo.element.playHoverAudio && eventInfo.element.Interactable)
             {
                 audioManager.Play(hoverSound, audioVolume);
             }
@@ -88,7 +89,7 @@ namespace dev.susybaka.raidsim.UI
             if (audioManager == null)
                 return;
 
-            if (eventInfo.element.playClickAudio)
+            if (eventInfo.element.playClickAudio && eventInfo.element.Interactable)
                 audioManager.Play(confirmSound, audioVolume);
         }
 
