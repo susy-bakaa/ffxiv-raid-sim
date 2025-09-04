@@ -251,6 +251,9 @@ namespace dev.susybaka.Shared.Audio
 
         private void DecrementSoundInstance(Sound s)
         {
+            if (!activeSoundInstances.ContainsKey(s))
+                return;
+
             activeSoundInstances[s] = Mathf.Max(0, activeSoundInstances[s] - 1);
             if (log)
                 Debug.Log($"[AudioManager] Decremented sound instance for {s.name}. Remaining instances: {activeSoundInstances[s]}");
