@@ -43,10 +43,9 @@ namespace dev.susybaka.raidsim.Editor
             "fps.bat",
             "debug.sh",
             "fps.sh",
-            "updater.dll",
+            "updater",
             "updater.exe",
             "updater.x86_64",
-            "updater.runtimeconfig.json",
             "log.txt",
             "output.log"
         };
@@ -154,6 +153,23 @@ namespace dev.susybaka.raidsim.Editor
             if (ShouldRebuildProgram)
             {
                 BuildPipeline.BuildPlayer(buildOptions);
+
+                // On Linux, rename the executable to remove the .x86_64 suffix for consistency with usual Linux conventions
+                if (target  == BuildTarget.StandaloneLinux64)
+                {
+                    string linuxExecutable = Path.Combine(outputDir, $"{ExecutableName}.x86_64");
+                    if (File.Exists(linuxExecutable))
+                    {
+                        try
+                        {
+                            File.Move(linuxExecutable, Path.Combine(outputDir, ExecutableName));
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.LogError($"Failed to rename Linux executable: {ex.Message}");
+                        }
+                    }
+                }
             }
 
             string bundleTargetFolder = Path.Combine(BundleRoot, target.ToString());
