@@ -51,12 +51,18 @@ namespace dev.susybaka.raidsim.Updater
         [SerializeField] private Button changelogCloseButton2;
         [SerializeField] private Button checkForUpdatesButton;
 
-#if UNITY_EDITOR
         [Header("Debug")]
+#if !DEV_VERSION
+        [SerializeField] private bool checkDevVersion = false;
+#else
+        [SerializeField] private bool checkDevVersion = true;
+#endif
+#if UNITY_EDITOR
         [SerializeField][Min(-1)] private int forceUpdateId = -1; // For testing purposes only, to force an update check
 #endif
 
         private const string gameVersionUrl = "https://raw.githubusercontent.com/susy-bakaa/ffxiv-raid-sim/refs/heads/main/version.txt";
+        private const string gameDevVersionUrl = "https://raw.githubusercontent.com/susy-bakaa/ffxiv-raid-sim/refs/heads/dev/version.txt";
 #if UNITY_STANDALONE_WIN
         private const string platform = "win";
         private const int checksumFileLine = 0;
@@ -93,6 +99,10 @@ namespace dev.susybaka.raidsim.Updater
 
         private void Start()
         {
+#if DEV_VERSION
+            checkDevVersion = true;
+#endif
+
             updateId = GlobalVariables.versionNumber;
 #if UNITY_EDITOR
             if (forceUpdateId > -1)
@@ -256,9 +266,10 @@ namespace dev.susybaka.raidsim.Updater
                 return;
 
             showDownloadSpeed = false;
+            string versionUrl = checkDevVersion ? gameDevVersionUrl : gameVersionUrl;
 
             webClient = new WebClient();
-            Stream stream = webClient.OpenRead(gameVersionUrl);
+            Stream stream = webClient.OpenRead(versionUrl);
             StreamReader sRead = new StreamReader(stream);
             string results = sRead.ReadToEnd();
 
