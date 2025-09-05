@@ -1,15 +1,18 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using TMPro;
-using dev.susybaka.raidsim.Core;
+#if UNITY_WEBPLAYER
 using System.Collections;
+using dev.susybaka.raidsim.Core;
 using dev.susybaka.Shared;
+#endif
 
 namespace dev.susybaka.raidsim.UI
 {
     [RequireComponent(typeof(TextMeshProUGUI))]
     public class ServerConnectionLabel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
+#if UNITY_WEBPLAYER
         private TextMeshProUGUI text;
         private TextMeshProUGUI subText;
         private CanvasGroup subTextGroup;
@@ -17,6 +20,8 @@ namespace dev.susybaka.raidsim.UI
         public string disconnectedText = "<sprite=\"online_status\" name=\"0\">";
         public string connectedSubText = "ONLINE";
         public string disconnectedSubText = "OFFLINE";
+
+        private bool isConnected = true;
 
         private IEnumerator Start()
         {
@@ -28,6 +33,17 @@ namespace dev.susybaka.raidsim.UI
 
             RefreshConnection();
             OnPointerExit(null);
+        }
+
+        void Update()
+        {
+            if (ConnectionHandler.Instance == null)
+                return;
+
+            if (ConnectionHandler.Instance.connectedToServer != isConnected)
+            {
+                RefreshConnection();
+            }
         }
 
         public void OnPointerEnter(PointerEventData eventData)
@@ -60,17 +76,23 @@ namespace dev.susybaka.raidsim.UI
             {
                 if (ConnectionHandler.Instance.connectedToServer)
                 {
+                    isConnected = true;
                     text.text = connectedText;
                     subText.text = connectedSubText;
                     subText.color = Color.green;
                 }
                 else
                 {
+                    isConnected = false;
                     text.text = disconnectedText;
                     subText.text = disconnectedSubText;
                     subText.color = Color.red;
                 }
             }, 0.5f, "ServerConnectionLabel_UpdateDelay", true, true);
         }
+#else
+        public void OnPointerEnter(PointerEventData eventData) { }
+        public void OnPointerExit(PointerEventData eventData) { }
+#endif
     }
 }
