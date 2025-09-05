@@ -695,21 +695,71 @@ namespace dev.susybaka.raidsim.Updater
             downloadEstimatedDuration.text = "Launching updater...";
 
             string gameDir = Path.GetDirectoryName(Application.dataPath);
-            string updaterPath = Path.Combine(gameDir, "updater.exe");
 
-            if (File.Exists(updaterPath))
+#if UNITY_STANDALONE_WIN
+            string updaterFile = "updater.exe";
+#elif UNITY_STANDALONE_LINUX
+            string updaterFile = "updater";
+#endif
+            string updaterPath = Path.Combine(gameDir, updaterFile);
+
+            // Fallback: try the other name just in case
+            if (!File.Exists(updaterPath))
             {
-                int pid = Process.GetCurrentProcess().Id;
-                ProcessStartInfo psi = new ProcessStartInfo(updaterPath, $"\"{zipFilePath}\" {pid}");
-                psi.UseShellExecute = true;
-                Process.Start(psi);
-                Application.Quit();
+#if UNITY_STANDALONE_WIN
+                string alt = Path.Combine(gameDir, "updater");
+#elif UNITY_STANDALONE_LINUX
+                string alt = Path.Combine(gameDir, "updater.exe");
+#endif
+                if (File.Exists(alt))
+                    updaterPath = alt;
             }
-            else
+
+            if (!File.Exists(updaterPath))
             {
                 downloadEstimatedDuration.text = "Failed to find the updater!";
-                Debug.LogError("Updater not found in the game directory!");
+                Debug.LogError($"Updater not found in: {gameDir}");
+                return;
             }
+
+#if UNITY_STANDALONE_LINUX
+            try
+            {
+                var chmod = new ProcessStartInfo("/bin/chmod", $"755 \"{updaterPath}\"")
+                {
+                    UseShellExecute = false,
+                    WorkingDirectory = gameDir
+                };
+                Process.Start(chmod)?.WaitForExit();
+            }
+            catch 
+            {
+                Debug.LogWarning("Failed to set execute permissions on updater. It might still work.");
+            }
+#endif
+
+            int pid = Process.GetCurrentProcess().Id;
+
+            var psi = new ProcessStartInfo
+            {
+                FileName = updaterPath,
+                Arguments = $"\"{zipFilePath}\" {pid}",
+                WorkingDirectory = gameDir,
+#if UNITY_STANDALONE_WIN
+                UseShellExecute = true
+#else 
+                UseShellExecute = false
+#endif
+            };
+
+#if UNITY_STANDALONE_LINUX
+            psi.UseShellExecute = false;           // important on Linux
+            psi.RedirectStandardError = false;     // set true to capture logs
+            psi.RedirectStandardOutput = false;
+#endif
+
+            Process.Start(psi);
+            Application.Quit();
         }
 
         private void ShowRetryButton()

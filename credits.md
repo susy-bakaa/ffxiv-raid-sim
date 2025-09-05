@@ -14,6 +14,7 @@
 - JimmysUnityUtilities by Jimmy Cushnie. [Source](https://github.com/JimmyCushnie/JimmysUnityUtilities)
 - FancyTextRendering by Jimmy Cushnie. [Source](https://github.com/JimmyCushnie/FancyTextRendering)
 - Unity Minimap code by Zack. [Source](https://github.com/ZackOfAllTrad3s/Minimap)
+- SharpCompress by Adam Hathcock. [Source](https://github.com/adamhathcock/sharpcompress)
 - Special thank you to Sort Of Arbitary for helping with extracting the boss models and animations. [Source](https://www.youtube.com/@sortofarbitrary6688/videos)
 - Thank you to all of the developers of each of the programs and tools used to make this simulator possible! Blender, TexTools, Garland Tools Database, FFlogs, FFXIV Data Explorer, MultiAssist, Godbert, ZoneFbx, ffxiv.consolegameswiki.com, xivapi.com and lastly Dalamud with it's various helpful plugins such as Penumbra, Distance, Cammy, Meddle, ResLogger2 and Hyperborea.
 - Thank you to also all of the other simulators created by various talented people! [XIVSim](https://xivsim.com/), [WCGH](https://github.com/WCGH) for their various offline sims, [xiv-stats](https://github.com/xiv-stats) for their sim and of course all of the other various smaller simulator projects created by everyone over the years.
