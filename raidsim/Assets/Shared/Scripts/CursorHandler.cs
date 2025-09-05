@@ -211,6 +211,11 @@ namespace dev.susybaka.Shared.UserInterface
                 Cursor.SetCursor(cursor.texture, cursor.hotspot, CursorMode.Auto);
 #endif
             }
+
+            if (!forceShowHardwareCursor)
+                Cursor.visible = visible;
+            else
+                Cursor.visible = true;
 #endif
 
             if (softwareCursorImage != null)
