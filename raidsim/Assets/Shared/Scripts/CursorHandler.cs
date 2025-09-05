@@ -26,6 +26,10 @@ namespace dev.susybaka.Shared.UserInterface
         private Dictionary<string, CursorData> nameLookup;
         private Dictionary<int, CursorData> idLookup;
 
+#if UNITY_STANDALONE_LINUX
+        private readonly Dictionary<string, Texture2D> linuxScaledCursorCache = new Dictionary<string, Texture2D>();
+#endif
+
 #if UNITY_EDITOR
         private void OnValidate()
         {
@@ -124,6 +128,15 @@ namespace dev.susybaka.Shared.UserInterface
             {
                 Instance = null;
             }
+
+#if UNITY_STANDALONE_LINUX
+            foreach (var kv in linuxScaledCursorCache)
+            {
+                if (kv.Value != null)
+                    Destroy(kv.Value);
+            }
+            linuxScaledCursorCache.Clear();
+#endif
         }
 
         public void SetSoftwareCursorVisibility(bool visible)
@@ -180,7 +193,24 @@ namespace dev.susybaka.Shared.UserInterface
 
 #if !UNITY_WEBPLAYER
             if (!useSoftwareCursor)
+            {
+#if UNITY_STANDALONE_LINUX
+                // Decide target cursor size: compositor hint or sensible default (32)
+                int target;
+                if (!TryGetLinuxCursorTargetSize(out target))
+                    target = 32;
+
+                // Downscale hi-res art to compositor size (or close) and scale hotspot to match
+                float scale;
+                Texture2D linuxTex = GetScaledCursorTexture(cursor.texture, target, out scale);
+                Vector2 hsScaled = new Vector2(Mathf.Round(cursor.hotspot.x * scale), Mathf.Round(cursor.hotspot.y * scale));
+
+                // Force Unity to draw it (bypasses hardware cursor scaling issues)
+                Cursor.SetCursor(linuxTex, hsScaled, CursorMode.ForceSoftware);
+#else
                 Cursor.SetCursor(cursor.texture, cursor.hotspot, CursorMode.Auto);
+#endif
+            }
 #endif
 
             if (softwareCursorImage != null)
@@ -189,6 +219,58 @@ namespace dev.susybaka.Shared.UserInterface
             }
             currentCursor = cursor;
         }
+
+#if UNITY_STANDALONE_LINUX
+        private static bool TryGetLinuxCursorTargetSize(out int size)
+        {
+            size = 0;
+            try
+            {
+                var env = System.Environment.GetEnvironmentVariable("XCURSOR_SIZE");
+                if (!string.IsNullOrEmpty(env) && int.TryParse(env, out var s) && s > 0)
+                {
+                    size = Mathf.Clamp(s, 16, 128);
+                    return true;
+                }
+            }
+            catch { /* ignore */ }
+            return false;
+        }
+
+        // Returns a scaled copy and the scale factor used (relative to src).
+        private Texture2D GetScaledCursorTexture(Texture2D src, int targetMaxEdge, out float scale)
+        {
+            // Preserve aspect; scale so the longest edge == targetMaxEdge
+            int srcW = src.width, srcH = src.height;
+            int longest = Mathf.Max(srcW, srcH);
+            scale = (longest > 0) ? (targetMaxEdge / (float)longest) : 1f;
+
+            int dstW = Mathf.Max(1, Mathf.RoundToInt(srcW * scale));
+            int dstH = Mathf.Max(1, Mathf.RoundToInt(srcH * scale));
+
+            string key = $"{src.GetInstanceID()}:{dstW}x{dstH}";
+            if (linuxScaledCursorCache.TryGetValue(key, out var cached) && cached != null)
+                return cached;
+
+            // GPU downscale (no need for src to be readable)
+            var rt = RenderTexture.GetTemporary(dstW, dstH, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);
+            Graphics.Blit(src, rt);
+
+            var prev = RenderTexture.active;
+            RenderTexture.active = rt;
+
+            var tex = new Texture2D(dstW, dstH, TextureFormat.RGBA32, false, true);
+            tex.ReadPixels(new Rect(0, 0, dstW, dstH), 0, 0, false);
+            tex.Apply(false, true);
+            tex.filterMode = FilterMode.Point; // crisp cursor
+
+            RenderTexture.active = prev;
+            RenderTexture.ReleaseTemporary(rt);
+
+            linuxScaledCursorCache[key] = tex;
+            return tex;
+        }
+#endif
 
         [System.Serializable]
         public struct CursorData
