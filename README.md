@@ -1,6 +1,10 @@
 # ffxiv-raid-sim
 
-A singleplayer raid and fight mechanic simulator with full bot support, made with the Unity game engine for the critically acclaimed MMORPG FINAL FANTASY XIV: Online. This program is completely separate from the game and does not interact with it in anyway. More timelines and fights will be added to this as we develop it further. We are also accepting any external thirdparty contributions by anyone. This simulator mainly focuses on battles, mechanics and fights, which are missing from other simulators, do not have bot support available anywhere else, are old/badly made or sometimes simply do not exist at all yet, such as older ultimates, older savages, "easier" fights not worth a sim by others, side battle content, bozja duels or blue mage raids.
+A singleplayer raid and fight mechanic simulator with full bot support, made with the Unity game engine for the critically acclaimed MMORPG FINAL FANTASY XIV: Online. 
+
+This program is completely separate from the game and does not directly interact with it in anyway. More timelines and fights will be added to this as we develop it further. We are also accepting any external thirdparty contributions by anyone. 
+
+This simulator mainly focuses on battles, mechanics and fights, which are missing from other simulators, do not have bot support available anywhere else, are old/badly made or sometimes simply do not exist at all yet, such as older ultimates, older savages, "easier" fights not worth a sim by others, side battle content, bozja duels or blue mage raids.
 
 If you want to keep up with development, have any questions or want to contribute yourself, best place to do all of that is the discord server. You can also follow my personal socials for occasional updates or other misc content possibly related to this program or FFXIV in general.
 
@@ -51,7 +55,7 @@ Fights listed here are finished and available in the simulator.
 
 # In development fights
 
-Fights listed here have unfinished timelines that don't work yet, the bots are not finished and will die to mechanics, the timeline is not fully implemented yet or the timings require more work.
+Fights listed here have unfinished timelines that don't work yet, the bots are not finished and will die to mechanics, the timeline is not fully implemented yet, the timings require more work or it is not present on the public release of the application yet. (dev branch) 
 
 - The Weapon's Refrain (Ultimate) (UWU)
 	- Phase 5 (The Ultima Weapon)
@@ -111,8 +115,8 @@ Fights listed here are not being worked on yet and are not in anyway guranteed t
 
 Latest Builds: 
 
-[![Static Badge](https://img.shields.io/badge/windows_x64-download-green)](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.6.2/raidsim_v.0.6.2_win64.zip)
-[![Static Badge](https://img.shields.io/badge/linux_x64-download-blue?logo=linux&logoColor=white)](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.6.2/raidsim_v.0.6.2_linux64.zip)
+[![Static Badge](https://img.shields.io/badge/windows_x64-download-green)](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.6.3/raidsim_v.0.6.3_win64.zip)
+[![Static Badge](https://img.shields.io/badge/linux_x64-download-blue?logo=linux&logoColor=white)](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.6.3/raidsim_v.0.6.3_linux64.zip)
 [![Static Badge](https://img.shields.io/badge/browser-open-yellow?logo=webgl&logoColor=white)](https://susybaka.dev/unityweb/raidsim/index.html)
 [![Static Badge](https://img.shields.io/badge/itch.io-open-red?logo=itchdotio&logoColor=white)](https://susybakaaa.itch.io/raidsim)
 
@@ -132,12 +136,17 @@ If you instead want to download the source code or expand upon this program in s
 
 This repository uses [gdrive](https://github.com/prasmussen/gdrive) for storage of larger files. This means that if you're an external contributor you need to manually download the latest asset archive from here: [ffxiv-raid-sim.tar.gz](https://drive.google.com/file/d/1ybYaJ8LGnHwY5jeCv1Zr6B5fT7FHL51i/view?usp=drive_link). I hope to improve this workflow eventually, sorry for the inconvenience.
 
+If you are interested in creating new timelines or want to provide other things to the application that require pull requests, here's few key details to keep in mind when submitting your changes.
+- Main development happens on the `dev` branch, so pull requests directly to there will be approved faster and are more likely to be included in the current update in development.
+- When creating new timelines, please try to keep the number of scenes at only one scene per mechanic. I know that sometimes it is tricky to implement a completely different strat into an existing scene, but in these cases do not hesitate on asking for some help from me directly or on the discord server. You will most certainly be helped with your work.
+- Try to keep your changes focused and do not submit big pull requests with lots of unrelated changes. One request per timeline added, one request per all strats added or one per code change is a heavy preference. Do not be afraid to bundle them together however if they are related in anyway, like if they are different strats to the same fight.
+
 For more in-depth guide, please check out the official documentation website:
 
 [![Static Badge](https://img.shields.io/badge/raidsim-documentation-blue?logo=materialformkdocs&logoColor=white)](https://docs.susybaka.dev/raidsim/)
 
 # Credits
 
-Please check out the included [credits file](https://github.com/susy-bakaa/ffxiv-raid-sim/blob/main/credits.md) for all of the credits!
+Please check out the included [credits file](https://github.com/susy-bakaa/ffxiv-raid-sim/blob/main/credits.md) for all of the resources used and their respective credits!
 
 [![GitHub License](https://img.shields.io/github/license/susy-bakaa/ffxiv-raid-sim)](https://github.com/susy-bakaa/ffxiv-raid-sim/blob/main/LICENSE)
