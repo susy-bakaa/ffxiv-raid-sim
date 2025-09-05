@@ -1,3 +1,4 @@
+#pragma warning disable 0162
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -22,6 +23,12 @@ namespace dev.susybaka.raidsim.UI
 
         private float currentRefreshRate;
         private int currentResolutionIndex = 0;
+        private const float HzTolerance = 0.5f;
+#if UNITY_STANDALONE_WIN
+        private const bool unfilteredResolutions = false;
+#else
+        private const bool unfilteredResolutions = true;
+#endif
 
         private Vector2 currentResolution;
         int savedValueX = 0;
@@ -58,11 +65,25 @@ namespace dev.susybaka.raidsim.UI
 
             for (int i = 0; i < resolutions.Length; i++)
             {
-                if ((float)resolutions[i].refreshRateRatio.value == currentRefreshRate)
+                if (unfilteredResolutions)
                 {
+                    // On some systems, especially Linux, the resolutions won't get detected properly, so just allow all resolutions
                     filteredResolutions.Add(resolutions[i]);
                 }
+                else
+                {
+                    // Approximate match of refresh rate within tolerance, because some systems report slightly different refresh rates
+                    // e.g. 59.94Hz vs 60Hz
+                    if (Mathf.Abs((float)resolutions[i].refreshRateRatio.value - currentRefreshRate) <= HzTolerance)
+                    {
+                        filteredResolutions.Add(resolutions[i]);
+                    }
+                }
             }
+
+            // Fallback if resolutions still won't get detected, just use and allow all resolutions
+            if (filteredResolutions.Count == 0)
+                filteredResolutions.AddRange(resolutions);
 
             filteredResolutions.Sort((a, b) => {
                 if (a.width != b.width)
@@ -77,9 +98,21 @@ namespace dev.susybaka.raidsim.UI
             {
                 string resolutionOption = $"{filteredResolutions[i].width} x {filteredResolutions[i].height}";
 
+                // Only show refresh rate if unfiltered resolutions are allowed, otherwise all resolutions have the same refresh rate
+                if (unfilteredResolutions && filteredResolutions[i].refreshRateRatio.value > 0)
+                    resolutionOption += $" {filteredResolutions[i].refreshRateRatio.value}Hz";
+
                 options.Add(resolutionOption);
 
-                if (filteredResolutions[i].width == Screen.width && filteredResolutions[i].height == Screen.height && (float)filteredResolutions[i].refreshRateRatio.value == currentRefreshRate)
+                // More lenient match allowing any refresh rate, because some systems report slightly different refresh rates
+                bool matchFree = unfilteredResolutions && filteredResolutions[i].width == Screen.width && filteredResolutions[i].height == Screen.height;
+
+                // Approximate match of refresh rate within tolerance, because some systems report slightly different refresh rates
+                // e.g. 59.94Hz vs 60Hz
+                // Strict match only allowing only resolutions with the monitor's current refresh rate
+                bool matchStrict = !unfilteredResolutions && filteredResolutions[i].width == Screen.width && filteredResolutions[i].height == Screen.height && Mathf.Abs((float)filteredResolutions[i].refreshRateRatio.value - currentRefreshRate) <= HzTolerance;
+
+                if (matchFree || matchStrict)
                 {
                     currentResolutionIndex = i;
                     currentResolution = new Vector2(Screen.width, Screen.height);
@@ -87,6 +120,13 @@ namespace dev.susybaka.raidsim.UI
             }
 
             resolutionDropdown.AddOptions(options);
+
+            if (currentResolutionIndex < 0 || currentResolutionIndex >= filteredResolutions.Count)
+            {
+                currentResolutionIndex = 0;
+                currentResolution = new Vector2(filteredResolutions[0].width, filteredResolutions[0].height);
+            }
+
             resolutionDropdown.value = currentResolutionIndex;
             resolutionDropdown.RefreshShownValue();
             SetResolution(currentResolutionIndex, Screen.fullScreen);
@@ -193,7 +233,15 @@ namespace dev.susybaka.raidsim.UI
 
                 for (int i = 0; i < filteredResolutions.Count; i++)
                 {
-                    if (filteredResolutions[i].width == savedValueX && filteredResolutions[i].height == savedValueY && (float)filteredResolutions[i].refreshRateRatio.value == currentRefreshRate)
+                    // More lenient match allowing any refresh rate, because some systems report slightly different refresh rates
+                    bool matchFree = unfilteredResolutions && filteredResolutions[i].width == savedValueX && filteredResolutions[i].height == savedValueY;
+
+                    // Approximate match of refresh rate within tolerance, because some systems report slightly different refresh rates
+                    // e.g. 59.94Hz vs 60Hz
+                    // Strict match only allowing only resolutions with the monitor's current refresh rate
+                    bool matchStrict = !unfilteredResolutions && filteredResolutions[i].width == savedValueX && filteredResolutions[i].height == savedValueY && Mathf.Abs((float)filteredResolutions[i].refreshRateRatio.value - currentRefreshRate) <= HzTolerance;
+
+                    if (matchFree || matchStrict)
                     {
                         currentResolutionIndex = i;
                         currentResolution = new Vector2(Screen.width, Screen.height);
@@ -225,3 +273,4 @@ namespace dev.susybaka.raidsim.UI
         }
     }
 }
+#pragma warning restore 0162
