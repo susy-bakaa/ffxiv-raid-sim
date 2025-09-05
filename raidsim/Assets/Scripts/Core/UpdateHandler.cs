@@ -695,21 +695,23 @@ namespace dev.susybaka.raidsim.Updater
             downloadEstimatedDuration.text = "Launching updater...";
 
             string gameDir = Path.GetDirectoryName(Application.dataPath);
+            string updaterFile = string.Empty; // Placeholder for unsupported platforms
 
 #if UNITY_STANDALONE_WIN
-            string updaterFile = "updater.exe";
+            updaterFile = "updater.exe"; // Windows executable
 #elif UNITY_STANDALONE_LINUX
-            string updaterFile = "updater";
+            updaterFile = "updater"; // Linux executable
 #endif
             string updaterPath = Path.Combine(gameDir, updaterFile);
 
             // Fallback: try the other name just in case
             if (!File.Exists(updaterPath))
             {
+                string alt = string.Empty;
 #if UNITY_STANDALONE_WIN
-                string alt = Path.Combine(gameDir, "updater");
+                alt = Path.Combine(gameDir, "updater");
 #elif UNITY_STANDALONE_LINUX
-                string alt = Path.Combine(gameDir, "updater.exe");
+                alt = Path.Combine(gameDir, "updater.exe");
 #endif
                 if (File.Exists(alt))
                     updaterPath = alt;
