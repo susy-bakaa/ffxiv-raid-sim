@@ -258,7 +258,10 @@ namespace dev.susybaka.raidsim.Editor
                     options = BuildAssetBundleOptions.ChunkBasedCompression;
                 }
 
-                Debug.Log($"Building for target: {target.ToString()} with the following {options}");
+                if (useCustomExtension)
+                    Debug.Log($"Building for target: {target.ToString()} with the following {options} AssetBundle extension: {GlobalVariables.assetBundleExtension}");
+                else
+                    Debug.Log($"Building for target: {target.ToString()} with the following {options} AssetBundle extension: none");
 
                 BuildPipeline.BuildAssetBundles(outputPath, options, target);
 
