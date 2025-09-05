@@ -12,7 +12,7 @@ namespace dev.susybaka.raidsim.UI
     [RequireComponent(typeof(TextMeshProUGUI))]
     public class ServerConnectionLabel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
-#if UNITY_WEBPLAYER
+#pragma warning disable 0414
         private TextMeshProUGUI text;
         private TextMeshProUGUI subText;
         private CanvasGroup subTextGroup;
@@ -22,7 +22,8 @@ namespace dev.susybaka.raidsim.UI
         public string disconnectedSubText = "OFFLINE";
 
         private bool isConnected = true;
-
+#pragma warning restore 0414
+#if UNITY_WEBPLAYER
         private IEnumerator Start()
         {
             text = GetComponent<TextMeshProUGUI>();
