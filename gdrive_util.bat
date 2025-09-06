@@ -7,6 +7,8 @@ echo [2] Update archive on Google Drive
 echo [3] Download archive from Google Drive
 echo [4] Exit
 echo.
+echo Pick one by typing out the number.
+echo.
 
 set "_var=$dsk,$cd,$arc,$feid,$fdid,$exfe"
 (for %%i in (%_var%)do set/p %%~i=)<.\.gdrive\gdrive_config.txt
