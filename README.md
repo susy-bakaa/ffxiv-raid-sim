@@ -130,6 +130,8 @@ After downloading the archive, you then need to extract it with some tool such a
 
 After you have extracted the game, on Windows you can launch the "raidsim.exe" executable directly to begin using it. On Linux you might need to first mark the game as executable, because .Zip archives often lose unix permissions. To do so, just run the following command inside the folder of the application in your terminal: `chmod 755 ./raidsim`. Now you should be able to just launch the "raidsim" executable file directly.
 
+This application includes an automatic updater that should apply updates to the program automatically once an update is detected and downloaded. If once an update has been installed and you press to restart in the simulator nothing happens, this is most likely due to your OS blocking the "updater" program. To make it work in this case, just launch it first directly through the installation folder to start it once and make sure it opens before retrying the update through the main simulator program. On Windows, most of the time the issue is simply solved by doing this and pressing "Allow" in the Windows Smart Screen. The updater's source code is included in this repository if you want to take a look at it and verify what it does. Using the updater is also completely optional and it can be toggled off.
+
 If you instead want to download the source code or expand upon this program in some other way, firstly thank you for your interest and to do so, check the git instructions below and/or contact me or the other developers through Discord or contact me directly on Twitter/Bluesky and I will get back to you.
 
 # Git Usage Instructions
