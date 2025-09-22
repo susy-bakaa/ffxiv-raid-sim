@@ -1,4 +1,6 @@
-// Downloaded from: https://github.com/illa4257/unity-IniStorage
+// From: https://github.com/illa4257/unity-IniStorage
+// License: The Unlicense
+// Check the THIRD-PARTY-NOTICES.txt file for more information.
 using System;
 using System.Collections;
 using System.Collections.Generic;

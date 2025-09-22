@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// This file is part of ffxiv-raid-sim. Linking with the Unity runtime
+// is permitted under the Unity Runtime Linking Exception (see LICENSE).
 using System.Xml;
 using System.Xml.Serialization;
 using System.Collections.Generic;

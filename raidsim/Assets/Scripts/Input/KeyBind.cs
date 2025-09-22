@@ -1,4 +1,9 @@
-// https://discussions.unity.com/t/how-to-get-the-nice-name-of-a-keycode/164747/2
+// SPDX-License-Identifier: GPL-3.0-only
+// This file is part of ffxiv-raid-sim. Linking with the Unity runtime
+// is permitted under the Unity Runtime Linking Exception (see LICENSE).
+// --------------------------------------------------------------
+// Referenced: https://discussions.unity.com/t/how-to-get-the-nice-name-of-a-keycode/164747/2
+// --------------------------------------------------------------
 using System;
 using System.Collections;
 using System.Collections.Generic;

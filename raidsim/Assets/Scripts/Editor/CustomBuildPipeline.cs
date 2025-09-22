@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// This file is part of ffxiv-raid-sim. Linking with the Unity runtime
+// is permitted under the Unity Runtime Linking Exception (see LICENSE).
 using System;
 using System.IO;
 using System.IO.Compression;
@@ -47,7 +50,8 @@ namespace dev.susybaka.raidsim.Editor
             "updater.exe",
             "updater.x86_64",
             "log.txt",
-            "output.log"
+            "output.log",
+            "THIRD-PARTY-NOTICES.txt"
         };
         public static readonly string[] PreserveFolders = new[]
         {

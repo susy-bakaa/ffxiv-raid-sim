@@ -1,9 +1,10 @@
-﻿#if UNITY_EDITOR
+﻿// SPDX-License-Identifier: GPL-3.0-only
+// This file is part of ffxiv-raid-sim. Linking with the Unity runtime
+// is permitted under the Unity Runtime Linking Exception (see LICENSE).
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Events;
 using System.Reflection;
-using System;
 using System.Collections.Generic;
 using Object = UnityEngine.Object;
 using UnityEditor.SceneManagement;

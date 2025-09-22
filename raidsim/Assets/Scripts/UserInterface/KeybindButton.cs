@@ -1,5 +1,10 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// This file is part of ffxiv-raid-sim. Linking with the Unity runtime
+// is permitted under the Unity Runtime Linking Exception (see LICENSE).
+// --------------------------------
 // Useful ref: https://discussions.unity.com/t/need-help-with-keybind-script-functionality/697577
-// Most of the code referenced from the Korean TEA sim
+// Most of the code for this referenced from the Korean TEA sim
+// --------------------------------
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;

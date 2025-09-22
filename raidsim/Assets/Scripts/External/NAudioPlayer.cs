@@ -1,4 +1,10 @@
-﻿#if UNITY_WEBPLAYER
+﻿// SPDX-License-Identifier: GPL-3.0-only
+// This file is part of ffxiv-raid-sim. Linking with the Unity runtime
+// is permitted under the Unity Runtime Linking Exception (see LICENSE).
+// ------------------------------------------------
+// This file is from an external source.
+// ------------------------------------------------
+#if UNITY_WEBPLAYER
 using UnityEngine;
 
 public static class NAudioPlayer
@@ -12,9 +18,6 @@ public static class NAudioPlayer
 using System.IO;
 using UnityEngine;
 using NAudio.Wave;
-
-//get NAudio dll:           https://www.dllme.com/getfile.php?file=26281&id=c305a9e16a5c04eb543c6332ac4d9036
-//example NAudio script:    https://www.dropbox.com/s/wks0ujanr0pm6nj/NAudioPlayer.cs?dl=0 
 
 public static class NAudioPlayer 
 {

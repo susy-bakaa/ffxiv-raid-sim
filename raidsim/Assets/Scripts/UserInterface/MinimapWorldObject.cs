@@ -1,6 +1,7 @@
 // Source and credit for most of the original code: https://github.com/ZackOfAllTrad3s/Minimap
 // License: Apache-2.0 license
-// This script is a modified version of the original minimap world object to fit the needs of this project.
+// This script is a modified version of the original minimap manager to fit the needs of this project.
+// To Learn more, check out the THIRD-PARTY-NOTICES.txt file in the root directory of this project.
 using dev.susybaka.raidsim.Characters;
 using dev.susybaka.Shared;
 using UnityEngine;

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// This file is part of ffxiv-raid-sim. Linking with the Unity runtime
+// is permitted under the Unity Runtime Linking Exception (see LICENSE).
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -634,14 +637,14 @@ namespace dev.susybaka.Shared
         /// <returns>The first GameObject with the specified name, or null if no such GameObject is found.</returns>
         public static GameObject FindAnyByName(string name)
         {
-            Transform[] objs = Resources.FindObjectsOfTypeAll<Transform>() as Transform[];
-            for (int i = 0; i < objs.Length; i++)
+            Transform[] transforms = (Transform[])Resources.FindObjectsOfTypeAll<Transform>();
+            for (int i = 0; i < transforms.Length; i++)
             {
-                if (objs[i].hideFlags == HideFlags.None)
+                if (transforms[i].hideFlags.Equals(HideFlags.None))
                 {
-                    if (objs[i].name == name)
+                    if (transforms[i].name.Equals(name))
                     {
-                        return objs[i].gameObject;
+                        return transforms[i].gameObject;
                     }
                 }
             }

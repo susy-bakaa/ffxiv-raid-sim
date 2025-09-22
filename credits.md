@@ -5,13 +5,13 @@ This file contains a list of all of the external resources used and their creato
 - FINAL FANTASY XIV: Online assets extracted from the original game. All game assets used are owned and copyrighted by SQUARE ENIX CO., LTD. and Creative Studio III. Big thank you to the original developers and artists for creating this amazing game!
 - Main simulator program and timelines made by [susy_baka](https://susybaka.dev/) with major help of [Worst Aqua Player](https://github.com/WorstAquaPlayer).
 - Some timelines were created by [Worst Aqua Player](https://github.com/WorstAquaPlayer) and [Khanh Le](https://github.com/khanh-alice).
-- Some original code partially borrowed, heavily referenced and utilized from the Korean TEA (The Epic of Alexander) simulator. All rights reserved to the original author of that program.
+- Some of the code was partially referenced and used as inspiration from the Korean TEA (The Epic of Alexander) simulator created by 백마도사@초코보. All rights to their code is reserved to the original author of that program and none of it is directly included in this one.
 - Settings cog icon from svgrepo. [Source](https://www.svgrepo.com/svg/163563/settings-cog)
 - Unity INI file script by illa4257. [Source](https://github.com/illa4257/unity-IniStorage) 
-- Unity find inactive GameObjects function by SO user Programmer. [Source](https://stackoverflow.com/questions/44456133/find-inactive-gameobject-by-name-tag-or-layer) 
+- Unity find inactive GameObjects function by StackOverflow user 'Programmer' was used as inspiration for another similar function. [Source](https://stackoverflow.com/questions/44456133/find-inactive-gameobject-by-name-tag-or-layer) 
 - NaughtyAttributes by Denis Rizov [Source](https://github.com/dbrizov/NaughtyAttributes)
-- Greggman for their better Unity WebGL template. [Source](https://github.com/greggman/better-unity-webgl-template)
-- JakeCarterAU for their tool to search materials by shader. [Source](https://github.com/JakeCarterDPM/unity-search-material-by-shader)
+- Greggman for their Better Unity WebGL template. [Source](https://github.com/greggman/better-unity-webgl-template)
+- Jake Carter for their tool to search materials by shader. [Source](https://github.com/JakeCarterDPM/unity-search-material-by-shader)
 - Unity AnimatorUtility by Hasan Bayat. [Source](https://gist.github.com/hasanbayatme/f7f1d9d0f8470b718fda836f6668c215#file-animatorutility-cs)
 - NAudio by Mark Heath. [Source](https://github.com/naudio/NAudio)
 - JimmysUnityUtilities by Jimmy Cushnie. [Source](https://github.com/JimmyCushnie/JimmysUnityUtilities)

@@ -1,4 +1,9 @@
-// From https://answers.unity.com/questions/1654475/why-doesnt-unity-property-editor-show-a-nullable-v.html
+// SPDX-License-Identifier: GPL-3.0-only
+// This file is part of ffxiv-raid-sim. Linking with the Unity runtime
+// is permitted under the Unity Runtime Linking Exception (see LICENSE).
+// ----------------------------------------------------------------
+// From: https://answers.unity.com/questions/1654475/why-doesnt-unity-property-editor-show-a-nullable-v.html
+// ----------------------------------------------------------------
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
