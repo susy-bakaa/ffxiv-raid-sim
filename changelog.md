@@ -1,24 +1,15 @@
-This update brings bit better **Linux compatibility**, some minor **WebGL improvements**, and a few **new contributions** from the community! With automatic updates now working on **all platforms** and new **Game8 strats** added for two timelines.
+This is a **small** but **important** update focused on restoring controller input support and patching the new Unity engine **vulnerability**. **WebGL** controller input should now work on most browsers as well if you're using a controller.
 
 ## Changelog
 
-### New Features
+### Fixes & Updates
 
--   Added **Game8 strats** to both **M8S: Terrestrial Rage** and **M8S: Beckon Moonlight** timelines. Thanks **khanh-alice** for the contribution!
--   Added a **WebGL server uptime tracker** to the UI, so you can now see the current status of the bundle server at a glance.
--   The **automatic updater now supports Linux**, making update handling seamless on **all platforms**.
+-   Fixed some **controller input issues** and controller support is now working correctly again. It should also function in **WebGL** builds on most **Chromium**-based browsers now.  
+    <b>NOTE:</b> There might still be compatibility issues with **Firefox** when using controller input. Try a different browser if you run into any.
+-   Upgraded the Unity engine version to patch a **security vulnerability**.
+    <b>NOTE:</b> More information about this can be found [here](https://flatt.tech/research/posts/arbitrary-code-execution-in-unity-runtime/).
 
-	<b>NOTE:</b> For the updater to work properly, you need to ensure the application is located in a folder where your user has full access and permissions. For more info check the updated <b>README</b>.
-
-### Bug Fixes
-
--   Fixed an issue where **non-interactable** or **disabled UI elements** were still playing **interaction sounds**.
--   Fixed the **settings confirmation popup** not playing any audio in the main menu.
--   Fixed **mouse cursor size** being incorrect on **Linux**.
--   Fixed the **resolution dropdown** not working properly on Linux.
--   Fixed **mouse cursor offset issues** on Linux.
-	
-	<b>NOTE:</b> With these changes the Linux build should now be fully tested and working almost just as well as the Windows one, minus the one known issue. If you encounter more problems let us know.
+---
 
 ### Known Issues
 
@@ -27,4 +18,4 @@ This update brings bit better **Linux compatibility**, some minor **WebGL improv
 
 ---
 
-Thanks again to everyone who helped with testing, reported any bugs, or contributed new strats or timelines. As always, let us know if you spot any problems through [GitHub](https://github.com/susy-bakaa/ffxiv-raid-sim/issues) or send a message on the [official Discord server](https://discord.gg/wepQtPfC6D)!
+Short and sweet, but important. As always, let us know if you spot any problems through [GitHub](https://github.com/susy-bakaa/ffxiv-raid-sim/issues) or send a message on the [official Discord server](https://discord.gg/wepQtPfC6D)!
