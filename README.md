@@ -115,12 +115,12 @@ Fights listed here are not being worked on yet and are not in anyway guranteed t
 
 Latest Builds: 
 
-[![Static Badge](https://img.shields.io/badge/windows_x64-download-green)](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.6.3/raidsim_v.0.6.3_win64.zip)
-[![Static Badge](https://img.shields.io/badge/linux_x64-download-blue?logo=linux&logoColor=white)](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.6.3/raidsim_v.0.6.3_linux64.zip)
+[![Static Badge](https://img.shields.io/badge/windows_x64-download-green)](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.6.4/raidsim_v.0.6.4_win64.zip)
+[![Static Badge](https://img.shields.io/badge/linux_x64-download-blue?logo=linux&logoColor=white)](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.6.4/raidsim_v.0.6.4_linux64.zip)
 [![Static Badge](https://img.shields.io/badge/browser-open-yellow?logo=webgl&logoColor=white)](https://susybaka.dev/unityweb/raidsim/index.html)
 [![Static Badge](https://img.shields.io/badge/itch.io-open-red?logo=itchdotio&logoColor=white)](https://susybakaaa.itch.io/raidsim)
 
-This program has a web version that runs inside your browser if you do not want to download anything. The web version is available in Itch.io or on my personal website. Your other option is to download the program archive and run it on your local machine. The program archive can be downloaded directly from this repo's [releases section](https://github.com/susy-bakaa/ffxiv-raid-sim/releases) or through the itch.io page. All versions of the program are nearly identical except the web version lacks controller support due to Unity not having it easily available for WebGL games. 
+This program has a web version that runs inside your browser if you do not want to download anything. The web version is available in Itch.io or on my personal website. Your other option is to download the program archive and run it on your local machine. The program archive can be downloaded directly from this repo's [releases section](https://github.com/susy-bakaa/ffxiv-raid-sim/releases) or through the itch.io page. All versions of the program are nearly identical except the web version has issues with controller support on some browsers. If you run into issues try a Chromium-based browser. 
 
 The web version fetches it's visual assets (Like character and enemy models) from a remote server, which can sometimes be down. If you do not see any character models be sure to check back later, as I usually manage to fix any issues with the server in a day or two.
 
