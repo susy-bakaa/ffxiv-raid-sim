@@ -1,34 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 using Lumina;
-using Lumina.Data;
-
-public class Config
-{
-    public string gamePath { get; set; } = "";
-    public string multiAssistExe { get; set; } = "";
-    public string blenderExe { get; set; } = "";
-    public string outputRoot { get; set; } = "";
-    public List<BossJob> jobs { get; set; } = new();
-}
-
-public class BossJob
-{
-    public string name { get; set; } = "";
-    public string skeletonGamePath { get; set; } = "";
-    public string modelPath { get; set; } = "";
-    public List<string> papGamePaths { get; set; } = new();
-    public List<string> appendFileNames { get; set; } = new();
-}
+using xivAnim;
 
 public static class Program
 {
+    public class Config
+    {
+        public string gamePath { get; set; } = "";
+        public string multiAssistExe { get; set; } = "";
+        public string blenderExe { get; set; } = "";
+        public string outputRoot { get; set; } = "";
+        public List<ModelJob> jobs { get; set; } = new();
+    }
+
+    public class ModelJob
+    {
+        public string name { get; set; } = "";
+        public string skeletonGamePath { get; set; } = "";
+        public List<string> modelPaths { get; set; } = new();
+        public List<string> papGamePaths { get; set; } = new();
+        public List<string> appendFileNames { get; set; } = new();
+    }
+
     public static int Main(string[] args)
     {
         if (args.Length == 0)
@@ -41,7 +36,7 @@ public static class Program
         var cfg = JsonSerializer.Deserialize<Config>(File.ReadAllText(configPath))
                   ?? throw new InvalidOperationException("Invalid config");
 
-        var gameData = new GameData(cfg.gamePath); // Lumina
+        var gameData = new GameData(cfg.gamePath);
 
         foreach (var job in cfg.jobs)
         {
@@ -58,6 +53,9 @@ public static class Program
             var outDir = Path.Combine(jobRoot, "Exported Animations");
             Directory.CreateDirectory(outDir);
 
+            // Track all exported animations for loop map generation
+            var exportedAnimations = new List<(string FfxivName, string FilePath)>();
+
             // Ensure skeleton + pap files exist locally
             var skeletonFile = ExtractRaw(gameData, job.skeletonGamePath, skeletonDir);
 
@@ -73,23 +71,26 @@ public static class Program
                     skeletonFile,
                     papFile,
                     outDir,
-                    job.appendFileNames
+                    job.appendFileNames,
+                    ref exportedAnimations
                 );
             }
+
+            // Gather distinct motion names for loop map
+            IEnumerable<string> motionNamesForBoss = exportedAnimations.Select(a => a.FfxivName).Distinct(StringComparer.OrdinalIgnoreCase);
+
+            // Build loop map from game data
+            var loopMap = Utility.BuildLoopMapForMotions(gameData, motionNamesForBoss);
+
+            // Serialise to JSON ready to pass to Blender
+            var loopJson = JsonSerializer.Serialize(loopMap);
 
             // Optionally run Blender automation
             if (!string.IsNullOrWhiteSpace(cfg.blenderExe))
             {
                 Console.WriteLine("  Running Blender automation...");
-                
-                var baseFbx = Path.Combine(jobRoot, job.modelPath);
 
-                RunBlenderAutomation(
-                    cfg.blenderExe,
-                    baseFbx,
-                    outDir,
-                    jobRoot
-                );
+                RunBlenderAutomation(cfg.blenderExe, job.modelPaths, outDir, jobRoot, loopJson);
             }
         }
 
@@ -124,7 +125,7 @@ public static class Program
         return dest;
     }
 
-    private static void ExportAllAnimationsForPap(string multiAssistExe, string skeletonFile, string papFile, string outputDir, List<string> appendNames)
+    private static void ExportAllAnimationsForPap(string multiAssistExe, string skeletonFile, string papFile, string outputDir, List<string> appendNames, ref List<(string FfxivName, string FilePath)> exportedAnimations)
     {
         // Normalize papFile and outputDir to use consistent directory separators
         multiAssistExe = Path.GetFullPath(multiAssistExe);
@@ -156,6 +157,8 @@ public static class Program
             string fbxPath = Path.Combine(outputDir, fileName);
 
             fbxPath = Path.GetFullPath(fbxPath);
+
+            exportedAnimations.Add((animName, fbxPath));
 
             Console.WriteLine($"    [{index}] {animName} -> {fileName}");
 
@@ -240,8 +243,7 @@ public static class Program
         // Dummy output path; we don't care about the XML file itself.
         var tmpOut = Path.GetTempFileName();
 
-        var args =
-            $"extract -s \"{skeletonFile}\" -p \"{papFile}\" -i 0 -t xml -o \"{tmpOut}\"";
+        var args = $"extract -s \"{skeletonFile}\" -p \"{papFile}\" -i 0 -t xml -o \"{tmpOut}\"";
 
         var result = RunMultiAssist(multiAssistExe, args);
 
@@ -298,10 +300,17 @@ public static class Program
         return $"{animName}.fbx";
     }
 
-    private static void RunBlenderAutomation(string blenderExe, string baseFbx, string animFolder, string folder)
+    private static void RunBlenderAutomation(string blenderExe, List<string> baseModelPaths, string animFolder, string folder, string loopJson)
     {
-        string fileName = Path.GetFileNameWithoutExtension(baseFbx);
+        string fileName = Path.GetFileNameWithoutExtension(baseModelPaths[0]);
 
+        int underscoreIndex = fileName.IndexOf('_');
+        if (underscoreIndex >= 0)
+        {
+            fileName = fileName.Substring(0, underscoreIndex);
+        }
+
+        string baseModelsJson = JsonSerializer.Serialize(baseModelPaths);
         string blendOut = Path.Combine(folder, $"{fileName}.blend");
         string finalFbx = Path.Combine(folder, $"{fileName}.fbx");
         // Assuming the script is located alongside the executable for now
@@ -310,10 +319,11 @@ public static class Program
         var exit = RunBlender(
             blenderExe,
             blenderScript,
-            baseFbx,
+            baseModelsJson,
             animFolder,
             blendOut,
-            finalFbx
+            finalFbx,
+            loopJson
         );
 
         if (exit != 0)
@@ -322,21 +332,29 @@ public static class Program
         }
     }
 
-    private static int RunBlender(string blenderExe, string blenderScript, string baseFbx, string animFolder, string blendOut, string finalFbx)
+    private static int RunBlender(string blenderExe, string blenderScript, string baseModels, string animFolder, string blendOut, string finalFbx, string loopJson)
     {
-        // blender -b -P script.py -- base.fbx animFolder out.blend out.fbx
-        string args = $"-b -P \"{blenderScript}\" -- \"{baseFbx}\" \"{animFolder}\" \"{blendOut}\" \"{finalFbx}\"";
-
         var psi = new ProcessStartInfo
         {
             FileName = blenderExe,
-            Arguments = args,
             UseShellExecute = false,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             CreateNoWindow = true,
             WorkingDirectory = Path.GetDirectoryName(blenderExe) ?? Environment.CurrentDirectory
         };
+
+        // Blender args:
+        // blender -b -P script.py -- base.fbx animFolder out.blend out.fbx loopJson
+        psi.ArgumentList.Add("-b");
+        psi.ArgumentList.Add("-P");
+        psi.ArgumentList.Add(blenderScript);
+        psi.ArgumentList.Add("--");
+        psi.ArgumentList.Add(baseModels);
+        psi.ArgumentList.Add(animFolder);
+        psi.ArgumentList.Add(blendOut);
+        psi.ArgumentList.Add(finalFbx);
+        psi.ArgumentList.Add(loopJson);
 
         using var proc = Process.Start(psi)!;
         string stdout = proc.StandardOutput.ReadToEnd();
@@ -345,8 +363,13 @@ public static class Program
 
         Console.WriteLine("=== Blender stdout ===");
         Console.WriteLine(stdout);
-        Console.WriteLine("=== Blender stderr ===");
-        Console.WriteLine(stderr);
+        Console.WriteLine("=== End stdout ===");
+        if (!string.IsNullOrWhiteSpace(stderr))
+        {
+            Console.WriteLine("=== Blender stderr ===");
+            Console.WriteLine(stderr);
+            Console.WriteLine("=== End stderr ===");
+        }
 
         return proc.ExitCode;
     }

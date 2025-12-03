@@ -21,6 +21,16 @@
 
   <ItemGroup>
     <PackageReference Include="Lumina" Version="6.7.0" />
+    <PackageReference Include="Lumina.Excel" Version="7.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="config.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="xivanim_blender.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
