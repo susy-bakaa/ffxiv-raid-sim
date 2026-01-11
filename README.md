@@ -21,7 +21,7 @@ Fights listed here are finished and available in the simulator.
 
 - Omega: Alphascape
 	- Alphascape 4.0 (Savage) (O12S)
-		- Phase 2
+		- Phase 2 (The Final Omega)
 			- Hello World 1 ([BLU](https://www.icy-veins.com/ffxiv/blue-mage-omega-raid-guide))
 			- Hello World 2 ([BLU](https://www.icy-veins.com/ffxiv/blue-mage-omega-raid-guide))
 - Alexander: Midas
@@ -47,7 +47,7 @@ Fights listed here are finished and available in the simulator.
 	- Phase 2 (Usurper of Frost)
 		- Diamond Dust ([Early LPDU](https://raidplan.io/plan/NzZWtqr5SbDehlgb))
 - Cloud of Darkness (Chaotic) (CODC)
-	- Phase 1
+	- Phase 1 (The Cloud of Darkness)
 		- Grim Embrace ([Debuff](https://raidplan.io/plan/NyvLFhk2tDTGzE43))
 - Dragonsong's Reprise (Ultimate) (DSR)
 	- Phase 2
@@ -65,14 +65,19 @@ Fights listed here have unfinished timelines that don't work yet, the bots are n
 
 Fights listed here are not being worked on yet and are not in anyway guranteed to be added, but we have a special interest in working on them eventually, meaning they are actively being considered and on the backlog.
 
+- AAC Heavyweight Tier
+	- AAC Heavyweight M4 (Savage) (M12S)
+		- Phase 2 (Lindwurm II)
+			- Idyllic Dream ([Banana Codex](https://raidplan.io/plan/qga7chh6ky23j3ey)?)
+			<br><b>NOTE:</b> Strat that I will be using in the sim for this mechanic has not been decided yet, but my group used Banana Codex raidplans and I liked them.
 - Eden's Promise
 	- Eden's Promise: Eternity (Savage)
-		- Phase 2
+		- Phase 2 (Oracle of Darkness)
 			- Basic Relativity ([BLU](https://raidplan.io/plan/pAyRt1XQ3_9CyWLQ))
 			- Advanced Relativity ([BLU](https://raidplan.io/plan/M1vkew11UuLlSvcn))
 - Omega: Alphascape
 	- Alphascape 4.0 (Savage) (O12S)
-		- Phase 2
+		- Phase 2 (The Final Omega)
 			- Patch ([BLU](https://www.icy-veins.com/ffxiv/blue-mage-omega-raid-guide))
 - Alexander: The Creator
 	- Alexander - The Soul of the Creator (Savage) (A12S)
@@ -100,11 +105,11 @@ Fights listed here are not being worked on yet and are not in anyway guranteed t
 	- AAC Cruiserweight M4 (Savage) (M8S)
 		- Millenial Decay ([Toxic](https://raidplan.io/plan/0YycPJM_3KLD6L1H))
 - Futures Rewritten (Ultimate) (FRU)
-	- Phase 1
+	- Phase 1 (Fatebreaker)
 		- Fall of Faith ([Early LPDU](https://raidplan.io/plan/V0swEBYmpTP22HnK))
-	- Phase 2
+	- Phase 2 (Usurper of Frost)
 		- Light Rampant ([Early LPDU](https://raidplan.io/plan/FG4cE9SQY4h5ryOT))
-	- Phase 3
+	- Phase 3 (Oracle of Darkness)
 		- Ultimate Relativity ([Early LPDU](https://docs.google.com/presentation/d/1gvAR5l6ZaKIR1DAgs9N-5mgNY28ii_jLZJDQvTk1iMU))
 - Dragonsong's Reprise (Ultimate) (DSR)
 	- Anything that does not have a proper [solo simulator by WCGH](https://github.com/WCGH/Dragonsong-Sim) yet. Suggestions and requests are welcome.
