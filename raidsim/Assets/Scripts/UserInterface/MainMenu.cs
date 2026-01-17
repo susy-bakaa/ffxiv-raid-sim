@@ -40,7 +40,7 @@ namespace dev.susybaka.raidsim.UI
 
             KeyBind.SetupKeyNames();
 
-#if UNITY_STANDALONE_WIN
+#if UNITY_STANDALONE_WIN && !UNITY_STANDALONE_LINUX && !UNITY_EDITOR_LINUX
             if (Application.isEditor)
                 return;
 
@@ -75,7 +75,7 @@ namespace dev.susybaka.raidsim.UI
                 }
             }
 
-            // Load next scene’s AssetBundle
+            // Load next sceneï¿½s AssetBundle
             AssetHandler.Instance.LoadSceneAssetBundle(simSceneBundle);
 
             fadeOut.gameObject.SetActive(true);

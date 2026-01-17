@@ -590,6 +590,9 @@ namespace dev.susybaka.raidsim.Inputs
 
         public bool GetButtonDown(string name)
         {
+            if (m_keys == null || m_keys.Count < 1)
+                return false;
+
             if (m_keys.TryGetValue(name, out InputBinding key))
             {
                 //Debug.Log($"key {name} key.hasControllerBinding {key.hasControllerBinding} key.controllerBind {key.controllerBind}");

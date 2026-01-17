@@ -68,14 +68,14 @@ namespace dev.susybaka.raidsim.Inputs
             {
                 if (Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(0))
                 {
-#if PLATFORM_STANDALONE_WIN
+#if PLATFORM_STANDALONE_WIN && !PLATFORM_STANDALONE_LINUX && !UNITY_EDITOR_LINUX
                     if (!cursorPositionSet)
                     {
                         cursorPosition = CursorControl.GetPosition();
                         cursorPositionSet = true;
                     }
 #endif
-#if UNITY_EDITOR_WIN
+#if UNITY_EDITOR_WIN && !UNITY_EDITOR_LINUX
                     if (!cursorPositionSet)
                     {
                         cursorPosition = CursorControl.GetPosition();
@@ -95,14 +95,14 @@ namespace dev.susybaka.raidsim.Inputs
                 if ((Input.GetMouseButtonUp(1) && !Input.GetMouseButton(0)) || (Input.GetMouseButtonUp(0) && !Input.GetMouseButton(1)))
                 {
                     Cursor.lockState = CursorLockMode.None;
-#if PLATFORM_STANDALONE_WIN
+#if PLATFORM_STANDALONE_WIN && !PLATFORM_STANDALONE_LINUX && !UNITY_EDITOR_LINUX
                     if (cursorPositionSet)
                     {
                         CursorControl.SetPosition(cursorPosition);
                         cursorPositionSet = false;
                     }
 #endif
-#if UNITY_EDITOR_WIN
+#if UNITY_EDITOR_WIN && !UNITY_EDITOR_LINUX
                     if (cursorPositionSet)
                     {
                         CursorControl.SetPosition(cursorPosition);

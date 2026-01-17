@@ -71,7 +71,7 @@ namespace dev.susybaka.raidsim.UI
             if (Application.isEditor)
                 return;
 
-#if UNITY_STANDALONE_WIN
+#if UNITY_STANDALONE_WIN && !UNITY_STANDALONE_LINUX && !UNITY_EDITOR_LINUX
             try
             {
                 var windowPtr = FindWindow(null, GlobalVariables.lastWindowName);
@@ -143,7 +143,7 @@ namespace dev.susybaka.raidsim.UI
                     AssetHandler.Instance.ClearCache();
                 }
 
-                // Load next scene’s AssetBundle
+                // Load next sceneï¿½s AssetBundle
                 AssetHandler.Instance.LoadSceneAssetBundle(scene.assetBundles);
             }
 
