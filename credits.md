@@ -13,7 +13,6 @@ This file contains a list of all of the external resources used and their creato
 - Greggman for their Better Unity WebGL template. [Source](https://github.com/greggman/better-unity-webgl-template)
 - Jake Carter for their tool to search materials by shader. [Source](https://github.com/JakeCarterDPM/unity-search-material-by-shader)
 - Unity AnimatorUtility by Hasan Bayat. [Source](https://gist.github.com/hasanbayatme/f7f1d9d0f8470b718fda836f6668c215#file-animatorutility-cs)
-- NAudio by Mark Heath. [Source](https://github.com/naudio/NAudio)
 - JimmysUnityUtilities by Jimmy Cushnie. [Source](https://github.com/JimmyCushnie/JimmysUnityUtilities)
 - FancyTextRendering by Jimmy Cushnie. [Source](https://github.com/JimmyCushnie/FancyTextRendering)
 - Unity Minimap code by Zack. [Source](https://github.com/ZackOfAllTrad3s/Minimap)

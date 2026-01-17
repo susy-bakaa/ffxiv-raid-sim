@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Networking;
 using dev.susybaka.raidsim.Core;
 using Random = UnityEngine.Random;
 
@@ -13,7 +14,7 @@ namespace dev.susybaka.raidsim.Audio
     public class MusicLoader : MonoBehaviour
     {
         private string completePath = string.Empty;
-        [SerializeField] private string path = "/test/bgm.mp3";
+        [SerializeField] private string path = "/test/bgm.ogg";
         [SerializeField] private bool useRelativeToExecutable = true;
         [SerializeField] private bool randomize = false;
         [SerializeField] private int songCount = 0;
@@ -25,8 +26,8 @@ namespace dev.susybaka.raidsim.Audio
         public void Load()
         {
 #if UNITY_WEBPLAYER
-        Destroy(gameObject);
-        return;
+            Destroy(gameObject);
+            return;
 #else
 
             startSource = transform.GetChild(0).GetComponent<AudioSource>();
@@ -92,48 +93,55 @@ namespace dev.susybaka.raidsim.Audio
                 return; // Skip loading if the file doesn't exist
             }
 
-            byte[] audioData = null;
+            if (completePath.EndsWith(".mp3") || completePath.EndsWith(".wav"))
+            {
+                Debug.Log("Invalid music file type (Only ogg vorbis is supported): " + completePath);
+                return; // Skip loading if the path points to an unsupported file
+            }
+
+            AudioClip originalClip;
             try
             {
-                // Load the audio data asynchronously from the file
-                audioData = await Task.Run(() => File.ReadAllBytes(completePath));
+                originalClip = await LoadOggClipFromDiskAsync(completePath);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Debug.LogWarning("Error loading music: " + ex.Message);
                 return;
             }
 
-            // Ensure we are back on the main thread to assign the audio clip
-            if (audioData != null)
+            if (originalClip == null)
             {
-                AudioClip originalClip = NAudioPlayer.FromMp3Data(audioData);
+                Debug.LogWarning("Error loading music: AudioClip was null");
+                return;
+            }
 
-                if (loopStart > -1)
-                {
-                    // Extract and create clips
-                    AudioClip startClip = CreateClipSegment(originalClip, 0, loopStart);
-                    AudioClip loopClip = CreateClipSegment(originalClip, loopStart, loopEnd);
+            Debug.Log("Loading music from: " + completePath);
 
-                    // Assign clips to audio sources
-                    startSource.clip = startClip;
-                    startSource.clip.name = "bgm_intro";
-                    loopSource.clip = loopClip;
-                    loopSource.clip.name = "bgm_loop";
+            if (loopStart > -1)
+            {
+                // Extract and create clips
+                AudioClip startClip = CreateClipSegment(originalClip, 0, loopStart);
+                AudioClip loopClip = CreateClipSegment(originalClip, loopStart, loopEnd);
 
-                    // Play the start segment
-                    startSource.Play();
+                // Assign clips to audio sources
+                startSource.clip = startClip;
+                startSource.clip.name = "bgm_intro";
+                loopSource.clip = loopClip;
+                loopSource.clip.name = "bgm_loop";
 
-                    // Schedule the loop segment to start playing when the start segment ends
-                    float startClipDuration = (float)loopStart / originalClip.frequency;
-                    loopSource.PlayScheduled(AudioSettings.dspTime + startClipDuration);
-                }
-                else
-                {
-                    loopSource.clip = originalClip;
-                    loopSource.clip.name = "bgm";
-                    loopSource.Play();
-                }
+                // Play the start segment
+                startSource.Play();
+
+                // Schedule the loop segment to start playing when the start segment ends
+                float startClipDuration = (float)loopStart / originalClip.frequency;
+                loopSource.PlayScheduled(AudioSettings.dspTime + startClipDuration);
+            }
+            else
+            {
+                loopSource.clip = originalClip;
+                loopSource.clip.name = "bgm";
+                loopSource.Play();
             }
         }
 
@@ -208,6 +216,40 @@ namespace dev.susybaka.raidsim.Audio
             }
 
             return Path.Combine(Application.streamingAssetsPath, finalPath);
+        }
+
+        private static async Task<AudioClip> LoadOggClipFromDiskAsync(string fullPath)
+        {
+            // Make sure format is a proper file:// URI (handles Linux/macOS paths and escaping spaces)
+            var uri = new Uri(fullPath).AbsoluteUri;
+
+            // Build request manually so we can set handler flags BEFORE sending
+            using var req = new UnityWebRequest(uri, UnityWebRequest.kHttpVerbGET);
+            var dh = new DownloadHandlerAudioClip(uri, AudioType.OGGVORBIS);
+            dh.streamAudio = false;
+            dh.compressed  = false;
+            req.downloadHandler = dh;
+
+            var op = req.SendWebRequest();
+            while (!op.isDone)
+                await Task.Yield();
+
+            if (req.result != UnityWebRequest.Result.Success)
+                throw new Exception(req.error);
+
+            var clip = dh.audioClip;
+            if (clip == null)
+                throw new Exception("DownloadHandlerAudioClip produced a null clip.");
+
+            // Force audio data load now (so slicing has real PCM to read)
+            clip.LoadAudioData();
+            while (clip.loadState == AudioDataLoadState.Loading)
+                await Task.Yield();
+
+            if (clip.loadState == AudioDataLoadState.Failed)
+                throw new Exception("AudioClip decode/load failed (loadState == Failed).");
+
+            return clip;
         }
 
         private AudioClip CreateClipSegment(AudioClip original, int startSample, int endSample)

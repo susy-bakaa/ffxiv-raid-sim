@@ -15,17 +15,20 @@ namespace dev.susybaka.raidsim.Core
         // Increment this when the scripts are changed in a way that will require a rebuild of all scenes inside bundles.
         // (This is not in use yet but added for future reference)
         public static int scriptingVersion = 1;
-#if UNITY_EDITOR
+#if UNITY_EDITOR && !UNITY_EDITOR_LINUX
         public static string configPath = Application.dataPath + "/config.ini";
         public static string bgmPath = "F:/Git/ffxiv-raid-sim/raidsim/Source/Audio/bgm";
-#elif PLATFORM_STANDALONE_WIN
+#elif UNITY_EDITOR_LINUX
+        public static string configPath = Application.dataPath + "/config.ini";
+        public static string bgmPath = "/mnt/ssd2/Git/ffxiv-raid-sim/raidsim/Source/Audio/bgm";
+#elif PLATFORM_STANDALONE_WIN && !PLATFORM_STANDALONE_LINUX
         public static string configPath = Path.GetDirectoryName(Application.dataPath) + "/config.ini";
         public static string bgmPath = Path.GetDirectoryName(Application.dataPath) + "/bgm";
 #else
         public static string configPath = Application.persistentDataPath + "/config.ini";
         public static string bgmPath = Application.persistentDataPath + "/bgm";
 #endif
-#if UNITY_STANDALONE_WIN
+#if UNITY_STANDALONE_WIN && !UNITY_STANDALONE_LINUX && !UNITY_EDITOR_LINUX
         //Import the following.
         [DllImport("user32.dll", EntryPoint = "SetWindowText")]
         public static extern bool SetWindowText(System.IntPtr hwnd, System.String lpString);
