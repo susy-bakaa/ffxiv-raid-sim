@@ -17,6 +17,7 @@ namespace dev.susybaka.raidsim.Characters
         CharacterState state;
         ThirdPersonCamera cameraScript;
         UserInput userInput;
+        Rigidbody rb;
 
         public Vector3 spawnOffset = new Vector3(0f, 1.25f, 0f);
         public float turnSmoothTime;
@@ -51,6 +52,8 @@ namespace dev.susybaka.raidsim.Characters
         private bool movementFrozen = false;
         private bool knockedBack = false;
         private bool preventJumping = false;
+        private bool preventGravity = false;
+        private bool wasPreventGravity = false;
         private bool jumping = false;
         private bool jumpInput = false;
         public bool jumpInputAvailable = true;
@@ -108,6 +111,7 @@ namespace dev.susybaka.raidsim.Characters
                 }
             }
 
+            rb = GetComponent<Rigidbody>();
             animator = GetComponent<Animator>();
         }
 
@@ -189,6 +193,16 @@ namespace dev.susybaka.raidsim.Characters
 
         private void Update()
         {
+            if (preventGravity != wasPreventGravity)
+            {
+                wasPreventGravity = preventGravity;
+                if (rb != null)
+                {
+                    rb.useGravity = !preventGravity;
+                    rb.velocity = Vector3.zero;
+                }
+            }
+
             if (Time.timeScale > 0f)
             {
                 animator.SetBool(animatorParameterDead, state.dead);
@@ -221,6 +235,7 @@ namespace dev.susybaka.raidsim.Characters
                 state.uncontrollable.RemoveFlag("knockback");
                 velocity = Vector3.zero;
                 knockedBack = false;
+                preventGravity = false; // Prevent gravity might need to be turned into a multi state flag later but for now only knockbacks use it
             }
             if (!state.uncontrollable.value && !state.dead && !state.bound.value && enableInput)
             {
@@ -534,14 +549,14 @@ namespace dev.susybaka.raidsim.Characters
             if (sliding && slideDistance > 0f)
             {
                 knockedBack = true;
-                Knockback(transform.forward * slideDistance, slideDuration);
+                Knockback(transform.forward * slideDistance, slideDuration, 0f, true);
                 return true;
             }
 
             return false;
         }
 
-        public void Knockback(Vector3 tp, float duration)
+        public void Knockback(Vector3 tp, float duration, float height, bool gravity)
         {
             if (!state.HasEffect("Surecast"))
             {
@@ -551,6 +566,20 @@ namespace dev.susybaka.raidsim.Characters
                 targetPosition = transform.position + tp;
                 animator.SetFloat(animatorParameterSpeed, 0f);
                 knockedBack = true;
+                preventGravity = !gravity;
+
+                if (height > 1f) // 1 unit has been default for all knockbacks so we only do the arc if height is greater than that, bit of a hacky solution but works for now
+                {
+                    float upDuration = duration * 0.4f; // 40% of total duration for going up
+                    float downDuration = duration * 0.6f; // 60% of total duration for coming down
+                    float peakDelay = upDuration * 0.6f; // Small delay at peak (60% into up phase)
+                    
+                    Vector3 up = new Vector3(0f, transform.position.y + height, 0f);
+                    model.LeanMoveLocal(up, upDuration).setEase(LeanTweenType.easeOutQuad).setOnComplete(() => 
+                        Utilities.FunctionTimer.Create(this, () => 
+                            model.LeanMoveLocal(Vector3.zero, downDuration).setEase(LeanTweenType.easeInQuad), 
+                            peakDelay, "player_knockback_fall_delay", false, true));
+                }
             }
         }
 
@@ -581,6 +610,10 @@ namespace dev.susybaka.raidsim.Characters
             jumping = false;
             jumpInput = false;
             jumpInputAvailable = true;
+            preventGravity = false;
+            wasPreventGravity = false;
+            if (rb != null)
+                rb.useGravity = true;
             tm = 0f;
             release = 0f;
             storedInput = Vector2.zero;

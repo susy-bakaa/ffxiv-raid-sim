@@ -5,17 +5,20 @@ using UnityEngine;
 using dev.susybaka.raidsim.Bots;
 using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.Nodes;
+using dev.susybaka.Shared;
 
 namespace dev.susybaka.raidsim.Characters
 {
     public class AIController : MonoBehaviour
     {
         Animator animator;
+        Rigidbody rb;
         public CharacterState state { get; private set; }
 
         public BotTimeline botTimeline;
         private BotTimeline wasBotTimeline;
         public BotNode clockSpot;
+        public Transform model;
         public float turnSmoothTime;
         public Vector3 spawnOffset = new Vector3(0f, 1.1f, 0f);
         public bool log;
@@ -33,6 +36,8 @@ namespace dev.susybaka.raidsim.Characters
         private Vector3 velocity;
         private bool knockedback = false;
         private bool movementFrozen = false;
+        private bool preventGravity = false;
+        private bool wasPreventGravity = false;
 
         private int animatorParameterDead = Animator.StringToHash("Dead");
         private int animatorParameterSpeed = Animator.StringToHash("Speed");
@@ -51,6 +56,7 @@ namespace dev.susybaka.raidsim.Characters
         private void Awake()
         {
             animator = GetComponent<Animator>();
+            rb = GetComponent<Rigidbody>();
             state = GetComponent<CharacterState>();
             wasBotTimeline = botTimeline;
             botTimeline.bot = this;
@@ -64,10 +70,26 @@ namespace dev.susybaka.raidsim.Characters
             movementFrozen = false;
             sliding = false;
             tweening = false;
+            preventGravity = false;
+            wasPreventGravity = false;
+            if (rb != null)
+            {
+                rb.useGravity = true;
+            }
         }
 
         private void Update()
         {
+            if (preventGravity != wasPreventGravity)
+            {
+                wasPreventGravity = preventGravity;
+                if (rb != null)
+                {
+                    rb.useGravity = !preventGravity;
+                    rb.velocity = Vector3.zero;
+                }
+            }
+
             if (Time.deltaTime > 0)
             {
                 animator.SetBool(animatorParameterDead, state.dead);
@@ -269,7 +291,7 @@ namespace dev.susybaka.raidsim.Characters
             return false;
         }
 
-        public void Knockback(Vector3 tp, float duration)
+        public void Knockback(Vector3 tp, float duration, float height, bool gravity)
         {
             if (!state.HasEffect("Surecast"))
             {
@@ -279,6 +301,20 @@ namespace dev.susybaka.raidsim.Characters
                 targetPosition = transform.position + tp;
                 animator.SetFloat(animatorParameterSpeed, 0f);
                 knockedback = true;
+                preventGravity = !gravity;
+
+                if (height > 1f) // 1 unit has been default for all knockbacks so we only do the arc if height is greater than that, bit of a hacky solution but works for now
+                {
+                    float upDuration = duration * 0.4f; // 40% of total duration for going up
+                    float downDuration = duration * 0.6f; // 60% of total duration for coming down
+                    float peakDelay = upDuration * 0.6f; // Small delay at peak (60% into up phase)
+
+                    Vector3 up = new Vector3(0f, transform.position.y + height, 0f);
+                    model.LeanMoveLocal(up, upDuration).setEase(LeanTweenType.easeOutQuad).setOnComplete(() =>
+                        Utilities.FunctionTimer.Create(this, () =>
+                            model.LeanMoveLocal(Vector3.zero, downDuration).setEase(LeanTweenType.easeInQuad),
+                            peakDelay, $"{gameObject.name}_knockback_fall_delay", false, true));
+                }
             }
         }
 
@@ -302,6 +338,12 @@ namespace dev.susybaka.raidsim.Characters
         {
             botTimeline = wasBotTimeline;
             botTimeline.bot = this;
+            preventGravity = false;
+            wasPreventGravity = false;
+            if (rb != null)
+            {
+                rb.useGravity = true;
+            }
             if (animator != null)
             {
                 animator.SetBool(animatorParameterDead, false);
