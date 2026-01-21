@@ -7,6 +7,8 @@ using static dev.susybaka.raidsim.Core.GlobalData;
 
 namespace dev.susybaka.raidsim.Mechanics
 {
+    [AddComponentMenu("")] // This hides it from the "Add Component" menu in Unity Editor
+    [System.Obsolete("This mechanic is retired and considered a legacy component. It will be kept for backwards compatibility but for any new timelines please use the CharacterStateMechanic component instead. It offers the same features and even more and is up to date.")]
     public class SpawnEnemiesMechanic : FightMechanic
     {
         public GameObject[] enemyObjects;
