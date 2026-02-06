@@ -272,7 +272,8 @@ namespace dev.susybaka.raidsim.Core
 
             onNoNewSeedOnStartChanged.Invoke(noNewSeedOnStart);
 
-            simulationSpeedLabel = Utilities.FindAnyByName("SimulationSpeedLabel").GetComponentInChildren<TextMeshProUGUI>(true);
+            // Cannot use FindAnyByName here because for some reason it keeps finding the prefab and not the scene instance, even though it can only see scene objects. This is likely a Unity editor quirk.
+            simulationSpeedLabel = GameObject.Find("SimulationSpeedLabel").GetComponentInChildren<TextMeshProUGUI>(true);
         }
 
         private void Update()

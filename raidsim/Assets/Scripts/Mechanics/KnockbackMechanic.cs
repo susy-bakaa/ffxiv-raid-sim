@@ -86,21 +86,27 @@ namespace dev.susybaka.raidsim.Mechanics
                         knockbackForce.y *= inverseMultiplier;
                     }
 
+                    float verticalDirection = direction.y;
+
                     if (!Xaxis)
                         knockbackForce = new Vector3(0f, knockbackForce.y, knockbackForce.z);
                     if (!Yaxis)
-                        knockbackForce = new Vector3(knockbackForce.x, 0f, knockbackForce.z);
+                        verticalDirection = 0f; // Vertical movement is handled separately in the Knockback function, so we just set this to 0 if Y-axis is disabled
                     if (!Zaxis)
                         knockbackForce = new Vector3(knockbackForce.x, knockbackForce.y, 0f);
+
+                    // Always prevent vertical knockback force because the current implementation does not handle physics based movement upwards or down
+                    // And all vertical movement is handled in the Knockback function as a simple transform movement
+                    knockbackForce = new Vector3(knockbackForce.x, 0f, knockbackForce.z);
 
                     // This implementation is temporary and very goofy ahh, needs a complete rework at some point
                     if (actionInfo.source.playerController != null)
                     {
-                        actionInfo.source.playerController.Knockback(knockbackForce, duration, direction.y, !disableGravity);
+                        actionInfo.source.playerController.Knockback(knockbackForce, duration, verticalDirection, !disableGravity);
                     }
                     else if (actionInfo.source.aiController != null)
                     {
-                        actionInfo.source.aiController.Knockback(knockbackForce, duration, direction.y, !disableGravity);
+                        actionInfo.source.aiController.Knockback(knockbackForce, duration, verticalDirection, !disableGravity);
                     }
                     else if (actionInfo.source.bossController != null)
                     {

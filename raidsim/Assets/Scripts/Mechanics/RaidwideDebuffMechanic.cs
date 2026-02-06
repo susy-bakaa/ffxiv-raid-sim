@@ -61,14 +61,12 @@ namespace dev.susybaka.raidsim.Mechanics
 
             if (party != null && party.members.Count > 0)
             {
-                partyMembers = new List<CharacterState>(); // Copy the party members list
+                partyMembers = new List<CharacterState>(party.GetActiveMembers()); // Copy the party members list
 
                 /*for (int i = 0; i < party.members.Count; i++)
                 {
                     partyMembers.Add(party.members[i].characterState);
                 }*/
-
-                partyMembers = party.GetActiveMembers();
 
                 if (randomizeParty)
                     partyMembers.Shuffle();

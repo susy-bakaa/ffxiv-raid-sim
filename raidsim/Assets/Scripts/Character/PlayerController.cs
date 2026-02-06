@@ -572,7 +572,7 @@ namespace dev.susybaka.raidsim.Characters
                 knockedBack = true;
                 preventGravity = !gravity;
 
-                if (height > 1f) // 1 unit has been default for all knockbacks so we only do the arc if height is greater than that, bit of a hacky solution but works for now
+                if (height > 0f) // Only do the vertical animation if there is a height component to the knockback
                 {
                     float upDuration = duration * 0.4f; // 40% of total duration for going up
                     float downDuration = duration * 0.6f; // 60% of total duration for coming down
