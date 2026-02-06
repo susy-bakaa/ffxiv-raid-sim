@@ -36,7 +36,7 @@ Shader "Custom/Unlit/TransparentTexture"
         AlphaToMask On
 
         CGPROGRAM
-        #pragma surface surf Unlit alphatest:_Cutoff noshadow
+        #pragma surface surf Unlit alphatest:_Cutoff
 
         sampler2D _MainTex;
         fixed4 _Color;
