@@ -11,7 +11,7 @@ namespace dev.susybaka.raidsim.Core
     {
         // This value is incremented when the game gets an update.
         // It is used by WebGL to determine if the game assets need to be redownloaded and by the auto updater for version checks for updates.
-        public static int versionNumber = 10;
+        public static int versionNumber = 11;
         // Increment this when the scripts are changed in a way that will require a rebuild of all scenes inside bundles.
         // (This is not in use yet but added for future reference)
         public static int scriptingVersion = 1;
