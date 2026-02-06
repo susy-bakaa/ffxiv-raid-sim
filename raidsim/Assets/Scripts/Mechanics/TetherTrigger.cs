@@ -508,6 +508,7 @@ namespace dev.susybaka.raidsim.Mechanics
             return A + AB * t;
         }
 
+#if UNITY_EDITOR
         private void OnDrawGizmos()
         {
             if (!drawDebug || tetherSource == null || tetherTarget == null || tetherSource.pivot == null || tetherTarget.pivot == null)
@@ -528,6 +529,7 @@ namespace dev.susybaka.raidsim.Mechanics
                 Gizmos.DrawWireSphere(mid, grabRadius);
             }
         }
+#endif
 
         private IEnumerator IE_SetLineRenderersActive(bool state, WaitForSeconds wait)
         {
