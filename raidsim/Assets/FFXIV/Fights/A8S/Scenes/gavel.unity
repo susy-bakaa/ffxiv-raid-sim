@@ -816,6 +816,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bot: {fileID: 0}
+  overrideParty: {fileID: 0}
   currentTarget: {fileID: 0}
   sector: 0
   updateSector: 0
@@ -1869,6 +1870,7 @@ MonoBehaviour:
   actions:
   - {fileID: 541538841}
   autoActions: []
+  _actionQueue: []
   loadAutomatically: 0
   autoAttackEnabled: 0
   instantCast: 0
@@ -1922,6 +1924,7 @@ MonoBehaviour:
   targetController: {fileID: 0}
   actionController: {fileID: 0}
   dashKnockbackPivot: {fileID: 0}
+  modelHandler: {fileID: 0}
   characterName: Steam Regulator B#2
   currentMaxHealth: 0
   health: 3000
@@ -2006,6 +2009,11 @@ MonoBehaviour:
     - name: base
       value: 1
     logic: 0
+    thresholdPercentage: 0
+  hidden:
+    name: hidden
+    values: []
+    logic: 1
     thresholdPercentage: 0
   dead: 0
   still: 1
@@ -2148,6 +2156,10 @@ MonoBehaviour:
   showOnlyFromCharacter: {fileID: 2686890239227479568}
   playAudio: 1
   audioVolume: 0.35
+  useTransparency: 0
+  modelAlpha: 1
+  pivot: {fileID: 0}
+  model: {fileID: 0}
   inflictedEffect:
     name: 
     data: {fileID: 0}
@@ -3928,6 +3940,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   input: {fileID: 3816549599173645464}
+  fightSelector: {fileID: 0}
   player: {fileID: 2686890239227479568}
   partyList: {fileID: 2884399813960674742}
   enemyList: {fileID: 8978751010131656686}
@@ -4132,6 +4145,7 @@ MonoBehaviour:
   log: 0
   clearRandomEventResultsOnStart: 1
   noNewSeedOnStart: 0
+  disableKnockbacks: 0
   onNoNewSeedOnStartChanged:
     m_PersistentCalls:
       m_Calls:
@@ -9059,6 +9073,7 @@ MonoBehaviour:
   targetController: {fileID: 0}
   actionController: {fileID: 0}
   dashKnockbackPivot: {fileID: 0}
+  modelHandler: {fileID: 0}
   characterName: AI5
   currentMaxHealth: 0
   health: 10000
@@ -9143,6 +9158,11 @@ MonoBehaviour:
     - name: base
       value: 1
     logic: 0
+    thresholdPercentage: 0
+  hidden:
+    name: hidden
+    values: []
+    logic: 1
     thresholdPercentage: 0
   dead: 0
   still: 0
@@ -9251,6 +9271,10 @@ MonoBehaviour:
   showOnlyFromCharacter: {fileID: 2686890239227479568}
   playAudio: 1
   audioVolume: 0.15
+  useTransparency: 0
+  modelAlpha: 1
+  pivot: {fileID: 0}
+  model: {fileID: 0}
   inflictedEffect:
     name: 
     data: {fileID: 0}
@@ -9280,10 +9304,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   botTimeline: {fileID: 614422565}
   clockSpot: {fileID: 2102489517}
+  model: {fileID: 0}
   turnSmoothTime: 0
   spawnOffset: {x: 0, y: 1.1, z: 0}
   log: 0
   freezeMovement: 0
+  allowGravity: 1
   sliding: 0
   slideDistance: 0
   slideDuration: 0.5
@@ -9335,6 +9361,7 @@ MonoBehaviour:
   autoActions:
   - {fileID: 494384498}
   - {fileID: 904009897}
+  _actionQueue: []
   loadAutomatically: 1
   autoAttackEnabled: 1
   instantCast: 0
@@ -10446,8 +10473,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rotation: {x: 0, y: -75, z: 0}
   setRotation: 0
+  oneTime: 0
   faceTowardsName: 
   faceTowards: {fileID: 0}
+  faceTowardsNearestCharacter: 0
+  party: {fileID: 0}
 --- !u!1 &241048622
 GameObject:
   m_ObjectHideFlags: 0
@@ -11276,6 +11306,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bot: {fileID: 0}
+  overrideParty: {fileID: 0}
   currentTarget: {fileID: 0}
   sector: 0
   updateSector: 0
@@ -12433,6 +12464,7 @@ MonoBehaviour:
   actions:
   - {fileID: 785324192}
   autoActions: []
+  _actionQueue: []
   loadAutomatically: 0
   autoAttackEnabled: 0
   instantCast: 0
@@ -12486,6 +12518,7 @@ MonoBehaviour:
   targetController: {fileID: 0}
   actionController: {fileID: 0}
   dashKnockbackPivot: {fileID: 0}
+  modelHandler: {fileID: 0}
   characterName: Steam Regulator A#1
   currentMaxHealth: 0
   health: 3000
@@ -12570,6 +12603,11 @@ MonoBehaviour:
     - name: base
       value: 1
     logic: 0
+    thresholdPercentage: 0
+  hidden:
+    name: hidden
+    values: []
+    logic: 1
     thresholdPercentage: 0
   dead: 0
   still: 1
@@ -12712,6 +12750,10 @@ MonoBehaviour:
   showOnlyFromCharacter: {fileID: 2686890239227479568}
   playAudio: 1
   audioVolume: 0.35
+  useTransparency: 0
+  modelAlpha: 1
+  pivot: {fileID: 0}
+  model: {fileID: 0}
   inflictedEffect:
     name: 
     data: {fileID: 0}
@@ -13894,6 +13936,22 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2069070437137074165, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2069070437137074165, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2069070437137074165, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2069070437137074165, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2079681180522639542, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -13971,6 +14029,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2192892018309730091, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221575615806950864, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221575615806950864, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221575615806950864, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221575615806950864, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
@@ -14263,6 +14337,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2983135332049798449, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3050137333268299194, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3050137333268299194, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3050137333268299194, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3050137333268299194, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
@@ -15074,6 +15164,38 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5206983416328303849, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5206983416328303849, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5206983416328303849, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5206983416328303849, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5254098291527977019, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5254098291527977019, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5254098291527977019, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5254098291527977019, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5310042908540304494, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -15132,7 +15254,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5607593311940560396, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_Size
-      value: 1
+      value: 0.8190414
       objectReference: {fileID: 0}
     - target: {fileID: 5623888830998960837, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMax.y
@@ -15478,6 +15600,22 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6111361583994397492, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6111361583994397492, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6111361583994397492, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6111361583994397492, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6123943962094604404, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -15586,6 +15724,22 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6340729520800563589, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6340729520800563589, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6340729520800563589, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6340729520800563589, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6408347848232224621, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -15759,6 +15913,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6981139675234876560, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7002510072620189089, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7002510072620189089, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7002510072620189089, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7002510072620189089, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
@@ -16066,6 +16236,22 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7949742893608680565, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7949742893608680565, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7949742893608680565, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7949742893608680565, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7960844083957721190, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -16262,6 +16448,22 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8629571535708349559, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8629571535708349559, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8629571535708349559, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8629571535708349559, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8682626303320553483, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -16436,7 +16638,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9178151334594336980, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_Size
-      value: 1
+      value: 0.8190414
       objectReference: {fileID: 0}
     - target: {fileID: 9190149586635999444, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Target
@@ -19375,6 +19577,7 @@ MonoBehaviour:
   hudEditor: {fileID: 1720620152}
   playerTargeting: {fileID: 2686890239227479570}
   playerActions: {fileID: 0}
+  chatWindow: {fileID: 0}
   menuScene: menu
   onPaused:
     m_PersistentCalls:
@@ -19703,6 +19906,7 @@ MonoBehaviour:
   targetController: {fileID: 0}
   actionController: {fileID: 0}
   dashKnockbackPivot: {fileID: 0}
+  modelHandler: {fileID: 0}
   characterName: AI6
   currentMaxHealth: 0
   health: 10000
@@ -19787,6 +19991,11 @@ MonoBehaviour:
     - name: base
       value: 1
     logic: 0
+    thresholdPercentage: 0
+  hidden:
+    name: hidden
+    values: []
+    logic: 1
     thresholdPercentage: 0
   dead: 0
   still: 0
@@ -19895,6 +20104,10 @@ MonoBehaviour:
   showOnlyFromCharacter: {fileID: 2686890239227479568}
   playAudio: 1
   audioVolume: 0.15
+  useTransparency: 0
+  modelAlpha: 1
+  pivot: {fileID: 0}
+  model: {fileID: 0}
   inflictedEffect:
     name: 
     data: {fileID: 0}
@@ -19924,10 +20137,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   botTimeline: {fileID: 1168395741}
   clockSpot: {fileID: 989487630}
+  model: {fileID: 0}
   turnSmoothTime: 0
   spawnOffset: {x: 0, y: 1.1, z: 0}
   log: 0
   freezeMovement: 0
+  allowGravity: 1
   sliding: 0
   slideDistance: 0
   slideDuration: 0.5
@@ -19979,6 +20194,7 @@ MonoBehaviour:
   autoActions:
   - {fileID: 582896455}
   - {fileID: 1128761589}
+  _actionQueue: []
   loadAutomatically: 1
   autoAttackEnabled: 1
   instantCast: 0
@@ -20239,9 +20455,11 @@ MonoBehaviour:
   log: 0
   tetherTriggerPrefab: {fileID: 1327405173}
   enableInstead: 1
+  tetherSource: {fileID: 0}
   startPoint: {fileID: 169990309}
-  startOffset: {x: 0, y: 0, z: 0}
+  sourceOffset: {x: 0, y: 0, z: 0}
   spawnLocation: {fileID: 355535661}
+  setSourceAutomatically: 0
   setTargetAutomatically: 1
   delay: 0
 --- !u!114 &355535665
@@ -20374,6 +20592,12 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   onTrigger:
+    m_PersistentCalls:
+      m_Calls: []
+  onOccupied:
+    m_PersistentCalls:
+      m_Calls: []
+  onVacated:
     m_PersistentCalls:
       m_Calls: []
   dummy: 0
@@ -22248,9 +22472,11 @@ MonoBehaviour:
   log: 0
   tetherTriggerPrefab: {fileID: 1060064259}
   enableInstead: 1
+  tetherSource: {fileID: 0}
   startPoint: {fileID: 1768829491}
-  startOffset: {x: 0, y: 0, z: 0}
+  sourceOffset: {x: 0, y: 0, z: 0}
   spawnLocation: {fileID: 384120746}
+  setSourceAutomatically: 0
   setTargetAutomatically: 1
   delay: 0
 --- !u!114 &384120750
@@ -22383,6 +22609,12 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   onTrigger:
+    m_PersistentCalls:
+      m_Calls: []
+  onOccupied:
+    m_PersistentCalls:
+      m_Calls: []
+  onVacated:
     m_PersistentCalls:
       m_Calls: []
   dummy: 0
@@ -26400,6 +26632,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bot: {fileID: 0}
+  overrideParty: {fileID: 0}
   currentTarget: {fileID: 0}
   sector: 0
   updateSector: 0
@@ -27321,6 +27554,7 @@ MonoBehaviour:
   defaultFadeTime: 0.5
   outOnStart: 1
   log: 0
+  shaderAlphaPropertyName: _Alpha
   fadeTime: 0.5
 --- !u!114 &497577020
 MonoBehaviour:
@@ -28729,6 +28963,7 @@ MonoBehaviour:
   defaultFadeTime: 0.33
   outOnStart: 0
   log: 0
+  shaderAlphaPropertyName: _Alpha
   fadeTime: 0.33
 --- !u!1 &545461957
 GameObject:
@@ -29873,6 +30108,7 @@ MonoBehaviour:
   targetController: {fileID: 0}
   actionController: {fileID: 0}
   dashKnockbackPivot: {fileID: 0}
+  modelHandler: {fileID: 0}
   characterName: AI2
   currentMaxHealth: 0
   health: 10000
@@ -29957,6 +30193,11 @@ MonoBehaviour:
     - name: base
       value: 1
     logic: 0
+    thresholdPercentage: 0
+  hidden:
+    name: hidden
+    values: []
+    logic: 1
     thresholdPercentage: 0
   dead: 0
   still: 0
@@ -30065,6 +30306,10 @@ MonoBehaviour:
   showOnlyFromCharacter: {fileID: 2686890239227479568}
   playAudio: 1
   audioVolume: 0.15
+  useTransparency: 0
+  modelAlpha: 1
+  pivot: {fileID: 0}
+  model: {fileID: 0}
   inflictedEffect:
     name: 
     data: {fileID: 0}
@@ -30094,10 +30339,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   botTimeline: {fileID: 471851639}
   clockSpot: {fileID: 439753801}
+  model: {fileID: 0}
   turnSmoothTime: 0
   spawnOffset: {x: 0, y: 1.1, z: 0}
   log: 0
   freezeMovement: 0
+  allowGravity: 1
   sliding: 0
   slideDistance: 0
   slideDuration: 0.5
@@ -30149,6 +30396,7 @@ MonoBehaviour:
   autoActions:
   - {fileID: 2079141498}
   - {fileID: 1977711403}
+  _actionQueue: []
   loadAutomatically: 1
   autoAttackEnabled: 1
   instantCast: 0
@@ -31038,6 +31286,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bot: {fileID: 0}
+  overrideParty: {fileID: 0}
   currentTarget: {fileID: 0}
   sector: 0
   updateSector: 0
@@ -32266,6 +32515,7 @@ MonoBehaviour:
   defaultFadeTime: 0.33
   outOnStart: 0
   log: 0
+  shaderAlphaPropertyName: _Alpha
   fadeTime: 0.33
 --- !u!1 &658664118
 GameObject:
@@ -33339,6 +33589,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bot: {fileID: 0}
+  overrideParty: {fileID: 0}
   currentTarget: {fileID: 0}
   sector: 0
   updateSector: 0
@@ -35700,6 +35951,7 @@ MonoBehaviour:
   targetController: {fileID: 0}
   actionController: {fileID: 0}
   dashKnockbackPivot: {fileID: 0}
+  modelHandler: {fileID: 0}
   characterName: AI3
   currentMaxHealth: 0
   health: 10000
@@ -35784,6 +36036,11 @@ MonoBehaviour:
     - name: base
       value: 1
     logic: 0
+    thresholdPercentage: 0
+  hidden:
+    name: hidden
+    values: []
+    logic: 1
     thresholdPercentage: 0
   dead: 0
   still: 0
@@ -35892,6 +36149,10 @@ MonoBehaviour:
   showOnlyFromCharacter: {fileID: 2686890239227479568}
   playAudio: 1
   audioVolume: 0.15
+  useTransparency: 0
+  modelAlpha: 1
+  pivot: {fileID: 0}
+  model: {fileID: 0}
   inflictedEffect:
     name: 
     data: {fileID: 0}
@@ -35921,10 +36182,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   botTimeline: {fileID: 1895131861}
   clockSpot: {fileID: 1030422652}
+  model: {fileID: 0}
   turnSmoothTime: 0
   spawnOffset: {x: 0, y: 1.1, z: 0}
   log: 0
   freezeMovement: 0
+  allowGravity: 1
   sliding: 0
   slideDistance: 0
   slideDuration: 0.5
@@ -35976,6 +36239,7 @@ MonoBehaviour:
   autoActions:
   - {fileID: 1764759185}
   - {fileID: 1504987923}
+  _actionQueue: []
   loadAutomatically: 1
   autoAttackEnabled: 1
   instantCast: 0
@@ -36405,6 +36669,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bot: {fileID: 0}
+  overrideParty: {fileID: 0}
   currentTarget: {fileID: 0}
   sector: 0
   updateSector: 0
@@ -37748,9 +38013,9 @@ RectTransform:
   - {fileID: 1607946135}
   m_Father: {fileID: 1054749749}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 20, y: -95}
   m_SizeDelta: {x: 250, y: 30}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!1 &782972610
@@ -38579,25 +38844,35 @@ MonoBehaviour:
   onlyTriggerOnce: 0
   global: 0
   log: 0
-  targets:
+  targets: []
+  targetsList:
   - {fileID: 289281612}
   - {fileID: 1022843429}
   - {fileID: 1439400338}
   - {fileID: 44656861}
   destination: {fileID: 0}
   destinations: []
+  destinationsList: []
   multipleDestinations: 0
   relative: 1
   local: 0
+  allowDynamicTargets: 0
+  randomizeDestinations: 0
+  assignStatusEffectsToRandomizedTargets: 0
+  effectsToAssign: []
   destinationPosition: {x: 0, y: 501, z: 0}
   rotate: 0
   destinationRotation: {x: 0, y: 0, z: 0}
-  faceTarget: 0
   copyTargetRotation: 0
+  faceTarget: 0
+  multipleRotationTargets: 0
   rotationTarget: {fileID: 0}
+  rotationTargetsList: []
   animationDuration: -1
   triggerAnimation: 
   playDirectly: 0
+  saveEachAsRandomEventResult: 0
+  baseRandomEventResultId: -1
 --- !u!114 &807065453
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -39357,6 +39632,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bot: {fileID: 0}
+  overrideParty: {fileID: 0}
   currentTarget: {fileID: 0}
   sector: 0
   updateSector: 0
@@ -39631,6 +39907,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1213505413}
     m_Modifications:
+    - target: {fileID: 411150461846322933, guid: 355bc87518964e04cafb4ee31987bfcf, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 411150461846322933, guid: 355bc87518964e04cafb4ee31987bfcf, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 411150461846322933, guid: 355bc87518964e04cafb4ee31987bfcf, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 779291301649576771, guid: 355bc87518964e04cafb4ee31987bfcf, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -39735,6 +40023,10 @@ PrefabInstance:
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: RandomFightTimelineResultSelector, Assembly-CSharp
       objectReference: {fileID: 0}
+    - target: {fileID: 4577020902956621597, guid: 355bc87518964e04cafb4ee31987bfcf, type: 3}
+      propertyPath: m_Size
+      value: 0.99930084
+      objectReference: {fileID: 0}
     - target: {fileID: 4859226572212147187, guid: 355bc87518964e04cafb4ee31987bfcf, type: 3}
       propertyPath: m_text
       value: Regulator name
@@ -39753,7 +40045,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7912640079483900569, guid: 355bc87518964e04cafb4ee31987bfcf, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0008637395
+      value: -0.0000002999634
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -40596,6 +40888,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   onTrigger:
+    m_PersistentCalls:
+      m_Calls: []
+  onOccupied:
+    m_PersistentCalls:
+      m_Calls: []
+  onVacated:
     m_PersistentCalls:
       m_Calls: []
   dummy: 0
@@ -41687,6 +41985,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bot: {fileID: 0}
+  overrideParty: {fileID: 0}
   currentTarget: {fileID: 0}
   sector: 0
   updateSector: 0
@@ -43778,6 +44077,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bot: {fileID: 0}
+  overrideParty: {fileID: 0}
   currentTarget: {fileID: 0}
   sector: 0
   updateSector: 0
@@ -44273,6 +44573,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bot: {fileID: 0}
+  overrideParty: {fileID: 0}
   currentTarget: {fileID: 0}
   sector: 0
   updateSector: 0
@@ -44908,6 +45209,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bot: {fileID: 0}
+  overrideParty: {fileID: 0}
   currentTarget: {fileID: 0}
   sector: 0
   updateSector: 0
@@ -45402,6 +45704,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bot: {fileID: 0}
+  overrideParty: {fileID: 0}
   currentTarget: {fileID: 0}
   sector: 0
   updateSector: 0
@@ -48591,6 +48894,142 @@ CanvasGroup:
   m_Interactable: 0
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
+--- !u!1 &1000316935
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1000316936}
+  - component: {fileID: 1000316938}
+  - component: {fileID: 1000316937}
+  m_Layer: 5
+  m_Name: Text (TMP)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1000316936
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000316935}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1401796468}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1000316937
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000316935}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text: Chat
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontSharedMaterials: []
+  m_fontMaterial: {fileID: 0}
+  m_fontMaterials: []
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: -1183493901
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 36
+  m_fontSizeBase: 36
+  m_fontWeight: 400
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 0
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
+  m_textAlignment: 65535
+  m_characterSpacing: 0
+  m_wordSpacing: 0
+  m_lineSpacing: 0
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 0
+  m_charWidthMaxAdj: 0
+  m_TextWrappingMode: 1
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 1
+  m_ActiveFontFeatures: 6e72656b
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_EmojiFallbackSupport: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 1
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: 0
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  m_hasFontAssetChanged: 0
+  m_baseMaterial: {fileID: 0}
+  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!222 &1000316938
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000316935}
+  m_CullTransparentMesh: 1
 --- !u!4 &1001030970 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1731425463626071797, guid: d9a92c9e1dfc2ab458bcc41117ae7b42, type: 3}
@@ -48920,6 +49359,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bot: {fileID: 0}
+  overrideParty: {fileID: 0}
   currentTarget: {fileID: 0}
   sector: 0
   updateSector: 0
@@ -49512,6 +49952,7 @@ MonoBehaviour:
   actions:
   - {fileID: 1436033933}
   autoActions: []
+  _actionQueue: []
   loadAutomatically: 0
   autoAttackEnabled: 0
   instantCast: 0
@@ -49565,6 +50006,7 @@ MonoBehaviour:
   targetController: {fileID: 0}
   actionController: {fileID: 0}
   dashKnockbackPivot: {fileID: 0}
+  modelHandler: {fileID: 0}
   characterName: Steam Regulator A#2
   currentMaxHealth: 0
   health: 3000
@@ -49649,6 +50091,11 @@ MonoBehaviour:
     - name: base
       value: 1
     logic: 0
+    thresholdPercentage: 0
+  hidden:
+    name: hidden
+    values: []
+    logic: 1
     thresholdPercentage: 0
   dead: 0
   still: 1
@@ -49791,6 +50238,10 @@ MonoBehaviour:
   showOnlyFromCharacter: {fileID: 2686890239227479568}
   playAudio: 1
   audioVolume: 0.35
+  useTransparency: 0
+  modelAlpha: 1
+  pivot: {fileID: 0}
+  model: {fileID: 0}
   inflictedEffect:
     name: 
     data: {fileID: 0}
@@ -49954,6 +50405,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bot: {fileID: 0}
+  overrideParty: {fileID: 0}
   currentTarget: {fileID: 0}
   sector: 0
   updateSector: 0
@@ -52078,9 +52530,10 @@ MonoBehaviour:
     data: {fileID: 11400000, guid: 3e9b1c600afcaa54c821bae1a0b3f866, type: 2}
     tag: 0
     stacks: 0
-  applyToTarget: 0
+  applyToTarget: 1
   cleans: 0
   allowSubStatuses: 0
+  doSilently: 0
 --- !u!114 &1060064263
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -52093,17 +52546,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f86ad0c3d03bc054b9ada0b0aa0b10eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  log: 0
   partyList: {fileID: 2884399813960674742}
   tetherType: 0
+  tetherSource: {fileID: 1022843432}
   startPoint: {fileID: 1768829491}
-  startOffset: {x: 0, y: 0, z: 0}
+  sourceOffset: {x: 0, y: 0, z: 0}
+  tetherTarget: {fileID: 0}
   endPoint: {fileID: 0}
-  endOffset: {x: 0, y: 0, z: 0}
+  targetOffset: {x: 0, y: 0, z: 0}
   maxDistance: 8
   breakDelay: 0.5
   visualBreakDelay: 0.75
   initializeOnStart: 0
   worldSpace: 1
+  grabbable: 0
+  makeSourceTargetTarget: 0
+  tickRate: 10
+  grabRadius: 0.6
+  swapLockSeconds: 0.2
+  carrierRegrabExtraRadius: 0.15
   onForm:
     m_PersistentCalls:
       m_Calls:
@@ -52132,6 +52594,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onSwap:
+    m_PersistentCalls:
+      m_Calls: []
   onBreak:
     m_PersistentCalls:
       m_Calls:
@@ -52190,6 +52655,10 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onTick:
+    m_PersistentCalls:
+      m_Calls: []
+  drawDebug: 1
   attachToCharacter: {fileID: 0}
 --- !u!1001 &1060486928
 PrefabInstance:
@@ -53145,8 +53614,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rotation: {x: 0, y: -75, z: 0}
   setRotation: 0
+  oneTime: 0
   faceTowardsName: 
   faceTowards: {fileID: 0}
+  faceTowardsNearestCharacter: 0
+  party: {fileID: 0}
 --- !u!1 &1086017815
 GameObject:
   m_ObjectHideFlags: 0
@@ -54398,6 +54870,8 @@ MonoBehaviour:
   enableInstead: 0
   spawnLocation: {fileID: 1158669055}
   copyRotation: 0
+  setRotation: 0
+  rotation: {x: 0, y: 0, z: 0}
   delay: 0
   autoAssignOwner: 0
   autoAssignLocation: 0
@@ -54405,6 +54879,7 @@ MonoBehaviour:
   usePlayerHealth: 0
   useTargetControllerCurrentTargetAsLocation: 0
   faceTarget: 0
+  faceSource: 0
   rotateSource: 0
   axis:
     x: 0
@@ -54439,6 +54914,8 @@ MonoBehaviour:
   enableInstead: 0
   spawnLocation: {fileID: 2024580002}
   copyRotation: 0
+  setRotation: 0
+  rotation: {x: 0, y: 0, z: 0}
   delay: 0
   autoAssignOwner: 0
   autoAssignLocation: 0
@@ -54446,6 +54923,7 @@ MonoBehaviour:
   usePlayerHealth: 0
   useTargetControllerCurrentTargetAsLocation: 0
   faceTarget: 0
+  faceSource: 0
   rotateSource: 0
   axis:
     x: 0
@@ -54480,6 +54958,8 @@ MonoBehaviour:
   enableInstead: 0
   spawnLocation: {fileID: 2143269069}
   copyRotation: 0
+  setRotation: 0
+  rotation: {x: 0, y: 0, z: 0}
   delay: 0
   autoAssignOwner: 0
   autoAssignLocation: 0
@@ -54487,6 +54967,7 @@ MonoBehaviour:
   usePlayerHealth: 0
   useTargetControllerCurrentTargetAsLocation: 0
   faceTarget: 0
+  faceSource: 0
   rotateSource: 0
   axis:
     x: 0
@@ -54521,6 +55002,8 @@ MonoBehaviour:
   enableInstead: 0
   spawnLocation: {fileID: 1196840041}
   copyRotation: 0
+  setRotation: 0
+  rotation: {x: 0, y: 0, z: 0}
   delay: 0
   autoAssignOwner: 0
   autoAssignLocation: 0
@@ -54528,6 +55011,7 @@ MonoBehaviour:
   usePlayerHealth: 0
   useTargetControllerCurrentTargetAsLocation: 0
   faceTarget: 0
+  faceSource: 0
   rotateSource: 0
   axis:
     x: 0
@@ -54562,6 +55046,8 @@ MonoBehaviour:
   enableInstead: 0
   spawnLocation: {fileID: 2112820971}
   copyRotation: 0
+  setRotation: 0
+  rotation: {x: 0, y: 0, z: 0}
   delay: 0
   autoAssignOwner: 0
   autoAssignLocation: 0
@@ -54569,6 +55055,7 @@ MonoBehaviour:
   usePlayerHealth: 0
   useTargetControllerCurrentTargetAsLocation: 0
   faceTarget: 0
+  faceSource: 0
   rotateSource: 0
   axis:
     x: 0
@@ -54603,6 +55090,8 @@ MonoBehaviour:
   enableInstead: 0
   spawnLocation: {fileID: 759346488}
   copyRotation: 0
+  setRotation: 0
+  rotation: {x: 0, y: 0, z: 0}
   delay: 0
   autoAssignOwner: 0
   autoAssignLocation: 0
@@ -54610,6 +55099,7 @@ MonoBehaviour:
   usePlayerHealth: 0
   useTargetControllerCurrentTargetAsLocation: 0
   faceTarget: 0
+  faceSource: 0
   rotateSource: 0
   axis:
     x: 0
@@ -54644,6 +55134,8 @@ MonoBehaviour:
   enableInstead: 0
   spawnLocation: {fileID: 1086017816}
   copyRotation: 0
+  setRotation: 0
+  rotation: {x: 0, y: 0, z: 0}
   delay: 0
   autoAssignOwner: 0
   autoAssignLocation: 0
@@ -54651,6 +55143,7 @@ MonoBehaviour:
   usePlayerHealth: 0
   useTargetControllerCurrentTargetAsLocation: 0
   faceTarget: 0
+  faceSource: 0
   rotateSource: 0
   axis:
     x: 0
@@ -54685,6 +55178,8 @@ MonoBehaviour:
   enableInstead: 0
   spawnLocation: {fileID: 230914986}
   copyRotation: 0
+  setRotation: 0
+  rotation: {x: 0, y: 0, z: 0}
   delay: 0
   autoAssignOwner: 0
   autoAssignLocation: 0
@@ -54692,6 +55187,7 @@ MonoBehaviour:
   usePlayerHealth: 0
   useTargetControllerCurrentTargetAsLocation: 0
   faceTarget: 0
+  faceSource: 0
   rotateSource: 0
   axis:
     x: 0
@@ -57057,6 +57553,7 @@ MonoBehaviour:
   targetController: {fileID: 0}
   actionController: {fileID: 0}
   dashKnockbackPivot: {fileID: 0}
+  modelHandler: {fileID: 0}
   characterName: Player_GroundTargeting_Dummy
   currentMaxHealth: 0
   health: 0
@@ -57152,6 +57649,11 @@ MonoBehaviour:
       value: 0
     logic: 1
     thresholdPercentage: 0
+  hidden:
+    name: hidden
+    values: []
+    logic: 1
+    thresholdPercentage: 0
   dead: 0
   still: 0
   disabled: 0
@@ -57245,6 +57747,10 @@ MonoBehaviour:
   showOnlyFromCharacter: {fileID: 0}
   playAudio: 0
   audioVolume: 1
+  useTransparency: 0
+  modelAlpha: 1
+  pivot: {fileID: 0}
+  model: {fileID: 0}
   inflictedEffect:
     name: 
     data: {fileID: 0}
@@ -57352,6 +57858,7 @@ MonoBehaviour:
   targetController: {fileID: 0}
   actionController: {fileID: 0}
   dashKnockbackPivot: {fileID: 0}
+  modelHandler: {fileID: 0}
   characterName: AI4
   currentMaxHealth: 0
   health: 10000
@@ -57436,6 +57943,11 @@ MonoBehaviour:
     - name: base
       value: 1
     logic: 0
+    thresholdPercentage: 0
+  hidden:
+    name: hidden
+    values: []
+    logic: 1
     thresholdPercentage: 0
   dead: 0
   still: 0
@@ -57544,6 +58056,10 @@ MonoBehaviour:
   showOnlyFromCharacter: {fileID: 2686890239227479568}
   playAudio: 1
   audioVolume: 0.15
+  useTransparency: 0
+  modelAlpha: 1
+  pivot: {fileID: 0}
+  model: {fileID: 0}
   inflictedEffect:
     name: 
     data: {fileID: 0}
@@ -57573,10 +58089,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   botTimeline: {fileID: 1805050369}
   clockSpot: {fileID: 253975076}
+  model: {fileID: 0}
   turnSmoothTime: 0
   spawnOffset: {x: 0, y: 1.1, z: 0}
   log: 0
   freezeMovement: 0
+  allowGravity: 1
   sliding: 0
   slideDistance: 0
   slideDuration: 0.5
@@ -57628,6 +58146,7 @@ MonoBehaviour:
   autoActions:
   - {fileID: 512967433}
   - {fileID: 724299940}
+  _actionQueue: []
   loadAutomatically: 1
   autoAttackEnabled: 1
   instantCast: 0
@@ -57911,6 +58430,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bot: {fileID: 0}
+  overrideParty: {fileID: 0}
   currentTarget: {fileID: 0}
   sector: 0
   updateSector: 0
@@ -58087,6 +58607,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bot: {fileID: 0}
+  overrideParty: {fileID: 0}
   currentTarget: {fileID: 0}
   sector: 0
   updateSector: 0
@@ -58588,6 +59109,171 @@ Transform:
   - {fileID: 1017013700}
   m_Father: {fileID: 1666049761}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1179778262
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1947292136}
+    m_Modifications:
+    - target: {fileID: 387205901237688726, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 387205901237688726, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3170906292419340599, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3170906292419340599, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3170906292419340599, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3170906292419340599, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4337079400078183818, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4638981946664995819, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4638981946664995819, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5025236613677952743, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5025236613677952743, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6274411102775132726, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_Name
+      value: Chat
+      objectReference: {fileID: 0}
+    - target: {fileID: 8061979561737948063, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8061979561737948063, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9008802953032731470, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9008802953032731470, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9008802953032731470, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9008802953032731470, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9008802953032731470, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9008802953032731470, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9008802953032731470, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 250
+      objectReference: {fileID: 0}
+    - target: {fileID: 9008802953032731470, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 9008802953032731470, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9008802953032731470, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9008802953032731470, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9008802953032731470, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9008802953032731470, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9008802953032731470, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9008802953032731470, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9008802953032731470, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 9008802953032731470, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 9008802953032731470, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9008802953032731470, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9008802953032731470, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+--- !u!114 &1179778263 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8082116622936300687, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+  m_PrefabInstance: {fileID: 1179778262}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1d036909e7cf1244ae3fb61f746aafd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!224 &1179778264 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 9008802953032731470, guid: 794f651aa0a6f4c40821c575783f6207, type: 3}
+  m_PrefabInstance: {fileID: 1179778262}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1191438265 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3431374926789751941, guid: 0b0dd4d54b351514d8d48d0dadaf74af, type: 3}
@@ -59707,9 +60393,9 @@ RectTransform:
   - {fileID: 8403269743315259725}
   m_Father: {fileID: 1054749749}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 20, y: -125}
   m_SizeDelta: {x: 250, y: 30}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &1213505414
@@ -60322,6 +61008,7 @@ MonoBehaviour:
   targetController: {fileID: 0}
   actionController: {fileID: 0}
   dashKnockbackPivot: {fileID: 0}
+  modelHandler: {fileID: 0}
   characterName: Brute Justice
   currentMaxHealth: 0
   health: 644046
@@ -60406,6 +61093,11 @@ MonoBehaviour:
     - name: base
       value: 0
     logic: 0
+    thresholdPercentage: 0
+  hidden:
+    name: hidden
+    values: []
+    logic: 1
     thresholdPercentage: 0
   dead: 0
   still: 1
@@ -60500,6 +61192,10 @@ MonoBehaviour:
   showOnlyFromCharacter: {fileID: 2686890239227479568}
   playAudio: 1
   audioVolume: 0.35
+  useTransparency: 0
+  modelAlpha: 1
+  pivot: {fileID: 0}
+  model: {fileID: 0}
   inflictedEffect:
     name: 
     data: {fileID: 0}
@@ -60559,6 +61255,7 @@ MonoBehaviour:
   - {fileID: 1846881064}
   autoActions:
   - {fileID: 1564070440}
+  _actionQueue: []
   loadAutomatically: 0
   autoAttackEnabled: 1
   instantCast: 0
@@ -62853,6 +63550,7 @@ MonoBehaviour:
   autoActions:
   - {fileID: 1191438266}
   - {fileID: 1702366906}
+  _actionQueue: []
   loadAutomatically: 1
   autoAttackEnabled: 1
   instantCast: 0
@@ -62906,6 +63604,7 @@ MonoBehaviour:
   targetController: {fileID: 0}
   actionController: {fileID: 0}
   dashKnockbackPivot: {fileID: 0}
+  modelHandler: {fileID: 0}
   characterName: AI8
   currentMaxHealth: 0
   health: 10000
@@ -62990,6 +63689,11 @@ MonoBehaviour:
     - name: base
       value: 1
     logic: 0
+    thresholdPercentage: 0
+  hidden:
+    name: hidden
+    values: []
+    logic: 1
     thresholdPercentage: 0
   dead: 0
   still: 0
@@ -63098,6 +63802,10 @@ MonoBehaviour:
   showOnlyFromCharacter: {fileID: 2686890239227479568}
   playAudio: 1
   audioVolume: 0.15
+  useTransparency: 0
+  modelAlpha: 1
+  pivot: {fileID: 0}
+  model: {fileID: 0}
   inflictedEffect:
     name: 
     data: {fileID: 0}
@@ -63127,10 +63835,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   botTimeline: {fileID: 824171318}
   clockSpot: {fileID: 2014858652}
+  model: {fileID: 0}
   turnSmoothTime: 0
   spawnOffset: {x: 0, y: 1.1, z: 0}
   log: 0
   freezeMovement: 0
+  allowGravity: 1
   sliding: 0
   slideDistance: 0
   slideDuration: 0.5
@@ -63641,6 +64351,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bot: {fileID: 0}
+  overrideParty: {fileID: 0}
   currentTarget: {fileID: 0}
   sector: 0
   updateSector: 0
@@ -63854,6 +64565,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bot: {fileID: 0}
+  overrideParty: {fileID: 0}
   currentTarget: {fileID: 0}
   sector: 0
   updateSector: 0
@@ -64676,8 +65388,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rotation: {x: 0, y: -75, z: 0}
   setRotation: 0
+  oneTime: 0
   faceTowardsName: 
   faceTowards: {fileID: 0}
+  faceTowardsNearestCharacter: 0
+  party: {fileID: 0}
 --- !u!1 &1326742382
 GameObject:
   m_ObjectHideFlags: 0
@@ -64790,9 +65505,10 @@ MonoBehaviour:
     data: {fileID: 11400000, guid: 84fe80b67883a8b43b3b4d04c4ef7b23, type: 2}
     tag: 0
     stacks: 0
-  applyToTarget: 0
+  applyToTarget: 1
   cleans: 0
   allowSubStatuses: 0
+  doSilently: 0
 --- !u!114 &1327405177
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -64805,17 +65521,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f86ad0c3d03bc054b9ada0b0aa0b10eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  log: 0
   partyList: {fileID: 2884399813960674742}
   tetherType: 0
+  tetherSource: {fileID: 1439400341}
   startPoint: {fileID: 7998325012184565115}
-  startOffset: {x: 0, y: 0, z: 0}
+  sourceOffset: {x: 0, y: 0, z: 0}
+  tetherTarget: {fileID: 0}
   endPoint: {fileID: 0}
-  endOffset: {x: 0, y: 0, z: 0}
+  targetOffset: {x: 0, y: 0, z: 0}
   maxDistance: 8
   breakDelay: 0.5
   visualBreakDelay: 0.75
   initializeOnStart: 0
   worldSpace: 1
+  grabbable: 0
+  makeSourceTargetTarget: 0
+  tickRate: 10
+  grabRadius: 0.6
+  swapLockSeconds: 0.2
+  carrierRegrabExtraRadius: 0.15
   onForm:
     m_PersistentCalls:
       m_Calls:
@@ -64844,6 +65569,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onSwap:
+    m_PersistentCalls:
+      m_Calls: []
   onBreak:
     m_PersistentCalls:
       m_Calls:
@@ -64902,6 +65630,10 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onTick:
+    m_PersistentCalls:
+      m_Calls: []
+  drawDebug: 1
   attachToCharacter: {fileID: 0}
 --- !u!1 &1327910999
 GameObject:
@@ -65087,6 +65819,8 @@ MonoBehaviour:
   enableInstead: 1
   spawnLocation: {fileID: 656197184}
   copyRotation: 0
+  setRotation: 0
+  rotation: {x: 0, y: 0, z: 0}
   delay: 2.5
   autoAssignOwner: 0
   autoAssignLocation: 0
@@ -65094,6 +65828,7 @@ MonoBehaviour:
   usePlayerHealth: 0
   useTargetControllerCurrentTargetAsLocation: 0
   faceTarget: 0
+  faceSource: 0
   rotateSource: 0
   axis:
     x: 0
@@ -65128,6 +65863,8 @@ MonoBehaviour:
   enableInstead: 1
   spawnLocation: {fileID: 1082564440}
   copyRotation: 0
+  setRotation: 0
+  rotation: {x: 0, y: 0, z: 0}
   delay: 2.5
   autoAssignOwner: 0
   autoAssignLocation: 0
@@ -65135,6 +65872,7 @@ MonoBehaviour:
   usePlayerHealth: 0
   useTargetControllerCurrentTargetAsLocation: 0
   faceTarget: 0
+  faceSource: 0
   rotateSource: 0
   axis:
     x: 0
@@ -66448,6 +67186,7 @@ MonoBehaviour:
   defaultFadeTime: 0.33
   outOnStart: 0
   log: 0
+  shaderAlphaPropertyName: _Alpha
   fadeTime: 0.33
 --- !u!1 &1380724120
 GameObject:
@@ -67210,6 +67949,189 @@ Transform:
   - {fileID: 988506878}
   m_Father: {fileID: 1009804551}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1401796467
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1401796468}
+  - component: {fileID: 1401796472}
+  - component: {fileID: 1401796471}
+  - component: {fileID: 1401796470}
+  - component: {fileID: 1401796469}
+  m_Layer: 5
+  m_Name: Image
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1401796468
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1401796467}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1000316936}
+  m_Father: {fileID: 1909064283}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1401796469
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1401796467}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 801af055657c9654c94b43ada9206ccd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  priority: 1
+  hidden: 0
+  omitSorting: 0
+  characterState: {fileID: 0}
+  destroyIfMissing: 0
+  initializeOnStart: 0
+  isPartyListElement: 0
+  untargetableOverlay: {fileID: 0}
+  targetButton: {fileID: 0}
+  blocksAllInput: 0
+  blocksPosInput: 0
+  blocksRotInput: 1
+  blocksScrInput: 0
+  blocksTargetRaycasts: 1
+  doMovement: 0
+  movement: {x: 0, y: 0}
+  fadeOutTime: -1
+  fadeOutDelay: 0
+  lifeTime: -1
+  images: []
+  texts: []
+  outlines: []
+  defaultColors: []
+  alternativeColors: []
+  changeCursor: 1
+  hoverCursorName: grab
+  dragCursorName: drag
+  restrictsAudio: 1
+  playHoverAudio: 0
+  playClickAudio: 0
+  onInitialize:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerEnterEnabled: 1
+  onPointerEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerExitEnabled: 1
+  onPointerExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerClickEnabled: 1
+  onPointerClick:
+    m_PersistentCalls:
+      m_Calls: []
+  otherPointerEventsEnabled: 1
+  dummy: 0
+--- !u!114 &1401796470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1401796467}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1002c8e96996d9b4cbc5bac6662cf81d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetSave: {fileID: 0}
+  canvas: {fileID: 1947292135}
+  widgetTransform: {fileID: 1909064283}
+  targetTransform: {fileID: 1179778264}
+  onOwnPositionAltered:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1909064284}
+        m_TargetAssemblyTypeName: SavePosition, Assembly-CSharp
+        m_MethodName: SaveValue
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onTargetPositionAltered:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1179778263}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.SaveLoad.SavePosition, Assembly-CSharp
+        m_MethodName: SaveValue
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &1401796471
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1401796467}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.5019608}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1401796472
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1401796467}
+  m_CullTransparentMesh: 1
 --- !u!1 &1408316445
 GameObject:
   m_ObjectHideFlags: 0
@@ -69373,6 +70295,7 @@ MonoBehaviour:
   actions:
   - {fileID: 1387733920}
   autoActions: []
+  _actionQueue: []
   loadAutomatically: 0
   autoAttackEnabled: 0
   instantCast: 0
@@ -69426,6 +70349,7 @@ MonoBehaviour:
   targetController: {fileID: 0}
   actionController: {fileID: 0}
   dashKnockbackPivot: {fileID: 0}
+  modelHandler: {fileID: 0}
   characterName: Steam Regulator B#1
   currentMaxHealth: 0
   health: 3000
@@ -69510,6 +70434,11 @@ MonoBehaviour:
     - name: base
       value: 1
     logic: 0
+    thresholdPercentage: 0
+  hidden:
+    name: hidden
+    values: []
+    logic: 1
     thresholdPercentage: 0
   dead: 0
   still: 1
@@ -69652,6 +70581,10 @@ MonoBehaviour:
   showOnlyFromCharacter: {fileID: 2686890239227479568}
   playAudio: 1
   audioVolume: 0.35
+  useTransparency: 0
+  modelAlpha: 1
+  pivot: {fileID: 0}
+  model: {fileID: 0}
   inflictedEffect:
     name: 
     data: {fileID: 0}
@@ -74153,6 +75086,7 @@ MonoBehaviour:
   autoActions:
   - {fileID: 852789519}
   - {fileID: 218923279}
+  _actionQueue: []
   loadAutomatically: 1
   autoAttackEnabled: 1
   instantCast: 0
@@ -74206,6 +75140,7 @@ MonoBehaviour:
   targetController: {fileID: 0}
   actionController: {fileID: 0}
   dashKnockbackPivot: {fileID: 0}
+  modelHandler: {fileID: 0}
   characterName: HiddenHealer
   currentMaxHealth: 0
   health: 10000
@@ -74296,6 +75231,11 @@ MonoBehaviour:
     - name: base
       value: 0
     logic: 0
+    thresholdPercentage: 0
+  hidden:
+    name: hidden
+    values: []
+    logic: 1
     thresholdPercentage: 0
   dead: 0
   still: 0
@@ -74404,6 +75344,10 @@ MonoBehaviour:
   showOnlyFromCharacter: {fileID: 2686890239227479568}
   playAudio: 1
   audioVolume: 0.15
+  useTransparency: 0
+  modelAlpha: 1
+  pivot: {fileID: 0}
+  model: {fileID: 0}
   inflictedEffect:
     name: 
     data: {fileID: 0}
@@ -74433,10 +75377,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   botTimeline: {fileID: 1822983725}
   clockSpot: {fileID: 2033386630}
+  model: {fileID: 0}
   turnSmoothTime: 0
   spawnOffset: {x: 0, y: 1.1, z: 0}
   log: 0
   freezeMovement: 0
+  allowGravity: 1
   sliding: 0
   slideDistance: 0
   slideDuration: 0.5
@@ -74686,6 +75632,7 @@ MonoBehaviour:
   applyToTarget: 1
   cleans: 1
   allowSubStatuses: 0
+  doSilently: 0
 --- !u!1 &1570345543
 GameObject:
   m_ObjectHideFlags: 0
@@ -80844,6 +81791,14 @@ MonoBehaviour:
     group: {fileID: 2072178523}
     window: {fileID: 989201729}
     save: {fileID: 2072178525}
+  - name: Minimap
+    group: {fileID: 1598394605}
+    window: {fileID: 1743142535}
+    save: {fileID: 1598394604}
+  - name: Chat
+    group: {fileID: 1909064285}
+    window: {fileID: 1401796470}
+    save: {fileID: 1909064284}
   onEditorOpened:
     m_PersistentCalls:
       m_Calls:
@@ -83397,7 +84352,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 255999098843580719, guid: 59546d19f4fc0294093dd8e6fb0b994a, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0008574439
+      value: -0.000048850423
       objectReference: {fileID: 0}
     - target: {fileID: 3157922546307045288, guid: 59546d19f4fc0294093dd8e6fb0b994a, type: 3}
       propertyPath: m_Pivot.x
@@ -83509,6 +84464,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5892676071631357099, guid: 59546d19f4fc0294093dd8e6fb0b994a, type: 3}
       propertyPath: m_Size
+      value: 0.9993006
+      objectReference: {fileID: 0}
+    - target: {fileID: 5892676071631357099, guid: 59546d19f4fc0294093dd8e6fb0b994a, type: 3}
+      propertyPath: m_Value
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7247062176292382965, guid: 59546d19f4fc0294093dd8e6fb0b994a, type: 3}
@@ -83866,6 +84825,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bot: {fileID: 0}
+  overrideParty: {fileID: 0}
   currentTarget: {fileID: 0}
   sector: 0
   updateSector: 0
@@ -84336,6 +85296,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bot: {fileID: 0}
+  overrideParty: {fileID: 0}
   currentTarget: {fileID: 0}
   sector: 0
   updateSector: 0
@@ -84647,6 +85608,7 @@ MonoBehaviour:
   defaultFadeTime: 0.5
   outOnStart: 1
   log: 0
+  shaderAlphaPropertyName: _Alpha
   fadeTime: 0.5
 --- !u!1 &1827146893
 GameObject:
@@ -85407,6 +86369,7 @@ MonoBehaviour:
   defaultFadeTime: 0.5
   outOnStart: 1
   log: 0
+  shaderAlphaPropertyName: _Alpha
   fadeTime: 0.5
 --- !u!1001 &1843451115
 PrefabInstance:
@@ -85656,6 +86619,10 @@ PrefabInstance:
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: DebuffPairSelector, Assembly-CSharp
       objectReference: {fileID: 0}
+    - target: {fileID: 4577020902956621597, guid: 355bc87518964e04cafb4ee31987bfcf, type: 3}
+      propertyPath: m_Size
+      value: 0.9993006
+      objectReference: {fileID: 0}
     - target: {fileID: 4859226572212147187, guid: 355bc87518964e04cafb4ee31987bfcf, type: 3}
       propertyPath: m_text
       value: Debuff name
@@ -85674,7 +86641,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7912640079483900569, guid: 355bc87518964e04cafb4ee31987bfcf, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0008656683
+      value: -0.00000018420151
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -86032,6 +86999,8 @@ MonoBehaviour:
   enableInstead: 1
   spawnLocation: {fileID: 1082564440}
   copyRotation: 0
+  setRotation: 0
+  rotation: {x: 0, y: 0, z: 0}
   delay: 2.5
   autoAssignOwner: 0
   autoAssignLocation: 0
@@ -86039,6 +87008,7 @@ MonoBehaviour:
   usePlayerHealth: 0
   useTargetControllerCurrentTargetAsLocation: 0
   faceTarget: 0
+  faceSource: 0
   rotateSource: 0
   axis:
     x: 0
@@ -86073,6 +87043,8 @@ MonoBehaviour:
   enableInstead: 1
   spawnLocation: {fileID: 656197184}
   copyRotation: 0
+  setRotation: 0
+  rotation: {x: 0, y: 0, z: 0}
   delay: 2.5
   autoAssignOwner: 0
   autoAssignLocation: 0
@@ -86080,6 +87052,7 @@ MonoBehaviour:
   usePlayerHealth: 0
   useTargetControllerCurrentTargetAsLocation: 0
   faceTarget: 0
+  faceSource: 0
   rotateSource: 0
   axis:
     x: 0
@@ -87302,8 +88275,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rotation: {x: 0, y: -75, z: 0}
   setRotation: 0
+  oneTime: 0
   faceTowardsName: 
   faceTowards: {fileID: 0}
+  faceTowardsNearestCharacter: 0
+  party: {fileID: 0}
 --- !u!1 &1875361725
 GameObject:
   m_ObjectHideFlags: 0
@@ -87755,6 +88731,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bot: {fileID: 0}
+  overrideParty: {fileID: 0}
   currentTarget: {fileID: 0}
   sector: 0
   updateSector: 0
@@ -88368,9 +89345,9 @@ RectTransform:
   - {fileID: 973656887}
   m_Father: {fileID: 1054749749}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 20, y: -35}
   m_SizeDelta: {x: 250, y: 30}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!4 &1906601078 stripped
@@ -88454,6 +89431,91 @@ Transform:
   - {fileID: 1428822153}
   m_Father: {fileID: 817072021}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1909064282
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1909064283}
+  - component: {fileID: 1909064286}
+  - component: {fileID: 1909064285}
+  - component: {fileID: 1909064284}
+  m_Layer: 5
+  m_Name: ChatWidget
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1909064283
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1909064282}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1401796468}
+  m_Father: {fileID: 1947292136}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 50, y: 50}
+  m_SizeDelta: {x: 250, y: 200}
+  m_Pivot: {x: 0, y: 0}
+--- !u!114 &1909064284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1909064282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1d036909e7cf1244ae3fb61f746aafd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 1909064283}
+  group: UI
+  key: ChatWidgetPos
+  id: 
+  randomDelay: 0.1
+  onStart:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &1909064285
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1909064282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33cf3c3fb11b49c4b8853a49bc86b7ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  copyFrom: {fileID: 0}
+  startOff: 1
+--- !u!225 &1909064286
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1909064282}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1001 &1909264586
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -88847,6 +89909,7 @@ MonoBehaviour:
   defaultFadeTime: 0.5
   outOnStart: 1
   log: 0
+  shaderAlphaPropertyName: _Alpha
   fadeTime: 0.5
 --- !u!1001 &1915792224
 PrefabInstance:
@@ -89667,9 +90730,9 @@ RectTransform:
   - {fileID: 8403269743114017873}
   m_Father: {fileID: 1054749749}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 20, y: -65}
   m_SizeDelta: {x: 250, y: 30}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &1941070995
@@ -90301,6 +91364,7 @@ RectTransform:
   - {fileID: 1424020627}
   - {fileID: 817614650}
   - {fileID: 790630013}
+  - {fileID: 1179778264}
   - {fileID: 506375461}
   - {fileID: 7793015363685076579}
   - {fileID: 5995095463146681092}
@@ -90326,6 +91390,7 @@ RectTransform:
   - {fileID: 690959774}
   - {fileID: 937684555}
   - {fileID: 2072178522}
+  - {fileID: 1909064283}
   - {fileID: 1598394603}
   - {fileID: 1720620149}
   - {fileID: 1024779270}
@@ -91845,6 +92910,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bot: {fileID: 0}
+  overrideParty: {fileID: 0}
   currentTarget: {fileID: 0}
   sector: 0
   updateSector: 0
@@ -95262,6 +96328,7 @@ MonoBehaviour:
   targetController: {fileID: 0}
   actionController: {fileID: 0}
   dashKnockbackPivot: {fileID: 0}
+  modelHandler: {fileID: 0}
   characterName: AI7
   currentMaxHealth: 0
   health: 10000
@@ -95346,6 +96413,11 @@ MonoBehaviour:
     - name: base
       value: 1
     logic: 0
+    thresholdPercentage: 0
+  hidden:
+    name: hidden
+    values: []
+    logic: 1
     thresholdPercentage: 0
   dead: 0
   still: 0
@@ -95454,6 +96526,10 @@ MonoBehaviour:
   showOnlyFromCharacter: {fileID: 2686890239227479568}
   playAudio: 1
   audioVolume: 0.15
+  useTransparency: 0
+  modelAlpha: 1
+  pivot: {fileID: 0}
+  model: {fileID: 0}
   inflictedEffect:
     name: 
     data: {fileID: 0}
@@ -95483,10 +96559,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   botTimeline: {fileID: 861174486}
   clockSpot: {fileID: 1542984853}
+  model: {fileID: 0}
   turnSmoothTime: 0
   spawnOffset: {x: 0, y: 1.1, z: 0}
   log: 0
   freezeMovement: 0
+  allowGravity: 1
   sliding: 0
   slideDistance: 0
   slideDuration: 0.5
@@ -95538,6 +96616,7 @@ MonoBehaviour:
   autoActions:
   - {fileID: 281696302}
   - {fileID: 1489260147}
+  _actionQueue: []
   loadAutomatically: 1
   autoAttackEnabled: 1
   instantCast: 0
@@ -96235,10 +97314,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ef4610bd5dc95f40b5875f4613d60bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  log: 0
   disableFogForWebGL: 1
   disableFogForWindows: 0
   disableFogForLinux: 0
   currentArenaIndex: 0
+  fadeBetweenArenaModels: 0
+  environmentalLights: []
   arenaModels:
   - ArenaModelStandard
   arenas:
@@ -96247,12 +97329,15 @@ MonoBehaviour:
   - name: ArenaModelStandard
     bundle: arena_a8s
     model: {fileID: 1047931311}
+    collision: {fileID: 0}
     position: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
+    ambientLightColor: {r: 0, g: 0, b: 0, a: 0}
   onLoad:
     m_PersistentCalls:
       m_Calls: []
+  editorArenaIndex: 0
 --- !u!1001 &2079141496
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -97249,10 +98334,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   botTimeline: {fileID: 1167964654}
   clockSpot: {fileID: 700791779}
+  model: {fileID: 0}
   turnSmoothTime: 0
   spawnOffset: {x: 0, y: 1.1, z: 0}
   log: 0
   freezeMovement: 0
+  allowGravity: 1
   sliding: 0
   slideDistance: 0
   slideDuration: 0.5
@@ -97274,6 +98361,7 @@ MonoBehaviour:
   targetController: {fileID: 0}
   actionController: {fileID: 0}
   dashKnockbackPivot: {fileID: 0}
+  modelHandler: {fileID: 0}
   characterName: AI1
   currentMaxHealth: 0
   health: 10000
@@ -97358,6 +98446,11 @@ MonoBehaviour:
     - name: base
       value: 1
     logic: 0
+    thresholdPercentage: 0
+  hidden:
+    name: hidden
+    values: []
+    logic: 1
     thresholdPercentage: 0
   dead: 0
   still: 0
@@ -97466,6 +98559,10 @@ MonoBehaviour:
   showOnlyFromCharacter: {fileID: 2686890239227479568}
   playAudio: 1
   audioVolume: 0.15
+  useTransparency: 0
+  modelAlpha: 1
+  pivot: {fileID: 0}
+  model: {fileID: 0}
   inflictedEffect:
     name: 
     data: {fileID: 0}
@@ -97508,6 +98605,7 @@ MonoBehaviour:
   autoActions:
   - {fileID: 871357109}
   - {fileID: 1883313457}
+  _actionQueue: []
   loadAutomatically: 1
   autoAttackEnabled: 1
   instantCast: 0
@@ -98210,6 +99308,7 @@ MonoBehaviour:
   defaultFadeTime: 0.33
   outOnStart: 0
   log: 0
+  shaderAlphaPropertyName: _Alpha
   fadeTime: 0.33
 --- !u!4 &2113088473
 Transform:
@@ -101105,17 +102204,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f86ad0c3d03bc054b9ada0b0aa0b10eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  log: 0
   partyList: {fileID: 2884399813960674742}
   tetherType: 0
+  tetherSource: {fileID: 44656865}
   startPoint: {fileID: 7998325012184565115}
-  startOffset: {x: 0, y: 0, z: 0}
+  sourceOffset: {x: 0, y: 0, z: 0}
+  tetherTarget: {fileID: 0}
   endPoint: {fileID: 0}
-  endOffset: {x: 0, y: 0, z: 0}
+  targetOffset: {x: 0, y: 0, z: 0}
   maxDistance: 8
   breakDelay: 0.5
   visualBreakDelay: 0.75
   initializeOnStart: 0
   worldSpace: 1
+  grabbable: 0
+  makeSourceTargetTarget: 0
+  tickRate: 10
+  grabRadius: 0.6
+  swapLockSeconds: 0.2
+  carrierRegrabExtraRadius: 0.15
   onForm:
     m_PersistentCalls:
       m_Calls:
@@ -101144,6 +102252,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onSwap:
+    m_PersistentCalls:
+      m_Calls: []
   onBreak:
     m_PersistentCalls:
       m_Calls:
@@ -101202,6 +102313,10 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onTick:
+    m_PersistentCalls:
+      m_Calls: []
+  drawDebug: 1
   attachToCharacter: {fileID: 0}
 --- !u!1001 &1446478619142416034
 PrefabInstance:
@@ -101766,9 +102881,10 @@ MonoBehaviour:
     data: {fileID: 11400000, guid: 3e9b1c600afcaa54c821bae1a0b3f866, type: 2}
     tag: 0
     stacks: 0
-  applyToTarget: 0
+  applyToTarget: 1
   cleans: 0
   allowSubStatuses: 0
+  doSilently: 0
 --- !u!224 &1903043951795844769
 RectTransform:
   m_ObjectHideFlags: 0
@@ -101874,9 +102990,11 @@ MonoBehaviour:
   log: 0
   tetherTriggerPrefab: {fileID: 9061905067458059857}
   enableInstead: 1
+  tetherSource: {fileID: 0}
   startPoint: {fileID: 7200605078771187576}
-  startOffset: {x: 0, y: 0, z: 0}
+  sourceOffset: {x: 0, y: 0, z: 0}
   spawnLocation: {fileID: 6966401508674683220}
+  setSourceAutomatically: 0
   setTargetAutomatically: 1
   delay: 0
 --- !u!114 &1975999695317750145
@@ -101898,9 +103016,11 @@ MonoBehaviour:
   log: 0
   tetherTriggerPrefab: {fileID: 2994416367570125105}
   enableInstead: 1
+  tetherSource: {fileID: 0}
   startPoint: {fileID: 7998325012184565115}
-  startOffset: {x: 0, y: 0, z: 0}
+  sourceOffset: {x: 0, y: 0, z: 0}
   spawnLocation: {fileID: 6966401508860150325}
+  setSourceAutomatically: 0
   setTargetAutomatically: 1
   delay: 0
 --- !u!1001 &2018750850313752770
@@ -103436,6 +104556,7 @@ MonoBehaviour:
   targetController: {fileID: 0}
   actionController: {fileID: 0}
   dashKnockbackPivot: {fileID: 0}
+  modelHandler: {fileID: 0}
   characterName: Player
   currentMaxHealth: 0
   health: 10000
@@ -103520,6 +104641,11 @@ MonoBehaviour:
     - name: base
       value: 1
     logic: 0
+    thresholdPercentage: 0
+  hidden:
+    name: hidden
+    values: []
+    logic: 1
     thresholdPercentage: 0
   dead: 0
   still: 0
@@ -103628,6 +104754,10 @@ MonoBehaviour:
   showOnlyFromCharacter: {fileID: 0}
   playAudio: 1
   audioVolume: 1
+  useTransparency: 0
+  modelAlpha: 1
+  pivot: {fileID: 0}
+  model: {fileID: 0}
   inflictedEffect:
     name: 
     data: {fileID: 0}
@@ -103673,6 +104803,7 @@ MonoBehaviour:
   autoActions:
   - {fileID: 2123311941}
   - {fileID: 1753583038}
+  _actionQueue: []
   loadAutomatically: 0
   autoAttackEnabled: 0
   instantCast: 0
@@ -103988,9 +105119,10 @@ MonoBehaviour:
     data: {fileID: 11400000, guid: 84fe80b67883a8b43b3b4d04c4ef7b23, type: 2}
     tag: 0
     stacks: 0
-  applyToTarget: 0
+  applyToTarget: 1
   cleans: 0
   allowSubStatuses: 0
+  doSilently: 0
 --- !u!1 &2790504284852977445
 GameObject:
   m_ObjectHideFlags: 0
@@ -105989,8 +107121,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rotation: {x: 0, y: -75, z: 0}
   setRotation: 0
+  oneTime: 0
   faceTowardsName: 
   faceTowards: {fileID: 0}
+  faceTowardsNearestCharacter: 0
+  party: {fileID: 0}
 --- !u!4 &4290983692093006130
 Transform:
   m_ObjectHideFlags: 0
@@ -106645,17 +107780,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f86ad0c3d03bc054b9ada0b0aa0b10eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  log: 0
   partyList: {fileID: 2884399813960674742}
   tetherType: 0
+  tetherSource: {fileID: 289281615}
   startPoint: {fileID: 7200605078771187576}
-  startOffset: {x: 0, y: 0, z: 0}
+  sourceOffset: {x: 0, y: 0, z: 0}
+  tetherTarget: {fileID: 0}
   endPoint: {fileID: 0}
-  endOffset: {x: 0, y: 0, z: 0}
+  targetOffset: {x: 0, y: 0, z: 0}
   maxDistance: 8
   breakDelay: 0.5
   visualBreakDelay: 0.75
   initializeOnStart: 0
   worldSpace: 1
+  grabbable: 0
+  makeSourceTargetTarget: 0
+  tickRate: 10
+  grabRadius: 0.6
+  swapLockSeconds: 0.2
+  carrierRegrabExtraRadius: 0.15
   onForm:
     m_PersistentCalls:
       m_Calls:
@@ -106684,6 +107828,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onSwap:
+    m_PersistentCalls:
+      m_Calls: []
   onBreak:
     m_PersistentCalls:
       m_Calls:
@@ -106742,6 +107889,10 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onTick:
+    m_PersistentCalls:
+      m_Calls: []
+  drawDebug: 1
   attachToCharacter: {fileID: 0}
 --- !u!1 &5165558302486540507
 GameObject:
@@ -107146,6 +108297,12 @@ MonoBehaviour:
   onTrigger:
     m_PersistentCalls:
       m_Calls: []
+  onOccupied:
+    m_PersistentCalls:
+      m_Calls: []
+  onVacated:
+    m_PersistentCalls:
+      m_Calls: []
   dummy: 0
 --- !u!114 &5529022389751173669
 MonoBehaviour:
@@ -107277,6 +108434,12 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   onTrigger:
+    m_PersistentCalls:
+      m_Calls: []
+  onOccupied:
+    m_PersistentCalls:
+      m_Calls: []
+  onVacated:
     m_PersistentCalls:
       m_Calls: []
   dummy: 0
