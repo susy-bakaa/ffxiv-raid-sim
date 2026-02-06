@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PublishSingleFile>true</PublishSingleFile>
+    <ApplicationIcon>../Res/logo.ico</ApplicationIcon>
+    <Version>1.1.0.0</Version>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <Company>susy_baka</Company>
+    <Product>xivAnim.Cli</Product>
+    <AssemblyName>xivAnim</AssemblyName>
+    <Copyright>Copyright © 2025</Copyright>
+    <StartupObject>dev.susy_baka.xivAnim.Cli.Program</StartupObject>
+    <RootNamespace>dev.susy_baka.xivAnim.Cli</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="../Res/logo.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\xivAnim.Core\xivAnim.Core.csproj" />
+  </ItemGroup>
+
+</Project>

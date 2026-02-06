@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PublishSingleFile>true</PublishSingleFile>
+    <ApplicationIcon>../Res/logo.ico</ApplicationIcon>
+    <Version>1.0.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <Company>susy_baka</Company>
+    <Product>xivAnim.Gui</Product>
+    <AssemblyName>xivAnim.Gui</AssemblyName>
+    <Copyright>Copyright © 2025</Copyright>
+    <RootNamespace>dev.susy_baka.xivAnim.Gui.Linux</RootNamespace>
+    <StartupObject>dev.susy_baka.xivAnim.Gui.Linux.Program</StartupObject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Eto.Forms" Version="2.10.2" />
+    <PackageReference Include="Eto.Platform.Gtk" Version="2.10.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\xivAnim.Core\xivAnim.Core.csproj" />
+    <ProjectReference Include="..\xivAnim.Gui\xivAnim.Eto.csproj" />
+  </ItemGroup>
+
+</Project>

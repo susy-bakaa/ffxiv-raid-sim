@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PublishSingleFile>true</PublishSingleFile>
+    <ApplicationIcon>../Res/logo.ico</ApplicationIcon>
+    <Version>1.0.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <Company>susy_baka</Company>
+    <Product>xivAnim.Eto</Product>
+    <AssemblyName>xivAnim.Eto</AssemblyName>
+    <Copyright>Copyright © 2025</Copyright>
+    <RootNamespace>dev.susy_baka.xivAnim.EtoGui</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Eto.Forms" Version="2.10.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\xivAnim.Core\xivAnim.Core.csproj" />
+  </ItemGroup>
+
+</Project>

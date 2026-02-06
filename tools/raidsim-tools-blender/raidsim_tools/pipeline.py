@@ -5,23 +5,6 @@ import json
 import re
 
 
-def get_args():
-    argv = sys.argv
-    if "--" not in argv:
-        raise RuntimeError("No '--' in Blender args; cannot get script arguments.")
-    args = argv[argv.index("--") + 1:]
-    if len(args) < 4:
-        raise RuntimeError(
-            "Expected at least 4 args: base_models_json anim_folder blend_out fbx_out [loop_json]"
-        )
-
-    base_models_json, anim_folder, blend_out, fbx_out = args[0:4]
-    loop_json = args[4] if len(args) > 4 else None
-    # Temporarily print args for debugging
-    #print(f"[auto] Script args:\nbase_fbx={base_fbx}\nanim_folder={anim_folder}\nblend_out={blend_out}\nfbx_out={fbx_out}\nloop_json={loop_json}")
-    return base_models_json, anim_folder, blend_out, fbx_out, loop_json
-
-
 def clean_scene():
     bpy.ops.object.select_all(action='SELECT')
     bpy.ops.object.delete(use_global=False)
@@ -356,30 +339,3 @@ def ensure_raidsim_addon():
             f"Failed to enable Raidsim Tools addon '{module_name}'. "
             f"Check that it is installed correctly."
         )
-
-
-def main():
-    base_models_json, anim_folder, blend_out, fbx_out, loop_json = get_args()
-    model_paths = [os.path.normpath(p) for p in parse_model_paths(base_models_json)]
-    anim_folder = os.path.normpath(anim_folder)
-    blend_out = os.path.normpath(blend_out)
-    fbx_out = os.path.normpath(fbx_out)
-
-    loop_map = parse_loop_map_from_json(loop_json)
-
-    clean_scene()
-    master_armature = import_base_models(model_paths)
-    select_armature(master_armature)
-
-    run_raidsim_import_operator(anim_folder)
-    apply_loop_markers(loop_map)
-
-    save_blend(blend_out)
-    export_final_fbx(fbx_out)
-    root, _ = os.path.splitext(fbx_out)
-    events_xml = root + ".events.xml"
-    export_events_xml(events_xml)
-
-
-if __name__ == "__main__":
-    main()
