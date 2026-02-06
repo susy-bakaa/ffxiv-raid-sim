@@ -1,0 +1,173 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2952943525002301481
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7968994889274011622}
+  - component: {fileID: 3533497461026339267}
+  - component: {fileID: 550535182858606112}
+  - component: {fileID: -6195645392019625672}
+  m_Layer: 3
+  m_Name: NearbyPortent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7968994889274011622
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2952943525002301481}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3533497461026339267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2952943525002301481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f919dc8dbf7e3a4cbd4d212ede7948b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data: {fileID: 11400000, guid: fcae3f7ed9d1f5c4e8b8d9f4c6b4b7ef, type: 2}
+  duration: 0
+  stacks: 0
+  uniqueTag: 0
+  sortOrder: 0
+  damage:
+    name: 
+    value: 0
+    negative: 0
+    ignoreDamageReductions: 0
+    type: 0
+    elementalAspect: 0
+    physicalAspect: 0
+    applicationType: 0
+    source: {fileID: 0}
+  onApplication:
+    m_PersistentCalls:
+      m_Calls: []
+  onTick:
+    m_PersistentCalls:
+      m_Calls: []
+  onUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+  onExpire:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 550535182858606112}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Mechanics.FightMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onCleanse:
+    m_PersistentCalls:
+      m_Calls: []
+  onReduce:
+    m_PersistentCalls:
+      m_Calls: []
+  onAddStack:
+    m_PersistentCalls:
+      m_Calls: []
+  onMaxStacks:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &550535182858606112
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2952943525002301481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7288a5b2fbba9468a8de0ac14344ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: 
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  party: {fileID: 0}
+  autoFindParty: 1
+  skipSelf: 1
+  m_type: 1
+  amountOfTargets: 1
+  effect:
+    name: 
+    data: {fileID: 0}
+    tag: 0
+    stacks: 0
+  availableRoles: []
+  pickRandomSubList: 0
+  fallBackToRandom: 0
+  makeSourceFaceTarget: 0
+  resultingMechanic: {fileID: -6195645392019625672}
+--- !u!114 &-6195645392019625672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2952943525002301481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f11e796dcb6bd64eada356ab536e195, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: 
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  owner: {fileID: 0}
+  targetController: {fileID: 0}
+  damageTriggerPrefab: {fileID: 1253936773159550248, guid: f65d11102d5cb48429dc480d2670ee33, type: 3}
+  enableInstead: 0
+  spawnLocation: {fileID: 7968994889274011622}
+  copyRotation: 0
+  delay: 0
+  autoAssignOwner: 1
+  autoAssignLocation: 0
+  useActionDamage: 1
+  usePlayerHealth: 0
+  useTargetControllerCurrentTargetAsLocation: 0
+  faceTarget: 1
+  faceSource: 0
+  rotateSource: 0
+  axis:
+    x: 0
+    y: 1
+    z: 0
+  dealDamage: 1
+  damageMultiplier: 1
+  increaseEnmity: 0
+  onSpawn:
+    m_PersistentCalls:
+      m_Calls: []

@@ -376,6 +376,7 @@ MonoBehaviour:
   log: 0
   setupOnStart: 1
   populateAutomatically: 1
+  restrictToTopLevel: 0
   setupDelay: 0.5
   elements: []
   onPointerEnter:
@@ -2079,6 +2080,7 @@ GameObject:
   - component: {fileID: 692497339914259333}
   - component: {fileID: 755390597255005095}
   - component: {fileID: 6743030130819790581}
+  - component: {fileID: 5489651982581623851}
   m_Layer: 5
   m_Name: Minimap
   m_TagString: Untagged
@@ -2139,6 +2141,7 @@ MonoBehaviour:
   settingsButton: {fileID: 3797564949323536931}
   coordinatesText: {fileID: 4849377161222885616}
   coordinateTarget: {fileID: 0}
+  northDirection: {x: 0, y: 0, z: 1}
   worldSize: {x: 240, y: 240}
   worldMin: {x: -120, y: -120}
   autoCalculateMin: 1
@@ -2189,6 +2192,7 @@ MonoBehaviour:
   log: 0
   setupOnStart: 1
   populateAutomatically: 0
+  restrictToTopLevel: 0
   setupDelay: 0.5
   elements:
   - {fileID: 2883701217102735125}
@@ -2220,6 +2224,27 @@ MonoBehaviour:
   audioVolume: 1
   limitEvents: 0
   eventCooldown: 0.3
+--- !u!114 &5489651982581623851
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8158486010816659161}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebb85b627b4b2eb41ab63f30de6aabb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  group: UI
+  key: MinimapWindowState
+  defaultValue: 1
+  runInAwake: 0
+  runOnReset: 0
+  useTimelineGroup: 0
+  onStart:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &8316969210711716067
 GameObject:
   m_ObjectHideFlags: 0

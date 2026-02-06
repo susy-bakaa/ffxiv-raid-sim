@@ -213,11 +213,13 @@ MonoBehaviour:
   data: {fileID: 0}
   damageName: Upheaval
   inverted: 0
+  isDonut: 0
+  innerRadius: 0
   log: 0
   owner: {fileID: 0}
   autoAssignOwner: 0
   ableToHitTag: Player
-  canHitCharacterName: AI
+  canHitCharacterName: AI,Tank,Healer,Melee,Ranged,MT,OT,ST,H1,H2,M1,M2,R1,R2,D1,D2,D3,D4
   damage:
     name: Upheaval
     value: -1000
@@ -364,6 +366,12 @@ MonoBehaviour:
   onTrigger:
     m_PersistentCalls:
       m_Calls: []
+  onOccupied:
+    m_PersistentCalls:
+      m_Calls: []
+  onVacated:
+    m_PersistentCalls:
+      m_Calls: []
   dummy: 0
 --- !u!114 &1339126011355700877
 MonoBehaviour:
@@ -385,6 +393,7 @@ MonoBehaviour:
   lockMovement: 0
   lockActions: 0
   fakeKnockback: 1
+  ignoreTargetHitbox: 0
   canBeResisted: 0
   duration: 1.5
   delay: 0
@@ -525,11 +534,13 @@ MonoBehaviour:
   data: {fileID: 0}
   damageName: Upheaval
   inverted: 0
+  isDonut: 0
+  innerRadius: 0
   log: 0
   owner: {fileID: 0}
   autoAssignOwner: 0
   ableToHitTag: Player
-  canHitCharacterName: AI
+  canHitCharacterName: AI,Tank,Healer,Melee,Ranged,MT,OT,ST,H1,H2,M1,M2,R1,R2,D1,D2,D3,D4
   damage:
     name: Upheaval
     value: -1000
@@ -676,6 +687,12 @@ MonoBehaviour:
   onTrigger:
     m_PersistentCalls:
       m_Calls: []
+  onOccupied:
+    m_PersistentCalls:
+      m_Calls: []
+  onVacated:
+    m_PersistentCalls:
+      m_Calls: []
   dummy: 0
 --- !u!114 &6178994101726328614
 MonoBehaviour:
@@ -697,6 +714,7 @@ MonoBehaviour:
   lockMovement: 0
   lockActions: 0
   fakeKnockback: 1
+  ignoreTargetHitbox: 0
   canBeResisted: 0
   duration: 1.5
   delay: 0
@@ -814,6 +832,8 @@ MonoBehaviour:
   data: {fileID: 0}
   damageName: Upheaval
   inverted: 0
+  isDonut: 0
+  innerRadius: 0
   log: 0
   owner: {fileID: 0}
   autoAssignOwner: 0
@@ -989,6 +1009,12 @@ MonoBehaviour:
   onTrigger:
     m_PersistentCalls:
       m_Calls: []
+  onOccupied:
+    m_PersistentCalls:
+      m_Calls: []
+  onVacated:
+    m_PersistentCalls:
+      m_Calls: []
   dummy: 0
 --- !u!114 &1835448060695009293
 MonoBehaviour:
@@ -1012,6 +1038,10 @@ MonoBehaviour:
   canBeResisted: 0
   originFromSource: 0
   isDash: 0
+  scaleWithDistance: 0
+  distanceRange: {x: 0.5, y: 3}
+  distanceMultipliers: {x: 0.5, y: 1}
+  disableGravity: 0
   source: {fileID: 0}
   origin: {fileID: 2830701385837975984}
   direction: {x: 22.5, y: 22.5, z: 22.5}
@@ -1037,6 +1067,7 @@ MonoBehaviour:
   defaultFadeTime: 0.33
   outOnStart: 0
   log: 0
+  shaderAlphaPropertyName: _Alpha
   fadeTime: 0.5
 --- !u!114 &3526749619116935604
 MonoBehaviour:
@@ -1052,7 +1083,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: 0
   disableInstead: 0
+  disabledOnStart: 0
   log: 0
+  onTriggerDestruction:
+    m_PersistentCalls:
+      m_Calls: []
   onDestroy:
     m_PersistentCalls:
       m_Calls: []

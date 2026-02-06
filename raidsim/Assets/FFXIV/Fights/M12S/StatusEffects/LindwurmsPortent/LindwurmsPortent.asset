@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99b696446f1f2e246b4a8ecc8cc05a7a, type: 3}
+  m_Name: LindwurmsPortent
+  m_EditorClassIdentifier: 
+  statusName: Lindwurm'sPortent
+  statusDesc: Age-old magicks will cause damage to the surrounding area when this
+    effect expires.
+  negative: 1
+  unique: 1
+  infinite: 0
+  toggle: 0
+  rollsCooldown: 1
+  hidden: 0
+  lostOnDeath: 0
+  unaffectedByTimeScale: 0
+  instantCasts: 0
+  reducesCastTimes: 0
+  length: 10
+  maxLength: 10
+  appliedStacks: 1
+  maxStacks: 1
+  statusEffect: {fileID: 2952943525002301481, guid: 2b98f0100e92662479f2ad6fe93ea646, type: 3}
+  hudElement: {fileID: 2782830212546906010, guid: 50d74386fc8c1404ca464ba2a02bf7df, type: 3}
+  icons:
+  - {fileID: 21300000, guid: 5018476774f86fcd6aa3c48f125cc896, type: 3}
+  incompatableStatusEffects: []
+  refreshStatusEffects: []
+  assignedRoles: 
+  applySoundFx: status_apply_negative
+  expireSoundFx: status_expire_negative

@@ -1,0 +1,164 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2952943525002301481
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7968994889274011622}
+  - component: {fileID: 3533497461026339267}
+  - component: {fileID: -1272843115452451423}
+  - component: {fileID: -316452455740321800}
+  m_Layer: 3
+  m_Name: LindwurmsPortent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7968994889274011622
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2952943525002301481}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3533497461026339267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2952943525002301481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f919dc8dbf7e3a4cbd4d212ede7948b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data: {fileID: 11400000, guid: 925444116ece9bb4988a776d30a8a5c0, type: 2}
+  duration: 0
+  stacks: 0
+  uniqueTag: 0
+  sortOrder: 0
+  damage:
+    name: 
+    value: 0
+    negative: 0
+    ignoreDamageReductions: 0
+    type: 0
+    elementalAspect: 0
+    physicalAspect: 0
+    applicationType: 0
+    source: {fileID: 0}
+  onApplication:
+    m_PersistentCalls:
+      m_Calls: []
+  onTick:
+    m_PersistentCalls:
+      m_Calls: []
+  onUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+  onExpire:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: -1272843115452451423}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Mechanics.FightMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: -316452455740321800}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Mechanics.FightMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onCleanse:
+    m_PersistentCalls:
+      m_Calls: []
+  onReduce:
+    m_PersistentCalls:
+      m_Calls: []
+  onAddStack:
+    m_PersistentCalls:
+      m_Calls: []
+  onMaxStacks:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &-1272843115452451423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2952943525002301481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 054d8d12c7769f5489b27a3a4077973e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: Lindwurm's Glare Deal Damage
+  onlyTriggerOnce: 1
+  global: 0
+  log: 0
+  damage:
+    name: Lindwurm's Glare
+    value: -90000
+    negative: 1
+    ignoreDamageReductions: 0
+    type: 1
+    elementalAspect: 9
+    physicalAspect: 0
+    applicationType: 0
+    source: {fileID: 0}
+  kill: 0
+--- !u!114 &-316452455740321800
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2952943525002301481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 243f9554c19faea429abb43acc690bf3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: Lindwurm's Glare Apply Vuln
+  onlyTriggerOnce: 1
+  global: 0
+  log: 0
+  effect:
+    name: MagicVulnerabilityUp
+    data: {fileID: 11400000, guid: 91596cb2ef6218f108bad8239e533e67, type: 2}
+    tag: 0
+    stacks: 0
+  applyToTarget: 1
+  cleans: 0
+  allowSubStatuses: 0
