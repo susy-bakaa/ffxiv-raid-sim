@@ -18,6 +18,7 @@ namespace dev.susybaka.raidsim.Characters
         ThirdPersonCamera cameraScript;
         UserInput userInput;
         Rigidbody rb;
+        [HideInInspector] public Rigidbody Rigidbody => rb;
 
         public Vector3 spawnOffset = new Vector3(0f, 1.25f, 0f);
         public float turnSmoothTime;
@@ -558,6 +559,9 @@ namespace dev.susybaka.raidsim.Characters
 
         public void Knockback(Vector3 tp, float duration, float height, bool gravity)
         {
+            if (FightTimeline.Instance != null && FightTimeline.Instance.disableKnockbacks)
+                return;
+
             if (!state.HasEffect("Surecast"))
             {
                 tm = 0f;

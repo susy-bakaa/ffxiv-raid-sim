@@ -23,6 +23,8 @@ namespace dev.susybaka.raidsim.Characters
 
         private SimpleShaderFade[] shaderFade;
         private bool hasShaderFade = false;
+        private SimpleParticleEffect[] particleEffects;
+        private bool hasParticleEffects = false;
         private Coroutine ieDisableEffect;
         private GameObject targetObject;
         private Coroutine ieOnReset;
@@ -39,11 +41,16 @@ namespace dev.susybaka.raidsim.Characters
         private void Awake()
         {
             shaderFade = transform.GetComponentsInChildren<SimpleShaderFade>();
+            particleEffects = transform.GetComponentsInChildren<SimpleParticleEffect>();
             targetObject = transform.GetChild(0).gameObject;
             if (shaderFade != null && shaderFade.Length > 0)
                 hasShaderFade = true;
             else
                 hasShaderFade = false;
+            if (particleEffects != null && particleEffects.Length > 0)
+                hasParticleEffects = true;
+            else
+                hasParticleEffects = false;
 
             wasVisible = visible;
             wasEnabledOnStart = enableOnStart;
@@ -139,6 +146,18 @@ namespace dev.susybaka.raidsim.Characters
             if (log)
                 Debug.Log($"[CharacterEffect ({gameObject.name})] EnableEffect was called!");
 
+            bool hasAnything = false;
+
+            if (hasParticleEffects)
+            {
+                for (int i = 0; i < particleEffects.Length; i++)
+                {
+                    if (toggleObject)
+                        particleEffects[i].gameObject.SetActive(true);
+                    particleEffects[i].Play();
+                    hasAnything = true;
+                }
+            }
             if (hasShaderFade)
             {
                 for (int i = 0; i < shaderFade.Length; i++)
@@ -146,9 +165,10 @@ namespace dev.susybaka.raidsim.Characters
                     if (toggleObject)
                         shaderFade[i].gameObject.SetActive(true);
                     shaderFade[i].FadeIn(fadeTime);
+                    hasAnything = true;
                 }
             }
-            else
+            if (!hasAnything)
             {
                 if (toggleObject)
                     targetObject.SetActive(true);
@@ -164,6 +184,8 @@ namespace dev.susybaka.raidsim.Characters
             if (log)
                 Debug.Log($"[CharacterEffect ({gameObject.name})] DisableEffect was called!");
 
+            bool hasAnything = false;
+
             if (hasShaderFade)
             {
                 for (int i = 0; i < shaderFade.Length; i++)
@@ -175,8 +197,22 @@ namespace dev.susybaka.raidsim.Characters
                     WaitForSeconds wait = new WaitForSeconds(fadeTime + 0.1f);
                     ieDisableEffect = StartCoroutine(IE_DisableEffect(wait));
                 }
+                hasAnything = true;
             }
-            else
+            if (hasParticleEffects)
+            {
+                for (int i = 0; i < particleEffects.Length; i++)
+                {
+                    particleEffects[i].Stop();
+                }
+                if (toggleObject && ieDisableEffect == null)
+                {
+                    WaitForSeconds wait = new WaitForSeconds(fadeTime + 0.1f);
+                    ieDisableEffect = StartCoroutine(IE_DisableEffect(wait));
+                }
+                hasAnything = true;
+            }
+            if (!hasAnything)
             {
                 if (toggleObject)
                     targetObject.SetActive(false);
@@ -187,14 +223,24 @@ namespace dev.susybaka.raidsim.Characters
         private IEnumerator IE_DisableEffect(WaitForSeconds wait)
         {
             yield return wait;
+            bool hasAnything = false;
+            if (hasParticleEffects)
+            {
+                for (int i = 0; i < particleEffects.Length; i++)
+                {
+                    particleEffects[i].gameObject.SetActive(false);
+                }
+                hasAnything = true;
+            }
             if (hasShaderFade)
             {
                 for (int i = 0; i < shaderFade.Length; i++)
                 {
                     shaderFade[i].gameObject.SetActive(false);
                 }
+                hasAnything = true;
             }
-            else
+            if (!hasAnything)
             {
                 targetObject.SetActive(false);
             }

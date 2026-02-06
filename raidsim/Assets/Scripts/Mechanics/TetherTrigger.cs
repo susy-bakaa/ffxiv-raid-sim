@@ -1,14 +1,19 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // This file is part of ffxiv-raid-sim. Linking with the Unity runtime
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
+using System;
 using System.Collections;
-using UnityEngine;
-using UnityEngine.Events;
+using System.Collections.Generic;
 using dev.susybaka.raidsim.Characters;
 using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.UI;
 using dev.susybaka.raidsim.Visuals;
 using dev.susybaka.Shared;
+using NaughtyAttributes;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.Serialization;
+using static dev.susybaka.raidsim.Core.GlobalData;
 using static dev.susybaka.raidsim.UI.PartyList;
 
 namespace dev.susybaka.raidsim.Mechanics
@@ -18,37 +23,54 @@ namespace dev.susybaka.raidsim.Mechanics
         LineRenderer[] lineRenderers;
         public enum TetherType { nearest, furthest, preDefined }
 
+        public bool log = false;
         public PartyList partyList;
         public TetherType tetherType = TetherType.nearest;
-        public Transform startPoint;
-        public Vector3 startOffset;
-        public Transform endPoint;
-        public Vector3 endOffset;
+        public CharacterState tetherSource;
+        [Obsolete("Use tetherSource instead. This field is kept for compatability reasons. It may be removed in a future version.")]
+        [SerializeField, HideInInspector] public Transform startPoint;
+        [FormerlySerializedAs("startOffset")] public Vector3 sourceOffset;
+        public CharacterState tetherTarget;
+        [Obsolete("Use tetherTarget instead. This field is kept for compatability reasons. It may be removed in a future version.")]
+        [SerializeField, HideInInspector] public Transform endPoint;
+        [FormerlySerializedAs("endOffset")] public Vector3 targetOffset;
         public float maxDistance;
         public float breakDelay = 0.5f;
         public float visualBreakDelay = 0.75f;
         public bool initializeOnStart;
         public bool worldSpace = true;
+        public bool grabbable = false;
+        public bool makeSourceTargetTarget = false; // If true, when forming a tether, source character will change their target controller target to the target character.
+        public float tickRate = 10f; // Mechanic tick (Hz). 10Hz = 0.1s.
+        [ShowIf(nameof(grabbable))] public float grabRadius = 0.6f; // How far from the tether line (in meters) counts as a grab (XZ plane).
+        [ShowIf(nameof(grabbable))] public float swapLockSeconds = 0.75f; // After a swap, ignore further swaps for this many seconds.
+        [ShowIf(nameof(grabbable))] public float carrierRegrabExtraRadius = 0.15f; // Don't allow the current carrier to re-grab immediately unless they clearly retake it (optional).
 
-        public UnityEvent<CharacterState> onForm;
-        public UnityEvent onBreak;
-        public UnityEvent onSolved;
+        public UnityEvent<ActionInfo> onForm;
+        public UnityEvent<ActionInfo> onSwap;
+        public UnityEvent<ActionInfo> onBreak;
+        public UnityEvent<ActionInfo> onSolved;
+        public UnityEvent<ActionInfo> onTick;
 
         private bool initialized;
-        private CharacterState startCharacter;
-        private CharacterState endCharacter;
+        //private CharacterState startCharacter;
+        //private CharacterState endCharacter;
         private Coroutine ieSetLineRenderersActive;
-        private SimpleShaderFade shaderFade;
+        private SimpleShaderFade[] shaderFades;
+        private SimpleTetherEffect[] tetherEffects;
+        private float tickAccum;
+        private float swapLockRemaining;
 
 #if UNITY_EDITOR
         [Header("Editor")]
+        public bool drawDebug = true;
         public CharacterState attachToCharacter;
         [NaughtyAttributes.Button("Initialize")]
         public void InitializeButton()
         {
             if (attachToCharacter != null)
             {
-                endPoint = attachToCharacter.transform.Find("Pivot");
+                tetherTarget = attachToCharacter;
                 Initialize(attachToCharacter);
             }
             else
@@ -56,23 +78,71 @@ namespace dev.susybaka.raidsim.Mechanics
                 Initialize();
             }
         }
+#pragma warning disable CS0618 // Disable obsolete warning for startPoint and endPoint for the editor tool
+        [NaughtyAttributes.Button("Migrate")]
+        public void MigrateButton()
+        {
+            if (tetherSource == null && startPoint != null)
+            {
+                CharacterState cs = startPoint.GetComponentInParents<CharacterState>();
+                if (cs != null)
+                {
+                    tetherSource = cs;
+                    startPoint = null;
+                    Debug.Log($"[TetherTrigger ({gameObject.name})] Migrated startPoint to tetherSource on {name}.");
+                }
+                else
+                {
+                    Debug.LogWarning($"[TetherTrigger ({gameObject.name})] Could not find CharacterState for startPoint on {name}. Migration failed.");
+                }
+            }
+            if (tetherTarget == null && endPoint != null)
+            {
+                CharacterState cs = endPoint.GetComponentInParents<CharacterState>();
+                if (cs != null)
+                {
+                    tetherTarget = cs;
+                    endPoint = null;
+                    Debug.Log($"[TetherTrigger ({gameObject.name})] Migrated endPoint to tetherTarget on {name}.");
+                }
+                else
+                {
+                    Debug.LogWarning($"[TetherTrigger ({gameObject.name})] Could not find CharacterState for endPoint on {name}. Migration failed.");
+                }
+            }
+        }
+#pragma warning restore CS0618
 #endif
 
         private void Awake()
         {
-            shaderFade = GetComponentInChildren<SimpleShaderFade>(true);
+            if (log)
+                Debug.Log($"[TetherTrigger ({gameObject.name})] Awake called.");
+
+            shaderFades = GetComponentsInChildren<SimpleShaderFade>(true);
+            tetherEffects = GetComponentsInChildren<SimpleTetherEffect>(true);
             lineRenderers = GetComponentsInChildren<LineRenderer>(true);
             SetLineRenderersActive(false);
+            if (tetherEffects != null && tetherEffects.Length > 0)
+            {
+                foreach (SimpleTetherEffect effect in tetherEffects)
+                {
+                    if (effect != null)
+                    {
+                        effect.Initialize(this);
+                        effect.SetVisible(false);
+                    }
+                }
+            }
             if (partyList == null)
             {
                 partyList = FightTimeline.Instance.partyList;
             }
-
             initialized = false;
 
             if (FightTimeline.Instance != null)
             {
-                if (endPoint != null)
+                if (tetherTarget != null)
                     FightTimeline.Instance.onReset.AddListener(ResetTether);
                 else
                     FightTimeline.Instance.onReset.AddListener(ResetTetherFull);
@@ -90,13 +160,13 @@ namespace dev.susybaka.raidsim.Mechanics
         private void OnDisable()
         {
             initialized = false;
-            startCharacter = null;
-            endCharacter = null;
+            //startCharacter = null;
+            //endCharacter = null;
         }
 
         private void Update()
         {
-            if (startPoint == null || endPoint == null)
+            if (tetherSource == null || tetherTarget == null)
                 return;
 
             if (lineRenderers != null && lineRenderers.Length > 0)
@@ -108,11 +178,11 @@ namespace dev.susybaka.raidsim.Mechanics
 
                     if (worldSpace)
                     {
-                        lineRenderer.SetPositions(new Vector3[2] { startPoint.position + startOffset, endPoint.position + endOffset });
+                        lineRenderer.SetPositions(new Vector3[2] { tetherSource.pivot.position + sourceOffset, tetherTarget.pivot.position + targetOffset });
                     }
                     else
                     {
-                        lineRenderer.SetPositions(new Vector3[2] { startPoint.localPosition + startOffset, endPoint.localPosition + endOffset });
+                        lineRenderer.SetPositions(new Vector3[2] { tetherSource.pivot.localPosition + sourceOffset, tetherTarget.pivot.localPosition + targetOffset });
                     }
                 }
 
@@ -122,19 +192,40 @@ namespace dev.susybaka.raidsim.Mechanics
             {
                 if (worldSpace)
                 {
-                    if (Vector3.Distance(startPoint.position, endPoint.position) > maxDistance)
+                    if (Vector3.Distance(tetherSource.transform.position, tetherTarget.transform.position) > maxDistance)
                     {
                         BreakTether();
                     }
                 }
                 else
                 {
-                    if (Vector3.Distance(startPoint.localPosition, endPoint.localPosition) > maxDistance)
+                    if (Vector3.Distance(tetherSource.transform.localPosition, tetherTarget.transform.localPosition) > maxDistance)
                     {
                         BreakTether();
                     }
                 }
             }
+
+            // Tick accumulator
+            float tickInterval = (tickRate <= 0f) ? 0.1f : 1f / tickRate;
+            tickAccum += Time.deltaTime;
+            if (tickAccum < tickInterval)
+                return;
+
+            tickAccum -= tickInterval; // keep remainder for stability
+
+            onTick?.Invoke(new ActionInfo(null, tetherSource, tetherTarget));
+
+            if (!grabbable || partyList == null)
+                return;
+
+            if (swapLockRemaining > 0f)
+                swapLockRemaining -= Time.deltaTime;
+
+            if (swapLockRemaining > 0f)
+                return;
+
+            TryGrabTether();
         }
 
         public void ResetTether()
@@ -142,8 +233,8 @@ namespace dev.susybaka.raidsim.Mechanics
             StopAllCoroutines();
             initialized = false;
             SetLineRenderersActive(false);
-            startCharacter = null;
-            endCharacter = null;
+            //startCharacter = null;
+            //endCharacter = null;
             ieSetLineRenderersActive = null;
         }
 
@@ -152,9 +243,9 @@ namespace dev.susybaka.raidsim.Mechanics
             StopAllCoroutines();
             initialized = false;
             SetLineRenderersActive(false);
-            startCharacter = null;
-            endCharacter = null;
-            endPoint = null;
+            //startCharacter = null;
+            //endCharacter = null;
+            tetherTarget = null;
             ieSetLineRenderersActive = null;
         }
 
@@ -162,6 +253,9 @@ namespace dev.susybaka.raidsim.Mechanics
         {
             if (!initialized)
             {
+                if (log)
+                    Debug.Log($"[TetherTrigger ({gameObject.name})] Initializing tether.");
+
                 FormTether();
                 initialized = true;
             }
@@ -171,6 +265,9 @@ namespace dev.susybaka.raidsim.Mechanics
         {
             if (!initialized)
             {
+                if (log)
+                    Debug.Log($"[TetherTrigger ({gameObject.name})] Initializing tether with target {target.characterName}.");
+
                 FormTether(target);
                 initialized = true;
             }
@@ -178,20 +275,28 @@ namespace dev.susybaka.raidsim.Mechanics
 
         public void FormTether()
         {
+            if (log)
+                Debug.Log($"[TetherTrigger ({gameObject.name})] FormTether called with TetherType {tetherType}.");
+
+            List<CharacterState> members =  new List<CharacterState>(partyList.GetActiveMembers());
+
             switch (tetherType)
             {
                 default:
                 {
+                    if (log)
+                        Debug.Log($"[TetherTrigger ({gameObject.name})] FormTether nearest from party of {members.Count}");
+
                     CharacterState closestMember = null;
                     float closestDistance = float.MaxValue;
 
-                    foreach (PartyMember member in partyList.members)
+                    foreach (CharacterState member in members)
                     {
-                        float distance = Vector3.Distance(transform.position, member.characterState.transform.position);
+                        float distance = Vector3.Distance(transform.position, member.transform.position);
                         if (distance < closestDistance)
                         {
                             closestDistance = distance;
-                            closestMember = member.characterState;
+                            closestMember = member;
                         }
                     }
 
@@ -201,21 +306,28 @@ namespace dev.susybaka.raidsim.Mechanics
                     //{
                     //    FormTether(closestMember);
                     //}
+
+                    if (log)
+                        Debug.Log($"[TetherTrigger ({gameObject.name})] FormTether nearest selected {closestMember.characterName} at distance {closestDistance}");
+
                     FormTether(closestMember);
                     break;
                 }
                 case TetherType.furthest:
                 {
+                    if (log)
+                        Debug.Log($"[TetherTrigger ({gameObject.name})] FormTether furthest from party of {members.Count}");
+
                     CharacterState furthestMember = null;
                     float furthestDistance = 0f;
 
-                    foreach (PartyMember member in partyList.members)
+                    foreach (CharacterState member in members)
                     {
-                        float distance = Vector3.Distance(transform.position, member.characterState.transform.position);
+                        float distance = Vector3.Distance(transform.position, member.transform.position);
                         if (distance > furthestDistance)
                         {
                             furthestDistance = distance;
-                            furthestMember = member.characterState;
+                            furthestMember = member;
                         }
                     }
 
@@ -225,14 +337,18 @@ namespace dev.susybaka.raidsim.Mechanics
                     //{
                     //    FormTether(furthestMember);
                     //}
+
+                    if (log)
+                        Debug.Log($"[TetherTrigger ({gameObject.name})] FormTether furthest selected {furthestMember.characterName} at distance {furthestDistance}");
+
                     FormTether(furthestMember);
                     break;
                 }
                 case TetherType.preDefined:
                 {
-                    if (startPoint != null && endPoint != null)
+                    if (tetherSource != null && tetherTarget != null)
                     {
-                        FormTether(startPoint, endPoint);
+                        FormTether(tetherSource, tetherTarget);
                     }
                     else
                     {
@@ -241,60 +357,176 @@ namespace dev.susybaka.raidsim.Mechanics
                     break;
                 }
             }
+
+            // Set source's target to the tether target if applicable
+            if (makeSourceTargetTarget && tetherSource != null && tetherTarget != null && tetherSource.targetController != null && tetherTarget.targetController != null)
+            {
+                if (tetherTarget.targetController.self != null)
+                {
+                    tetherSource.targetController.SetTarget(tetherTarget.targetController.self);
+                }
+            }
         }
 
         public void FormTether(CharacterState target)
         {
-            Transform result = target.transform.Find("Pivot"); // target.transform.GetChild(target.transform.childCount - 2).transform
-
-            if (result == null)
+            if (target == null)
             {
-                Debug.LogWarning($"[TetherTrigger] Could not find 'Pivot' in {target.gameObject.name}. Using the target's transform instead.");
-                result = target.transform;
+                Debug.LogWarning($"[TetherTrigger] Could not create a tether with null target. Operation aborted.");
+                return;
             }
 
-            FormTether(startPoint, result);
+            FormTether(tetherSource, target);
         }
 
-        public void FormTether(Transform start, Transform end)
+        public void FormTether(CharacterState source, CharacterState target)
         {
-            if (start.gameObject.activeInHierarchy == false || end.gameObject.activeInHierarchy == false)
+            if (source.gameObject.activeInHierarchy == false || target.gameObject.activeInHierarchy == false)
                 Destroy(gameObject);
 
             SetLineRenderersActive(true);
-            startPoint = start;
-            endPoint = end;
+            tetherSource = source;
+            tetherTarget = target;
 
-            if (end.TryGetComponentInParents(out CharacterState endState))
-            {
-                endCharacter = endState;
-                onForm.Invoke(endState);
-            }
-            else if (start.TryGetComponentInParents(out CharacterState startState))
-            {
-                startCharacter = startState;
-                onForm.Invoke(startState);
-            }
-            else
-            {
-                endCharacter = null;
-                startCharacter = null;
-                onForm.Invoke(null);
-            }
+            onForm.Invoke(new ActionInfo(null, tetherSource, tetherTarget));
         }
 
         public void BreakTether()
         {
+            ActionInfo actionInfo = new ActionInfo(null, tetherSource, tetherTarget);
+            
+            if (log)
+                Debug.Log($"[TetherTrigger ({gameObject.name})] Tether between {tetherSource.characterName} ({tetherSource.gameObject.name}) and {tetherTarget.characterName} ({tetherTarget.gameObject.name}) broken.\nActionInfo: action '{actionInfo.action}' source '{actionInfo.source}' target '{actionInfo.target}' targetIsPlayer '{actionInfo.targetIsPlayer}'");
+            
             if (ieSetLineRenderersActive == null)
                 ieSetLineRenderersActive = StartCoroutine(IE_SetLineRenderersActive(false, new WaitForSeconds(visualBreakDelay)));
-            Utilities.FunctionTimer.Create(this, () => onBreak.Invoke(), breakDelay, $"TetherTrigger_{this}_{GetHashCode()}_Break_Delay", false, true);
+            Utilities.FunctionTimer.Create(this, () => onBreak.Invoke(actionInfo), breakDelay, $"TetherTrigger_{this}_{GetHashCode()}_Break_Delay", false, true);
         }
 
         public void SolveTether()
         {
+            ActionInfo actionInfo = new ActionInfo(null, tetherSource, tetherTarget);
+
+            if (log)
+                Debug.Log($"[TetherTrigger ({gameObject.name})] Tether between {tetherSource.characterName} ({tetherSource.gameObject.name}) and {tetherTarget.characterName} ({tetherTarget.gameObject.name}) was solved.\nActionInfo: action '{actionInfo.action}' source '{actionInfo.source}' target '{actionInfo.target}' targetIsPlayer '{actionInfo.targetIsPlayer}'");
+
             if (ieSetLineRenderersActive == null)
                 ieSetLineRenderersActive = StartCoroutine(IE_SetLineRenderersActive(false, new WaitForSeconds(visualBreakDelay)));
-            Utilities.FunctionTimer.Create(this, () => onSolved.Invoke(), breakDelay, $"TetherTrigger_{this}_{GetHashCode()}_Solve_Delay", false, true);
+            Utilities.FunctionTimer.Create(this, () => onSolved.Invoke(actionInfo), breakDelay, $"TetherTrigger_{this}_{GetHashCode()}_Solve_Delay", false, true);
+        }
+
+        private void TryGrabTether()
+        {
+            List<CharacterState> members = partyList.GetActiveMembers();
+            if (members == null || members.Count == 0)
+                return;
+
+            Vector3 a3 = tetherSource.pivot.position;
+            Vector3 b3 = tetherTarget.pivot.position;
+
+            // Flatten to XZ plane
+            Vector2 A = new Vector2(a3.x, a3.z);
+            Vector2 B = new Vector2(b3.x, b3.z);
+
+            // If tether is degenerate, skip.
+            if ((B - A).sqrMagnitude < 0.0001f)
+                return;
+
+            CharacterState currentCarrier = tetherTarget;
+
+            if (currentCarrier == null)
+                return;
+
+            CharacterState bestCandidate = null;
+            float bestT = float.PositiveInfinity; // smallest t = closest to source along segment
+            float bestDistSq = float.PositiveInfinity;
+
+            for (int i = 0; i < members.Count; i++)
+            {
+                CharacterState c = members[i];
+                if (c == null)
+                    continue;
+
+                // Skip the current carrier if it’s the same CharacterState as endPoint.
+                // (If your endPoint isn't the carrier transform, adjust this.)
+                if (currentCarrier != null && ReferenceEquals(c, currentCarrier))
+                    continue;
+
+                Vector3 p3 = c.transform.position;
+                Vector2 P = new Vector2(p3.x, p3.z);
+
+                float t;
+                Vector2 closest = ClosestPointOnSegment(A, B, P, out t);
+                float distSq = (P - closest).sqrMagnitude;
+
+                // Optional: make it slightly harder for the current carrier to "regrab" if you *don't* skip them.
+                float radius = grabRadius;
+                // If you decide NOT to skip currentCarrier above, you can do:
+                // if (ReferenceEquals(c, currentCarrier)) radius += carrierRegrabExtraRadius;
+
+                if (distSq > radius * radius)
+                    continue;
+
+                // Winner selection:
+                // 1) smallest t (closest to source)
+                // 2) then smallest distance (more "inside" the line)
+                if (t < bestT - 0.0001f || (Mathf.Abs(t - bestT) <= 0.0001f && distSq < bestDistSq))
+                {
+                    bestCandidate = c;
+                    bestT = t;
+                    bestDistSq = distSq;
+                }
+            }
+
+            if (bestCandidate == null)
+                return;
+
+            // Swap tether end to the new carrier.
+            CharacterState oldCarrier = currentCarrier;
+            tetherTarget = bestCandidate;
+
+            swapLockRemaining = swapLockSeconds;
+
+            onSwap?.Invoke(new ActionInfo(null, oldCarrier, bestCandidate));
+        }
+
+        /// <summary>
+        /// Returns closest point on segment AB to point P, and outputs t in [0,1].
+        /// </summary>
+        private static Vector2 ClosestPointOnSegment(Vector2 A, Vector2 B, Vector2 P, out float t)
+        {
+            Vector2 AB = B - A;
+            float abLenSq = Vector2.Dot(AB, AB);
+            if (abLenSq <= 0.000001f)
+            {
+                t = 0f;
+                return A;
+            }
+
+            t = Vector2.Dot(P - A, AB) / abLenSq;
+            t = Mathf.Clamp01(t);
+            return A + AB * t;
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (!drawDebug || tetherSource == null || tetherTarget == null || tetherSource.pivot == null || tetherTarget.pivot == null)
+                return;
+
+            Vector3 a = tetherSource.pivot.position;
+            Vector3 b = tetherTarget.pivot.position;
+
+            Gizmos.DrawLine(a, b);
+
+            // Draw a "tube" approximation at a few points to show intercept radius
+            if (grabRadius > 0f)
+            {
+                Gizmos.DrawWireSphere(a, grabRadius);
+                Gizmos.DrawWireSphere(b, grabRadius);
+
+                Vector3 mid = (a + b) * 0.5f;
+                Gizmos.DrawWireSphere(mid, grabRadius);
+            }
         }
 
         private IEnumerator IE_SetLineRenderersActive(bool state, WaitForSeconds wait)
@@ -311,16 +543,38 @@ namespace dev.susybaka.raidsim.Mechanics
                 if (lineRenderer == null)
                     continue;
 
-                if (shaderFade == null)
+                if (shaderFades == null || shaderFades.Length < 1)
                 {
                     lineRenderer.gameObject.SetActive(state);
                 }
-                else
+            }
+
+            if (shaderFades != null && shaderFades.Length > 0)
+            {
+                foreach (SimpleShaderFade shaderFade in shaderFades)
                 {
-                    if (state)
-                        shaderFade.FadeIn();
-                    else
-                        shaderFade.FadeOut();
+                    if (shaderFade != null)
+                    {
+                        if (state)
+                        {
+                            shaderFade.FadeIn();
+                        }
+                        else
+                        {
+                            shaderFade.FadeOut();
+                        }
+                    }
+                }
+            }
+
+            if (tetherEffects != null && tetherEffects.Length > 0)
+            {
+                foreach (SimpleTetherEffect effect in tetherEffects)
+                {
+                    if (effect != null)
+                    {
+                        effect.SetVisible(state);
+                    }
                 }
             }
         }

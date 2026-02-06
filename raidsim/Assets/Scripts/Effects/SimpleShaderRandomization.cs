@@ -42,19 +42,24 @@ namespace dev.susybaka.raidsim.Visuals
             {
                 for (int i = 0; i < shaderFade.Materials.Count; i++)
                 {
+                    string key = string.Format("{0}#id{1}#{2}", shaderFade.Materials[i].name, i, property.name);
+
+                    if (log)
+                        Debug.Log($"Storing original value of shader property '{property.name}' on material {i} ({shaderFade.Materials[i].name}) with type {property.type} [KEY '{key}']");
+
                     switch (property.type)
                     {
                         case PropertyType.Float:
-                            originalShaderProperties.Add(property.name, new ShaderPropertyInfo(property.name, property.type, new Vector4(shaderFade.Materials[i].GetFloat(shaderPropertyHashes[property.name]), 0, 0, 0)));
+                            originalShaderProperties.Add(key, new ShaderPropertyInfo(property.name, property.type, new Vector4(shaderFade.Materials[i].GetFloat(shaderPropertyHashes[property.name]), 0, 0, 0)));
                             break;
                         case PropertyType.Int:
-                            originalShaderProperties.Add(property.name, new ShaderPropertyInfo(property.name, property.type, new Vector4(shaderFade.Materials[i].GetInt(shaderPropertyHashes[property.name]), 0, 0, 0)));
+                            originalShaderProperties.Add(key, new ShaderPropertyInfo(property.name, property.type, new Vector4(shaderFade.Materials[i].GetInt(shaderPropertyHashes[property.name]), 0, 0, 0)));
                             break;
                         case PropertyType.Color:
-                            originalShaderProperties.Add(property.name, new ShaderPropertyInfo(property.name, property.type, shaderFade.Materials[i].GetColor(shaderPropertyHashes[property.name])));
+                            originalShaderProperties.Add(key, new ShaderPropertyInfo(property.name, property.type, shaderFade.Materials[i].GetColor(shaderPropertyHashes[property.name])));
                             break;
                         default:
-                            originalShaderProperties.Add(property.name, new ShaderPropertyInfo(property.name, property.type, shaderFade.Materials[i].GetVector(shaderPropertyHashes[property.name])));
+                            originalShaderProperties.Add(key, new ShaderPropertyInfo(property.name, property.type, shaderFade.Materials[i].GetVector(shaderPropertyHashes[property.name])));
                             break;
                     }
                 }              
@@ -73,7 +78,7 @@ namespace dev.susybaka.raidsim.Visuals
                 for (int i = 0; i < shaderFade.Materials.Count; i++)
                 {
                     if (log)
-                        Debug.Log($"Randomizing shader property '{property.name}' on material {i} with type {property.type}");
+                        Debug.Log($"Randomizing shader property '{property.name}' on material {i} ({shaderFade.Materials[i].name}) with type {property.type}");
 
                     switch (property.type)
                     {
@@ -109,22 +114,24 @@ namespace dev.susybaka.raidsim.Visuals
             {
                 for (int i = 0; i < shaderFade.Materials.Count; i++)
                 {
+                    string key = string.Format("{0}#id{1}#{2}", shaderFade.Materials[i].name, i, property.name);
+
                     if (log)
-                        Debug.Log($"Resetting shader property '{property.name}' on material {i} with type {property.type} to its original value");
+                        Debug.Log($"Resetting shader property '{property.name}' on material {i} ({shaderFade.Materials[i].name}) with type {property.type} to its original value [KEY '{key}']");
 
                     switch (property.type)
                     {
                         case PropertyType.Float:
-                            shaderFade.Materials[i].SetFloat(shaderPropertyHashes[property.name], originalShaderProperties[property.name].minValue.x);
+                            shaderFade.Materials[i].SetFloat(shaderPropertyHashes[property.name], originalShaderProperties[key].minValue.x);
                             break;
                         case PropertyType.Int:
-                            shaderFade.Materials[i].SetInt(shaderPropertyHashes[property.name], (int)Mathf.Round(originalShaderProperties[property.name].minValue.x));
+                            shaderFade.Materials[i].SetInt(shaderPropertyHashes[property.name], (int)Mathf.Round(originalShaderProperties[key].minValue.x));
                             break;
                         case PropertyType.Color:
-                            shaderFade.Materials[i].SetColor(shaderPropertyHashes[property.name], originalShaderProperties[property.name].minValue);
+                            shaderFade.Materials[i].SetColor(shaderPropertyHashes[property.name], originalShaderProperties[key].minValue);
                             break;
                         default:
-                            shaderFade.Materials[i].SetVector(shaderPropertyHashes[property.name], originalShaderProperties[property.name].minValue);
+                            shaderFade.Materials[i].SetVector(shaderPropertyHashes[property.name], originalShaderProperties[key].minValue);
                             break;
                     }
                 }

@@ -11,16 +11,18 @@ using UnityEngine.UI;
 using TMPro;
 using NaughtyAttributes;
 using dev.susybaka.raidsim.Actions;
+using dev.susybaka.raidsim.Animations;
 using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.StatusEffects;
 using dev.susybaka.raidsim.Targeting;
 using dev.susybaka.raidsim.UI;
+using dev.susybaka.raidsim.Visuals;
 using dev.susybaka.Shared;
+using dev.susybaka.Shared.Audio;
 using static dev.susybaka.raidsim.Core.GlobalData;
 using static dev.susybaka.raidsim.Core.GlobalData.Damage;
 using static dev.susybaka.raidsim.Core.GlobalData.Flag;
 using static dev.susybaka.raidsim.UI.PartyList;
-using dev.susybaka.Shared.Audio;
 
 namespace dev.susybaka.raidsim.Characters
 {
@@ -38,6 +40,8 @@ namespace dev.susybaka.raidsim.Characters
         public ActionController actionController;
         [Hidden]
         public Transform dashKnockbackPivot;
+        [Hidden]
+        public ModelHandler modelHandler;
 
         #region Stat Variables
         [Header("Status")]
@@ -151,6 +155,9 @@ namespace dev.susybaka.raidsim.Characters
         private Flag wasCanDoActions;
         public Flag canDie = new Flag("canDie", new List<FlagValue> { new FlagValue("base", true) }, AggregateLogic.AllTrue);
         private Flag wasCanDie;
+        public Flag hidden = new Flag("hidden", AggregateLogic.AnyTrue);
+        private Flag wasHidden;
+        private bool hide = false;
         public bool dead = false;
         public bool still = false;
         public bool disabled = false;
@@ -196,7 +203,7 @@ namespace dev.susybaka.raidsim.Characters
         public bool hidePartyListEntry = false;
         private bool wasHidePartyListEntry;
 
-        #region User Interface Variables
+        #region UI/Embellishment Variables
         [Header("Personal - Name")]
         public bool showCharacterName = true;
         public bool showCharacterLevel = true;
@@ -206,6 +213,8 @@ namespace dev.susybaka.raidsim.Characters
         public TextMeshProUGUI nameplateCharacterNameText;
         private CanvasGroup nameplateCharacterNameTextGroup;
         public CanvasGroup nameplateGroup;
+        public Color nameplateColor = new Color(0.502f, 0.929f, 1);
+        public bool colorNameplateBasedOnAggression = true;
         [Header("Personal - Status Effects")]
         public bool showStatusEffects = true;
         public Transform statusEffectPositiveIconParent;
@@ -232,6 +241,7 @@ namespace dev.susybaka.raidsim.Characters
         public bool showOnlyBelowMaxHealth = false;
         public Slider nameplateHealthBar;
         private CanvasGroup nameplateHealthBarGroup;
+        private Image nameplateHealthBarFill;
         [Header("Personal - Signs")]
         public bool showSignMarkers = true;
         public bool showDeadMarker = true;
@@ -287,6 +297,13 @@ namespace dev.susybaka.raidsim.Characters
         public bool playAudio = false;
         [Range(0f, 1f)] public float audioVolume = 1f;
         private Transform audioParent;
+
+        [Header("Visuals")]
+        public bool useTransparency = false;
+        [ShowIf(nameof(useTransparency)), Range(0f,1f)] public float modelAlpha = 1f;
+        public Transform pivot;
+        public Transform model;
+        private SimpleShaderFade modelShaderFade;
         #endregion
 
 #if UNITY_EDITOR
@@ -331,11 +348,18 @@ namespace dev.susybaka.raidsim.Characters
         public string GetCharacterName()
         {
             int index = characterName.IndexOf('#');
+            string result;
+
             if (index >= 0) // Check if '#' exists in the string
             {
-                return characterName.Substring(0, index);
+                result = characterName.Substring(0, index);
             }
-            return characterName; // Return the full string if no '#' is found
+            else
+            {
+                result = characterName; // Return the full string if no '#' is found
+            }
+
+            return result;
         }
 
         public void UpdateCharacterName()
@@ -388,7 +412,10 @@ namespace dev.susybaka.raidsim.Characters
             bossController = GetComponent<BossController>();
             targetController = GetComponent<TargetController>();
             actionController = GetComponent<ActionController>();
-            TaggedObject[] taggedObjects = transform.Find("Pivot")?.GetComponentsInChildren<TaggedObject>();
+            modelHandler = GetComponentInChildren<ModelHandler>(true);
+            if (pivot == null)
+                pivot = transform.Find("Pivot");
+            TaggedObject[] taggedObjects = pivot?.GetComponentsInChildren<TaggedObject>();
 
             if (taggedObjects != null && taggedObjects.Length > 0)
             {
@@ -402,6 +429,22 @@ namespace dev.susybaka.raidsim.Characters
                 }
             }
 
+            if (pivot == null)
+            {
+                pivot = transform;
+            }
+
+            if (model == null)
+            {
+                model = transform.Find("Model");
+            }
+            if (model != null)
+            {
+                modelShaderFade = model.GetComponent<SimpleShaderFade>();
+                if (modelHandler == null)
+                    modelHandler = model.GetComponent<ModelHandler>();
+            }
+
             if (nameplateGroup == null)
             {
                 CanvasGroup[] children = transform.GetComponentsInChildren<CanvasGroup>();
@@ -413,6 +456,12 @@ namespace dev.susybaka.raidsim.Characters
                         break;
                     }
                 }
+            }
+
+            // A bit janky but the fill image is the one colored and should always be here
+            if (nameplateHealthBarFill == null)
+            {
+                nameplateHealthBarFill = nameplateHealthBar?.transform.Find("Fill Area/Fill")?.GetComponent<Image>();
             }
 
             if (statusEffectNegativeIconParent != null)
@@ -477,6 +526,9 @@ namespace dev.susybaka.raidsim.Characters
             wasCanDoActions = new Flag(canDoActions);
             canDie.ForceUpdate();
             wasCanDie = new Flag(canDie);
+            hidden.ForceUpdate();
+            wasHidden = new Flag(hidden);
+            hide = hidden.value;
             enmity = new Dictionary<CharacterState, long>();
             preventDamage = false;
 
@@ -599,6 +651,24 @@ namespace dev.susybaka.raidsim.Characters
                     else
                     {
                         nameplateCharacterNameText.text = $"{GetCharacterName()}{letter}";
+                    }
+                }
+
+                if (colorNameplateBasedOnAggression)
+                {
+                    nameplateColor = !isAggressive ? GlobalVariables.allyDefaultColor : GlobalVariables.enemyDefaultColor;
+                    nameplateCharacterNameText.color = nameplateColor;
+                    if (nameplateHealthBarFill != null)
+                    {
+                        nameplateHealthBarFill.color = nameplateColor;
+                    }
+                }
+                else
+                {
+                    nameplateCharacterNameText.color = nameplateColor;
+                    if (nameplateHealthBarFill != null)
+                    {
+                        nameplateHealthBarFill.color = nameplateColor;
                     }
                 }
             }
@@ -755,6 +825,14 @@ namespace dev.susybaka.raidsim.Characters
             if (Mathf.Abs(transform.position.y) >= GlobalVariables.worldBounds.y || Mathf.Abs(transform.position.x) >= GlobalVariables.worldBounds.x || Mathf.Abs(transform.position.z) >= GlobalVariables.worldBounds.z)
             {
                 ModifyHealth(new Damage(100, true, true, DamageType.unique, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.percentageFromMax, "Out of bounds"));
+                if (playerController != null)
+                {
+                    playerController.Rigidbody.velocity = Vector3.zero;
+                }
+                else if (aiController != null)
+                {
+                    aiController.Rigidbody.velocity = Vector3.zero;
+                }
                 transform.position = new Vector3(0f, 1f, 0f);
             }
 
@@ -856,7 +934,7 @@ namespace dev.susybaka.raidsim.Characters
                             effectsArray[i].duration -= FightTimeline.deltaTime;
                         }
                         effectsArray[i].onUpdate.Invoke(this);
-                        if (effectsArray[i]?.duration <= 0f)
+                        if (i >= 0 && i < effectsArray.Length && effectsArray[i]?.duration <= 0f)
                         {
                             RemoveEffect(effectsArray[i], true, this, effectsArray[i].uniqueTag, effectsArray[i].stacks);
                         }
@@ -921,6 +999,24 @@ namespace dev.susybaka.raidsim.Characters
                         nameplateCharacterNameText.text = $"{GetCharacterName()}{letter}";
                     }
                 }
+
+                if (colorNameplateBasedOnAggression)
+                {
+                    nameplateColor = !isAggressive ? GlobalVariables.allyDefaultColor : GlobalVariables.enemyDefaultColor;
+                    nameplateCharacterNameText.color = nameplateColor;
+                    if (nameplateHealthBarFill != null)
+                    {
+                        nameplateHealthBarFill.color = nameplateColor;
+                    }
+                }
+                else
+                {
+                    nameplateCharacterNameText.color = nameplateColor;
+                    if (nameplateHealthBarFill != null)
+                    {
+                        nameplateHealthBarFill.color = nameplateColor;
+                    }
+                }
             }
             if (partyList != null)
             {
@@ -952,6 +1048,11 @@ namespace dev.susybaka.raidsim.Characters
                     signMarkersGroup.alpha = 0f;
                 }
             }
+
+            if (hide != hidden.value)
+            {
+                UpdateVisibility();
+            }
         }
 
         private void OnDestroy()
@@ -963,23 +1064,59 @@ namespace dev.susybaka.raidsim.Characters
         #endregion
 
         #region Toggles
-        public void ToggleState()
+        public void ToggleCharacterState()
         {
-            disabled = !disabled;
-            gameObject.SetActive(disabled);
+            bool newState = !disabled;
+            ToggleState(newState, true);
         }
 
+        public void ToggleState()
+        {
+            bool newState = !disabled;
+
+            ToggleState(newState, false);
+
+            // ---
+            // Old implementation, kept it here as reference because pretty sure it had a bug with the gameObject state.
+            // Hopefully nothing used it in a way where fixing that would break anything.
+            // ---
+            //disabled = !disabled;
+            //gameObject.SetActive(disabled);
+        }
+
+        /// <summary>
+        /// Toggles the character's state between active and inactive based on the specified value.
+        /// </summary>
+        /// <param name="state">A value indicating whether the character should be set to the active state. Specify <see langword="true"/>
+        /// to activate the character; otherwise, <see langword="false"/> to deactivate.</param>
+        public void ToggleCharacterState(bool state)
+        {
+            ToggleState(state, true);
+        }
+
+        /// <summary>
+        /// Toggles the character's state between active and inactive based on the specified value. This one also affects the GameObject's active state.
+        /// </summary>
+        /// <param name="state">A value indicating whether the character should be set to the active state. Specify <see langword="true"/>
+        /// to activate the character; otherwise, <see langword="false"/> to deactivate.</param>
         public void ToggleState(bool state)
+        {
+            ToggleState(state, false);
+        }
+
+        private void ToggleState(bool state, bool ignoreGameObject)
         {
             if (state)
             {
                 disabled = false;
-                gameObject.SetActive(true);
+                if (!ignoreGameObject)
+                    gameObject.SetActive(true);
             }
             else
             {
                 disabled = true;
-                gameObject.SetActive(false);
+                if (!ignoreGameObject)
+                    gameObject.SetActive(false);
             }
         }
 
@@ -1093,6 +1230,8 @@ namespace dev.susybaka.raidsim.Characters
             amnesia = new Flag(wasAmnesia);
             canDoActions = new Flag(wasCanDoActions);
             canDie = new Flag(wasCanDie);
+            hidden = new Flag(wasHidden);
+            hide = hidden.value;
             disabled = wasDisabled;
             dead = false;
             isAggressive = wasIsAggressive;
@@ -1282,6 +1421,24 @@ namespace dev.susybaka.raidsim.Characters
                         nameplateCharacterNameText.text = $"{GetCharacterName()}{letter}";
                     }
                 }
+
+                if (colorNameplateBasedOnAggression)
+                {
+                    nameplateColor = !isAggressive ? GlobalVariables.allyDefaultColor : GlobalVariables.enemyDefaultColor;
+                    nameplateCharacterNameText.color = nameplateColor;
+                    if (nameplateHealthBarFill != null)
+                    {
+                        nameplateHealthBarFill.color = nameplateColor;
+                    }
+                }
+                else
+                {
+                    nameplateCharacterNameText.color = nameplateColor;
+                    if (nameplateHealthBarFill != null)
+                    {
+                        nameplateHealthBarFill.color = nameplateColor;
+                    }
+                }
             }
             if (partyList != null)
             {
@@ -1362,6 +1519,84 @@ namespace dev.susybaka.raidsim.Characters
                     signMarkersGroup.alpha = 0f;
                 }
             }
+        }
+
+        public void SetModelVisibility(bool state)
+        {
+            if (state)
+            {
+                hidden.RemoveFlag("toggleVisibility");
+                hide = hidden.value;
+            }
+            else
+            {
+                hidden.SetFlag("toggleVisibility", true);
+                hide = hidden.value;
+            }
+
+            UpdateVisibility();
+        }
+
+        public void FadeModelVisibility(bool toVisibility)
+        {
+            FadeModelVisibility(toVisibility, -1f);
+        }
+
+        public void FadeModelVisibility(bool toVisibility, float duration = -1f)
+        {
+            if (toVisibility)
+            {
+                hidden.RemoveFlag("toggleVisibility");
+                hide = hidden.value;
+            }
+
+            if (hidden.value)
+                return;
+
+            if (toVisibility)
+            {
+                if (modelShaderFade != null)
+                {
+                    if (duration < 0f)
+                        modelShaderFade.FadeIn();
+                    else
+                        modelShaderFade.FadeIn(duration);
+                }
+            }
+            else
+            {
+                if (modelShaderFade != null)
+                {
+                    if (duration < 0f)
+                        modelShaderFade.FadeOut(() => { hidden.SetFlag("toggleVisibility", true); hide = hidden.value; });
+                    else
+                        modelShaderFade.FadeOut(duration, () => { hidden.SetFlag("toggleVisibility", true); hide = hidden.value; });
+                }
+                else
+                {
+                    hidden.SetFlag("toggleVisibility", true);
+                    hide = hidden.value;
+                }
+            }
+        }
+
+        private void UpdateVisibility()
+        {
+            if (modelShaderFade == null)
+            {
+                return;
+            }
+
+            if (hidden.value)
+            {
+                modelShaderFade.FadeOut(0f);
+            }
+            else
+            {
+                modelShaderFade.FadeIn(0f);
+            }
+
+            hide = hidden.value;
         }
         #endregion
 
@@ -3296,12 +3531,12 @@ namespace dev.susybaka.raidsim.Characters
         #endregion
 
         #region Status Effects
-        public void AddEffect(StatusEffectData data, CharacterState character, bool self = false, int tag = 0, int stacks = 0, float duration = -1)
+        public void AddEffect(StatusEffectData data, CharacterState character, bool self = false, int tag = 0, int stacks = 0, float duration = -1, bool hidePopups = false)
         {
-            AddEffect(data, null, character, self, tag, stacks, duration);
+            AddEffect(data, null, character, self, tag, stacks, duration, hidePopups);
         }
 
-        public void AddEffect(StatusEffectData data, Damage? damage, CharacterState character, bool self = false, int tag = 0, int stacks = 0, float duration = -1)
+        public void AddEffect(StatusEffectData data, Damage? damage, CharacterState character, bool self = false, int tag = 0, int stacks = 0, float duration = -1, bool hidePopups = false)
         {
             if (data.statusEffect == null)
                 return;
@@ -3354,9 +3589,12 @@ namespace dev.susybaka.raidsim.Characters
                 refreshed = true;
             }
 
-            if (showStatusPopups && refreshed)
+            if (!hidePopups)
             {
-                ShowStatusEffectFlyTextWorldspace(data, stacks + data.appliedStacks, " + ");
+                if (showStatusPopups && refreshed)
+                {
+                    ShowStatusEffectFlyTextWorldspace(data, stacks + data.appliedStacks, " + ");
+                }
             }
 
             if (refreshed)
@@ -3380,15 +3618,15 @@ namespace dev.susybaka.raidsim.Characters
                 effect.damage = new Damage((Damage)damage);
             }
 
-            AddEffect(effect, damage, character, self, tag, stacks, duration);
+            AddEffect(effect, damage, character, self, tag, stacks, duration, hidePopups);
         }
 
-        public void AddEffect(StatusEffect effect, CharacterState character, bool self = false, int tag = 0, int stacks = 0, float duration = -1)
+        public void AddEffect(StatusEffect effect, CharacterState character, bool self = false, int tag = 0, int stacks = 0, float duration = -1, bool hidePopups = false)
         {
             AddEffect(effect, null, character, self, tag, stacks, duration);
         }
 
-        public void AddEffect(StatusEffect effect, Damage? damage, CharacterState character, bool self = false, int tag = 0, int stacks = 0, float duration = -1)
+        public void AddEffect(StatusEffect effect, Damage? damage, CharacterState character, bool self = false, int tag = 0, int stacks = 0, float duration = -1, bool hidePopups = false)
         {
             //if (effect.data.name.Contains("Cleaned"))
             //    Debug.LogError("Cleaned detected");
@@ -3442,9 +3680,12 @@ namespace dev.susybaka.raidsim.Characters
                 refreshed = true;
             }
 
-            if (showStatusPopups)
+            if (!hidePopups)
             {
-                ShowStatusEffectFlyTextWorldspace(effect.data, stacks + effect.data.appliedStacks, " + ");
+                if (showStatusPopups)
+                {
+                    ShowStatusEffectFlyTextWorldspace(effect.data, stacks + effect.data.appliedStacks, " + ");
+                }
             }
 
             if (refreshed)
@@ -3461,9 +3702,12 @@ namespace dev.susybaka.raidsim.Characters
                 }
             }
 
-            if (showDamagePopups || showTargetDamagePopups)
+            if (!hidePopups)
             {
-                ShowStatusEffectFlyText(effect, stacks + effect.data.appliedStacks, " + ", character);
+                if (showDamagePopups || showTargetDamagePopups)
+                {
+                    ShowStatusEffectFlyText(effect, stacks + effect.data.appliedStacks, " + ", character);
+                }
             }
 
             // Only prevent negative effects
@@ -3516,22 +3760,22 @@ namespace dev.susybaka.raidsim.Characters
             {
                 if (self)
                 {
-                    effect.Initialize(this, statusEffectNegativeIconParent, statusEffectIconParentParty, targetStatusEffectIconParent, ownStatusEffectColor);
+                    effect.Initialize(this, character, statusEffectNegativeIconParent, statusEffectIconParentParty, targetStatusEffectIconParent, ownStatusEffectColor);
                 }
                 else
                 {
-                    effect.Initialize(this, statusEffectNegativeIconParent, statusEffectIconParentParty, targetStatusEffectIconParent, otherStatusEffectColor);
+                    effect.Initialize(this, character, statusEffectNegativeIconParent, statusEffectIconParentParty, targetStatusEffectIconParent, otherStatusEffectColor);
                 }
             }
             else
             {
                 if (self)
                 {
-                    effect.Initialize(this, statusEffectPositiveIconParent, statusEffectIconParentParty, targetStatusEffectIconParent, ownStatusEffectColor);
+                    effect.Initialize(this, character, statusEffectPositiveIconParent, statusEffectIconParentParty, targetStatusEffectIconParent, ownStatusEffectColor);
                 }
                 else
                 {
-                    effect.Initialize(this, statusEffectPositiveIconParent, statusEffectIconParentParty, targetStatusEffectIconParent, otherStatusEffectColor);
+                    effect.Initialize(this, character, statusEffectPositiveIconParent, statusEffectIconParentParty, targetStatusEffectIconParent, otherStatusEffectColor);
                 }
             }
             if (duration > 0)
@@ -3543,7 +3787,7 @@ namespace dev.susybaka.raidsim.Characters
             if (partyList != null)
                 partyList.UpdatePrioritySorting();
 
-            if (playAudio)
+            if (playAudio && !hidePopups && !effect.data.hidden)
             {
                 if (!string.IsNullOrEmpty(effect.data.applySoundFx) && AudioManager.Instance != null)
                 {
@@ -3552,17 +3796,17 @@ namespace dev.susybaka.raidsim.Characters
             }
         }
 
-        public void RemoveEffect(StatusEffectData data, bool expired, CharacterState character, int tag = 0, int stacks = 0)
+        public void RemoveEffect(StatusEffectData data, bool expired, CharacterState character, int tag = 0, int stacks = 0, bool hidePopups = false)
         {
-            RemoveEffect(data.statusName, expired, character, tag, stacks);
+            RemoveEffect(data.statusName, expired, character, tag, stacks, hidePopups);
         }
 
-        public void RemoveEffect(StatusEffect effect, bool expired, CharacterState character, int tag = 0, int stacks = 0)
+        public void RemoveEffect(StatusEffect effect, bool expired, CharacterState character, int tag = 0, int stacks = 0, bool hidePopups = false)
         {
-            RemoveEffect(effect.data.statusName, expired, character, tag, stacks);
+            RemoveEffect(effect.data.statusName, expired, character, tag, stacks, hidePopups);
         }
 
-        public void RemoveEffect(string name, bool expired, CharacterState character, int tag = 0, int stacks = 0)
+        public void RemoveEffect(string name, bool expired, CharacterState character, int tag = 0, int stacks = 0, bool hidePopups = false)
         {
             if (!gameObject.activeSelf)
                 return;
@@ -3578,7 +3822,7 @@ namespace dev.susybaka.raidsim.Characters
             {
                 for (int i = 0; i < (tag * -1); i++)
                 {
-                    RemoveEffect(name, expired, character, i + 1, stacks);
+                    RemoveEffect(name, expired, character, i + 1, stacks, hidePopups);
                 }
                 return;
             }
@@ -3588,21 +3832,24 @@ namespace dev.susybaka.raidsim.Characters
 
             StatusEffect temp = effects[name];
 
-            if ((showDamagePopups || showTargetDamagePopups) && (effects[name].stacks <= 1 || effects[name].stacks <= stacks))
+            if (!hidePopups)
             {
-                ShowStatusEffectFlyText(temp, " - ", character);
-            }
-            else if (showDamagePopups || showTargetDamagePopups)
-            {
-                ShowStatusEffectFlyText(temp, 1, " - ", character);
-            }
-            if (showStatusPopups && (effects[name].stacks <= 1 || effects[name].stacks <= stacks))
-            {
-                ShowStatusEffectFlyTextWorldspace(temp.data, temp.stacks, " - ");
-            }
-            else if (showStatusPopups)
-            {
-                ShowStatusEffectFlyTextWorldspace(temp.data, 1, " - ");
+                if ((showDamagePopups || showTargetDamagePopups) && (effects[name].stacks <= 1 || effects[name].stacks <= stacks))
+                {
+                    ShowStatusEffectFlyText(temp, " - ", character);
+                }
+                else if (showDamagePopups || showTargetDamagePopups)
+                {
+                    ShowStatusEffectFlyText(temp, 1, " - ", character);
+                }
+                if (showStatusPopups && (effects[name].stacks <= 1 || effects[name].stacks <= stacks))
+                {
+                    ShowStatusEffectFlyTextWorldspace(temp.data, temp.stacks, " - ");
+                }
+                else if (showStatusPopups)
+                {
+                    ShowStatusEffectFlyTextWorldspace(temp.data, 1, " - ");
+                }
             }
 
             // Not sure why being invulnerable would prevent buffs and debuffs from clearing?
@@ -3672,7 +3919,8 @@ namespace dev.susybaka.raidsim.Characters
             if (partyList != null)
                 partyList.UpdatePrioritySorting();
 
-            if (playAudio)
+            // hidePopups also means don't play sound effects
+            if (playAudio && !hidePopups && !temp.data.hidden)
             {
                 if (!string.IsNullOrEmpty(temp.data.expireSoundFx) && AudioManager.Instance != null)
                 {

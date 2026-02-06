@@ -4,6 +4,7 @@
 using System.Collections;
 using UnityEngine;
 using dev.susybaka.raidsim.Characters;
+using dev.susybaka.Shared;
 
 namespace dev.susybaka.raidsim.Mechanics
 {
@@ -25,6 +26,10 @@ namespace dev.susybaka.raidsim.Mechanics
         private IEnumerator IE_PerformReset(Transform target)
         {
             yield return new WaitForSeconds(1.5f);
+            if (target.TryGetComponentInChildren(true, out Rigidbody rb))
+            {
+                rb.velocity = Vector3.zero;
+            }
             target.transform.position = location;
         }
 
@@ -33,6 +38,10 @@ namespace dev.susybaka.raidsim.Mechanics
             yield return new WaitForSeconds(0.5f);
             screenFade.LeanAlpha(1f, 1f);
             yield return new WaitForSeconds(1f);
+            if (target.TryGetComponentInChildren(true, out Rigidbody rb))
+            {
+                rb.velocity = Vector3.zero;
+            }
             target.transform.position = location;
             yield return new WaitForSeconds(0.5f);
             screenFade.LeanAlpha(0f, 2f);

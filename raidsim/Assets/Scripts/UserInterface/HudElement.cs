@@ -23,6 +23,7 @@ namespace dev.susybaka.raidsim.UI
         Selectable selectable;
         RectTransform rectTransform;
         CanvasGroup canvasGroup;
+        public CanvasGroup CanvasGroup { get { return canvasGroup; } }
         UserInput input;
         HudElementPriority priorityHandler;
         HudElementGroup elementGroup;
@@ -46,6 +47,8 @@ namespace dev.susybaka.raidsim.UI
         public bool blocksRotInput = false;
         public bool blocksScrInput = false;
         public bool blocksTargetRaycasts = false;
+        private bool selected = false;
+        private bool wasSelected = false;
         private bool interactable = true;
         public bool Interactable { get { return interactable; } }
         [Header("Animation")]
@@ -145,6 +148,8 @@ namespace dev.susybaka.raidsim.UI
             }
 
             originalPriority = priority;
+            selected = false;
+            wasSelected = false;
         }
 
         private void Start()
@@ -165,6 +170,35 @@ namespace dev.susybaka.raidsim.UI
 
         private void Update()
         {
+            if (input != null && selected)
+            {
+                wasSelected = selected;
+                if (blocksAllInput)
+                    input.inputEnabled = false;
+                if (blocksPosInput)
+                    input.movementInputEnabled = false;
+                if (blocksRotInput)
+                    input.rotationInputEnabled = false;
+                if (blocksScrInput)
+                    input.zoomInputEnabled = false;
+                if (blocksTargetRaycasts)
+                    input.targetRaycastInputEnabled = false;
+            }
+            else if (input != null && wasSelected != selected)
+            {
+                wasSelected = selected;
+                if (blocksAllInput)
+                    input.inputEnabled = true;
+                if (blocksPosInput)
+                    input.movementInputEnabled = true;
+                if (blocksRotInput)
+                    input.rotationInputEnabled = true;
+                if (blocksScrInput)
+                    input.zoomInputEnabled = true;
+                if (blocksTargetRaycasts)
+                    input.targetRaycastInputEnabled = true;
+            }
+
             interactable = (selectable != null) ? selectable.interactable : true;
 
             if (isPartyListElement)
@@ -405,6 +439,16 @@ namespace dev.susybaka.raidsim.UI
             {
                 CursorHandler.Instance.SetCursorByName(hoverCursorName);
             }
+        }
+
+        public void OnSelect()
+        {
+            selected = true;
+        }
+
+        public void OnDeselect()
+        {
+            selected = false;
         }
     }
 

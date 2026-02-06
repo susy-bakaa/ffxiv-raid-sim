@@ -12,6 +12,7 @@ using NaughtyAttributes;
 using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.Inputs;
 using dev.susybaka.Shared;
+using UnityEngine.Events;
 
 namespace dev.susybaka.raidsim.UI
 {
@@ -51,6 +52,7 @@ namespace dev.susybaka.raidsim.UI
         [SerializeField] private Transform playerCameraTransform;
         [SerializeField] private Transform playerTransform;
         public bool rotateMapInstead = false;
+        public UnityEvent<bool> onToggleMinimapVisibility;
 
         // Private fields for internal state management
         private Vector3 currentNorthDirection = Vector3.forward;
@@ -166,9 +168,11 @@ namespace dev.susybaka.raidsim.UI
 
         public void ToggleVisible(bool state)
         {
+            visible = state;
             canvasGroup.alpha = state ? 1f : 0f;
             canvasGroup.interactable = state;
             canvasGroup.blocksRaycasts = state;
+            onToggleMinimapVisibility.Invoke(state);
         }
 
         // Zooms the minimap in or out based on the function

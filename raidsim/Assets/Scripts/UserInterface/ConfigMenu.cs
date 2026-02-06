@@ -16,6 +16,7 @@ using dev.susybaka.Shared;
 using dev.susybaka.Shared.UserInterface;
 using dev.susybaka.WaveSurvivalGame.UserInterface;
 using static dev.susybaka.raidsim.Characters.PlayerController;
+using dev.susybaka.raidsim.Core;
 
 namespace dev.susybaka.raidsim.UI
 {
@@ -25,6 +26,9 @@ namespace dev.susybaka.raidsim.UI
         TargetController playerTargeting;
         ThirdPersonCamera thirdPersonCamera;
         UserInput userInput;
+        FightTimeline timeline;
+        SpotSelector spotSelector;
+        RoleSelector roleSelector;
 
         [Header("Config Menu")]
         [SerializeField] private AudioMixer audioMixer;
@@ -40,6 +44,8 @@ namespace dev.susybaka.raidsim.UI
         [SerializeField] private SliderInputLinker cameraSensitivitySync;
         [SerializeField] private ToggleLinker toggleMouseCursorType;
         [SerializeField] private Toggle skipUpdatesToggle;
+        [SerializeField] private TMP_Dropdown botNameTypeDropdown;
+        [SerializeField] private Toggle botNameRoleColorsToggle;
         float scale = 50;
         float newScale = 50;
         bool legacy = true;
@@ -62,6 +68,10 @@ namespace dev.susybaka.raidsim.UI
         bool newHardwareCursor = true;
         bool skipUpdates = false;
         bool newSkipUpdates = false;
+        int botNameType = 0;
+        int newBotNameType = 0;
+        bool botNameRoleColors = false;
+        bool newBotNameRoleColors = false;
         [SerializeField] private HudWindow applyPopup;
         public HudWindow ApplyPopup { get { return applyPopup; } }
 
@@ -81,6 +91,9 @@ namespace dev.susybaka.raidsim.UI
             group = GetComponent<CanvasGroup>();
             playerController = FindObjectOfType<PlayerController>();
             thirdPersonCamera = FindObjectOfType<ThirdPersonCamera>();
+            timeline = FightTimeline.Instance;
+            spotSelector = FindObjectOfType<SpotSelector>();
+            roleSelector = FindObjectOfType<RoleSelector>();
             if (playerController != null && playerTargeting == null)
                 playerTargeting = playerController.gameObject.GetComponent<TargetController>();
 
@@ -102,6 +115,9 @@ namespace dev.susybaka.raidsim.UI
 
         private void Update()
         {
+            if (timeline == null)
+                timeline = FightTimeline.Instance;
+
             if (userInput != null)
             {
                 if (isOpen)
@@ -295,6 +311,18 @@ namespace dev.susybaka.raidsim.UI
             newSkipUpdates = value;
         }
 
+        public void ChangeBotNameType(int value)
+        {
+            configSaved = false;
+            newBotNameType = value;
+        }
+
+        public void ChangeBotNameRoleColors(bool value)
+        {
+            configSaved = false;
+            newBotNameRoleColors = value;
+        }
+
         public void ApplySettings()
         {
             if (Mathf.Approximately(newScale, 50f))
@@ -350,6 +378,17 @@ namespace dev.susybaka.raidsim.UI
                 CursorHandler.Instance.useSoftwareCursor = !hardwareCursor;
             skipUpdates = newSkipUpdates;
 #endif
+            botNameType = newBotNameType;
+            botNameRoleColors = newBotNameRoleColors;
+            if (timeline != null)
+            {
+                timeline.botNameType = botNameType;
+                timeline.colorBotNamesByRole = botNameRoleColors;
+                if (spotSelector != null)
+                    spotSelector.Select();
+                if (roleSelector != null)
+                    roleSelector.Select();
+            }
             configSaved = true;
         }
 
@@ -415,6 +454,8 @@ namespace dev.susybaka.raidsim.UI
             newHardwareCursor = true;
             newSkipUpdates = false;
 #endif
+            newBotNameType = 0;
+            newBotNameRoleColors = false;
             ApplySettings();
         }
 
@@ -452,6 +493,8 @@ namespace dev.susybaka.raidsim.UI
             newSkipUpdates = skipUpdates;
             skipUpdatesToggle.SetIsOnWithoutNotify(newSkipUpdates);
 #endif
+            newBotNameType = botNameType;
+            newBotNameRoleColors = botNameRoleColors;
             ApplySettings();
         }
 

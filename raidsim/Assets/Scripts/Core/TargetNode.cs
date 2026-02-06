@@ -23,6 +23,7 @@ namespace dev.susybaka.raidsim.Targeting
         [SerializeField] private int group;
         public int Group { get { return group; } }
         public float hitboxRadius = 0f;
+        private float originalHitboxRadius = 0f;
 
         public UnityEvent onTarget;
         public UnityEvent onDetarget;
@@ -38,6 +39,8 @@ namespace dev.susybaka.raidsim.Targeting
                 hitboxRadius = capsuleCollider.radius;
             if (sphereCollider != null && hitboxRadius <= 0f)
                 hitboxRadius = sphereCollider.radius;
+
+            originalHitboxRadius = hitboxRadius;
 
             SetupCharacterState();
             SetupActionController();
@@ -240,6 +243,21 @@ namespace dev.susybaka.raidsim.Targeting
 
             if (targetController.targetTriggerNodes.Contains(node))
                 targetController.targetTriggerNodes.Remove(node);
+        }
+
+        public void SetHitboxRadius(float radius)
+        {
+            if (capsuleCollider != null && radius > 0f)
+                capsuleCollider.radius = radius;
+            if (sphereCollider != null && radius > 0f)
+                sphereCollider.radius = radius;
+
+            hitboxRadius = radius;
+        }
+
+        public void ResetHitboxRadius()
+        {
+            SetHitboxRadius(originalHitboxRadius);
         }
     }
 }

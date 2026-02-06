@@ -20,6 +20,7 @@ using dev.susybaka.Shared;
 using dev.susybaka.Shared.Attributes;
 using dev.susybaka.Shared.Audio;
 using static dev.susybaka.raidsim.Core.GlobalData;
+using TMPro;
 
 namespace dev.susybaka.raidsim.Core
 {
@@ -28,6 +29,7 @@ namespace dev.susybaka.raidsim.Core
         public static FightTimeline Instance;
 
         public UserInput input;
+        public FightSelector fightSelector;
         public CharacterState player;
         public PartyList partyList;
         public PartyList enemyList;
@@ -64,6 +66,7 @@ namespace dev.susybaka.raidsim.Core
         public bool log = false;
         public bool clearRandomEventResultsOnStart = true;
         public bool noNewSeedOnStart = false;
+        public bool disableKnockbacks = false;
         public UnityEvent<bool> onNoNewSeedOnStartChanged;
         public UnityEvent onReset;
         public UnityEvent onPlay;
@@ -72,6 +75,8 @@ namespace dev.susybaka.raidsim.Core
         public Button[] disableDuringPlayback;
         public bool useAutomarker = false;
         public UnityEvent<bool> onUseAutomarkerChanged;
+        public int botNameType = 0;
+        public bool colorBotNamesByRole = false;
 
         [Header("Audio")]
         [SerializeField][SoundName] private string reloadSound = "ui_close";
@@ -99,6 +104,8 @@ namespace dev.susybaka.raidsim.Core
         private Coroutine ieResetTimeline;
         private bool hasBeenPlayed = false;
         private bool resetCalled = false;
+        private float gameSpeed = 1f;
+        private TextMeshProUGUI simulationSpeedLabel;
 
         [System.Serializable]
         public struct RandomEventResult
@@ -250,6 +257,7 @@ namespace dev.susybaka.raidsim.Core
             }
 
             input = GetComponentInChildren<UserInput>();
+            fightSelector = FindFirstObjectByType<FightSelector>();
 
             for (int i = 0; i < events.Count; i++)
             {
@@ -263,6 +271,8 @@ namespace dev.susybaka.raidsim.Core
             hasBeenPlayed = false;
 
             onNoNewSeedOnStartChanged.Invoke(noNewSeedOnStart);
+
+            simulationSpeedLabel = Utilities.FindAnyByName("SimulationSpeedLabel").GetComponentInChildren<TextMeshProUGUI>(true);
         }
 
         private void Update()
@@ -273,7 +283,50 @@ namespace dev.susybaka.raidsim.Core
             }
             else
             {
-                Time.timeScale = 1f;
+                Time.timeScale = gameSpeed;
+
+                if (input != null)
+                {
+                    float s = input.GetAxisDown("Speed");
+
+                    if (s > 0f)
+                    {
+                        if (gameSpeed >= 4f)
+                        {
+                            gameSpeed += 1f;
+                        }
+                        else if (gameSpeed < 4f && gameSpeed >= 2f)
+                        {
+                            gameSpeed += 0.5f;
+                        }
+                        else if (gameSpeed < 2f)
+                        {
+                            gameSpeed += 0.25f;
+                        }
+                    }
+                    else if (s < 0f)
+                    {
+                        if (gameSpeed > 4f)
+                        {
+                            gameSpeed -= 1f;
+                        }
+                        else if (gameSpeed <= 4f && gameSpeed > 2f)
+                        {
+                            gameSpeed -= 0.5f;
+                        }
+                        else if (gameSpeed <= 2f)
+                        {
+                            gameSpeed -= 0.25f;
+                        }
+                    }
+
+                    if (gameSpeed < 0f)
+                        gameSpeed = 0f;
+                    if (gameSpeed > 10f)
+                        gameSpeed = 10f;
+
+                    simulationSpeedLabel.text = gameSpeed.ToString("F2").Replace(',','.');
+                }
             }
 
             if (timeScale < 0f)
@@ -629,35 +682,72 @@ namespace dev.susybaka.raidsim.Core
                 e.ResetRandomEventPools();
                 events[i] = e;
             }
-            for (int i = 0; i < allBotTimelines.Length; i++)
+            if (allBotTimelines != null && allBotTimelines.Length > 0 && !disableBotTimelines)
             {
-                allBotTimelines[i].ResetTimeline();
+                for (int i = 0; i < allBotTimelines.Length; i++)
+                {
+                    if (i < 0 || i >= allBotTimelines.Length)
+                        continue;
+
+                    allBotTimelines[i].ResetTimeline();
+                }
             }
-            for (int i = 0; i < allSetDynamicBotNodes.Length; i++)
+            if (allSetDynamicBotNodes != null && allSetDynamicBotNodes.Length > 0)
             {
-                allSetDynamicBotNodes[i].ResetComponent();
+                for (int i = 0; i < allSetDynamicBotNodes.Length; i++)
+                {
+                    if (i < 0 || i >= allSetDynamicBotNodes.Length)
+                        continue;
+
+                    allSetDynamicBotNodes[i].ResetComponent();
+                }
             }
-            for (int i = 0; i < allBotTimelineBranches.Length; i++)
+            if (allBotTimelineBranches != null && allBotTimelineBranches.Length > 0)
             {
-                allBotTimelineBranches[i].ResetComponent();
+                for (int i = 0; i < allBotTimelineBranches.Length; i++)
+                {
+                    if (i < 0 || i >= allBotTimelineBranches.Length)
+                        continue;
+
+                    allBotTimelineBranches[i].ResetComponent();
+                }
             }
-            for (int i = 0; i < allCharacters.Count; i++)
+            if (allCharacters != null && allCharacters.Count > 0)
             {
-                allCharacters[i].gameObject.SetActive(true);
-                allCharacters[i].ResetState();
+                for (int i = 0; i < allCharacters.Count; i++)
+                {
+                    if (i < 0 || i >= allCharacters.Count)
+                        continue;
+
+                    allCharacters[i].gameObject.SetActive(true);
+                    allCharacters[i].ResetState();
+                }
             }
-            for (int i = 0; i < allBotNodes.Length; i++)
+            if (allBotNodes != null && allBotNodes.Length > 0)
             {
-                allBotNodes[i].occupied = false;
-                allBotNodes[i].hasMechanic = false;
+                for (int i = 0; i < allBotNodes.Length; i++)
+                {
+                    if (i < 0 || i >= allBotNodes.Length)
+                        continue;
+
+                    allBotNodes[i].occupied = false;
+                    allBotNodes[i].hasMechanic = false;
+                }
             }
-            for (int i = 0; i < allMechanicNodes.Length; i++)
+            if (allMechanicNodes != null && allMechanicNodes.Length > 0)
             {
-                allMechanicNodes[i].isTaken = false;
+                for (int i = 0; i < allMechanicNodes.Length; i++)
+                {
+                    if (i < 0 || i >= allMechanicNodes.Length)
+                        continue;
+
+                    allMechanicNodes[i].isTaken = false;
+                }
             }
             pausedBy.Clear();
             paused = false;
-            Time.timeScale = 1f;
+            gameSpeed = 1f;
+            Time.timeScale = gameSpeed;
             if (mechanicParent != null)
             {
                 foreach (Transform child in mechanicParent)

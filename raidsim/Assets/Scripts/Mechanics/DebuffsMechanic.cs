@@ -20,6 +20,7 @@ namespace dev.susybaka.raidsim.Mechanics
         public bool ignoreRoles = false;
         public bool useIndexMapping = false;
         public bool useRoleMapping = false;
+        public bool useTarget = false;
 
         public override void TriggerMechanic(ActionInfo actionInfo)
         {
@@ -29,13 +30,27 @@ namespace dev.susybaka.raidsim.Mechanics
             CharacterState state = null;
             int r = FightTimeline.Instance.GetRandomEventResult(fightTimelineEventRandomResultId);
 
-            if (actionInfo.source != null)
+            if (!useTarget)
             {
-                state = actionInfo.source;
+                if (actionInfo.source != null)
+                {
+                    state = actionInfo.source;
+                }
+                else if (actionInfo.target != null)
+                {
+                    state = actionInfo.target;
+                }
             }
-            else if (actionInfo.target != null)
+            else
             {
-                state = actionInfo.target;
+                if (actionInfo.target != null)
+                {
+                    state = actionInfo.target;
+                }
+                else if (actionInfo.source != null)
+                {
+                    state = actionInfo.source;
+                }
             }
 
             if (log)
@@ -104,6 +119,15 @@ namespace dev.susybaka.raidsim.Mechanics
 
                             state.AddEffect(effects[i].data, state, false, effects[i].tag, effects[i].stacks);
                         }
+                    }
+                }
+                else
+                {
+                    // For now we'll just remove all effects in the list
+                    // Future improvement would be to add support for the same filtering as adding effects
+                    for (int i = 0; i < effects.Count; i++)
+                    {
+                        state.RemoveEffect(effects[i].data.statusName, false, actionInfo.source, effects[i].tag, effects[i].stacks, false);
                     }
                 }
             }

@@ -25,6 +25,7 @@ namespace dev.susybaka.raidsim.Bots
         public AIController bot;
 
         [Header("Timeline")]
+        public PartyList overrideParty = null;
         public Transform currentTarget;
         public Sector sector;
         public bool updateSector = false;
@@ -43,6 +44,9 @@ namespace dev.susybaka.raidsim.Bots
 #if UNITY_EDITOR
         private void OnValidate()
         {
+            if (events == null || events.Count < 1)
+                return;
+
             for (int i = 0; i < events.Count; i++)
             {
                 BotEvent e = events[i];
@@ -92,6 +96,10 @@ namespace dev.susybaka.raidsim.Bots
                     Debug.LogWarning($"No target controller found for {bot}!");
                     return;
                 }
+            }
+            if (overrideParty != null)
+            {
+                party = overrideParty;
             }
             if (party == null)
             {
@@ -173,6 +181,7 @@ namespace dev.susybaka.raidsim.Bots
                     {
                         if (member.characterState.HasEffect(events[i].targetStatusEffectHolder.data.statusName, events[i].targetStatusEffectHolder.tag))
                         {
+                            Debug.Log($"[BotTimeline] {bot.gameObject.name} targeting {member.characterState.name} for event {i} due to status effect {events[i].targetStatusEffectHolder.name}");
                             targeting.SetTarget(member.targetController.self);
                             break;
                         }

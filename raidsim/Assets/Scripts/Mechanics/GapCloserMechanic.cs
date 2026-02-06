@@ -14,6 +14,7 @@ namespace dev.susybaka.raidsim.Mechanics
         public bool lockMovement = true;
         public bool lockActions = true;
         public bool fakeKnockback = false;
+        public bool ignoreTargetHitbox = false;
         [ShowIf("fakeKnockback")] public bool canBeResisted = false;
         public float duration = 0.5f;
         public float delay = 0.25f;
@@ -85,18 +86,42 @@ namespace dev.susybaka.raidsim.Mechanics
         {
             Transform target = overrideTarget != null ? overrideTarget : actionInfo.target?.targetController?.self?.transform;
             float hitboxRadius = 0f;
-            if (actionInfo.target != null && actionInfo.target.targetController != null && actionInfo.target.targetController.self != null)
+            float maxMelee = this.maxMelee;
+            if (!ignoreTargetHitbox && actionInfo.target != null && actionInfo.target.targetController != null && actionInfo.target.targetController.self != null)
+            {
                 hitboxRadius = actionInfo.target.targetController.self.hitboxRadius;
+            }
+            else if (ignoreTargetHitbox)
+            {
+                maxMelee = 0f;
+                hitboxRadius = 0f;
+            }
 
             Vector3 originalPosition = actionInfo.source.transform.position;
             Vector3 direction = (target.position - actionInfo.source.transform.position).normalized;
-            Vector3 targetPosition = target.position - direction * (hitboxRadius + maxMelee);
-            if (!moveAxis.x)
-                targetPosition.x = 0f;
-            if (!moveAxis.y)
-                targetPosition.y = 0f;
-            if (!moveAxis.z)
-                targetPosition.z = 0f;
+            float distanceToTarget = Vector3.Distance(actionInfo.source.transform.position, target.position);
+            float requiredDistance = hitboxRadius + maxMelee;
+            
+            Vector3 targetPosition;
+            
+            // Check if already within range
+            if (distanceToTarget <= requiredDistance)
+            {
+                // Already in range, so don't move
+                targetPosition = originalPosition;
+            }
+            else
+            {
+                // Calculate the target position
+                targetPosition = target.position - direction * requiredDistance;
+                if (!moveAxis.x)
+                    targetPosition.x = originalPosition.x;
+                if (!moveAxis.y)
+                    targetPosition.y = originalPosition.y;
+                if (!moveAxis.z)
+                    targetPosition.z = originalPosition.z;
+            }
+            
             tween = actionInfo.source.transform.LeanMove(targetPosition, duration).setEase(ease).setOnUpdate((float _) => { if (actionInfo.source.dead) { LeanTween.cancel(tween.id); actionInfo.source.transform.position = originalPosition; } }).setOnComplete(() => ResetState(actionInfo));
         }
 

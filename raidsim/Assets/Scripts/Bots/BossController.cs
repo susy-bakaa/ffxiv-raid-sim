@@ -193,7 +193,12 @@ namespace dev.susybaka.raidsim.Characters
                 if (lookTarget != null && !state.dead && ((!ignoreCasting && !controller.isCasting && !animator.TryGetBool(animatorParameterActionLocked)) || ignoreCasting))
                 {
                     Vector3 direction = (new Vector3(lookTarget.position.x, 0f, lookTarget.position.z) - new Vector3(transform.position.x, 0f, transform.position.z)).normalized;
-                    Quaternion lookRotation = Quaternion.LookRotation(direction);
+                    Quaternion lookRotation = Quaternion.identity;
+                    // This gets rid of the Unity: 'Look rotation viewing vector is zero' log message spam
+                    if (direction != Vector3.zero)
+                    {
+                        lookRotation = Quaternion.LookRotation(direction);
+                    }
                     transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, turnSmoothTime * Time.deltaTime);
 
                     // Calculate turning speed (directional value -1 to 1)
@@ -314,6 +319,14 @@ namespace dev.susybaka.raidsim.Characters
         public void SetStoppingDistance(float distance)
         {
             stoppingDistance = distance;
+        }
+
+        public void SetLookRotation(TargetController targetController)
+        {
+            if (targetController != null && targetController.currentTarget != null)
+            {
+                SetLookRotation(targetController.currentTarget);
+            }
         }
 
         public void SetLookRotation(TargetNode targetNode)

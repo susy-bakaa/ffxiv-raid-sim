@@ -28,6 +28,16 @@ namespace dev.susybaka.raidsim.Mechanics
             }
         }
 
+        public void AddDelay(float delay)
+        {
+            this.delay += delay;
+        }
+
+        public void SetDelay(float delay)
+        {
+            this.delay = delay;
+        }
+
         public override void TriggerMechanic(ActionInfo actionInfo)
         {
             if (!CanTrigger(actionInfo))

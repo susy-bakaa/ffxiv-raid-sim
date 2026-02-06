@@ -13,7 +13,8 @@ namespace dev.susybaka.raidsim.Characters
     {
         Animator animator;
         Rigidbody rb;
-        public CharacterState state { get; private set; }
+        [HideInInspector] public Rigidbody Rigidbody => rb;
+        [HideInInspector] public CharacterState state { get; private set; }
 
         public BotTimeline botTimeline;
         private BotTimeline wasBotTimeline;
@@ -23,6 +24,7 @@ namespace dev.susybaka.raidsim.Characters
         public Vector3 spawnOffset = new Vector3(0f, 1.1f, 0f);
         public bool log;
         public bool freezeMovement = false;
+        public bool allowGravity = true;
         public bool sliding = false;
         public float slideDistance = 0f;
         public float slideDuration = 0.5f;
@@ -60,6 +62,16 @@ namespace dev.susybaka.raidsim.Characters
             state = GetComponent<CharacterState>();
             wasBotTimeline = botTimeline;
             botTimeline.bot = this;
+            if (allowGravity)
+            {
+                preventGravity = false;
+                wasPreventGravity = false;
+            }
+            else
+            {
+                preventGravity = true;
+                wasPreventGravity = true;
+            }
         }
 
         private void OnEnable()
@@ -70,8 +82,16 @@ namespace dev.susybaka.raidsim.Characters
             movementFrozen = false;
             sliding = false;
             tweening = false;
-            preventGravity = false;
-            wasPreventGravity = false;
+            if (allowGravity)
+            {
+                preventGravity = false;
+                wasPreventGravity = false;
+            }
+            else
+            {
+                preventGravity = true;
+                wasPreventGravity = true;
+            }
             if (rb != null)
             {
                 rb.useGravity = true;
@@ -80,12 +100,23 @@ namespace dev.susybaka.raidsim.Characters
 
         private void Update()
         {
-            if (preventGravity != wasPreventGravity)
+            if (allowGravity)
             {
-                wasPreventGravity = preventGravity;
-                if (rb != null)
+                if (preventGravity != wasPreventGravity)
                 {
-                    rb.useGravity = !preventGravity;
+                    wasPreventGravity = preventGravity;
+                    if (rb != null)
+                    {
+                        rb.useGravity = !preventGravity;
+                        rb.velocity = Vector3.zero;
+                    }
+                }
+            }
+            else
+            {
+                if (rb != null && rb.useGravity)
+                {
+                    rb.useGravity = false;
                     rb.velocity = Vector3.zero;
                 }
             }
@@ -293,6 +324,9 @@ namespace dev.susybaka.raidsim.Characters
 
         public void Knockback(Vector3 tp, float duration, float height, bool gravity)
         {
+            if (FightTimeline.Instance != null && FightTimeline.Instance.disableKnockbacks)
+                return;
+
             if (!state.HasEffect("Surecast"))
             {
                 tm = 0f;
@@ -301,7 +335,8 @@ namespace dev.susybaka.raidsim.Characters
                 targetPosition = transform.position + tp;
                 animator.SetFloat(animatorParameterSpeed, 0f);
                 knockedback = true;
-                preventGravity = !gravity;
+                if (allowGravity)
+                    preventGravity = !gravity;
 
                 if (height > 1f) // 1 unit has been default for all knockbacks so we only do the arc if height is greater than that, bit of a hacky solution but works for now
                 {
@@ -327,6 +362,12 @@ namespace dev.susybaka.raidsim.Characters
 
             transform.position = new Vector3(finalSpawnOffset.x + Random.Range(-1.5f, 1.5f), finalSpawnOffset.y, finalSpawnOffset.z + Random.Range(-1.5f, 1.5f));
             transform.eulerAngles = new Vector3(0f, Random.Range(-360f, 360f), 0f);
+
+            if (!allowGravity)
+            {
+                preventGravity = true;
+                wasPreventGravity = true;
+            }
         }
 
         public void SetAnimator(Animator animator)
@@ -338,8 +379,16 @@ namespace dev.susybaka.raidsim.Characters
         {
             botTimeline = wasBotTimeline;
             botTimeline.bot = this;
-            preventGravity = false;
-            wasPreventGravity = false;
+            if (allowGravity)
+            {
+                preventGravity = false;
+                wasPreventGravity = false;
+            }
+            else
+            {   
+                preventGravity = true;
+                wasPreventGravity = true;
+            }
             if (rb != null)
             {
                 rb.useGravity = true;

@@ -14,6 +14,7 @@ namespace dev.susybaka.raidsim.UI
 {
     public class SpotSelector : MonoBehaviour
     {
+        FightTimeline timeline;
         TMP_Dropdown dropdown;
 
         public PartyList partyList;
@@ -44,6 +45,8 @@ namespace dev.susybaka.raidsim.UI
             {
                 player = partyList.members[0];
             }
+
+            timeline = FightTimeline.Instance;
         }
 
         private void Start()
@@ -57,7 +60,15 @@ namespace dev.susybaka.raidsim.UI
 
         private void Update()
         {
+            if (timeline == null)
+                timeline = FightTimeline.Instance;
+
             dropdown.interactable = !FightTimeline.Instance.playing;
+        }
+
+        public void Select()
+        {
+            Select(lastSelected);
         }
 
         public void Select(int value)
@@ -86,6 +97,8 @@ namespace dev.susybaka.raidsim.UI
 
             for (int i = 0; i < bots.Length; i++)
             {
+                bots[i].clockSpot = spots[i];
+
                 if (bots[i].clockSpot == player.playerController.clockSpot)
                 {
                     bots[i].state.characterName = "Disabled";
@@ -93,7 +106,7 @@ namespace dev.susybaka.raidsim.UI
                 }
                 else
                 {
-                    bots[i].state.characterName = $"AI{botNameIndex + 1}";
+                    bots[i].state.characterName = GetBotName(botNameIndex, bots[i].state);
                     bots[i].gameObject.SetActive(true);
                     botNameIndex++;
                 }
@@ -101,6 +114,43 @@ namespace dev.susybaka.raidsim.UI
 
             partyList.UpdatePartyList();
             lastSelected = value;
+        }
+
+        public string GetBotName(int index, CharacterState state)
+        {
+            string bName = $"AI{index + 1}";
+
+            if (timeline != null)
+            {
+                switch (timeline.botNameType)
+                {
+                    case 1:
+                        bName = GlobalVariables.botRoleNames[index];
+                        break;
+                    case 2:
+                        bName = GlobalVariables.botRoleWesternShortNames[index];
+                        break;
+                    case 3:
+                        bName = GlobalVariables.botRoleEasternShortNames[index];
+                        break;
+                }
+
+                if (timeline.colorBotNamesByRole)
+                {
+                    state.colorNameplateBasedOnAggression = false;
+                    state.nameplateColor = GlobalVariables.botRoleColors[index];
+                }
+                else
+                {
+                    state.colorNameplateBasedOnAggression = true;
+                }
+            }
+            else
+            {
+                state.colorNameplateBasedOnAggression = true;
+            }
+
+            return bName;
         }
     }
 }

@@ -17,6 +17,7 @@ namespace dev.susybaka.raidsim.UI
         public HudEditor hudEditor;
         public TargetController playerTargeting;
         public ActionController playerActions;
+        public ChatWindow chatWindow;
         public string menuScene = "menu";
         public UnityEvent onPaused;
         public UnityEvent onUnpaused;
@@ -33,6 +34,8 @@ namespace dev.susybaka.raidsim.UI
                 hudEditor = FindObjectOfType<HudEditor>();
             if (playerTargeting != null)
                 playerTargeting.SetPauseMenu(this);
+            if (chatWindow == null)
+                chatWindow = ChatWindow.Instance;
         }
 
         public void ExitToMainMenu()
@@ -66,6 +69,8 @@ namespace dev.susybaka.raidsim.UI
             if (hudEditor != null && hudEditor.isMenuOpen)
                 return;
             if (playerActions.isGroundTargeting)
+                return;
+            if (chatWindow != null && chatWindow.isOpen && chatWindow.IsFocused)
                 return;
 
             OpenWindow();

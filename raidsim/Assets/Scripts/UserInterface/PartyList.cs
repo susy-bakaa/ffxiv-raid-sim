@@ -285,6 +285,55 @@ namespace dev.susybaka.raidsim.UI
             return highestHealthMember;
         }
 
+        public CharacterState GetNearestMember(Vector3 position)
+        {
+            if (members == null || members.Count == 0)
+            {
+                return null; // or handle the case where there are no members
+            }
+
+            CharacterState nearestMember = null;
+            float nearestDistance = float.MaxValue;
+            for (int i = 0; i < members.Count; i++)
+            {
+                if (members[i].characterState == null || !members[i].characterState.gameObject.activeSelf || members[i].characterState.disabled)
+                    continue;
+
+                CharacterState memberState = members[i].characterState;
+                float distance = Vector3.Distance(memberState.transform.position, position);
+                if (distance < nearestDistance)
+                {
+                    nearestDistance = distance;
+                    nearestMember = memberState;
+                }
+            }
+            return nearestMember;
+        }
+
+        public CharacterState GetFurthestMember(Vector3 position)
+        {
+            if (members == null || members.Count == 0)
+            {
+                return null; // or handle the case where there are no members
+            }
+            CharacterState furthestMember = null;
+            float furthestDistance = float.MinValue;
+            for (int i = 0; i < members.Count; i++)
+            {
+                if (members[i].characterState == null || !members[i].characterState.gameObject.activeSelf || members[i].characterState.disabled)
+                    continue;
+
+                CharacterState memberState = members[i].characterState;
+                float distance = Vector3.Distance(memberState.transform.position, position);
+                if (distance > furthestDistance)
+                {
+                    furthestDistance = distance;
+                    furthestMember = memberState;
+                }
+            }
+            return furthestMember;
+        }
+
         public List<EnmityInfo> GetEnmityValuesList(CharacterState towards)
         {
             if (members == null || members.Count == 0 || towards == null)

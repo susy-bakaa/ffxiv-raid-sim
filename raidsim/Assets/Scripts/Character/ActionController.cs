@@ -5,19 +5,20 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
-using TMPro;
-using NaughtyAttributes;
-using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.Characters;
+using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.StatusEffects;
 using dev.susybaka.raidsim.Targeting;
 using dev.susybaka.raidsim.UI;
 using dev.susybaka.Shared;
 using dev.susybaka.Shared.Audio;
+using NaughtyAttributes;
+using TMPro;
+using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
+using static System.Collections.Specialized.BitVector32;
 using static dev.susybaka.raidsim.Core.GlobalData;
 
 namespace dev.susybaka.raidsim.Actions
@@ -31,6 +32,9 @@ namespace dev.susybaka.raidsim.Actions
         public Transform actionParent;
         public List<CharacterAction> actions = new List<CharacterAction>();
         public List<CharacterAction> autoActions = new List<CharacterAction>();
+#if UNITY_EDITOR
+        public List<CharacterAction> _actionQueue = new List<CharacterAction>();
+#endif
         private CharacterAction autoAttack;
         public bool loadAutomatically = true;
         public bool autoAttackEnabled = true;
@@ -105,6 +109,7 @@ namespace dev.susybaka.raidsim.Actions
         private int rateLimit;
         private float autoAttackTimer;
         private Queue<CharacterAction> queuedAutoActions = new Queue<CharacterAction>();
+        private Queue<CharacterAction> actionQueue = new Queue<CharacterAction>();
 
         private int animatorParameterActionLocked = Animator.StringToHash("ActionLocked");
         private int animatorParameterCasting = Animator.StringToHash("Casting");
@@ -488,6 +493,54 @@ namespace dev.susybaka.raidsim.Actions
             this.animator = animator;
         }
 
+        public bool TryGetAction(CharacterActionData actionData, out CharacterAction action, StringComparison comparison = StringComparison.Ordinal)
+        {
+            return TryGetAction(actionData.actionName, out action, comparison);
+        }
+
+        public bool TryGetAction(string name, out CharacterAction action, StringComparison comparison = StringComparison.Ordinal)
+        {
+            for (int i = 0; i < actions.Count; i++)
+            {
+                if (name.Equals(actions[i].data.actionName, comparison))
+                {
+                    action = actions[i];
+                    return true;
+                }
+            }
+            action = null;
+            return false;
+        }
+
+        public bool HasAction(CharacterActionData actionData, StringComparison comparison = StringComparison.Ordinal)
+        {
+            return HasAction(actionData.actionName, comparison);
+        }
+
+        public bool HasAction(string name, StringComparison comparison = StringComparison.Ordinal)
+        {
+            for (int i = 0; i < actions.Count; i++)
+            {
+                if (name.Equals(actions[i].data.actionName, comparison))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public bool HasAction(CharacterAction action, StringComparison comparison = StringComparison.Ordinal)
+        {
+            for (int i = 0; i < actions.Count; i++)
+            {
+                if (action.data.actionName.Equals(actions[i].data.actionName, comparison))
+                {
+                    action = actions[i];
+                }
+            }
+            return false;
+        }
+
         public void PerformAutoAction(CharacterAction autoAction)
         {
             if (!gameObject.activeSelf)
@@ -654,6 +707,95 @@ namespace dev.susybaka.raidsim.Actions
             return false;
         }
 
+        public void QueueAction(string name)
+        {
+            if (!gameObject.activeSelf)
+                return;
+
+            for (int i = 0; i < actions.Count; i++)
+            {
+                if (actions[i].data.actionName == name)
+                {
+                    QueueAction(actions[i]);
+                }
+            }
+        }
+
+        public void QueueAction(CharacterAction action)
+        {
+            if (!gameObject.activeSelf)
+                return;
+
+#if UNITY_EDITOR
+            _actionQueue.Add(action);
+#endif
+            actionQueue.Enqueue(action);
+        }
+
+        public void ClearActionQueue()
+        {
+            if (!gameObject.activeSelf)
+                return;
+
+#if UNITY_EDITOR
+            _actionQueue.Clear();
+#endif
+            actionQueue.Clear();
+        }
+
+        public void PerformQueuedAction()
+        {
+            PerformQueuedActionInternal(false, false);
+        }
+
+        public void PerformQueuedActionHidden()
+        {
+            PerformQueuedActionInternal(false, true);
+        }
+
+        public void PerformQueuedActionUnrestricted()
+        {
+            PerformQueuedActionInternal(true, false);
+        }
+
+        private void PerformQueuedActionInternal(bool unrestricted, bool hidden)
+        {
+            if (!gameObject.activeSelf)
+                return;
+
+            if (characterState.dead)
+                return;
+
+            if (Time.timeScale <= 0f)
+                return;
+
+            if (actionQueue == null || actionQueue.Count < 1)
+                return;
+
+            CharacterAction action = actionQueue.Dequeue();
+
+#if UNITY_EDITOR
+            for (int i = 0; i < _actionQueue.Count; i++)
+            {
+                if (_actionQueue[i] == action)
+                {
+                    _actionQueue.RemoveAt(i);
+                    break;
+                }
+            }
+#endif
+
+            if (action == null)
+                return;
+
+            if (!unrestricted && !hidden)
+                PerformAction(action);
+            else if (hidden && !unrestricted)
+                PerformActionHidden(action);
+            else if (unrestricted && !hidden)
+                PerformActionUnrestricted(action);
+        }
+
         public void PerformAction(string name)
         {
             if (!gameObject.activeSelf)
@@ -670,6 +812,7 @@ namespace dev.susybaka.raidsim.Actions
                 if (actions[i].data.actionName == name)
                 {
                     PerformAction(actions[i]);
+                    break;
                 }
             }
         }
@@ -695,6 +838,7 @@ namespace dev.susybaka.raidsim.Actions
                 if (actions[i].data.actionName == name)
                 {
                     PerformActionUnrestricted(actions[i]);
+                    break;
                 }
             }
         }
@@ -711,6 +855,7 @@ namespace dev.susybaka.raidsim.Actions
                 if (actions[i].data.actionName == name)
                 {
                     PerformActionHidden(actions[i]);
+                    break;
                 }
             }
         }

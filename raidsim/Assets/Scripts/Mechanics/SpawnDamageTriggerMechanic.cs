@@ -23,6 +23,8 @@ namespace dev.susybaka.raidsim.Mechanics
         public bool enableInstead = false;
         public Transform spawnLocation;
         public bool copyRotation = false;
+        public bool setRotation = false;
+        [ShowIf(nameof(setRotation))] public Vector3 rotation = Vector3.zero;
         public float delay = 0f;
         public bool autoAssignOwner = false;
         public bool autoAssignLocation = false;
@@ -30,6 +32,7 @@ namespace dev.susybaka.raidsim.Mechanics
         public bool usePlayerHealth = false;
         public bool useTargetControllerCurrentTargetAsLocation = false;
         public bool faceTarget = false;
+        public bool faceSource = false;
         public bool rotateSource = false;
         [ShowIf("faceTarget")] public Axis axis = new Axis();
         public bool dealDamage = true;
@@ -78,6 +81,9 @@ namespace dev.susybaka.raidsim.Mechanics
                     if (copyRotation)
                         spawned.transform.eulerAngles = actionInfo.target.transform.eulerAngles;
 
+                    if (setRotation)
+                        spawned.transform.eulerAngles = rotation;
+
                     SetupDamageTrigger(spawned, actionInfo);
                 }
                 else if (actionInfo.source != null && actionInfo.action != null)
@@ -91,6 +97,9 @@ namespace dev.susybaka.raidsim.Mechanics
 
                     if (copyRotation)
                         spawned.transform.eulerAngles = actionInfo.source.transform.eulerAngles;
+
+                    if (setRotation)
+                        spawned.transform.eulerAngles = rotation;
 
                     SetupDamageTrigger(spawned, actionInfo);
                 }
@@ -106,6 +115,9 @@ namespace dev.susybaka.raidsim.Mechanics
 
                 if (copyRotation)
                     spawned.transform.eulerAngles = spawnLocation.eulerAngles;
+
+                if (setRotation)
+                    spawned.transform.eulerAngles = rotation;
 
                 if (log)
                     Debug.Log($"Object was spawned at {spawned?.transform.position} with rotation {spawned?.transform.eulerAngles} using '{spawnLocation?.gameObject.name}' at {spawnLocation?.position} with rotation {spawnLocation?.eulerAngles} as target");
@@ -145,47 +157,47 @@ namespace dev.susybaka.raidsim.Mechanics
                 if (actionInfo.action != null && actionInfo.action.data != null)
                     damageTrigger.data = actionInfo.action.data;
 
-                if (faceTarget)
+                if ((faceTarget && actionInfo.target != null) || (faceSource && actionInfo.source != null))
                 {
-                    if (actionInfo.target != null)
+                    Transform faceTowards = faceTarget && actionInfo.target != null ? actionInfo.target.transform : faceSource && actionInfo.source != null ? actionInfo.source.transform : null;
+
+                    // Calculate the look rotation
+                    Vector3 directionToTarget = faceTowards.position - spawned.transform.position;
+                    Quaternion lookRotation = Quaternion.LookRotation(directionToTarget);
+
+                    // Apply axis locking
+                    Vector3 lockedEulerAngles = lookRotation.eulerAngles;
+
+                    // Lock specific axes
+                    if (!axis.x)
+                        lockedEulerAngles.x = spawned.transform.eulerAngles.x;
+                    if (!axis.y)
+                        lockedEulerAngles.y = spawned.transform.eulerAngles.y;
+                    if (!axis.z)
+                        lockedEulerAngles.z = spawned.transform.eulerAngles.z;
+
+                    // Apply the rotation
+                    spawned.transform.rotation = Quaternion.Euler(lockedEulerAngles);
+
+                    if (rotateSource && actionInfo.source != null)
                     {
-                        // Calculate the look rotation
-                        Vector3 directionToTarget = actionInfo.target.transform.position - spawned.transform.position;
-                        Quaternion lookRotation = Quaternion.LookRotation(directionToTarget);
-
-                        // Apply axis locking
-                        Vector3 lockedEulerAngles = lookRotation.eulerAngles;
-
+                        Vector3 sourceEuler = actionInfo.source.transform.eulerAngles;
+                        actionInfo.source.transform.LookAt(actionInfo.target.transform);
+                        Vector3 newSourceEuler = actionInfo.source.transform.eulerAngles;
                         // Lock specific axes
                         if (!axis.x)
-                            lockedEulerAngles.x = spawned.transform.eulerAngles.x;
+                            newSourceEuler.x = sourceEuler.x;
                         if (!axis.y)
-                            lockedEulerAngles.y = spawned.transform.eulerAngles.y;
+                            newSourceEuler.y = sourceEuler.y;
                         if (!axis.z)
-                            lockedEulerAngles.z = spawned.transform.eulerAngles.z;
-
-                        // Apply the rotation
-                        spawned.transform.rotation = Quaternion.Euler(lockedEulerAngles);
-
-                        if (rotateSource && actionInfo.source != null)
-                        {
-                            Vector3 sourceEuler = actionInfo.source.transform.eulerAngles;
-                            actionInfo.source.transform.LookAt(actionInfo.target.transform);
-                            Vector3 newSourceEuler = actionInfo.source.transform.eulerAngles;
-                            // Lock specific axes
-                            if (!axis.x)
-                                newSourceEuler.x = sourceEuler.x;
-                            if (!axis.y)
-                                newSourceEuler.y = sourceEuler.y;
-                            if (!axis.z)
-                                newSourceEuler.z = sourceEuler.z;
-                            actionInfo.source.transform.eulerAngles = newSourceEuler;
-                        }
+                            newSourceEuler.z = sourceEuler.z;
+                        actionInfo.source.transform.eulerAngles = newSourceEuler;
                     }
-                    else
-                    {
-                        Debug.LogWarning($"[SpawnDamageTriggerMechanic ({gameObject.name})] has faceTarget set to true, but no available target was found!");
-                    }
+
+                }                    
+                else if (faceTarget || faceSource)
+                {
+                    Debug.LogWarning($"[SpawnDamageTriggerMechanic ({gameObject.name})] has faceTarget or faceSource set to true, but no available target or source was found!");
                 }
 
                 if (delay > 0)
@@ -225,6 +237,9 @@ namespace dev.susybaka.raidsim.Mechanics
                     }
                 }
             }
+
+            if (setRotation)
+                spawned.transform.eulerAngles = rotation;
 
             onSpawn.Invoke(spawned);
         }

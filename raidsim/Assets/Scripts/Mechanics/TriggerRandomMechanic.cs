@@ -142,10 +142,17 @@ namespace dev.susybaka.raidsim.Mechanics
 
                 r = b;
 
-                mechanics[0].fightMechanics[r].TriggerMechanic(actionInfo);
+                if (mechanics[0].fightMechanics.Count > r)
+                {
+                    mechanics[0].fightMechanics[r].TriggerMechanic(actionInfo);
+                } 
+                else if (log)
+                {
+                    Debug.LogError($"[TriggerRandomMechanic ({gameObject.name})] Mechanic index {r} is out of range for mechanics list with count {mechanics[0].fightMechanics.Count}", gameObject);
+                }
             }
 
-            //Debug.Log($"RandomMechanic chosen {r} from total of {mechanics.Count - 1}");
+            //Debug.Log($"[TriggerRandomMechanic ({gameObject.name})] RandomMechanic chosen {r} from total of {mechanics.Count - 1}", gameObject);
 
             if (thisRandomEventResultId > -1)
                 FightTimeline.Instance.AddRandomEventResult(thisRandomEventResultId, r);

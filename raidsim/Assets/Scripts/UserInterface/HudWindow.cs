@@ -30,6 +30,9 @@ namespace dev.susybaka.raidsim.UI
             group = GetComponent<CanvasGroup>();
         }
 
+#if UNITY_EDITOR
+        [ContextMenu("Open Window")]
+#endif
         public void OpenWindow()
         {
             if (group == null)
@@ -45,6 +48,9 @@ namespace dev.susybaka.raidsim.UI
             onOpen.Invoke();
         }
 
+#if UNITY_EDITOR
+        [ContextMenu("Close Window")]
+#endif
         public void CloseWindow()
         {
             if (group == null)

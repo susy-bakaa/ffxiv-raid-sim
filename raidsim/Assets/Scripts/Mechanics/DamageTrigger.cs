@@ -34,6 +34,7 @@ namespace dev.susybaka.raidsim.Mechanics
         [Tag]
         public string ableToHitTag = "Player";
         public string canHitCharacterName = string.Empty;
+        private string[] canHitCharacterNames;
         public Damage damage;
         public AnimationCurve damageFalloff = new AnimationCurve(
             new Keyframe(0f, 1f),
@@ -76,6 +77,8 @@ namespace dev.susybaka.raidsim.Mechanics
         public UnityEvent onSpawn;
         public UnityEvent<CharacterState> onInitialize;
         public UnityEvent<CharacterCollection> onTrigger;
+        public UnityEvent<List<CharacterState>> onOccupied;
+        public UnityEvent onVacated;
 
         private int id = 0;
         private bool inProgress = false;
@@ -102,7 +105,7 @@ namespace dev.susybaka.raidsim.Mechanics
 
                 // Draw at the collider's offset position in world space
                 Vector3 offsetPosition = transform.position;
-                
+
                 if (m_collider is BoxCollider boxCollider)
                 {
                     offsetPosition += boxCollider.center;
@@ -160,6 +163,14 @@ namespace dev.susybaka.raidsim.Mechanics
             {
                 colliderWaDisabled = true;
             }
+
+            string[] names = canHitCharacterName.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            canHitCharacterNames = new string[names.Length];
+
+            for (int i = 0; i < names.Length; i++)
+            {
+                canHitCharacterNames[i] = names[i].Trim();
+            }
         }
 
         private void Start()
@@ -192,6 +203,8 @@ namespace dev.susybaka.raidsim.Mechanics
                 return;
             }
 
+            initialized = true;
+
             if (delay > 0f)
             {
                 visualDelay = delay;
@@ -207,7 +220,8 @@ namespace dev.susybaka.raidsim.Mechanics
             {
                 if (triggerDelayVariance > 0f)
                     triggerDelay += Random.Range(0f, triggerDelayVariance);
-                Utilities.FunctionTimer.Create(this, () => {
+                Utilities.FunctionTimer.Create(this, () =>
+                {
                     if (!inProgress)
                         StartDamageTrigger();
                 }, triggerDelay, $"{id}_{damageName}_{gameObject.name}_trigger_delay", false, true);
@@ -219,8 +233,6 @@ namespace dev.susybaka.raidsim.Mechanics
             }
 
             onInitialize.Invoke(owner);
-
-            initialized = true;
         }
 
         public void ResetOwner()
@@ -267,8 +279,25 @@ namespace dev.susybaka.raidsim.Mechanics
                     {
                         if (!string.IsNullOrEmpty(canHitCharacterName))
                         {
-                            if (!playerState.characterName.ToLower().Contains(canHitCharacterName.ToLower()))
-                                return;
+                            if (canHitCharacterNames != null && canHitCharacterNames.Length > 0)
+                            {
+                                bool nameMatchFound = false;
+                                foreach (string name in canHitCharacterNames)
+                                {
+                                    if (playerState.characterName.ToLower().Contains(name.ToLower()))
+                                    {
+                                        nameMatchFound = true;
+                                        break;
+                                    }
+                                }
+                                if (!nameMatchFound)
+                                    return;
+                            }
+                            else
+                            {
+                                if (!playerState.characterName.ToLower().Contains(canHitCharacterName.ToLower()))
+                                    return;
+                            }
                         }
 
                         if (currentPlayers.Contains(playerState))
@@ -285,6 +314,8 @@ namespace dev.susybaka.raidsim.Mechanics
 
                         if (!inProgress && playerActivated && initialized)
                             StartDamageTrigger();
+
+                        UpdateOccupancyState();
                     }
                 }
             }
@@ -299,9 +330,27 @@ namespace dev.susybaka.raidsim.Mechanics
                     {
                         if (!string.IsNullOrEmpty(canHitCharacterName))
                         {
-                            if (!playerState.characterName.ToLower().Contains(canHitCharacterName.ToLower()))
-                                return;
+                            if (canHitCharacterNames != null && canHitCharacterNames.Length > 0)
+                            {
+                                bool nameMatchFound = false;
+                                foreach (string name in canHitCharacterNames)
+                                {
+                                    if (playerState.characterName.ToLower().Contains(name.ToLower()))
+                                    {
+                                        nameMatchFound = true;
+                                        break;
+                                    }
+                                }
+                                if (!nameMatchFound)
+                                    return;
+                            }
+                            else
+                            {
+                                if (!playerState.characterName.ToLower().Contains(canHitCharacterName.ToLower()))
+                                    return;
+                            }
                         }
+
                         if (!currentPlayers.Contains(playerState))
                             return;
                         if (playerState == owner && ignoresOwner)
@@ -313,6 +362,8 @@ namespace dev.susybaka.raidsim.Mechanics
 
                         collidersInsideTrigger.Remove(other);
                         currentPlayers.Remove(playerState);
+
+                        UpdateOccupancyState();
                     }
                 }
             }
@@ -336,8 +387,25 @@ namespace dev.susybaka.raidsim.Mechanics
                         {
                             if (!string.IsNullOrEmpty(canHitCharacterName))
                             {
-                                if (!playerState.characterName.ToLower().Contains(canHitCharacterName.ToLower()))
-                                    return;
+                                if (canHitCharacterNames != null && canHitCharacterNames.Length > 0)
+                                {
+                                    bool nameMatchFound = false;
+                                    foreach (string name in canHitCharacterNames)
+                                    {
+                                        if (playerState.characterName.ToLower().Contains(name.ToLower()))
+                                        {
+                                            nameMatchFound = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!nameMatchFound)
+                                        return;
+                                }
+                                else
+                                {
+                                    if (!playerState.characterName.ToLower().Contains(canHitCharacterName.ToLower()))
+                                        return;
+                                }
                             }
 
                             if (!updateLive && currentPlayers.Contains(playerState))
@@ -369,9 +437,27 @@ namespace dev.susybaka.raidsim.Mechanics
                             {
                                 if (!string.IsNullOrEmpty(canHitCharacterName))
                                 {
-                                    if (!playerState.characterName.ToLower().Contains(canHitCharacterName.ToLower()))
-                                        return;
+                                    if (canHitCharacterNames != null && canHitCharacterNames.Length > 0)
+                                    {
+                                        bool nameMatchFound = false;
+                                        foreach (string name in canHitCharacterNames)
+                                        {
+                                            if (playerState.characterName.ToLower().Contains(name.ToLower()))
+                                            {
+                                                nameMatchFound = true;
+                                                break;
+                                            }
+                                        }
+                                        if (!nameMatchFound)
+                                            return;
+                                    }
+                                    else
+                                    {
+                                        if (!playerState.characterName.ToLower().Contains(canHitCharacterName.ToLower()))
+                                            return;
+                                    }
                                 }
+
                                 if (!updateLive && !currentPlayers.Contains(playerState))
                                     return;
                                 if (playerState == owner && ignoresOwner)
@@ -417,8 +503,25 @@ namespace dev.susybaka.raidsim.Mechanics
                     {
                         if (!string.IsNullOrEmpty(canHitCharacterName))
                         {
-                            if (!playerState.characterName.ToLower().Contains(canHitCharacterName.ToLower()))
-                                return;
+                            if (canHitCharacterNames != null && canHitCharacterNames.Length > 0)
+                            {
+                                bool nameMatchFound = false;
+                                foreach (string name in canHitCharacterNames)
+                                {
+                                    if (playerState.characterName.ToLower().Contains(name.ToLower()))
+                                    {
+                                        nameMatchFound = true;
+                                        break;
+                                    }
+                                }
+                                if (!nameMatchFound)
+                                    return;
+                            }
+                            else
+                            {
+                                if (!playerState.characterName.ToLower().Contains(canHitCharacterName.ToLower()))
+                                    return;
+                            }
                         }
 
                         if (!currentPlayers.Contains(playerState))
@@ -432,6 +535,8 @@ namespace dev.susybaka.raidsim.Mechanics
 
                         collidersInsideTrigger.Remove(other);
                         currentPlayers.Remove(playerState);
+
+                        UpdateOccupancyState();
                     }
                 }
             }
@@ -446,9 +551,27 @@ namespace dev.susybaka.raidsim.Mechanics
                     {
                         if (!string.IsNullOrEmpty(canHitCharacterName))
                         {
-                            if (!playerState.characterName.ToLower().Contains(canHitCharacterName.ToLower()))
-                                return;
+                            if (canHitCharacterNames != null && canHitCharacterNames.Length > 0)
+                            {
+                                bool nameMatchFound = false;
+                                foreach (string name in canHitCharacterNames)
+                                {
+                                    if (playerState.characterName.ToLower().Contains(name.ToLower()))
+                                    {
+                                        nameMatchFound = true;
+                                        break;
+                                    }
+                                }
+                                if (!nameMatchFound)
+                                    return;
+                            }
+                            else
+                            {
+                                if (!playerState.characterName.ToLower().Contains(canHitCharacterName.ToLower()))
+                                    return;
+                            }
                         }
+
                         if (currentPlayers.Contains(playerState))
                             return;
                         if (playerState == owner && ignoresOwner)
@@ -463,6 +586,8 @@ namespace dev.susybaka.raidsim.Mechanics
 
                         if (!inProgress && playerActivated && initialized)
                             StartDamageTrigger();
+
+                        UpdateOccupancyState();
                     }
                 }
             }
@@ -543,9 +668,30 @@ namespace dev.susybaka.raidsim.Mechanics
             }
 
             // Kinda hacky way to remove the hidden healer from damage triggers, because enumerations kept getting messed up if they were sometimes hit
-            players = players.Where(p => !p.characterName.ToLower().Contains("hidden") &&
-                                         (string.IsNullOrEmpty(canHitCharacterName) ||
-                                          p.characterName.ToLower().Contains(canHitCharacterName.ToLower()))).ToArray();
+            players = players.Where(p => 
+            {
+                // Exclude hidden characters
+                if (p.characterName.ToLower().Contains("hidden"))
+                    return false;
+    
+                // If no character name filter is set, include all
+                if (string.IsNullOrEmpty(canHitCharacterName))
+                    return true;
+    
+                // If we have an array of character names to check
+                if (canHitCharacterNames != null && canHitCharacterNames.Length > 0)
+                {
+                    foreach (string name in canHitCharacterNames)
+                    {
+                        if (p.characterName.ToLower().Contains(name.ToLower()))
+                            return true;
+                    }
+                    return false;
+                }
+    
+                // Fall back to single character name check
+                return p.characterName.ToLower().Contains(canHitCharacterName.ToLower());
+            }).ToArray();
 
             Damage damagePerPlayer;
 
@@ -816,6 +962,18 @@ namespace dev.susybaka.raidsim.Mechanics
             else
             {
                 return false; // If not a donut or innerRadius is 0, collision is not inside the donut's inner circle, allow the collision
+            }
+        }
+
+        private void UpdateOccupancyState()
+        {
+            if (currentPlayers.Count > 0)
+            {
+                onOccupied.Invoke(currentPlayers);
+            }
+            else
+            {
+                onVacated.Invoke();
             }
         }
     }

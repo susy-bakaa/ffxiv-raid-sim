@@ -13,6 +13,8 @@ namespace dev.susybaka.raidsim.Mechanics
         public bool applyToTarget = true;
         public bool cleans = false;
         public bool allowSubStatuses = false;
+        [Tooltip("If true, the effect will be applied/removed without any popups or effects.")]
+        public bool doSilently = false;
 
         public override void TriggerMechanic(ActionInfo actionInfo)
         {
@@ -37,11 +39,11 @@ namespace dev.susybaka.raidsim.Mechanics
                                 return;
                             }
                         }
-                        actionInfo.target.AddEffect(effect.data, actionInfo.target, false, effect.tag, effect.stacks);
+                        actionInfo.target.AddEffect(effect.data, actionInfo.source != null ? actionInfo.source : actionInfo.target, false, effect.tag, effect.stacks, -1, doSilently);
                     }
                     else
                     {
-                        actionInfo.target.RemoveEffect(effect.data, false, actionInfo.target, effect.tag, effect.stacks);
+                        actionInfo.target.RemoveEffect(effect.data, false, actionInfo.source != null ? actionInfo.source : actionInfo.target, effect.tag, effect.stacks, doSilently);
 
                         if (allowSubStatuses)
                         {
@@ -51,7 +53,7 @@ namespace dev.susybaka.raidsim.Mechanics
                                 {
                                     if (actionInfo.target.HasEffect(effect.data.refreshStatusEffects[i].statusName))
                                     {
-                                        actionInfo.target.RemoveEffect(effect.data.refreshStatusEffects[i], false, actionInfo.target, effect.tag, effect.stacks);
+                                        actionInfo.target.RemoveEffect(effect.data.refreshStatusEffects[i], false, actionInfo.source != null ? actionInfo.source : actionInfo.target, effect.tag, effect.stacks, doSilently);
                                     }
                                 }
                             }

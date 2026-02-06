@@ -15,6 +15,9 @@ namespace dev.susybaka.raidsim.StatusEffects
     public class StatusEffect : MonoBehaviour
     {
         CharacterState character;
+        CharacterState source;
+        [HideInInspector] public CharacterState Character => character;
+        [HideInInspector] public CharacterState Source => source;
 
         [Header("Base")]
         public StatusEffectData data;
@@ -51,9 +54,10 @@ namespace dev.susybaka.raidsim.StatusEffects
         private Image targetHudIcon;
         private StatusEffectIcon icon;
 
-        public void Initialize(CharacterState holder, Transform hudElementParent, Transform partyHudElementParent, Transform targetHudElementParent, Color labelColor)
+        public void Initialize(CharacterState holder, CharacterState source, Transform hudElementParent, Transform partyHudElementParent, Transform targetHudElementParent, Color labelColor)
         {
             character = holder;
+            this.source = source;
             onApplication.AddListener(OnApplication);
             onTick.AddListener(OnTick);
             onUpdate.AddListener(OnUpdate);
@@ -265,7 +269,7 @@ namespace dev.susybaka.raidsim.StatusEffects
                 Destroy(partyHudElement, 0.1f);
             if (hasTargetHudElement)
                 Destroy(targetHudElement, 0.1f);
-            Destroy(gameObject, 0.1f);
+            Destroy(gameObject, 0.25f);
         }
 
         public virtual void OnApplication(CharacterState state)
@@ -332,22 +336,32 @@ namespace dev.susybaka.raidsim.StatusEffects
 
         public virtual void OnExpire(CharacterState state)
         {
-            if (hasHudElement)
-                hudTimer.text = "";
-            if (hasPartyHudElement)
-                partyHudTimer.text = "";
-            if (hasTargetHudElement)
-                targetHudTimer.text = "";
+            // Only clear the timer if the duration is effectively zero
+            // to avoid clearing it prematurely for effects that get cleared while still having time left
+            if (duration <= 0.01f)
+            {
+                if (hasHudElement)
+                    hudTimer.text = "";
+                if (hasPartyHudElement)
+                    partyHudTimer.text = "";
+                if (hasTargetHudElement)
+                    targetHudTimer.text = "";
+            }
         }
 
         public virtual void OnCleanse(CharacterState state)
         {
-            if (hasHudElement)
-                hudTimer.text = "";
-            if (hasPartyHudElement)
-                partyHudTimer.text = "";
-            if (hasTargetHudElement)
-                targetHudTimer.text = "";
+            // Only clear the timer if the duration is effectively zero
+            // to avoid clearing it prematurely for effects that get cleared while still having time left
+            if (duration <= 0.01f)
+            {
+                if (hasHudElement)
+                    hudTimer.text = "";
+                if (hasPartyHudElement)
+                    partyHudTimer.text = "";
+                if (hasTargetHudElement)
+                    targetHudTimer.text = "";
+            }
         }
 
         public virtual void OnReduce(CharacterState state)

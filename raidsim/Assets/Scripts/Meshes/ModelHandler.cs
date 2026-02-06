@@ -190,6 +190,11 @@ namespace dev.susybaka.raidsim.Animations
             characterState.SetAnimator(animator);
         }
 
+        public Animator GetCurrentAnimator()
+        {
+            return activeAnimator;
+        }
+
         public void SetTrigger(string trigger)
         {
             if (activeAnimator == null && activeAnimatorController == null)

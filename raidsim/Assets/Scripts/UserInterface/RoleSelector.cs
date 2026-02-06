@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // This file is part of ffxiv-raid-sim. Linking with the Unity runtime
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
+using System;
 using System.Collections.Generic;
-using UnityEngine;
-using TMPro;
+using dev.susybaka.raidsim.Characters;
 using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.Nodes;
+using TMPro;
+using UnityEngine;
 using static dev.susybaka.raidsim.Core.GlobalData;
 using static dev.susybaka.raidsim.UI.PartyList;
 
@@ -13,6 +15,7 @@ namespace dev.susybaka.raidsim.UI
 {
     public class RoleSelector : MonoBehaviour
     {
+        FightTimeline timeline;
         TMP_Dropdown dropdown;
 
         public PartyList partyList;
@@ -47,6 +50,8 @@ namespace dev.susybaka.raidsim.UI
 
         private void Awake()
         {
+            timeline = FightTimeline.Instance;
+
             if (autoObtainPlayer && partyList != null && partyList.members != null && partyList.members.Count > 0)
             {
                 for (int i = 0; i < partyList.members.Count; i++)
@@ -70,7 +75,15 @@ namespace dev.susybaka.raidsim.UI
 
         private void Update()
         {
+            if (timeline == null)
+                timeline = FightTimeline.Instance;
+
             dropdown.interactable = !FightTimeline.Instance.playing;
+        }
+
+        public void Select()
+        {
+            Select(lastSelected);
         }
 
         public void Select(int value)
@@ -93,7 +106,7 @@ namespace dev.susybaka.raidsim.UI
                 }
                 else
                 {
-                    bots[i].characterState.characterName = $"AI{botNameIndex + 1}";
+                    bots[i].characterState.characterName = GetBotName(botNameIndex, bots[i].characterState);
                     bots[i].characterState.gameObject.SetActive(true);
                     botNameIndex++;
                 }
@@ -118,6 +131,43 @@ namespace dev.susybaka.raidsim.UI
 
             if (partyList.SetupDone)
                 partyList.UpdatePartyList();
+        }
+
+        public string GetBotName(int index, CharacterState state)
+        {
+            string bName = $"AI{index + 1}";
+
+            if (timeline != null)
+            {
+                switch (timeline.botNameType)
+                {
+                    case 1:
+                        bName = GlobalVariables.botRoleNames[index];
+                        break;
+                    case 2:
+                        bName = GlobalVariables.botRoleWesternShortNames[index];
+                        break;
+                    case 3:
+                        bName = GlobalVariables.botRoleEasternShortNames[index];
+                        break;
+                }
+
+                if (timeline.colorBotNamesByRole)
+                {
+                    state.colorNameplateBasedOnAggression = false;
+                    state.nameplateColor = GlobalVariables.botRoleColors[index];
+                }
+                else
+                {
+                    state.colorNameplateBasedOnAggression = true;
+                }
+            }
+            else
+            {
+                state.colorNameplateBasedOnAggression = true;
+            }
+
+            return bName;
         }
 
         [System.Serializable]

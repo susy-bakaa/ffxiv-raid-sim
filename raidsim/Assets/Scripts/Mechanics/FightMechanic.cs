@@ -34,6 +34,14 @@ namespace dev.susybaka.raidsim.Mechanics
             FightTimeline.Instance.onReset.AddListener(InterruptMechanic);
         }
 
+#if UNITY_EDITOR
+        [ContextMenu("Trigger Mechanic (Editor)")]
+        public void TriggerMechanicEditor()
+        {
+            TriggerMechanic(new ActionInfo(null, null, null));
+        }
+#endif
+
         public void TriggerMechanic(CharacterCollection characterCollection)
         {
             for (int i = 0; i < characterCollection.values.Count; i++)
@@ -94,14 +102,17 @@ namespace dev.susybaka.raidsim.Mechanics
         {
             if (!mechanicEnabled)
             {
-                string nameToLog = string.IsNullOrEmpty(mechanicName) ? "Unnamed mechanic" : mechanicName;
-                Debug.Log($"[FightMechanic] '{nameToLog}' ({gameObject.name}) is not enabled! Interruption aborted.");
+                if (log)
+                {
+                    string nameToLog = string.IsNullOrEmpty(mechanicName) ? "Unnamed mechanic" : mechanicName;
+                    Debug.Log($"[FightMechanic] '{nameToLog}' ({gameObject.name}) is not enabled! Interruption aborted.", gameObject);
+                }
                 return;
             }
             if (log)
             {
                 string nameToLog = string.IsNullOrEmpty(mechanicName) ? "Unnamed mechanic" : mechanicName;
-                Debug.Log($"[FightMechanic] '{nameToLog}' ({gameObject.name}) was interrupted with ActionInfo (action: '{actionInfo.action?.gameObject}', source: '{actionInfo.source?.characterName}', target: '{actionInfo.target?.characterName}', targetIsPlayer: '{actionInfo.targetIsPlayer}')");
+                Debug.Log($"[FightMechanic] '{nameToLog}' ({gameObject.name}) was interrupted with ActionInfo (action: '{actionInfo.action?.gameObject}', source: '{actionInfo.source?.characterName}', target: '{actionInfo.target?.characterName}', targetIsPlayer: '{actionInfo.targetIsPlayer}')", gameObject);
             }
             triggered = false;
         }
@@ -120,16 +131,19 @@ namespace dev.susybaka.raidsim.Mechanics
                     if (FightTimeline.Instance.executedMechanics.Contains(mechanicName))
                     {
                         if (log)
-                            Debug.Log($"[DelayedMechanic ({gameObject.name})] Global mechanic {mechanicName} already triggered");
+                            Debug.Log($"[DelayedMechanic ({gameObject.name})] Global mechanic {mechanicName} already triggered", gameObject);
                         return false;
                     }
                     FightTimeline.Instance.executedMechanics.Add(mechanicName);
                 }
             }
-            if (!mechanicEnabled && log)
+            if (!mechanicEnabled)
             {
-                string nameToLog = string.IsNullOrEmpty(mechanicName) ? "Unnamed mechanic" : mechanicName;
-                Debug.Log($"[FightMechanic] '{nameToLog}' ({gameObject.name}) is not enabled! Execution aborted.");
+                if (log)
+                {
+                    string nameToLog = string.IsNullOrEmpty(mechanicName) ? "Unnamed mechanic" : mechanicName;
+                    Debug.Log($"[FightMechanic] '{nameToLog}' ({gameObject.name}) is not enabled! Execution aborted.", gameObject);
+                }
                 return false;
             }
             if (triggered && onlyTriggerOnce)
@@ -137,7 +151,7 @@ namespace dev.susybaka.raidsim.Mechanics
                 if (log)
                 {
                     string nameToLog = string.IsNullOrEmpty(mechanicName) ? "Unnamed mechanic" : mechanicName;
-                    Debug.Log($"[FightMechanic] '{nameToLog}' ({gameObject.name}) has already been triggered once! Execution aborted.");
+                    Debug.Log($"[FightMechanic] '{nameToLog}' ({gameObject.name}) has already been triggered once! Execution aborted.", gameObject);
                 }
                 return false;
             }
@@ -145,7 +159,7 @@ namespace dev.susybaka.raidsim.Mechanics
             if (log)
             {
                 string nameToLog = string.IsNullOrEmpty(mechanicName) ? "Unnamed mechanic" : mechanicName;
-                Debug.Log($"[FightMechanic] '{nameToLog}' ({gameObject.name}) triggered with ActionInfo (action: '{actionInfo.action?.gameObject}', source: '{actionInfo.source?.characterName}', target: '{actionInfo.target?.characterName}', targetIsPlayer: '{actionInfo.targetIsPlayer}')");
+                Debug.Log($"[FightMechanic] '{nameToLog}' ({gameObject.name}) triggered with ActionInfo (action: '{actionInfo.action?.gameObject}', source: '{actionInfo.source?.characterName}', target: '{actionInfo.target?.characterName}', targetIsPlayer: '{actionInfo.targetIsPlayer}')", gameObject);
             }
             return true;
         }

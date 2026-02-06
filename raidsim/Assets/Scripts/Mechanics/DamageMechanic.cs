@@ -11,6 +11,7 @@ namespace dev.susybaka.raidsim.Mechanics
         [Header("Damage Settings")]
         public Damage damage;
         public bool kill = false;
+        public string onlyHitCharacterName = string.Empty;
 
         public override void TriggerMechanic(ActionInfo actionInfo)
         {
@@ -19,12 +20,32 @@ namespace dev.susybaka.raidsim.Mechanics
 
             if (actionInfo.target != null)
             {
+                if (!string.IsNullOrEmpty(onlyHitCharacterName))
+                {
+                    if (!actionInfo.target.characterName.ToLower().Contains(onlyHitCharacterName.ToLower()))
+                    {
+                        if (log)
+                            Debug.Log("DamageMechanic: onlyHitCharacterName check failed, skipping damage.");
+                        return;
+                    }
+                }
+
                 actionInfo.target.ModifyHealth(damage, kill);
                 if (log)
                     Debug.Log("DamageMechanic: actionInfo.target.ModifyHealth(damage, kill);");
             }
             else if (actionInfo.source != null)
             {
+                if (!string.IsNullOrEmpty(onlyHitCharacterName))
+                {
+                    if (!actionInfo.source.characterName.ToLower().Contains(onlyHitCharacterName.ToLower()))
+                    {
+                        if (log)
+                            Debug.Log("DamageMechanic: onlyHitCharacterName check failed, skipping damage.");
+                        return;
+                    }
+                }
+
                 actionInfo.source.ModifyHealth(damage, kill);
                 if (log)
                     Debug.Log("DamageMechanic: actionInfo.source.ModifyHealth(damage, kill);");
