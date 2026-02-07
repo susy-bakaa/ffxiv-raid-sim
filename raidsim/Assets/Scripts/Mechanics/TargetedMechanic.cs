@@ -268,6 +268,17 @@ namespace dev.susybaka.raidsim.Mechanics
             }
         }
 
+        public override void InterruptMechanic(ActionInfo actionInfo)
+        {
+            base.InterruptMechanic(actionInfo);
+
+            lastCandidates.Clear();
+            preDefinedTargets.Clear();
+            targetList.Clear();
+            preDefinedTargets = new List<CharacterState>(originalPreDefinedTargets);
+            targetList = new List<CharacterState>(originalTargetList);
+        }
+
         private List<CharacterState> GetRandomCandidates(List<CharacterState> candidates)
         {
             if (candidates == null || candidates.Count == 0 || amountOfTargets <= 0)

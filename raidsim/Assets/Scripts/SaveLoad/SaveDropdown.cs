@@ -24,7 +24,7 @@ namespace dev.susybaka.raidsim.SaveLoad
         public UnityEvent<int> onStart;
 
         IniStorage ini;
-        int id = 0;
+        int id = -1;
 
 #if UNITY_EDITOR
         private void OnValidate()
@@ -62,6 +62,14 @@ namespace dev.susybaka.raidsim.SaveLoad
                 dropdown.onValueChanged.Invoke(savedValue);
                 onStart.Invoke(savedValue);
             }
+        }
+
+        public void LoadSavedValue()
+        {
+            if (id < 0)
+                return;
+
+            OnStart();
         }
 
         public void SaveValue(int value)

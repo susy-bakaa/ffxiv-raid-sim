@@ -1,3 +1,4 @@
+using dev.susybaka.raidsim.Core;
 using UnityEngine;
 
 namespace dev.susybaka.raidsim.Visuals
@@ -24,6 +25,22 @@ namespace dev.susybaka.raidsim.Visuals
             {
                 originalAlpha = tintEffect.alpha;
                 originalColor = tintEffect.tintColor;
+            }
+        }
+
+        private void OnEnable()
+        {
+            if (FightTimeline.Instance != null)
+            {
+                FightTimeline.Instance.onReset.AddListener(ResetEffect);
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (FightTimeline.Instance != null)
+            {
+                FightTimeline.Instance.onReset.RemoveListener(ResetEffect);
             }
         }
 
@@ -61,7 +78,7 @@ namespace dev.susybaka.raidsim.Visuals
                 {
                     float alpha = tintEffect.alpha;
                     if (tween != null)
-                    {   
+                    {
                         if (log)
                             Debug.Log($"[ScreenSpaceEffect {gameObject.name}] Cancelling existing tween (id: {tween.id}) before starting new fade.\nalpha '{alpha}' originalAlpha '{originalAlpha}'");
                         LeanTween.cancel(tintEffect.gameObject, tween.id);
@@ -89,6 +106,20 @@ namespace dev.susybaka.raidsim.Visuals
             {
                 tintEffect.tintColor = originalColor;
             }
+        }
+
+        public void ResetAlpha()
+        {
+            if (tintEffect != null)
+            {
+                tintEffect.alpha = originalAlpha;
+            }
+        }
+
+        public void ResetEffect()
+        {
+            ResetColor();
+            ResetAlpha();
         }
     }
 }

@@ -21,6 +21,7 @@ namespace dev.susybaka.raidsim.SaveLoad
         public bool runInAwake = false;
         public bool runOnReset = false;
         public bool useTimelineGroup = false;
+        public float startDelay = 0f;
 
         public UnityEvent<bool> onStart;
 
@@ -51,7 +52,14 @@ namespace dev.susybaka.raidsim.SaveLoad
 
             if (runInAwake)
             {
-                Begin();
+                if (startDelay > 0f)
+                {
+                    Utilities.FunctionTimer.Create(this, Begin, startDelay, $"SaveButton_{id}_{gameObject.name}_startdelay", false, true);
+                }
+                else
+                {
+                    Begin();
+                }
             }
         }
 
@@ -64,7 +72,14 @@ namespace dev.susybaka.raidsim.SaveLoad
 
             if (!runInAwake)
             {
-                Begin();
+                if (startDelay > 0f)
+                {
+                    Utilities.FunctionTimer.Create(this, Begin, startDelay, $"SaveButton_{id}_{gameObject.name}_startdelay", false, true);
+                }
+                else
+                {
+                    Begin();
+                }
             }
         }
 

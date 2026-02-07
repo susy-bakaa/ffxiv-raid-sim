@@ -30,18 +30,30 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: 925444116ece9bb4988a776d30a8a5c0, type: 2}
     - target: {fileID: 2229154260702925997, guid: 30bdff7f279cab049b2f3837d0894cea, type: 3}
       propertyPath: onHit.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2229154260702925997, guid: 30bdff7f279cab049b2f3837d0894cea, type: 3}
       propertyPath: onHit.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2229154260702925997, guid: 30bdff7f279cab049b2f3837d0894cea, type: 3}
+      propertyPath: onHit.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2229154260702925997, guid: 30bdff7f279cab049b2f3837d0894cea, type: 3}
       propertyPath: onHit.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 4098597337749215777}
+      objectReference: {fileID: 5110444332033845357}
+    - target: {fileID: 2229154260702925997, guid: 30bdff7f279cab049b2f3837d0894cea, type: 3}
+      propertyPath: onHit.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 2480027240240617522}
     - target: {fileID: 2229154260702925997, guid: 30bdff7f279cab049b2f3837d0894cea, type: 3}
       propertyPath: onHit.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2229154260702925997, guid: 30bdff7f279cab049b2f3837d0894cea, type: 3}
+      propertyPath: onHit.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2229154260702925997, guid: 30bdff7f279cab049b2f3837d0894cea, type: 3}
@@ -49,11 +61,23 @@ PrefabInstance:
       value: TriggerMechanic
       objectReference: {fileID: 0}
     - target: {fileID: 2229154260702925997, guid: 30bdff7f279cab049b2f3837d0894cea, type: 3}
+      propertyPath: onHit.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: TriggerMechanic
+      objectReference: {fileID: 0}
+    - target: {fileID: 2229154260702925997, guid: 30bdff7f279cab049b2f3837d0894cea, type: 3}
       propertyPath: onHit.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: dev.susybaka.raidsim.Mechanics.FightMechanic, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 2229154260702925997, guid: 30bdff7f279cab049b2f3837d0894cea, type: 3}
+      propertyPath: onHit.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: dev.susybaka.raidsim.Mechanics.FightMechanic, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2229154260702925997, guid: 30bdff7f279cab049b2f3837d0894cea, type: 3}
       propertyPath: onHit.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 2229154260702925997, guid: 30bdff7f279cab049b2f3837d0894cea, type: 3}
+      propertyPath: onHit.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 3424001749709851483, guid: 30bdff7f279cab049b2f3837d0894cea, type: 3}
@@ -134,13 +158,42 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 9063424163889276113, guid: 30bdff7f279cab049b2f3837d0894cea, type: 3}
       insertIndex: 6
+      addedObject: {fileID: 5110444332033845357}
+    - targetCorrespondingSourceObject: {fileID: 9063424163889276113, guid: 30bdff7f279cab049b2f3837d0894cea, type: 3}
+      insertIndex: 7
       addedObject: {fileID: 4098597337749215777}
+    - targetCorrespondingSourceObject: {fileID: 9063424163889276113, guid: 30bdff7f279cab049b2f3837d0894cea, type: 3}
+      insertIndex: 8
+      addedObject: {fileID: 2480027240240617522}
+    - targetCorrespondingSourceObject: {fileID: 9063424163889276113, guid: 30bdff7f279cab049b2f3837d0894cea, type: 3}
+      insertIndex: 9
+      addedObject: {fileID: 7738088549438852353}
   m_SourcePrefab: {fileID: 100100000, guid: 30bdff7f279cab049b2f3837d0894cea, type: 3}
 --- !u!1 &2085327699830049545 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 9063424163889276113, guid: 30bdff7f279cab049b2f3837d0894cea, type: 3}
   m_PrefabInstance: {fileID: 7005158177510059992}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5110444332033845357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2085327699830049545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04f38061dda15d748938eaad15e25c94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: 
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  allowCharacters:
+  - Player
+  mechanic: {fileID: 4098597337749215777}
 --- !u!114 &4098597337749215777
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -175,6 +228,81 @@ MonoBehaviour:
   Xaxis: 1
   Yaxis: 1
   Zaxis: 1
+--- !u!114 &2480027240240617522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2085327699830049545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04f38061dda15d748938eaad15e25c94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: 
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  allowCharacters:
+  - AI
+  - Tank
+  - Healer
+  - Melee
+  - Ranged
+  - MT
+  - OT
+  - ST
+  - H1
+  - H2
+  - M1
+  - M2
+  - R1
+  - R2
+  - D1
+  - D2
+  - D3
+  - D4
+  mechanic: {fileID: 7738088549438852353}
+--- !u!114 &7738088549438852353
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2085327699830049545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8657138b821026d4cb38011b4367e75d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: 
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  lockActions: 1
+  lockMovement: 1
+  dashToTarget: 1
+  delay: 0
+  duration: 2
+  dashHeight: 5
+  overrideTargetPosition: {x: 0, y: 0, z: 0}
+  overrideTarget: {fileID: 0}
+  overrideTargetTag: node7
+  overrideTargetEffect:
+    name: 
+    data: {fileID: 0}
+    tag: 0
+    stacks: 0
+  dashDirection: {x: 0, y: 0, z: 1}
+  dashDistance: 10
+  ease: 4
+  moveAxis:
+    x: 1
+    y: 0
+    z: 1
 --- !u!4 &3650700869817870704 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6025454725629789864, guid: 30bdff7f279cab049b2f3837d0894cea, type: 3}

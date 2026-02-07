@@ -16,6 +16,7 @@ namespace dev.susybaka.raidsim.Core
         private static ChatHandler _instance;
 
         public event Action<ChatMessage> MessageAdded;
+        public event Action ChatCleared;
 
         public IReadOnlyList<ChatMessage> History => _history;
 
@@ -82,7 +83,8 @@ namespace dev.susybaka.raidsim.Core
         public void Clear()
         {
             _history.Clear();
-            MessageAdded?.Invoke(new ChatMessage(_nextId++, DateTime.UtcNow, "System", ChatKind.System, ChatChannel.System, "Chat cleared."));
+            ChatCleared?.Invoke();
+            //MessageAdded?.Invoke(new ChatMessage(_nextId++, DateTime.UtcNow, "System", ChatKind.System, ChatChannel.System, "Chat cleared."));
         }
 
         private void Add(ChatMessage msg)

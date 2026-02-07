@@ -2,9 +2,10 @@
 // This file is part of ffxiv-raid-sim. Linking with the Unity runtime
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
 using System.Collections;
-using UnityEngine;
-using NaughtyAttributes;
 using dev.susybaka.raidsim.StatusEffects;
+using dev.susybaka.Shared;
+using NaughtyAttributes;
+using UnityEngine;
 using static dev.susybaka.raidsim.Core.GlobalData;
 using static dev.susybaka.raidsim.StatusEffects.StatusEffectData;
 
@@ -18,8 +19,10 @@ namespace dev.susybaka.raidsim.Mechanics
         public bool dashToTarget = false;
         public float delay = 0.25f;
         public float duration = 0.5f;
+        public float dashHeight = 0f;
         [ShowIf("dashToTarget")] public Vector3 overrideTargetPosition;
         [ShowIf("dashToTarget")] public Transform overrideTarget;
+        [ShowIf("dashToTarget"), Tag] public string overrideTargetTag = string.Empty;
         [ShowIf("dashToTarget")] public StatusEffectInfo overrideTargetEffect;
         [HideIf("dashToTarget")] public Vector3 dashDirection = new Vector3(0f, 0f, 1f);
         [HideIf("dashToTarget")] public float dashDistance = 10f;
@@ -30,6 +33,16 @@ namespace dev.susybaka.raidsim.Mechanics
         LTDescr tween;
         Vector3 targetPosition;
         Vector3 startPosition;
+
+        private void Awake()
+        {
+            if (overrideTarget == null && overrideTargetTag != string.Empty)
+            {
+                GameObject obj = GameObject.FindWithTag(overrideTargetTag);
+                if (obj != null)
+                    overrideTarget = obj.transform;
+            }
+        }
 
         public override void TriggerMechanic(ActionInfo actionInfo)
         {
@@ -129,7 +142,22 @@ namespace dev.susybaka.raidsim.Mechanics
                 targetPosition.z = 0f;
             }
             if (duration > 0)
+            {
+                if (dashHeight > 0f) // Only do the vertical animation if there is a height component to the dash
+                {
+                    float upDuration = duration * 0.4f; // 40% of total duration for going up
+                    float downDuration = duration * 0.6f; // 60% of total duration for coming down
+                    float peakDelay = upDuration * 0.6f; // Small delay at peak (60% into up phase)
+
+                    Vector3 up = new Vector3(0f, actionInfo.source.transform.position.y + dashHeight, 0f);
+                    actionInfo.source.model.LeanMoveLocal(up, upDuration).setEase(LeanTweenType.easeOutQuad).setOnComplete(() =>
+                        Utilities.FunctionTimer.Create(this, () =>
+                            actionInfo.source.model.LeanMoveLocal(Vector3.zero, downDuration).setEase(LeanTweenType.easeInQuad),
+                            peakDelay, $"{gameObject.name}_dash_fall_delay", false, true));
+                }
+
                 tween = actionInfo.source.transform.LeanMove(finalTargetPosition, duration).setEase(ease).setOnComplete(() => ResetState(actionInfo));
+            }
             else
             {
                 actionInfo.source.transform.position = targetPosition;

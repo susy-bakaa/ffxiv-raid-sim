@@ -9,6 +9,7 @@ using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.Nodes;
 using static dev.susybaka.raidsim.Core.GlobalData;
 using static dev.susybaka.raidsim.UI.PartyList;
+using System.Collections;
 
 namespace dev.susybaka.raidsim.UI
 {
@@ -28,6 +29,7 @@ namespace dev.susybaka.raidsim.UI
         [ShowIf("changePlayerGroup")] public int[] spotGroups;
         public int defaultSpot = 4;
         private int lastSelected = 4;
+        public bool aoz = false;
 
 #if UNITY_EDITOR
         private void OnValidate()
@@ -55,7 +57,9 @@ namespace dev.susybaka.raidsim.UI
             Select(defaultSpot);
 
             if (FightTimeline.Instance != null)
-                FightTimeline.Instance.onReset.AddListener(() => Select(lastSelected));
+                FightTimeline.Instance.onReset.AddListener(() => { StopAllCoroutines(); Select(lastSelected); });
+
+            StartCoroutine(IE_DelayedSelect(new WaitForSecondsRealtime(1.1f)));
         }
 
         private void Update()
@@ -64,6 +68,12 @@ namespace dev.susybaka.raidsim.UI
                 timeline = FightTimeline.Instance;
 
             dropdown.interactable = !FightTimeline.Instance.playing;
+        }
+
+        private IEnumerator IE_DelayedSelect(WaitForSecondsRealtime wait)
+        {
+            yield return wait;
+            Select(lastSelected);
         }
 
         public void Select()
@@ -94,7 +104,19 @@ namespace dev.susybaka.raidsim.UI
             }
 
             int botNameIndex = 0;
+            int playerIndex = -1;
 
+            // First loop to assign clock spots and find player index for naming
+            for (int i = 0; i < bots.Length; i++)
+            {
+                bots[i].clockSpot = spots[i];
+
+                if (bots[i].clockSpot == player.playerController.clockSpot)
+                {
+                    playerIndex = i;
+                }
+            }
+            // Second loop to set active state and names based on player index
             for (int i = 0; i < bots.Length; i++)
             {
                 bots[i].clockSpot = spots[i];
@@ -106,7 +128,7 @@ namespace dev.susybaka.raidsim.UI
                 }
                 else
                 {
-                    bots[i].state.characterName = GetBotName(botNameIndex, bots[i].state);
+                    bots[i].state.characterName = GetBotName(botNameIndex, playerIndex, bots[i].state);
                     bots[i].gameObject.SetActive(true);
                     botNameIndex++;
                 }
@@ -116,29 +138,41 @@ namespace dev.susybaka.raidsim.UI
             lastSelected = value;
         }
 
-        public string GetBotName(int index, CharacterState state)
+        public string GetBotName(int index, int pIndex, CharacterState state)
         {
             string bName = $"AI{index + 1}";
 
             if (timeline != null)
             {
-                switch (timeline.botNameType)
+                if (!aoz)
                 {
-                    case 1:
-                        bName = GlobalVariables.botRoleNames[index];
-                        break;
-                    case 2:
-                        bName = GlobalVariables.botRoleWesternShortNames[index];
-                        break;
-                    case 3:
-                        bName = GlobalVariables.botRoleEasternShortNames[index];
-                        break;
+                    if (pIndex != -1 && index >= pIndex)
+                        index++; // If the player is in the list of bots, we need to shift the index for naming since one of the bots will be disabled and not named
+
+                    switch (timeline.botNameType)
+                    {
+                        case 1:
+                            bName = GlobalVariables.botRoleNames[index];
+                            break;
+                        case 2:
+                            bName = GlobalVariables.botRoleWesternShortNames[index];
+                            break;
+                        case 3:
+                            bName = GlobalVariables.botRoleEasternShortNames[index];
+                            break;
+                    }
                 }
+                else
+                    bName = $"BLU {index + 1}"; // If this is a blue mage fight, just name the bots BLU X since the normal names would not make sense
 
                 if (timeline.colorBotNamesByRole)
                 {
                     state.colorNameplateBasedOnAggression = false;
-                    state.nameplateColor = GlobalVariables.botRoleColors[index];
+
+                    if (!aoz)
+                        state.nameplateColor = GlobalVariables.botRoleColors[index]; // If this is not a blue mage fight, use the normal bot role colors
+                    else
+                        state.nameplateColor = GlobalVariables.botRoleColors[GlobalVariables.botRoleColors.Length - 1]; // If this is a blue mage fight, use the last role color for everyone, since all the bots are casters in that case
                 }
                 else
                 {

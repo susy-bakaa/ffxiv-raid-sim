@@ -66,6 +66,7 @@ namespace dev.susybaka.raidsim.UI
             if (!subbed)
             {
                 ChatHandler.Instance.MessageAdded += OnMessageAdded;
+                ChatHandler.Instance.ChatCleared += RebuildTranscriptFromHistory;
                 subbed = true;
             }
 
@@ -82,7 +83,10 @@ namespace dev.susybaka.raidsim.UI
             if (subbed)
             {
                 if (ChatHandler.Instance != null)
+                {
                     ChatHandler.Instance.MessageAdded -= OnMessageAdded;
+                    ChatHandler.Instance.ChatCleared -= RebuildTranscriptFromHistory;
+                }
                 subbed = false;
             }
 
@@ -304,5 +308,6 @@ namespace dev.susybaka.raidsim.UI
         // Convenience API for the rest of your game
         public void PostSystem(string text) => ChatHandler.Instance.PostSystem(text);
         public void PostLog(string text) => ChatHandler.Instance.PostLog(text);
+        public void Clear() => ChatHandler.Instance.Clear();
     }
 }

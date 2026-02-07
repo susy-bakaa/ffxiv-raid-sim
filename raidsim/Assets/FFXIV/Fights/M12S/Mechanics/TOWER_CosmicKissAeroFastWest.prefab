@@ -74,14 +74,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9212352465290656629, guid: 36846b25aa91f5345bfb9491936f8c7e, type: 3}
       propertyPath: onHit.m_PersistentCalls.m_Calls.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 9212352465290656629, guid: 36846b25aa91f5345bfb9491936f8c7e, type: 3}
       propertyPath: onHit.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9212352465290656629, guid: 36846b25aa91f5345bfb9491936f8c7e, type: 3}
+      propertyPath: onHit.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9212352465290656629, guid: 36846b25aa91f5345bfb9491936f8c7e, type: 3}
       propertyPath: onHit.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 7750716144276747492}
+    - target: {fileID: 9212352465290656629, guid: 36846b25aa91f5345bfb9491936f8c7e, type: 3}
+      propertyPath: onHit.m_PersistentCalls.m_Calls.Array.data[2].m_Target
       value: 
       objectReference: {fileID: -631422196552418927}
     - target: {fileID: 9212352465290656629, guid: 36846b25aa91f5345bfb9491936f8c7e, type: 3}
@@ -89,15 +97,31 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 9212352465290656629, guid: 36846b25aa91f5345bfb9491936f8c7e, type: 3}
+      propertyPath: onHit.m_PersistentCalls.m_Calls.Array.data[2].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9212352465290656629, guid: 36846b25aa91f5345bfb9491936f8c7e, type: 3}
       propertyPath: onHit.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: TriggerMechanic
+      objectReference: {fileID: 0}
+    - target: {fileID: 9212352465290656629, guid: 36846b25aa91f5345bfb9491936f8c7e, type: 3}
+      propertyPath: onHit.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
       value: SetResult
       objectReference: {fileID: 0}
     - target: {fileID: 9212352465290656629, guid: 36846b25aa91f5345bfb9491936f8c7e, type: 3}
       propertyPath: onHit.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: dev.susybaka.raidsim.Mechanics.FightMechanic, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 9212352465290656629, guid: 36846b25aa91f5345bfb9491936f8c7e, type: 3}
+      propertyPath: onHit.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
       value: dev.susybaka.raidsim.Events.SetRandomEventResult, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 9212352465290656629, guid: 36846b25aa91f5345bfb9491936f8c7e, type: 3}
       propertyPath: onHit.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 9212352465290656629, guid: 36846b25aa91f5345bfb9491936f8c7e, type: 3}
+      propertyPath: onHit.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -131,3 +155,14 @@ MonoBehaviour:
   party: {fileID: 0}
   autoFindParty: 1
   characters: []
+--- !u!114 &7750716144276747492 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2480027240240617522, guid: 36846b25aa91f5345bfb9491936f8c7e, type: 3}
+  m_PrefabInstance: {fileID: 5330785203983330518}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6127801058697848799}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04f38061dda15d748938eaad15e25c94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

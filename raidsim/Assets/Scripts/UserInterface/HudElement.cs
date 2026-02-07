@@ -160,11 +160,31 @@ namespace dev.susybaka.raidsim.UI
             }
         }
 
+        private void OnEnable()
+        {
+            if (FightTimeline.Instance != null)
+            {
+                FightTimeline.Instance.onReset.AddListener(ResetElement);
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (FightTimeline.Instance != null)
+            {
+                FightTimeline.Instance.onReset.RemoveListener(ResetElement);
+            }
+        }
+
         private void OnDestroy()
         {
             if (elementGroup != null)
             {
                 elementGroup.RemoveElement(this);
+            }
+            if (FightTimeline.Instance != null)
+            {
+                FightTimeline.Instance.onReset.RemoveListener(ResetElement);
             }
         }
 
@@ -309,6 +329,12 @@ namespace dev.susybaka.raidsim.UI
         public void Initialize()
         {
             onInitialize.Invoke(new HudElementEventInfo(this));
+        }
+
+        public void ResetElement()
+        {
+            selected = false;
+            wasSelected = false;
         }
 
         public void ChangeColors(bool alt)

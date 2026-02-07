@@ -97,6 +97,7 @@ namespace dev.susybaka.raidsim.Core
             }
 #endif
             originalArenaIndex = currentArenaIndex;
+            ChangeArenaModel(originalArenaIndex);
         }
 
         private void Start()
@@ -150,22 +151,25 @@ namespace dev.susybaka.raidsim.Core
                         }
                     }
 
-                    if (originalArenaIndex >= 0 && originalArenaIndex < arenaModelData.Length)
+                    if (allArenaModelsLoaded)
                     {
-                        arenaModelData[originalArenaIndex].model?.SetActive(true);
-                        arenaModelData[originalArenaIndex].collision?.SetActive(true);
-                        for (int j = 0; j < environmentalLights.Length; j++)
+                        if (originalArenaIndex >= 0 && originalArenaIndex < arenaModelData.Length)
                         {
-                            environmentalLights[j].color = arenaModelData[originalArenaIndex].ambientLightColor;
+                            arenaModelData[originalArenaIndex].model?.SetActive(true);
+                            arenaModelData[originalArenaIndex].collision?.SetActive(true);
+                            for (int j = 0; j < environmentalLights.Length; j++)
+                            {
+                                environmentalLights[j].color = arenaModelData[originalArenaIndex].ambientLightColor;
+                            }
                         }
-                    }
-                    else
-                    {
-                        arenaModelData[0].model?.SetActive(true);
-                        arenaModelData[0].collision?.SetActive(true);
-                        for (int j = 0; j < environmentalLights.Length; j++)
+                        else
                         {
-                            environmentalLights[j].color = arenaModelData[0].ambientLightColor;
+                            arenaModelData[0].model?.SetActive(true);
+                            arenaModelData[0].collision?.SetActive(true);
+                            for (int j = 0; j < environmentalLights.Length; j++)
+                            {
+                                environmentalLights[j].color = arenaModelData[0].ambientLightColor;
+                            }
                         }
                     }
                 }
@@ -262,14 +266,14 @@ namespace dev.susybaka.raidsim.Core
                 if (i == index)
                 {
                     if (log)
-                        Debug.Log($"[EnvironmentHandler] Enabling collision for arena model: {arenaModelData[i].name}.");
+                        Debug.Log($"[EnvironmentHandler] Enabling collision ({arenaModelData[i].collision.name}) for arena model: {arenaModelData[i].name}.");
                     if (arenaModelData[i].collision != null)
                         arenaModelData[i].collision.SetActive(true);
                 }
                 else
                 {
                     if (log)
-                        Debug.Log($"[EnvironmentHandler] Disabling collision for arena model: {arenaModelData[i].name}.");
+                        Debug.Log($"[EnvironmentHandler] Disabling collision ({arenaModelData[i].collision.name}) for arena model: {arenaModelData[i].name}.");
                     if (arenaModelData[i].collision != null)
                         arenaModelData[i].collision.SetActive(false);
                 }

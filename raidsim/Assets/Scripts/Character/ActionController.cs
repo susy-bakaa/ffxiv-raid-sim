@@ -486,6 +486,10 @@ namespace dev.susybaka.raidsim.Actions
                 castBarGroup.alpha = 0f;
             if (castBarGroupParty != null)
                 castBarGroupParty.alpha = 0f;
+            actionQueue.Clear();
+#if UNITY_EDITOR
+            _actionQueue.Clear();
+#endif
         }
 
         public void SetAnimator(Animator animator)

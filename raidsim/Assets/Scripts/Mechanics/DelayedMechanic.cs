@@ -17,9 +17,12 @@ namespace dev.susybaka.raidsim.Mechanics
         public UnityEvent<ActionInfo> onDelayedTrigger;
 
         private Coroutine ieTriggerMechanicDelayed = null;
+        private float originalDelay = 0f;
 
         private void Start()
         {
+            originalDelay = delay;
+
             if (startAutomatically)
             {
                 if (FightTimeline.Instance != null)
@@ -72,6 +75,7 @@ namespace dev.susybaka.raidsim.Mechanics
         {
             StopAllCoroutines();
             ieTriggerMechanicDelayed = null;
+            delay = originalDelay;
         }
     }
 }

@@ -119,6 +119,11 @@ namespace dev.susybaka.raidsim.UI
                 AudioManager.Instance.Play(FightTimeline.Instance.ReloadSound, FightTimeline.Instance.AudioVolume);
             }
 
+            if (ChatHandler.Instance != null)
+            {
+                ChatHandler.Instance.Clear();
+            }
+
             if (ieLoadSceneDelayed == null)
             {
                 ieLoadSceneDelayed = StartCoroutine(IE_LoadSceneDelayed(originalScene, new WaitForSeconds(loadDelay)));
@@ -127,6 +132,11 @@ namespace dev.susybaka.raidsim.UI
 
         public void Load()
         {
+            if (ChatHandler.Instance != null)
+            {
+                ChatHandler.Instance.Clear();
+            }
+
             if (ieLoadSceneDelayed == null)
             {
                 ieLoadSceneDelayed = StartCoroutine(IE_LoadSceneDelayed(currentScene, new WaitForSeconds(loadDelay)));

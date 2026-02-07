@@ -30,8 +30,22 @@ namespace dev.susybaka.raidsim.Mechanics
             {
                 log = true;
             }
+        }
 
-            FightTimeline.Instance.onReset.AddListener(InterruptMechanic);
+        private void OnEnable()
+        {
+            if (FightTimeline.Instance != null)
+            {
+                FightTimeline.Instance.onReset.AddListener(InterruptMechanic);
+            }
+        }
+
+        void OnDisable()
+        {
+            if (FightTimeline.Instance != null)
+            {
+                FightTimeline.Instance.onReset.RemoveListener(InterruptMechanic);
+            }
         }
 
 #if UNITY_EDITOR

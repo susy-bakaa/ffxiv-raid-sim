@@ -173,7 +173,7 @@ namespace dev.susybaka.raidsim.Characters
                     }
                 }
 
-                float stoppingDistance = 0.05f; // Adjust as needed
+                float stoppingDistance = 0.1f; // was 0.05f, increased to prevent jittering when very close to the target on some platforms
                 if (distanceToTarget > stoppingDistance)
                 {
                     if (sliding && slideDistance > 0f && botTimeline != null && botTimeline.currentTarget != null)

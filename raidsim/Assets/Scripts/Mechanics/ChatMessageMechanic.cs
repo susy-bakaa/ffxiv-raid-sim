@@ -45,6 +45,14 @@ namespace dev.susybaka.raidsim.Mechanics
             if (!CanTrigger(actionInfo))
                 return;
 
+            if (clearChatInstead && ChatHandler.Instance != null)
+            {
+                if (log)
+                    Debug.Log($"[ChatMessageMechanic ({gameObject.name})] Clearing chat.");
+                ChatHandler.Instance.Clear();
+                return;
+            }    
+
             if (chatWindow == null)
                 chatWindow = ChatWindow.Instance;
 

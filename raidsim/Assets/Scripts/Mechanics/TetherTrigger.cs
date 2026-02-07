@@ -40,7 +40,7 @@ namespace dev.susybaka.raidsim.Mechanics
         public bool initializeOnStart;
         public bool worldSpace = true;
         public bool grabbable = false;
-        public bool makeSourceTargetTarget = false; // If true, when forming a tether, source character will change their target controller target to the target character.
+        public bool makeSourceTargetTarget = false; // If true, when forming or solving a tether, source character will change their target controller target to the target character.
         public float tickRate = 10f; // Mechanic tick (Hz). 10Hz = 0.1s.
         [ShowIf(nameof(grabbable))] public float grabRadius = 0.6f; // How far from the tether line (in meters) counts as a grab (XZ plane).
         [ShowIf(nameof(grabbable))] public float swapLockSeconds = 0.75f; // After a swap, ignore further swaps for this many seconds.
@@ -413,6 +413,15 @@ namespace dev.susybaka.raidsim.Mechanics
             if (ieSetLineRenderersActive == null)
                 ieSetLineRenderersActive = StartCoroutine(IE_SetLineRenderersActive(false, new WaitForSeconds(visualBreakDelay)));
             Utilities.FunctionTimer.Create(this, () => onSolved.Invoke(actionInfo), breakDelay, $"TetherTrigger_{this}_{GetHashCode()}_Solve_Delay", false, true);
+
+            // Set source's target to the tether target if applicable here as well, in case the tether was swapped before being solved
+            if (makeSourceTargetTarget && tetherSource != null && tetherTarget != null && tetherSource.targetController != null && tetherTarget.targetController != null)
+            {
+                if (tetherTarget.targetController.self != null)
+                {
+                    tetherSource.targetController.SetTarget(tetherTarget.targetController.self);
+                }
+            }
         }
 
         private void TryGrabTether()

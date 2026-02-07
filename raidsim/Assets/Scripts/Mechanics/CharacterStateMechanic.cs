@@ -330,7 +330,14 @@ namespace dev.susybaka.raidsim.Mechanics
                 return;
             }
 
+            if (log)
+                Debug.Log($"[CharacterStateMechanic ({gameObject.name})] Resetting character list of ({characters.Count}) to original pre-defined characters.");
+
+            characters.Clear();
             characters = new List<CharacterState>(originalCharacters);
+
+            if (log)
+                Debug.Log($"[CharacterStateMechanic ({gameObject.name})] Character list reset, now containing {characters.Count} characters.");
         }
         #endregion
 

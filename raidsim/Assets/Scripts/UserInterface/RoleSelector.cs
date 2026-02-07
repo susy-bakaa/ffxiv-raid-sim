@@ -2,6 +2,7 @@
 // This file is part of ffxiv-raid-sim. Linking with the Unity runtime
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using dev.susybaka.raidsim.Characters;
 using dev.susybaka.raidsim.Core;
@@ -25,6 +26,7 @@ namespace dev.susybaka.raidsim.UI
         public BotNode[] spots;
         public List<RoleSelectorPair> roleSelectorPairs = new List<RoleSelectorPair>();
         private int lastSelected = 0;
+        public bool aoz = false;
 
 #if UNITY_EDITOR
         private void OnValidate()
@@ -70,7 +72,9 @@ namespace dev.susybaka.raidsim.UI
             dropdown = GetComponentInChildren<TMP_Dropdown>();
             Select(0);
             if (FightTimeline.Instance != null)
-                FightTimeline.Instance.onReset.AddListener(() => Select(lastSelected));
+                FightTimeline.Instance.onReset.AddListener(() => { StopAllCoroutines(); Select(lastSelected); });
+
+            StartCoroutine(IE_DelayedSelect(new WaitForSecondsRealtime(1.1f)));
         }
 
         private void Update()
@@ -79,6 +83,12 @@ namespace dev.susybaka.raidsim.UI
                 timeline = FightTimeline.Instance;
 
             dropdown.interactable = !FightTimeline.Instance.playing;
+        }
+
+        private IEnumerator IE_DelayedSelect(WaitForSecondsRealtime wait)
+        {
+            yield return wait;
+            Select(lastSelected);
         }
 
         public void Select()
@@ -139,23 +149,32 @@ namespace dev.susybaka.raidsim.UI
 
             if (timeline != null)
             {
-                switch (timeline.botNameType)
+                if (!aoz)
                 {
-                    case 1:
-                        bName = GlobalVariables.botRoleNames[index];
-                        break;
-                    case 2:
-                        bName = GlobalVariables.botRoleWesternShortNames[index];
-                        break;
-                    case 3:
-                        bName = GlobalVariables.botRoleEasternShortNames[index];
-                        break;
+                    switch (timeline.botNameType)
+                    {
+                        case 1:
+                            bName = GlobalVariables.botRoleNames[index];
+                            break;
+                        case 2:
+                            bName = GlobalVariables.botRoleWesternShortNames[index];
+                            break;
+                        case 3:
+                            bName = GlobalVariables.botRoleEasternShortNames[index];
+                            break;
+                    }
                 }
+                else
+                    bName = $"BLU {index + 1}"; // If this is a blue mage fight, just name the bots BLU X since the normal names would not make sense
 
                 if (timeline.colorBotNamesByRole)
                 {
                     state.colorNameplateBasedOnAggression = false;
-                    state.nameplateColor = GlobalVariables.botRoleColors[index];
+
+                    if (!aoz)
+                        state.nameplateColor = GlobalVariables.botRoleColors[index]; // If this is not a blue mage fight, use the normal bot role colors
+                    else
+                        state.nameplateColor = GlobalVariables.botRoleColors[GlobalVariables.botRoleColors.Length - 1]; // If this is a blue mage fight, use the last role color for everyone, since all the bots are casters in that case
                 }
                 else
                 {

@@ -214,6 +214,7 @@ namespace dev.susybaka.raidsim.Targeting
             {
                 self.onDetarget.Invoke();
                 self.UpdateUserInterface(0f, 0f);
+                self.ResetHitboxRadius();
             }
             if (targetCastbarGroup != null)
             {

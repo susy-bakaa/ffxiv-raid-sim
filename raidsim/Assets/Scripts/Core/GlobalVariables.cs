@@ -41,7 +41,7 @@ namespace dev.susybaka.raidsim.Core
 #else
         public static bool muteBgm = false;
 #endif
-        public static Vector3 worldBounds = new Vector3(1000, 1000, 1000);
+        public static Vector3 worldBounds = new Vector3(501, 501, 501);
         public static Resolution currentGameResolution; // Cached resolution for comparison
         public const long maximumDamage = 999999999999999999;
         public static Vector3 minimapZoom;

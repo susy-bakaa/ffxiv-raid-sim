@@ -44,6 +44,7 @@ namespace dev.susybaka.raidsim.Mechanics
         public bool increaseEnmity = false;
         public bool topEnmity = false;
         public bool initializeOnStart = true;
+        public bool keepInitialized = false;
         public bool self = false;
         public bool dealsDamage = true;
         public bool passDamage = false;
@@ -186,7 +187,8 @@ namespace dev.susybaka.raidsim.Mechanics
 
         private void OnDisable()
         {
-            initialized = false;
+            if (!keepInitialized)
+                initialized = false;
             currentPlayers.Clear();
             inProgress = false;
         }

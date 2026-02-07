@@ -12,6 +12,7 @@ namespace dev.susybaka.raidsim.Mechanics
     {
         public bool onStart;
         public bool onEnable;
+        public bool noReset = false;
         public GameObject target;
         public UnityEvent<ActionInfo> onTrigger;
 
@@ -21,7 +22,7 @@ namespace dev.susybaka.raidsim.Mechanics
         {
             _triggered = false;
 
-            if (onStart && FightTimeline.Instance != null)
+            if (onStart && FightTimeline.Instance != null && !noReset)
                 FightTimeline.Instance.onReset.AddListener(TriggerMechanic);
 
             if (onStart)

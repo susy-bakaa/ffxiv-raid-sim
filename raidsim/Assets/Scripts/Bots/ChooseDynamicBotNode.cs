@@ -44,7 +44,6 @@ namespace dev.susybaka.raidsim.Bots
             if (chooseBasedOnBotGroup)
             {
                 fightTimelineEventRandomResultId = -1;
-                fightTimelineEventRandomResultId2 = -1;
             }
         }
 
