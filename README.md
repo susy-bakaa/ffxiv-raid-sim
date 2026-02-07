@@ -17,8 +17,39 @@ If you want to keep up with development, have any questions or want to contribut
 
 Fights listed here are finished and available in the simulator.
 
-<b>NOTE:</b> This simulator is mainly being built with raiding strats from the European data center, from LPDU or just whatever ends up popular in EU PF, as I personally mostly only play in that region. I do not have the time to maintain and add 10 different versions of one strategy, however if anyone else wants to contribute other strats, you're free to do so and I encourage you to give it a go! For help with this, I recommend you join our discord and contact us there for additional information regarding that.
+<b>NOTE:</b> This simulator is mainly being built with raiding strats from the European data center, which are usually either from LPDU or just whatever ends up popular in EU PF. Reason being that I personally mostly only play in that region. I do not have the time to maintain and add 10 different versions of one strategy, however if anyone else wants to contribute other strats, you're free to do so and I encourage you to give it a go! For help with this, I recommend you join our discord and contact us there for additional information regarding that.
 
+- AAC Heavyweight Tier
+	- AAC Heavyweight M4 (Savage) (M12S)
+		- Phase 2 (Lindwurm II)
+			- Idyllic Dream ([EU pastebin/Hector](https://youtu.be/Osd---W8ZTY))
+			- Idyllic Dream ([NA pastebin/Hector](https://youtu.be/Ey--4oQS6KI))
+			- Idyllic Dream ([Banana Codex](https://raidplan.io/plan/qga7chh6ky23j3ey))
+- AAC Cruiserweight Tier
+	- AAC Cruiserweight M4 (Savage) (M8S)
+		- Terrestrial Rage ([Rinon](https://wtfdig.info/72/m8s#84ddog))
+		- Terrestrial Rage ([Half Rinon](https://wtfdig.info/72/m8s#84ddog::halfr:::::))
+		- Terrestrial Rage ([Game8](https://game8.jp/ff14/681843))
+		- Beckon Moonlight ([Quad](https://raidplan.io/plan/WFsLBku1C9Iyxneu))
+		- Beckon Moonlight ([Game8](https://game8.jp/ff14/681843))
+- AAC Light-heavyweight Tier
+	- AAC Light-heavyweight M4 (Savage) (M4S)
+		- Sunrise Sabbath ([Rinon/Hector](https://www.youtube.com/watch?v=1lrk5FbNIPc))
+		- Sunrise Sabbath ([AutoCad/Uptime](https://raidplan.io/plan/OnQXobwatopL1G8u))
+- Futures Rewritten (Ultimate) (FRU)
+	- Phase 2 (Usurper of Frost)
+		- Diamond Dust ([Early LPDU](https://raidplan.io/plan/NzZWtqr5SbDehlgb))
+- Dragonsong's Reprise (Ultimate) (DSR)
+	- Phase 2
+		- Meteors (Second half of Sanctity of the Ward) ([LPDU](https://ff14.toolboxgaming.space/?id=454690614288171&preview=1#20))
+- The Weapon's Refrain (Ultimate) (UWU)
+	- Phase 3 (Titan)
+		- Gaols ([LPDU](https://www.youtube.com/watch?v=PwEVH50b-rg))
+	- Phase 5 (The Ultima Weapon)
+		- Ultimate Predation ([LPDU/NAUR](https://ff14.toolboxgaming.space/?id=222999692467471&preview=1))
+- Cloud of Darkness (Chaotic) (CODC)
+	- Phase 1 (The Cloud of Darkness)
+		- Grim Embrace ([Debuff](https://raidplan.io/plan/NyvLFhk2tDTGzE43))
 - Omega: Alphascape
 	- Alphascape 4.0 (Savage) (O12S)
 		- Phase 2 (The Final Omega)
@@ -27,31 +58,6 @@ Fights listed here are finished and available in the simulator.
 - Alexander: Midas
 	- Alexander - The Burden of the Son (Savage) (A8S)
 		- Gavel ([BLU](https://www.icy-veins.com/ffxiv/blue-mage-brute-justice-raid-guide))
-- AAC Light-heavyweight Tier
-	- AAC Light-heavyweight M4 (Savage) (M4S)
-		- Sunrise Sabbath ([Rinon/Hector](https://www.youtube.com/watch?v=1lrk5FbNIPc))
-		- Sunrise Sabbath ([AutoCad/Uptime](https://raidplan.io/plan/OnQXobwatopL1G8u))
-- AAC Cruiserweight Tier
-	- AAC Cruiserweight M4 (Savage) (M8S)
-		- Terrestrial Rage ([Rinon](https://wtfdig.info/72/m8s#84ddog))
-		- Terrestrial Rage ([Half Rinon](https://wtfdig.info/72/m8s#84ddog::halfr:::::))
-		- Terrestrial Rage ([Game8](https://game8.jp/ff14/681843))
-		- Beckon Moonlight ([Quad](https://raidplan.io/plan/WFsLBku1C9Iyxneu))
-		- Beckon Moonlight ([Game8](https://game8.jp/ff14/681843))
-- The Weapon's Refrain (Ultimate) (UWU)
-	- Phase 3 (Titan)
-		- Gaols ([LPDU](https://www.youtube.com/watch?v=PwEVH50b-rg))
-	- Phase 5 (The Ultima Weapon)
-		- Ultimate Predation ([LPDU/NAUR](https://ff14.toolboxgaming.space/?id=222999692467471&preview=1))
-- Futures Rewritten (Ultimate) (FRU)
-	- Phase 2 (Usurper of Frost)
-		- Diamond Dust ([Early LPDU](https://raidplan.io/plan/NzZWtqr5SbDehlgb))
-- Cloud of Darkness (Chaotic) (CODC)
-	- Phase 1 (The Cloud of Darkness)
-		- Grim Embrace ([Debuff](https://raidplan.io/plan/NyvLFhk2tDTGzE43))
-- Dragonsong's Reprise (Ultimate) (DSR)
-	- Phase 2
-		- Meteors (Second half of Sanctity of the Ward) ([LPDU](https://ff14.toolboxgaming.space/?id=454690614288171&preview=1#20))
 
 # In development fights
 
@@ -65,11 +71,6 @@ Fights listed here have unfinished timelines that don't work yet, the bots are n
 
 Fights listed here are not being worked on yet and are not in anyway guranteed to be added, but we have a special interest in working on them eventually, meaning they are actively being considered and on the backlog.
 
-- AAC Heavyweight Tier
-	- AAC Heavyweight M4 (Savage) (M12S)
-		- Phase 2 (Lindwurm II)
-			- Idyllic Dream ([Banana Codex](https://raidplan.io/plan/qga7chh6ky23j3ey)?)
-			<br><b>NOTE:</b> Strat that I will be using in the sim for this mechanic has not been decided yet, but my group used Banana Codex raidplans and I liked them.
 - Eden's Promise
 	- Eden's Promise: Eternity (Savage)
 		- Phase 2 (Oracle of Darkness)
@@ -120,8 +121,8 @@ Fights listed here are not being worked on yet and are not in anyway guranteed t
 
 Latest Builds: 
 
-[![Static Badge](https://img.shields.io/badge/windows_x64-download-green)](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.6.4/raidsim_v.0.6.4_win64.zip)
-[![Static Badge](https://img.shields.io/badge/linux_x64-download-blue?logo=linux&logoColor=white)](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.6.4/raidsim_v.0.6.4_linux64.zip)
+[![Static Badge](https://img.shields.io/badge/windows_x64-download-green)](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.6.5/raidsim_v.0.6.5_win64.zip)
+[![Static Badge](https://img.shields.io/badge/linux_x64-download-blue?logo=linux&logoColor=white)](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.6.5/raidsim_v.0.6.5_linux64.zip)
 [![Static Badge](https://img.shields.io/badge/browser-open-yellow?logo=webgl&logoColor=white)](https://susybaka.dev/unityweb/raidsim/index.html)
 [![Static Badge](https://img.shields.io/badge/itch.io-open-red?logo=itchdotio&logoColor=white)](https://susybakaaa.itch.io/raidsim)
 
