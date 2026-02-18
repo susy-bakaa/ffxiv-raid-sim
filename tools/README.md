@@ -13,6 +13,10 @@ These tools are not most likely required for regular users of the simulator, but
 A standalone binary used by the main simulator to apply updates after they are downloaded.  
 It handles file replacement and integrity checks for installed builds.
 
+### librsim
+
+A standalone Linux library used by the main simulator program to extend default behavior of the Unity runtime.
+
 ### xivAnim
 
 A specialized C# console app for extracting and processing **FFXIV models and animations** from game data into a format used by the simulator.  
