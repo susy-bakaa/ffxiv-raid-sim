@@ -20,6 +20,7 @@ namespace dev.susybaka.raidsim.SaveLoad
         public string group = "";
         public string key = "UnnamedDropdown";
         public bool useTimelineGroup = false;
+        public bool alwaysLoadValue = false;
 
         public UnityEvent<int> onStart;
 
@@ -57,6 +58,16 @@ namespace dev.susybaka.raidsim.SaveLoad
             if (ini.Contains(group, $"i{key}"))
             {
                 savedValue = ini.GetInt(group, $"i{key}");
+                dropdown.value = savedValue;
+                dropdown.RefreshShownValue();
+                dropdown.onValueChanged.Invoke(savedValue);
+                onStart.Invoke(savedValue);
+            }
+            else if (alwaysLoadValue)
+            {
+                // If the value doesn't exist in the INI, save the default value (0) so that it can be loaded next time.
+                // This ensures if anything relies on the event being invoked on start, it will work correctly even on the first run.
+                SaveValue(savedValue);
                 dropdown.value = savedValue;
                 dropdown.RefreshShownValue();
                 dropdown.onValueChanged.Invoke(savedValue);

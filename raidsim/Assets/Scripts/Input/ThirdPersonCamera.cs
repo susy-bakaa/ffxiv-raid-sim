@@ -52,6 +52,8 @@ namespace dev.susybaka.raidsim.Inputs
         private bool cursorPositionSet;
         private float heldTime;
         private float heldTimeThreshold = 0.2f;
+        private float lastHeldTime;
+        private float lastHeldTimeTreshold = 0.4f;
 
         private void Awake()
         {
@@ -106,22 +108,29 @@ namespace dev.susybaka.raidsim.Inputs
             if (target == null) // || externalControl
                 return;
 
-            // Synchronize yaw and pitch with the current camera rotation
-            yaw = transform.eulerAngles.y;
-            // Convert transform.eulerAngles.x to the correct pitch range
-            float rawPitch = transform.eulerAngles.x;
-            pitch = (rawPitch > 180) ? rawPitch - 360 : rawPitch;
+            bool isMouseInput = Input.GetMouseButton(1) || Input.GetMouseButton(0);
+            bool isControllerInput = controllerInput != Vector2.zero;
+
+            // Only synchronize when not actively receiving input to prevent feedback loops
+            if (!isMouseInput && !isControllerInput)
+            {
+                // Synchronize yaw and pitch with the current camera rotation
+                yaw = transform.eulerAngles.y;
+                // Convert transform.eulerAngles.x to the correct pitch range
+                float rawPitch = transform.eulerAngles.x;
+                pitch = (rawPitch > 180) ? rawPitch - 360 : rawPitch;
+
+                // Reset smooth damp velocity when not receiving input
+                if (rotationSmoothVelocity.sqrMagnitude > 0.01f)
+                {
+                    rotationSmoothVelocity = Vector3.zero;
+                    currentRotation = transform.eulerAngles;
+                }
+            }
 
             if (Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(0))
             {
 #if PLATFORM_STANDALONE_WIN && !PLATFORM_STANDALONE_LINUX && !UNITY_EDITOR_LINUX
-                if (!cursorPositionSet)
-                {
-                    cursorPosition = CursorControl.GetPosition();
-                    cursorPositionSet = true;
-                }
-                Cursor.lockState = CursorLockMode.Confined;
-#elif UNITY_EDITOR_WIN && !UNITY_EDITOR_LINUX
                 if (!cursorPositionSet)
                 {
                     cursorPosition = CursorControl.GetPosition();
@@ -157,6 +166,7 @@ namespace dev.susybaka.raidsim.Inputs
                 }
 #endif
                 heldTime = 0;
+                lastHeldTime = 0;
 
                 if (CursorHandler.Instance != null)
                 {
@@ -187,6 +197,9 @@ namespace dev.susybaka.raidsim.Inputs
                     pitch -= Input.GetAxis("Mouse Y") * mouseSensitivity;
                 else
                     pitch += Input.GetAxis("Mouse Y") * mouseSensitivity;
+
+                // Normalize yaw to prevent overflow
+                yaw = Mathf.Repeat(yaw, 360f);
                 pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
                 currentRotation = Vector3.SmoothDamp(currentRotation, new Vector3(pitch, yaw, 0f), ref rotationSmoothVelocity, rotationSmoothTime, float.PositiveInfinity, Time.unscaledDeltaTime);
                 transform.eulerAngles = currentRotation;
@@ -216,9 +229,50 @@ namespace dev.susybaka.raidsim.Inputs
                         pitch += controllerInput.y * controllerSensitivity;
                 }
 
+                // Normalize yaw to prevent overflow
+                yaw = Mathf.Repeat(yaw, 360f);
                 pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
                 currentRotation = Vector3.SmoothDamp(currentRotation, new Vector3(pitch, yaw, 0f), ref rotationSmoothVelocity, rotationSmoothTime, float.PositiveInfinity, Time.unscaledDeltaTime);
                 transform.eulerAngles = currentRotation;
+            }
+
+            // Fix cursor state sometimes not resetting if the mouse button is released outside the game window
+            // This gives a small grace period where the cursor will reset after the mouse button is released, even if the release event was missed
+            if (!isMouseInput)
+            {
+                lastHeldTime += Time.unscaledDeltaTime;
+
+                if (lastHeldTime >= lastHeldTimeTreshold)
+                {
+                    Cursor.lockState = CursorLockMode.None;
+#if PLATFORM_STANDALONE_WIN && !PLATFORM_STANDALONE_LINUX && !UNITY_EDITOR_LINUX
+                    if (cursorPositionSet)
+                    {
+                        CursorControl.SetPosition(cursorPosition);
+                        cursorPositionSet = false;
+                    }
+#elif UNITY_EDITOR_WIN && !UNITY_EDITOR_LINUX
+                if (cursorPositionSet)
+                {
+                    CursorControl.SetPosition(cursorPosition);
+                    cursorPositionSet = false;
+                }
+#endif
+                    heldTime = 0;
+
+                    if (CursorHandler.Instance != null)
+                    {
+                        CursorHandler.Instance.visible = true;
+                    }
+                    else
+                    {
+                        Cursor.visible = true;
+                    }
+                }
+            }
+            else if (isMouseInput || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(0))
+            {
+                lastHeldTime = 0;
             }
         }
 
