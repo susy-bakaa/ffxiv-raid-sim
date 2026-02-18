@@ -68,29 +68,12 @@ namespace dev.susybaka.raidsim.UI
             dropdown = GetComponentInChildren<TMP_Dropdown>();
             //Select(0);
 
-            if (Application.isEditor)
-                return;
-
-#if UNITY_STANDALONE_WIN && !UNITY_STANDALONE_LINUX && !UNITY_EDITOR_LINUX
-            try
+            // Set the window title to include the fight name, if possible
+            if (WindowTitle.TrySet($"raidsim - {GetFightName()}"))
             {
-                var windowPtr = FindWindow(null, GlobalVariables.lastWindowName);
-                if (windowPtr == IntPtr.Zero)
-                {
-                    Debug.LogError("Window handle not found. Skipping SetWindowText.");
-                }
-                else
-                {
-                    string windowName = $"raidsim - {GetFightName()}";
-                    SetWindowText(windowPtr, windowName);
-                    GlobalVariables.lastWindowName = windowName;
-                }
+                WindowTitle.ResetWindowCache();
+                WindowTitle.TrySet($"raidsim - {GetFightName()}");
             }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error setting window title: {ex}");
-            }
-#endif
         }
 
         private void Update()

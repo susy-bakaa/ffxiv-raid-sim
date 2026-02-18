@@ -23,7 +23,7 @@ namespace dev.susybaka.raidsim
             toggle = GetComponent<Toggle>();
             dropdown = GetComponent<TMP_Dropdown>();
 
-#if UNITY_WEBPLAYER
+#if (UNITY_WEBPLAYER || UNITY_WEBGL) && !UNITY_EDITOR
         if (disableForWebGL)
         {
             if (button != null)
@@ -36,7 +36,7 @@ namespace dev.susybaka.raidsim
                 gameObject.SetActive(false);
         }
 #endif
-#if UNITY_STANDALONE_LINUX
+#if UNITY_STANDALONE_LINUX && !UNITY_EDITOR
         if (disableForLinuxStandalone)
         {
             if (button != null)
@@ -49,7 +49,7 @@ namespace dev.susybaka.raidsim
                 gameObject.SetActive(false);
         }
 #endif
-#if UNITY_STANDALONE_WIN
+#if UNITY_STANDALONE_WIN && !UNITY_EDITOR
             if (disableForWinStandalone)
             {
                 if (button != null)

@@ -29,11 +29,6 @@ namespace dev.susybaka.raidsim.Core
         public static string bgmPath = Application.persistentDataPath + "/bgm";
 #endif
 #if UNITY_STANDALONE_WIN && !UNITY_STANDALONE_LINUX && !UNITY_EDITOR_LINUX
-        //Import the following.
-        [DllImport("user32.dll", EntryPoint = "SetWindowText")]
-        public static extern bool SetWindowText(System.IntPtr hwnd, System.String lpString);
-        [DllImport("user32.dll", EntryPoint = "FindWindow")]
-        public static extern System.IntPtr FindWindow(System.String className, System.String windowName);
         public static string lastWindowName = "raidsim";
 #endif
 #if UNITY_EDITOR

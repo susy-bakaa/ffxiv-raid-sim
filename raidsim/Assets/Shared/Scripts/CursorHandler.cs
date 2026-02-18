@@ -28,13 +28,16 @@ namespace dev.susybaka.Shared.UserInterface
         private Dictionary<string, CursorData> nameLookup;
         private Dictionary<int, CursorData> idLookup;
 
-#if UNITY_STANDALONE_LINUX
+#if UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX
         private readonly Dictionary<string, Texture2D> linuxScaledCursorCache = new Dictionary<string, Texture2D>();
 #endif
 
 #if UNITY_EDITOR
         private void OnValidate()
         {
+            if (cursors == null || cursors.Count < 1)
+                return;
+
             for (int i = 0; i < cursors.Count; i++)
             {
                 CursorData c = cursors[i];
@@ -131,7 +134,7 @@ namespace dev.susybaka.Shared.UserInterface
                 Instance = null;
             }
 
-#if UNITY_STANDALONE_LINUX
+#if UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX
             foreach (var kv in linuxScaledCursorCache)
             {
                 if (kv.Value != null)
@@ -196,7 +199,7 @@ namespace dev.susybaka.Shared.UserInterface
 #if !UNITY_WEBPLAYER
             if (!useSoftwareCursor)
             {
-#if UNITY_STANDALONE_LINUX
+#if UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX
                 // Decide target cursor size: compositor hint or sensible default (32)
                 int target;
                 if (!TryGetLinuxCursorTargetSize(out target))
@@ -227,7 +230,7 @@ namespace dev.susybaka.Shared.UserInterface
             currentCursor = cursor;
         }
 
-#if UNITY_STANDALONE_LINUX
+#if UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX
         private static bool TryGetLinuxCursorTargetSize(out int size)
         {
             size = 0;

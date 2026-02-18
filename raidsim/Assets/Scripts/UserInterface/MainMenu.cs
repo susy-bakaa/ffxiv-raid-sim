@@ -24,7 +24,7 @@ namespace dev.susybaka.raidsim.UI
         public CanvasGroup fadeOut;
         public Button[] disableOnLoad;
 
-#if UNITY_WEBPLAYER
+#if UNITY_WEBPLAYER || UNITY_WEBGL
         public const string webplayerQuitURL = "https://susybaka.dev/tools.html";
         [DllImport("__Internal")]
         private static extern void ReplaceURL(string url);
@@ -40,29 +40,7 @@ namespace dev.susybaka.raidsim.UI
 
             KeyBind.SetupKeyNames();
 
-#if UNITY_STANDALONE_WIN && !UNITY_STANDALONE_LINUX && !UNITY_EDITOR_LINUX
-            if (Application.isEditor)
-                return;
-
-            try
-            {
-                var windowPtr = GlobalVariables.FindWindow(null, GlobalVariables.lastWindowName);
-                if (windowPtr == IntPtr.Zero)
-                {
-                    Debug.LogError("Window handle not found. Skipping SetWindowText.");
-                }
-                else
-                {
-                    string windowName = "raidsim";
-                    GlobalVariables.SetWindowText(windowPtr, windowName);
-                    GlobalVariables.lastWindowName = windowName;
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error setting window title: {ex}");
-            }
-#endif
+            WindowTitle.TrySet("raidsim");
         }
 
         public void LoadSimScene()

@@ -78,19 +78,19 @@ namespace dev.susybaka.raidsim.Core
 
         private void Awake()
         {
-#if UNITY_WEBPLAYER
+#if (UNITY_WEBPLAYER || UNITY_WEBGL || UNITY_EDITOR_WEBGL) && !UNITY_EDITOR_WIN && !UNITY_EDITOR_LINUX && !UNITY_EDITOR_OSX
             if (disableFogForWebGL)
             {
                 RenderSettings.fog = false;
             }
 #endif
-#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
+#if (UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN) && !UNITY_EDITOR_LINUX && !UNITY_EDITOR_WEBGL && !UNITY_EDITOR_OSX
             if (disableFogForWindows)
             {
                 RenderSettings.fog = false;
             }
 #endif
-#if UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX
+#if (UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX) && !UNITY_EDITOR_WIN && !UNITY_EDITOR_WEBGL && !UNITY_EDITOR_OSX
             if (disableFogForLinux)
             {
                 RenderSettings.fog = false;
