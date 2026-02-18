@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using dev.susybaka.raidsim.Actions;
 using dev.susybaka.raidsim.Characters;
+using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.Targeting;
 using dev.susybaka.Shared;
 using NaughtyAttributes;
@@ -96,6 +97,7 @@ namespace dev.susybaka.raidsim.Mechanics
         public UnityEvent<CharacterState> onProcessCharacter;
 
         private List<CharacterState> originalCharacters = new List<CharacterState>();
+        private readonly List<TargetNode> _remainingTargets = new();
 #pragma warning disable CS0414
         // Editor only
         private bool _hideStateFields = false;
@@ -201,6 +203,11 @@ namespace dev.susybaka.raidsim.Mechanics
             {
                 ResetCharacters();
             }
+        }
+
+        protected override bool UsesPCG()
+        {
+            return true;
         }
 
         #region Dynamic Characters
@@ -595,15 +602,30 @@ namespace dev.susybaka.raidsim.Mechanics
                         }
                         break;
                     case TargetingType.RandomPerEach:
-
                         if (availableTargets.Count >= characters.Count)
                         {
-                            int r = Random.Range(0, availableTargets.Count);
-                            while (usedTargets.Contains(availableTargets[r]))
+                            _remainingTargets.Clear();
+                            for (int i = 0; i < availableTargets.Count; i++)
                             {
-                                r = Random.Range(0, availableTargets.Count);
+                                var t = availableTargets[i];
+                                if (!usedTargets.Contains(t))
+                                    _remainingTargets.Add(t);
                             }
-                            finalTarget = availableTargets[r];
+
+                            if (_remainingTargets.Count == 0)
+                            {
+                                if (log)
+                                    Debug.LogWarning($"[CharacterStateMechanic ({gameObject.name})] No remaining targets for RandomPerEach, defaulting to first target.");
+                                finalTarget = availableTargets[0];
+                                break;
+                            }
+
+                            // Deterministic stream for this mechanic choice
+                            var stream = timeline.random.Stream($"{mechanicName}_TargetingType_RandomPerEach");
+
+                            int pick = stream.NextInt(0, _remainingTargets.Count);
+                            finalTarget = _remainingTargets[pick];
+
                             usedTargets.Add(finalTarget);
                         }
                         else
@@ -616,13 +638,14 @@ namespace dev.susybaka.raidsim.Mechanics
                     case TargetingType.Random:
                         if (availableTargets.Count > 1)
                         {
-                            int r = Random.Range(0, availableTargets.Count);
+                            int r = timeline.random.Pick($"{mechanicName}_TargetingType_Random", availableTargets.Count, timeline.GlobalRngMode);
+
                             finalTarget = availableTargets[r];
                         }
                         else
                         {
                             if (log)
-                                Debug.LogWarning($"[CharacterStateMechanic ({gameObject.name})] Not enough available targets for RandomPerEach targeting, defaulting to first target.");
+                                Debug.LogWarning($"[CharacterStateMechanic ({gameObject.name})] Not enough available targets for Random targeting, defaulting to first target.");
                             finalTarget = availableTargets[0];
                         }
                         break;

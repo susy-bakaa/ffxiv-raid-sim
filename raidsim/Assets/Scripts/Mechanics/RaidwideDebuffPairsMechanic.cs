@@ -21,6 +21,7 @@ namespace dev.susybaka.raidsim.Mechanics
 
         List<StatusEffectInfoArray> statusEffects;
         List<CharacterState> partyMembers;
+        private readonly List<CharacterState> _candidatesCopy = new List<CharacterState>();
 
         CharacterState player;
 
@@ -63,8 +64,8 @@ namespace dev.susybaka.raidsim.Mechanics
 
             statusEffects = new List<StatusEffectInfoArray>(effects); // Copy the effects list
             partyMembers = new List<CharacterState>(party.GetActiveMembers()); // Copy the party members list
-            partyMembers.Shuffle();
-            statusEffects.Shuffle();
+            partyMembers.ShufflePCG(timeline.random.Stream($"{mechanicName}_{gameObject.name}_Shuffle_PartyMembersList"));
+            statusEffects.ShufflePCG(timeline.random.Stream($"{mechanicName}_{gameObject.name}_Shuffle_StatusEffectsList"));
 
             if (!string.IsNullOrEmpty(playerEffect.name) && playerEffect.effectInfos.Length > 0 && player != null)
             {
@@ -90,7 +91,7 @@ namespace dev.susybaka.raidsim.Mechanics
 
                     // If no suitable target found, apply to a random member
                     if (target == null)
-                        target = partyMembers[Random.Range(0, partyMembers.Count)];
+                        target = partyMembers[timeline.random.Pick($"{mechanicName}_{gameObject.name}_RandomTarget", partyMembers.Count, timeline.GlobalRngMode)]; // Random.Range(0, partyMembers.Count)
 
                     // Apply the effects to the target
                     for (int j = 0; j < statusEffects[i].effectInfos.Length; j++)
@@ -120,17 +121,25 @@ namespace dev.susybaka.raidsim.Mechanics
             }
         }
 
+        protected override bool UsesPCG()
+        {
+            return true;
+        }
+
         private CharacterState FindSuitableTarget(StatusEffectInfo effect, List<CharacterState> candidates)
         {
             foreach (Role role in effect.data.assignedRoles)
             {
                 // Create a copy of the candidates list
-                List<CharacterState> candidatesCopy = new List<CharacterState>(candidates);
+                _candidatesCopy.Clear();
+                if (_candidatesCopy.Capacity < candidates.Count)
+                    _candidatesCopy.Capacity = candidates.Count;
+                _candidatesCopy.AddRange(candidates);
 
                 // Iterate through the copy of candidates
-                for (int i = 0; i < candidatesCopy.Count; i++)
+                for (int i = 0; i < _candidatesCopy.Count; i++)
                 {
-                    var candidate = candidatesCopy[i];
+                    var candidate = _candidatesCopy[i];
                     if (candidate.role == role)
                     {
                         candidates.Remove(candidate); // Remove the candidate from the original list

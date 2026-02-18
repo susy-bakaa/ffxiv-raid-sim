@@ -56,7 +56,11 @@ namespace dev.susybaka.raidsim.Mechanics
             {
                 if (pickBetweenMaxAndMin)
                 {
-                    FightTimeline.Instance.SetRandomEventResult(id, Random.Range(minResult, maxResult + 1));
+                    int count = (maxResult - minResult) + 1; // inclusive count
+                    int offset = timeline.random.Pick($"{mechanicName}_{id}_RandomEventResultRange", count, timeline.GlobalRngMode);
+                    int value = minResult + offset;
+
+                    FightTimeline.Instance.SetRandomEventResult(id, value);
                 }
             }
 

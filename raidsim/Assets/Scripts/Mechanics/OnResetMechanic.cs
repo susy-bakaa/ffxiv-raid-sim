@@ -11,8 +11,6 @@ namespace dev.susybaka.raidsim.Mechanics
 {
     public class OnResetMechanic : FightMechanic
     {
-        FightTimeline timeline;
-
         [Header("On Reset Mechanic")]
         public UnityEvent onReset;
 

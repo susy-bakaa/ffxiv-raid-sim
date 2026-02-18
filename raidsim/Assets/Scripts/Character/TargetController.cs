@@ -547,6 +547,11 @@ namespace dev.susybaka.raidsim.Targeting
 
         public void SetRandomTargetFromList()
         {
+            SetRandomTargetFromList($"{gameObject.name}_TargetController_SetRandomTargetFromList");
+        }
+
+        public void SetRandomTargetFromList(string key)
+        {
             if (targetList == null)
                 return;
 
@@ -560,9 +565,8 @@ namespace dev.susybaka.raidsim.Targeting
                         nodes.Add(targetController.self);
                 }
             }
-            nodes.Shuffle();
 
-            SetTarget(nodes.GetRandomItem());
+            SetTarget(nodes.PickRandomItemPCG(FightTimeline.Instance.random, key));
         }
 
 #if !UNITY_WEBPLAYER

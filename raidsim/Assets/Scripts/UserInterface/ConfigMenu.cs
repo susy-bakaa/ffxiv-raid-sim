@@ -46,6 +46,7 @@ namespace dev.susybaka.raidsim.UI
         [SerializeField] private Toggle skipUpdatesToggle;
         [SerializeField] private TMP_Dropdown botNameTypeDropdown;
         [SerializeField] private Toggle botNameRoleColorsToggle;
+        [SerializeField] private TMP_Dropdown rngTypeDropdown;
         float scale = 50;
         float newScale = 50;
         bool legacy = true;
@@ -72,6 +73,8 @@ namespace dev.susybaka.raidsim.UI
         int newBotNameType = 0;
         bool botNameRoleColors = false;
         bool newBotNameRoleColors = false;
+        int rngType = 0;
+        int newRngType = 0;
         [SerializeField] private HudWindow applyPopup;
         public HudWindow ApplyPopup { get { return applyPopup; } }
 
@@ -323,6 +326,12 @@ namespace dev.susybaka.raidsim.UI
             newBotNameRoleColors = value;
         }
 
+        public void ChangeRngType(int value)
+        {
+            configSaved = false;
+            newRngType = value;
+        }
+
         public void ApplySettings()
         {
             if (Mathf.Approximately(newScale, 50f))
@@ -380,6 +389,7 @@ namespace dev.susybaka.raidsim.UI
 #endif
             botNameType = newBotNameType;
             botNameRoleColors = newBotNameRoleColors;
+            rngType = newRngType;
             if (timeline != null)
             {
                 timeline.botNameType = botNameType;
@@ -388,6 +398,7 @@ namespace dev.susybaka.raidsim.UI
                     spotSelector.Select();
                 if (roleSelector != null)
                     roleSelector.Select();
+                timeline.SetGlobalRngMode(rngType);
             }
             configSaved = true;
         }
@@ -456,6 +467,7 @@ namespace dev.susybaka.raidsim.UI
 #endif
             newBotNameType = 0;
             newBotNameRoleColors = false;
+            newRngType = 0;
             ApplySettings();
         }
 
@@ -495,6 +507,7 @@ namespace dev.susybaka.raidsim.UI
 #endif
             newBotNameType = botNameType;
             newBotNameRoleColors = botNameRoleColors;
+            newRngType = rngType;
             ApplySettings();
         }
 

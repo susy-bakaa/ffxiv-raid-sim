@@ -27,6 +27,11 @@ namespace dev.susybaka.raidsim.Mechanics
         private int totalNodesUsed = 0;
         private Dictionary<Sector, List<MechanicNode>> nodeAssignmentsBySector = new Dictionary<Sector, List<MechanicNode>>();
 
+        // Reuse lists to avoid GC
+        private readonly List<ArenaSector> _availableSectors = new List<ArenaSector>();
+        private readonly List<MechanicNode> _availableMiddleNodes = new List<MechanicNode>();
+        private readonly List<MechanicNode> _candidates = new List<MechanicNode>();
+
 #if UNITY_EDITOR
         private void OnValidate()
         {
@@ -77,108 +82,144 @@ namespace dev.susybaka.raidsim.Mechanics
 
         private void AssignMiddleNodes(int minMiddle)
         {
-            List<MechanicNode> availableMiddleNodes = new List<MechanicNode>();
-            List<ArenaSector> availableSectors = new List<ArenaSector>();
+            _availableMiddleNodes.Clear();
+            _availableSectors.Clear();
 
-            availableSectors = arenaSectors;
+            // Copy sectors (avoid aliasing the serialized list)
+            _availableSectors.AddRange(arenaSectors);
 
-            availableSectors.Shuffle();
+            // Deterministic shuffle (no PickMode here)
+            var rngSectors = timeline.random.Stream($"{mechanicName}_{gameObject.name}_{id}_Shuffle_AvailableSectors");
+            _availableSectors.ShufflePCG(rngSectors);
 
-            for (int i = 0; i < availableSectors.Count; i++)
+            // Collect available middle nodes from all sectors
+            for (int i = 0; i < _availableSectors.Count; i++)
             {
-                int randomIndex = Random.Range(0, availableSectors.Count);
-                ArenaSector temp = availableSectors[i];
-                availableSectors[i] = availableSectors[randomIndex];
-                availableSectors[randomIndex] = temp;
-            }
-
-            // Collect all available middle nodes from all sectors
-            foreach (ArenaSector sector in availableSectors)
-            {
-                foreach (MechanicNode node in sector.nodes)
+                var sector = _availableSectors[i];
+                for (int n = 0; n < sector.nodes.Count; n++)
                 {
-                    if (node.isMiddle && !node.isTaken && !availableMiddleNodes.Contains(node))
-                    {
-                        availableMiddleNodes.Add(node);
-                    }
+                    var node = sector.nodes[n];
+                    if (node.isMiddle && !node.isTaken && !_availableMiddleNodes.Contains(node))
+                        _availableMiddleNodes.Add(node);
                 }
             }
 
-            availableMiddleNodes.Shuffle();
-
-            for (int i = 0; i < availableMiddleNodes.Count; i++)
-            {
-                int randomIndex = Random.Range(0, availableMiddleNodes.Count);
-                MechanicNode temp = availableMiddleNodes[i];
-                availableMiddleNodes[i] = availableMiddleNodes[randomIndex];
-                availableMiddleNodes[randomIndex] = temp;
-            }
+            // Deterministic shuffle (no PickMode)
+            var rngNodes = timeline.random.Stream($"{mechanicName}_{gameObject.name}_{id}_Shuffle_AvailableMiddleNodes");
+            _availableMiddleNodes.ShufflePCG(rngNodes);
 
             if (log)
-                Debug.Log($"Available middle nodes: {availableMiddleNodes.Count}");
+                Debug.Log($"Available middle nodes: {_availableMiddleNodes.Count}");
 
-            // Continue looping until we reach the minimum required middle nodes
+            // Pick middle nodes until we reach minimum, using deterministic candidate-picking
+            var rngPick = timeline.random.Stream($"{mechanicName}_{gameObject.name}_{id}_PickMiddleNode");
+
             while (middleNodesUsed < minMiddle)
             {
-                MechanicNode picked = availableMiddleNodes[Random.Range(0, availableMiddleNodes.Count)]; // Pick a random available node
+                // Build candidates that can actually be assigned right now
+                _candidates.Clear();
 
-                bool nodeAssigned = false;
-
-                // Attempt to assign the node to its corresponding sectors
-                for (int s = 0; s < availableSectors.Count; s++)
+                for (int i = 0; i < _availableMiddleNodes.Count; i++)
                 {
-                    ArenaSector sector = availableSectors[s];
+                    var node = _availableMiddleNodes[i];
+                    if (node.isTaken) continue;
 
-                    if (sector.nodes.Contains(picked))
+                    // Is there *any* sector that contains this node and has capacity?
+                    bool canAssign = false;
+                    for (int s = 0; s < _availableSectors.Count; s++)
                     {
-                        // Ensure we don't exceed the allowed middle nodes per sector
+                        var sector = _availableSectors[s];
                         if (sector.current >= sector.capacity || sector.current >= maxMiddleNodesPerSector)
                             continue;
 
-                        if (picked.isTaken)
+                        if (!sector.nodes.Contains(node))
                             continue;
 
-                        picked.isTaken = true;
-                        nodeAssigned = true;
-                        availableMiddleNodes.Remove(picked);
-                        totalNodesUsed++;
-                        middleNodesUsed++;
-
-                        if (log)
-                            Debug.Log($"Assigning {picked.gameObject.name} to {sector.name} as the {totalNodesUsed}. node (mid)");
-
-                        if (!nodeAssignmentsBySector.ContainsKey(sector.sector))
-                            nodeAssignmentsBySector[sector.sector] = new List<MechanicNode>();
-
-                        nodeAssignmentsBySector[sector.sector].Add(picked);
-                        sector.current++;
-
-                        availableSectors[s] = sector;
+                        canAssign = true;
+                        break;
                     }
+
+                    if (canAssign)
+                        _candidates.Add(node);
+                }
+
+                if (_candidates.Count == 0)
+                {
+                    if (log)
+                        Debug.LogWarning($"[{nameof(SectorMechanic)} ({gameObject.name})] No assignable middle nodes left, stopping early ({middleNodesUsed}/{minMiddle}).");
+                    break;
+                }
+
+                var picked = _candidates[rngPick.NextInt(0, _candidates.Count)];
+
+                bool nodeAssigned = false;
+
+                // Assign to first eligible sector in the (already shuffled) sector order
+                for (int s = 0; s < _availableSectors.Count; s++)
+                {
+                    ArenaSector sector = _availableSectors[s];
+
+                    if (!sector.nodes.Contains(picked))
+                        continue;
+
+                    if (sector.current >= sector.capacity || sector.current >= maxMiddleNodesPerSector)
+                        continue;
+
+                    if (picked.isTaken)
+                        break;
+
+                    picked.isTaken = true;
+                    nodeAssigned = true;
+
+                    // Remove from pool so it can't be picked again
+                    _availableMiddleNodes.Remove(picked);
+
+                    totalNodesUsed++;
+                    middleNodesUsed++;
+
+                    if (log)
+                        Debug.Log($"Assigning {picked.gameObject.name} to {sector.name} as the {totalNodesUsed}. node (mid)");
+
+                    if (!nodeAssignmentsBySector.ContainsKey(sector.sector))
+                        nodeAssignmentsBySector[sector.sector] = new List<MechanicNode>();
+
+                    nodeAssignmentsBySector[sector.sector].Add(picked);
+
+                    sector.current++;
+                    _availableSectors[s] = sector;
+
+                    break;
                 }
 
                 if (nodeAssigned)
                     onNodeUsed.Invoke(picked);
             }
+
+            // Keep same behavior as before: write back sector.current updates
+            for (int i = 0; i < arenaSectors.Count; i++)
+            {
+                // Match by sector enum (safer than relying on list order)
+                for (int s = 0; s < _availableSectors.Count; s++)
+                {
+                    if (arenaSectors[i].sector == _availableSectors[s].sector)
+                    {
+                        arenaSectors[i] = _availableSectors[s];
+                        break;
+                    }
+                }
+            }
         }
 
         private void AssignRemainingNodes()
         {
-            List<ArenaSector> availableSectors = new List<ArenaSector>();
+            _availableSectors.Clear();
+            _availableSectors.AddRange(arenaSectors);
 
-            availableSectors = arenaSectors;
+            var rngSectors = timeline.random.Stream($"{mechanicName}_{gameObject.name}_{id}_Shuffle_RemainingSectors");
+            _availableSectors.ShufflePCG(rngSectors);
 
-            availableSectors.Shuffle();
-
-            for (int i = 0; i < availableSectors.Count; i++)
-            {
-                int randomIndex = Random.Range(0, availableSectors.Count);
-                ArenaSector temp = availableSectors[i];
-                availableSectors[i] = availableSectors[randomIndex];
-                availableSectors[randomIndex] = temp;
-            }
-
-            arenaSectors = availableSectors;
+            // Keep original behavior: arenaSectors order becomes randomized for this run
+            arenaSectors = new List<ArenaSector>(_availableSectors);
 
             for (int i = 0; i < arenaSectors.Count; i++)
             {
@@ -188,18 +229,34 @@ namespace dev.susybaka.raidsim.Mechanics
                 if (sector.isFull)
                     continue;
 
+                // Per-sector deterministic stream (prevents other RNG uses from affecting this sector)
+                var rngSectorPick = timeline.random.Stream($"{mechanicName}_{gameObject.name}_{id}_RemainingPick_{sector.sector}");
+
                 while (!sector.isFull && totalNodesUsed < maxNodes)
                 {
-                    MechanicNode picked = sector.nodes.GetRandomItem();
+                    _candidates.Clear();
 
-                    if (picked.isTaken)
-                        continue;
+                    // Build valid candidates instead of rerolling forever
+                    for (int n = 0; n < sector.nodes.Count; n++)
+                    {
+                        var node = sector.nodes[n];
 
-                    if (middleNodesUsed >= maxMiddleNodes && picked.isMiddle)
-                        continue;
+                        if (node.isTaken)
+                            continue;
 
-                    if (picked.isMiddle && sector.current >= maxMiddleNodesPerSector)
-                        continue;
+                        if (middleNodesUsed >= maxMiddleNodes && node.isMiddle)
+                            continue;
+
+                        if (node.isMiddle && sector.current >= maxMiddleNodesPerSector)
+                            continue;
+
+                        _candidates.Add(node);
+                    }
+
+                    if (_candidates.Count == 0)
+                        break;
+
+                    MechanicNode picked = _candidates[rngSectorPick.NextInt(0, _candidates.Count)];
 
                     picked.isTaken = true;
                     sector.current++;
@@ -237,6 +294,11 @@ namespace dev.susybaka.raidsim.Mechanics
                 }
                 arenaSectors[i] = temp;
             }
+        }
+
+        protected override bool UsesPCG()
+        {
+            return true;
         }
 
         [System.Serializable]

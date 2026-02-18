@@ -301,7 +301,7 @@ namespace dev.susybaka.raidsim.Bots
 
                         if (random)
                         {
-                            n = Random.Range(0, timelines.Count);
+                            n = FightTimeline.Instance.random.Pick($"{gameObject.name}_NextBotTimeline_Random", timelines.Count, FightTimeline.Instance.GlobalRngMode); //Random.Range(0, timelines.Count);
                         }
 
                         timelines[n].bot = bot;

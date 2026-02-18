@@ -15,6 +15,7 @@ namespace dev.susybaka.raidsim.Core
         public enum Role { meleeDps, magicalRangedDps, physicalRangedDps, tank, healer, unassigned }
         public enum Sector { N, E, S, W }
         public enum SubSector { NE, SE, SW, NW }
+        public enum RngMode { PureRandom, NoRepeatConsecutive, ShuffleBag }
 
         public struct ActionInfo
         {

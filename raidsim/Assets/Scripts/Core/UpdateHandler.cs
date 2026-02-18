@@ -68,16 +68,16 @@ namespace dev.susybaka.raidsim.Updater
 
         private const string gameVersionUrl = "https://raw.githubusercontent.com/susy-bakaa/ffxiv-raid-sim/refs/heads/main/version.txt";
         private const string gameDevVersionUrl = "https://raw.githubusercontent.com/susy-bakaa/ffxiv-raid-sim/refs/heads/dev/version.txt";
-#if UNITY_STANDALONE_WIN
+#if (UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN) && !UNITY_EDITOR_LINUX && !UNITY_EDITOR_WEBGL && !UNITY_EDITOR_OSX
         private const string platform = "win";
         private const int checksumFileLine = 0;
-#elif UNITY_STANDALONE_LINUX
+#elif (UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX) && !UNITY_EDITOR_WIN && !UNITY_EDITOR_WEBGL && !UNITY_EDITOR_OSX
         private const string platform = "linux";
         private const int checksumFileLine = 1;
-#elif UNITY_WEBGL
+#elif (UNITY_WEBGL || UNITY_EDITOR_WEBGL) && !UNITY_EDITOR_WIN && !UNITY_EDITOR_LINUX && !UNITY_EDITOR_OSX
         private const string platform = "webgl";
         private const int checksumFileLine = 2;
-#elif UNITY_STANDALONE_OSX
+#elif (UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX) && !UNITY_EDITOR_WIN && !UNITY_EDITOR_LINUX && !UNITY_EDITOR_WEBGL
         private const string platform = "osx";
         private const int checksumFileLine = 3;
 #endif
@@ -702,9 +702,9 @@ namespace dev.susybaka.raidsim.Updater
             string gameDir = Path.GetDirectoryName(Application.dataPath);
             string updaterFile = string.Empty; // Placeholder for unsupported platforms
 
-#if UNITY_STANDALONE_WIN
+#if UNITY_STANDALONE_WIN && !UNITY_EDITOR
             updaterFile = "updater.exe"; // Windows executable
-#elif UNITY_STANDALONE_LINUX
+#elif UNITY_STANDALONE_LINUX && !UNITY_EDITOR
             updaterFile = "updater"; // Linux executable
 #endif
             string updaterPath = Path.Combine(gameDir, updaterFile);
@@ -713,9 +713,9 @@ namespace dev.susybaka.raidsim.Updater
             if (!File.Exists(updaterPath))
             {
                 string alt = string.Empty;
-#if UNITY_STANDALONE_WIN
+#if UNITY_STANDALONE_WIN && !UNITY_EDITOR
                 alt = Path.Combine(gameDir, "updater");
-#elif UNITY_STANDALONE_LINUX
+#elif UNITY_STANDALONE_LINUX && !UNITY_EDITOR
                 alt = Path.Combine(gameDir, "updater.exe");
 #endif
                 if (File.Exists(alt))
@@ -729,7 +729,7 @@ namespace dev.susybaka.raidsim.Updater
                 return;
             }
 
-#if UNITY_STANDALONE_LINUX
+#if UNITY_STANDALONE_LINUX && !UNITY_EDITOR
             try
             {
                 var chmod = new ProcessStartInfo("/bin/chmod", $"755 \"{updaterPath}\"")
@@ -752,14 +752,14 @@ namespace dev.susybaka.raidsim.Updater
                 FileName = updaterPath,
                 Arguments = $"\"{zipFilePath}\" {pid}",
                 WorkingDirectory = gameDir,
-#if UNITY_STANDALONE_WIN
+#if UNITY_STANDALONE_WIN && !UNITY_EDITOR
                 UseShellExecute = true
 #else 
                 UseShellExecute = false
 #endif
             };
 
-#if UNITY_STANDALONE_LINUX
+#if UNITY_STANDALONE_LINUX && !UNITY_EDITOR
             psi.UseShellExecute = false;           // important on Linux
             psi.RedirectStandardError = false;     // set true to capture logs
             psi.RedirectStandardOutput = false;

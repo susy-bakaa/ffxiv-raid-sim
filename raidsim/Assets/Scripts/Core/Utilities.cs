@@ -6,13 +6,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using dev.susybaka.raidsim.Characters;
+using dev.susybaka.raidsim.Core.Rng;
+using dev.susybaka.raidsim.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using dev.susybaka.raidsim.Characters;
-using dev.susybaka.raidsim.UI;
 using static dev.susybaka.raidsim.Characters.CharacterState;
-using static dev.susybaka.raidsim.UI.PartyList;
 using static dev.susybaka.raidsim.StatusEffects.StatusEffectData;
+using static dev.susybaka.raidsim.UI.PartyList;
 
 namespace dev.susybaka.Shared
 {
@@ -335,15 +336,53 @@ namespace dev.susybaka.Shared
             return components;
         }
 
-        public static T GetRandomItem<T>(this IList<T> list)
+        /// <summary>
+        /// Returns a random element using the standard Unity RNG for pure random selection.
+        /// </summary>
+        /// <typeparam name="T">The element type of the list.</typeparam>
+        /// <param name="list">The list to pick from.</param>
+        /// <returns>A randomly selected element from the list.</returns>
+        /*public static T GetRandomItem<T>(this IList<T> list)
         {
             if (list == null || list.Count < 1)
                 return default;
 
             return list[UnityEngine.Random.Range(0, list.Count)];
+        }*/
+
+        /// <summary>
+        /// Returns a random element using the provided PCG RNG for pure random selection.
+        /// </summary>
+        /// <typeparam name="T">The element type of the list.</typeparam>
+        /// <param name="list">The list to pick from.</param>
+        /// <param name="rng">The PCG RNG used to generate the index.</param>
+        /// <returns>A randomly selected element from the list.</returns>
+        public static T GetRandomItemPCG<T>(this IList<T> list, Pcg32 rng)
+        {
+            return list[rng.NextInt(0, list.Count)];
         }
 
-        public static void Shuffle<T>(this IList<T> list)
+        /// <summary>
+        /// Returns an element using the RNG service, allowing controlled variants via key and mode.
+        /// </summary>
+        /// <typeparam name="T">The element type of the list.</typeparam>
+        /// <param name="list">The list to pick from.</param>
+        /// <param name="rng">The RNG service used to pick an index.</param>
+        /// <param name="key">A key used to scope or control the RNG sequence.</param>
+        /// <param name="mode">The RNG mode to use for the pick.</param>
+        /// <returns>A selected element from the list.</returns>
+        public static T PickRandomItemPCG<T>(this IList<T> list, raidsim.Core.Rng.RngService rng, string key, raidsim.Core.GlobalData.RngMode mode = raidsim.Core.GlobalData.RngMode.PureRandom)
+        {
+            int index = rng.Pick(key, list.Count, mode);
+            return list[index];
+        }
+
+        /// <summary>
+        /// Shuffles the list in place using a Fisher-Yates shuffle driven by the standard Unity RNG.
+        /// </summary>
+        /// <typeparam name="T">The element type of the list.</typeparam>
+        /// <param name="list">The list to shuffle in place.</param>
+        /*public static void Shuffle<T>(this IList<T> list)
         {
             for (var i = list.Count - 1; i > 1; i--)
             {
@@ -351,6 +390,21 @@ namespace dev.susybaka.Shared
                 var value = list[j];
                 list[j] = list[i];
                 list[i] = value;
+            }
+        }*/
+
+        /// <summary>
+        /// Shuffles the list in place using a Fisher-Yates shuffle driven by the provided PCG RNG.
+        /// </summary>
+        /// <typeparam name="T">The element type of the list.</typeparam>
+        /// <param name="list">The list to shuffle in place.</param>
+        /// <param name="rng">The PCG RNG used to generate indices.</param>
+        public static void ShufflePCG<T>(this IList<T> list, Pcg32 rng)
+        {
+            for (int i = list.Count - 1; i > 0; i--)
+            {
+                int j = rng.NextInt(0, i + 1);
+                (list[i], list[j]) = (list[j], list[i]);
             }
         }
 

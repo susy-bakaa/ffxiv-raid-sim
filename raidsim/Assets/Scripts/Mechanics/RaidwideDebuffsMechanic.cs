@@ -36,6 +36,9 @@ namespace dev.susybaka.raidsim.Mechanics
 
         List<StatusEffectInfo> statusEffects;
         List<CharacterState> partyMembers;
+        private readonly List<CharacterState> _candidatesCopy = new List<CharacterState>();
+        private readonly List<StatusEffectData> _incompatibleEffects = new List<StatusEffectData>();
+        private readonly List<Role> _assignedRoles = new List<Role>();
 
         CharacterState player;
 
@@ -97,7 +100,7 @@ namespace dev.susybaka.raidsim.Mechanics
                 if (specifiedRoles != null)
                 {
                     if (randomizeRoleGroups)
-                        specifiedRoles.Shuffle();
+                        specifiedRoles.ShufflePCG(timeline.random.Stream($"{mechanicName}_{gameObject.name}_Shuffle_SpecifiedRoles"));
 
                     int selected = 0;
 
@@ -127,12 +130,12 @@ namespace dev.susybaka.raidsim.Mechanics
                             if (log)
                                 Debug.LogWarning($"Failed to get random event result for ID {randomEventResultId}!");
                             if (fallbackToRandom)
-                                selected = Random.Range(0, specifiedRoles.Count);
+                                selected = timeline.random.Pick($"{mechanicName}_{gameObject.name}_RandomBasedOnPrevious", specifiedRoles.Count, timeline.GlobalRngMode); //Random.Range(0, specifiedRoles.Count);
                         }
                     }
                     else
                     {
-                        selected = Random.Range(0, specifiedRoles.Count);
+                        selected = timeline.random.Pick($"{mechanicName}_{gameObject.name}_Random", specifiedRoles.Count, timeline.GlobalRngMode); //Random.Range(0, specifiedRoles.Count);
                     }
 
                     if (log)
@@ -167,7 +170,7 @@ namespace dev.susybaka.raidsim.Mechanics
                 if (specifiedRoles != null)
                 {
                     if (randomizeRoleGroups)
-                        specifiedRoles.Shuffle();
+                        specifiedRoles.ShufflePCG(timeline.random.Stream($"{mechanicName}_{gameObject.name}_Shuffle_OnlySpecifiedRoles1"));
 
                     RoleSelection playerRoleGroup = specifiedRoles.FirstOrDefault(group => group.roles.Contains(player.role));
 
@@ -199,7 +202,7 @@ namespace dev.susybaka.raidsim.Mechanics
                 if (specifiedRoles != null)
                 {
                     if (randomizeRoleGroups)
-                        specifiedRoles.Shuffle();
+                        specifiedRoles.ShufflePCG(timeline.random.Stream($"{mechanicName}_{gameObject.name}_Shuffle_OnlySpecifiedRoles2"));
 
                     RoleSelection playerRoleGroup = specifiedRoles.FirstOrDefault(group => group.roles.Contains(player.role));
 
@@ -212,7 +215,7 @@ namespace dev.susybaka.raidsim.Mechanics
 
                         if (otherGroups.Count > 0)
                         {
-                            int selected = Random.Range(0, otherGroups.Count);
+                            int selected = timeline.random.Pick($"{mechanicName}_{gameObject.name}_RandomGroup", otherGroups.Count, timeline.GlobalRngMode);//Random.Range(0, otherGroups.Count);
 
                             if (log)
                                 Debug.Log($"Role group {otherGroups[selected].name} selected out of possible {otherGroups.Count}!");
@@ -241,8 +244,8 @@ namespace dev.susybaka.raidsim.Mechanics
                 }
             }
 
-            statusEffects.Shuffle();
-            partyMembers.Shuffle();
+            statusEffects.ShufflePCG(timeline.random.Stream($"{mechanicName}_{gameObject.name}_Shuffle_StatusEffects"));
+            partyMembers.ShufflePCG(timeline.random.Stream($"{mechanicName}_{gameObject.name}_Shuffle_PartyMembers"));
 
             if (playerEffect.data != null && player != null)
             {
@@ -278,7 +281,7 @@ namespace dev.susybaka.raidsim.Mechanics
 
                     // If no suitable target found, apply to a random member if allowed
                     if (target == null && fallbackToRandom)
-                        target = partyMembers[Random.Range(0, partyMembers.Count)];
+                        target = partyMembers[timeline.random.Pick($"{mechanicName}_{gameObject.name}_RandomTargetMember", partyMembers.Count, timeline.GlobalRngMode)]; // Random.Range(0, partyMembers.Count)
 
                     if (log)
                         Debug.Log($"fallbackToRandomTarget: '{target?.characterName}'");
@@ -316,28 +319,39 @@ namespace dev.susybaka.raidsim.Mechanics
             }
         }
 
+        protected override bool UsesPCG()
+        {
+            return true;
+        }
+
         private CharacterState FindSuitableTarget(StatusEffectInfo effect, List<CharacterState> candidates)
         {
             if (effect.data.assignedRoles != null && effect.data.assignedRoles.Count > 0 && !ignoreRoles)
             {
                 // Create a copy of the assigned roles for this status effect
-                List<Role> assignedRoles = effect.data.assignedRoles;
+                _assignedRoles.Clear();
+                if (_assignedRoles.Capacity < effect.data.assignedRoles.Count)
+                    _assignedRoles.Capacity = effect.data.assignedRoles.Count;
+                _assignedRoles.AddRange(effect.data.assignedRoles);
 
                 // Shuffle the roles so it wont always end up picking the member with the same role that is defined first in effect.data.assignedRoles
-                assignedRoles.Shuffle();
+                _assignedRoles.ShufflePCG(timeline.random.Stream($"{mechanicName}_{gameObject.name}_Shuffle_AssignedRoles_Effect_{effect.data.statusName}_{effect.tag}"));
 
-                foreach (Role role in assignedRoles)
+                foreach (Role role in _assignedRoles)
                 {
                     // Create a copy of the candidates list
-                    List<CharacterState> candidatesCopy = new List<CharacterState>(candidates);
+                    _candidatesCopy.Clear();
+                    if (_candidatesCopy.Capacity < candidates.Count)
+                        _candidatesCopy.Capacity = candidates.Count;
+                    _candidatesCopy.AddRange(candidates);
 
                     // Shuffle candidates for more random behaviour as well
-                    candidatesCopy.Shuffle();
+                    _candidatesCopy.ShufflePCG(timeline.random.Stream($"{mechanicName}_{gameObject.name}_Shuffle_CandidatesCopy_Effect_{effect.data.statusName}_{effect.tag}"));
 
                     // Iterate through the copy of candidates
-                    for (int i = 0; i < candidatesCopy.Count; i++)
+                    for (int i = 0; i < _candidatesCopy.Count; i++)
                     {
-                        var candidate = candidatesCopy[i];
+                        var candidate = _candidatesCopy[i];
                         if (candidate.role == role)
                         {
                             candidates.Remove(candidate); // Remove the candidate from the original list
@@ -348,22 +362,28 @@ namespace dev.susybaka.raidsim.Mechanics
             }
             else if (ignoreRoles)
             {
-                // Create a copy of all incompatable status effects
-                List<StatusEffectData> incompatableEffects = effect.data.incompatableStatusEffects;
+                // Create a copy of all incompatible status effects
+                _incompatibleEffects.Clear();
+                if (_incompatibleEffects.Capacity < effect.data.incompatableStatusEffects.Count)
+                    _incompatibleEffects.Capacity = effect.data.incompatableStatusEffects.Count;
+                _incompatibleEffects.AddRange(effect.data.incompatableStatusEffects);
 
                 // Create a copy of the candidates list
-                List<CharacterState> candidatesCopy = new List<CharacterState>(candidates);
+                _candidatesCopy.Clear();
+                if (_candidatesCopy.Capacity < candidates.Count)
+                    _candidatesCopy.Capacity = candidates.Count;
+                _candidatesCopy.AddRange(candidates);
 
                 // Shuffle candidates for more random behaviour as well
-                candidatesCopy.Shuffle();
+                _candidatesCopy.ShufflePCG(timeline.random.Stream($"{mechanicName}_{gameObject.name}_Shuffle_CandidatesCopy_Effect_{effect.data.statusName}_{effect.tag}_IgnoreRoles"));
 
                 // Iterate through the copy of candidates
-                for (int i = 0; i < candidatesCopy.Count; i++)
+                for (int i = 0; i < _candidatesCopy.Count; i++)
                 {
-                    var candidate = candidatesCopy[i];
+                    var candidate = _candidatesCopy[i];
 
                     // Iterate through all of the incompatable status effects
-                    foreach (StatusEffectData effectData in incompatableEffects)
+                    foreach (StatusEffectData effectData in _incompatibleEffects)
                     {
                         // Check if this candidate has one of the incompatable effects
                         if (!candidate.HasEffect(effectData.statusName))

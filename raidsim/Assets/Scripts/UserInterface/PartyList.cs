@@ -2,6 +2,7 @@
 // This file is part of ffxiv-raid-sim. Linking with the Unity runtime
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using TMPro;
 using NaughtyAttributes;
@@ -11,6 +12,7 @@ using dev.susybaka.raidsim.StatusEffects;
 using dev.susybaka.raidsim.Targeting;
 using dev.susybaka.Shared;
 using static dev.susybaka.raidsim.Core.GlobalData;
+using dev.susybaka.raidsim.Core;
 
 namespace dev.susybaka.raidsim.UI
 {
@@ -35,6 +37,8 @@ namespace dev.susybaka.raidsim.UI
         private PartyMember player;
         private bool setupDone = false;
         public bool SetupDone { get { return setupDone; } }
+        private readonly List<CharacterState> _shuffledMembers = new List<CharacterState>();
+        private readonly List<EnmityInfo> _enmityInfoList = new List<EnmityInfo>();
 
 #if UNITY_EDITOR
         // Redundant now with the changes to partylist hud elements?
@@ -226,26 +230,27 @@ namespace dev.susybaka.raidsim.UI
                 return null; // or handle the case where there are no members
             }
 
-            // Create a copy of the members list
-            List<CharacterState> shuffledMembers = new List<CharacterState>(members.Count);
-            shuffledMembers.Clear();
+            // Create a copy of the members list that consists of CharacterState objects
+            _shuffledMembers.Clear();
+            if (_shuffledMembers.Capacity < members.Count)
+                _shuffledMembers.Capacity = members.Count;
 
             for (int i = 0; i < members.Count; i++)
             {
-                shuffledMembers.Add(members[i].characterState);
+                _shuffledMembers.Add(members[i].characterState);
             }
 
             // Randomize the copy
-            shuffledMembers.Shuffle();
+            _shuffledMembers.ShufflePCG(FightTimeline.Instance.random.Stream("PartyList_GetLowestHealthMember_Shuffle_PartyMembers"));
 
             // Find the member with the lowest health in the shuffled list
-            CharacterState lowestHealthMember = shuffledMembers[0];
+            CharacterState lowestHealthMember = _shuffledMembers[0];
 
-            for (int i = 1; i < shuffledMembers.Count; i++)
+            for (int i = 1; i < _shuffledMembers.Count; i++)
             {
-                if (shuffledMembers[i].health < lowestHealthMember.health)
+                if (_shuffledMembers[i].health < lowestHealthMember.health)
                 {
-                    lowestHealthMember = shuffledMembers[i];
+                    lowestHealthMember = _shuffledMembers[i];
                 }
             }
 
@@ -259,26 +264,27 @@ namespace dev.susybaka.raidsim.UI
                 return null; // or handle the case where there are no members
             }
 
-            // Create a copy of the members list
-            List<CharacterState> shuffledMembers = new List<CharacterState>(members.Count);
-            shuffledMembers.Clear();
+            // Create a copy of the members list that consists of CharacterState objects
+            _shuffledMembers.Clear();
+            if (_shuffledMembers.Capacity < members.Count)
+                _shuffledMembers.Capacity = members.Count;
 
             for (int i = 0; i < members.Count; i++)
             {
-                shuffledMembers.Add(members[i].characterState);
+                _shuffledMembers.Add(members[i].characterState);
             }
 
             // Randomize the copy
-            shuffledMembers.Shuffle();
+            _shuffledMembers.ShufflePCG(FightTimeline.Instance.random.Stream("PartyList_GetHighestHealthMember_Shuffle_PartyMembers"));
 
             // Find the member with the highest health in the shuffled list
-            CharacterState highestHealthMember = shuffledMembers[0];
+            CharacterState highestHealthMember = _shuffledMembers[0];
 
-            for (int i = 1; i < shuffledMembers.Count; i++)
+            for (int i = 1; i < _shuffledMembers.Count; i++)
             {
-                if (shuffledMembers[i].health > highestHealthMember.health)
+                if (_shuffledMembers[i].health > highestHealthMember.health)
                 {
-                    highestHealthMember = shuffledMembers[i];
+                    highestHealthMember = _shuffledMembers[i];
                 }
             }
 
@@ -341,8 +347,9 @@ namespace dev.susybaka.raidsim.UI
                 return new List<EnmityInfo>(); // Return an empty list if there are no members
             }
 
-            // Create a list of EnmityInfo
-            List<EnmityInfo> enmityInfoList = new List<EnmityInfo>();
+            // Clear the EnmityInfo list and set its capacity to the number of members
+            _enmityInfoList.Clear();
+            _enmityInfoList.Capacity = members.Count;
 
             for (int i = 0; i < members.Count; i++)
             {
@@ -350,13 +357,13 @@ namespace dev.susybaka.raidsim.UI
                 long enmityValue = memberState.enmity.TryGetValue(towards, out long value) ? value : 0;
 
                 // Add the EnmityInfo struct to the list
-                enmityInfoList.Add(new EnmityInfo(memberState.characterName, memberState, towards, (int)enmityValue));
+                _enmityInfoList.Add(new EnmityInfo(memberState.characterName, memberState, towards, (int)enmityValue));
             }
 
             // Sort the list based on the enmity value in descending order
-            enmityInfoList.Sort((a, b) => b.enmity.CompareTo(a.enmity));
+            _enmityInfoList.Sort((a, b) => b.enmity.CompareTo(a.enmity));
 
-            return enmityInfoList;
+            return _enmityInfoList;
         }
 
         public List<CharacterState> GetEnmityList(CharacterState towards)

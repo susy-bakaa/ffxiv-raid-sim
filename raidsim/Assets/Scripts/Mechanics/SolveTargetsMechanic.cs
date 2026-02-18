@@ -17,6 +17,8 @@ namespace dev.susybaka.raidsim.Mechanics
         [ShowIf(nameof(matchBasedOnRoles))] public bool accountForGroups = false;
         public bool fallbackToRandom = true;
 
+        private readonly List<CharacterState> _candidates = new List<CharacterState>();
+
         public override void TriggerMechanic(ActionInfo actionInfo)
         {
             if (!CanTrigger(actionInfo))
@@ -27,35 +29,36 @@ namespace dev.susybaka.raidsim.Mechanics
                 if (character == null || character.targetController == null)
                     continue;
 
-                List<CharacterState> candidates = new List<CharacterState>(targetList.GetActiveMembers());
+                _candidates.Clear();
+                _candidates.AddRange(targetList.GetActiveMembers());
 
                 if (log)
                 {
-                    for (int i = 0; i < candidates.Count; i++)
+                    for (int i = 0; i < _candidates.Count; i++)
                     {
-                        Debug.Log($"[SolveTargetsMechanic ({gameObject.name})] --> {character.characterName} found candidate {candidates[i].characterName} ({i}) out of {candidates.Count} total.");
+                        Debug.Log($"[SolveTargetsMechanic ({gameObject.name})] --> {character.characterName} found candidate {_candidates[i].characterName} ({i}) out of {_candidates.Count} total.");
                     }
                 }
 
-                if (matchBasedOnRoles && candidates != null && candidates.Count > 0)
+                if (matchBasedOnRoles && _candidates != null && _candidates.Count > 0)
                 {
-                    for (int i = candidates.Count - 1; i >= 0; i--)
+                    for (int i = _candidates.Count - 1; i >= 0; i--)
                     {
-                        CharacterState candidate = candidates[i];
+                        CharacterState candidate = _candidates[i];
 
                         if (log)
-                            Debug.Log($"[SolveTargetsMechanic ({gameObject.name})] {character.characterName} evaluating {candidate.characterName} ({i}) as candidate target out of {candidates.Count} total.");
+                            Debug.Log($"[SolveTargetsMechanic ({gameObject.name})] {character.characterName} evaluating {candidate.characterName} ({i}) as candidate target out of {_candidates.Count} total.");
 
                         if (candidate.role != character.role)
                         {
-                            candidates.RemoveAt(i);
+                            _candidates.RemoveAt(i);
                             if (log)
                                 Debug.Log($"[SolveTargetsMechanic ({gameObject.name})] {character.characterName} rejected {candidate.characterName} ({i}) due to role mismatch.");
                             continue;
                         }
                         if (accountForGroups && candidate.group != character.group)
                         {
-                            candidates.RemoveAt(i);
+                            _candidates.RemoveAt(i);
                             if (log)
                                 Debug.Log($"[SolveTargetsMechanic ({gameObject.name})] {character.characterName} rejected {candidate.characterName} ({i}) due to group mismatch.");
                             continue;
@@ -66,10 +69,10 @@ namespace dev.susybaka.raidsim.Mechanics
                 }
                 else
                 {
-                    candidates.RemoveAll(c => c == character);
+                    _candidates.RemoveAll(c => c == character);
                 }
 
-                if (candidates == null || candidates.Count == 0)
+                if (_candidates == null || _candidates.Count == 0)
                 {
                     Debug.LogWarning($"[SolveTargetsMechanic ({gameObject.name})] No valid candidates found for {character.characterName}.");
                     continue;
@@ -77,15 +80,15 @@ namespace dev.susybaka.raidsim.Mechanics
 
                 CharacterState picked = null;
 
-                if (candidates.Count == 1 || !fallbackToRandom)
+                if (_candidates.Count == 1 || !fallbackToRandom)
                 {
-                    picked = candidates[0];
+                    picked = _candidates[0];
                     if (log)
                         Debug.Log($"[SolveTargetsMechanic ({gameObject.name})] Only one candidate found for {character.characterName}, picking {picked.characterName}.");
                 }
                 else if (fallbackToRandom)
                 {
-                    picked = candidates[Random.Range(0, candidates.Count)];
+                    picked = _candidates[timeline.random.Pick($"{mechanicName}_{gameObject.name}_FallbackToRandom", _candidates.Count, timeline.GlobalRngMode)]; // Random.Range(0, candidates.Count)
                     if (log)
                         Debug.Log($"[SolveTargetsMechanic ({gameObject.name})] Multiple candidates found for {character.characterName}, randomly picked {picked.characterName}.");
                 }
@@ -98,6 +101,11 @@ namespace dev.susybaka.raidsim.Mechanics
 
                 character.targetController.SetTarget(picked.targetController.self);
             }
+        }
+
+        protected override bool UsesPCG()
+        {
+            return true;
         }
     }
 }

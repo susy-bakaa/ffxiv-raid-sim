@@ -7,9 +7,11 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using NaughtyAttributes;
+using TMPro;
 using dev.susybaka.raidsim.Actions;
 using dev.susybaka.raidsim.Bots;
 using dev.susybaka.raidsim.Characters;
+using dev.susybaka.raidsim.Core.Rng;
 using dev.susybaka.raidsim.Inputs;
 using dev.susybaka.raidsim.Mechanics;
 using dev.susybaka.raidsim.Nodes;
@@ -20,7 +22,6 @@ using dev.susybaka.Shared;
 using dev.susybaka.Shared.Attributes;
 using dev.susybaka.Shared.Audio;
 using static dev.susybaka.raidsim.Core.GlobalData;
-using TMPro;
 
 namespace dev.susybaka.raidsim.Core
 {
@@ -28,6 +29,7 @@ namespace dev.susybaka.raidsim.Core
     {
         public static FightTimeline Instance;
 
+        public RngService random { private set; get; }
         public UserInput input;
         public FightSelector fightSelector;
         public CharacterState player;
@@ -70,6 +72,14 @@ namespace dev.susybaka.raidsim.Core
         public UnityEvent<bool> onNoNewSeedOnStartChanged;
         public UnityEvent onReset;
         public UnityEvent onPlay;
+
+        [Header("RNG")]
+        [SerializeField] private bool freezeRng = false;
+        [SerializeField] private ulong rngSeed = 12345UL;
+        [SerializeField] private RngMode globalRngMode = RngMode.PureRandom;
+        public bool FreezeRng { get { return freezeRng; } }
+        public ulong RngSeed { get { return rngSeed; } }
+        public RngMode GlobalRngMode { get { return globalRngMode; } }
 
         [Header("User Interface")]
         public Button[] disableDuringPlayback;
@@ -208,6 +218,9 @@ namespace dev.susybaka.raidsim.Core
             }
             Instance = this;
 
+            // Always setup when starting fresh
+            SetupRng();
+
             if (mechanicParent == null)
             {
                 mechanicParent = Utilities.FindAnyByName("Mechanics").transform;
@@ -256,7 +269,7 @@ namespace dev.susybaka.raidsim.Core
                 }
             }
 
-            input = GetComponentInChildren<UserInput>();
+            input = GetComponentInChildren<UserInput>();   
             fightSelector = FindFirstObjectByType<FightSelector>();
 
             for (int i = 0; i < events.Count; i++)
@@ -351,32 +364,8 @@ namespace dev.susybaka.raidsim.Core
 
             hasBeenPlayed = true;
 
-            int seed = ((int)System.DateTime.Now.Ticks + Mathf.RoundToInt(Time.time) + System.DateTime.Now.DayOfYear + (int)System.TimeZoneInfo.Local.BaseUtcOffset.Ticks + Mathf.RoundToInt(SystemInfo.batteryLevel) + SystemInfo.graphicsDeviceID + SystemInfo.graphicsDeviceVendorID + SystemInfo.graphicsMemorySize + SystemInfo.processorCount + SystemInfo.processorFrequency + SystemInfo.systemMemorySize) / 6;
-
-            seed = Mathf.RoundToInt(seed);
-
-            if (seed > 1000000)
-            {
-                seed /= 2;
-            }
-            else if (seed < -1000000)
-            {
-                seed += Mathf.Abs(seed) / 3;
-            }
-            if (seed > 1000000)
-            {
-                seed /= 3;
-            }
-            else if (seed < -1000000)
-            {
-                seed += Mathf.Abs(seed) / 2;
-            }
-
-            if (!noNewSeedOnStart)
-            {
-                Random.InitState(seed);
-                Debug.Log($"New random seed: {seed}");
-            }
+            SetupRng();
+            Debug.Log($"Random seed: {rngSeed}");
 
             if (clearRandomEventResultsOnStart)
             {
@@ -449,7 +438,7 @@ namespace dev.susybaka.raidsim.Core
                             if (!cEvents[e].pickRandomTarget)
                                 cEvents[e].targets.SetTarget(cEvents[e].target);
                             else
-                                cEvents[e].targets.SetRandomTargetFromList();
+                                cEvents[e].targets.SetRandomTargetFromList($"{cEvents[e].targets.gameObject.name}_TargetController_{cEvents[e].name.Replace(" ", string.Empty)}_{cEvents[e].id}_Event_SetRandomTargetFromList");
                             if (cEvents[e].faceTarget && cEvents[e].bossController != null && cEvents[e].targets.currentTarget != null)
                             {
                                 Vector3 direction = cEvents[e].targets.currentTarget.transform.position - cEvents[e].targets.transform.position;
@@ -516,7 +505,7 @@ namespace dev.susybaka.raidsim.Core
                                             randomEventCharacterActions.Add(pool.id, pool.CharacterActionPool);
                                         }
 
-                                        CharacterActionData temp = availableActions.GetRandomItem();
+                                        CharacterActionData temp = availableActions.PickRandomItemPCG(random, $"{timelineAbbreviation}_FightTimeline_{cEvents[e].name.Replace(" ", string.Empty)}_{cEvents[e].id}_Event_RandomCharacterActionFromPool", globalRngMode);
 
                                         for (int a = 0; a < cEvents[e].performCharacterActions.Length; a++)
                                         {
@@ -549,7 +538,8 @@ namespace dev.susybaka.raidsim.Core
                                     }
                                     else
                                     {
-                                        int r = UnityEngine.Random.Range(0, cEvents[e].performCharacterActions.Length);
+                                        //UnityEngine.Random.Range(0, cEvents[e].performCharacterActions.Length);
+                                        int r = random.Pick($"{timelineAbbreviation}_FightTimeline_{cEvents[e].name.Replace(" ", string.Empty)}_{cEvents[e].id}_Event_RandomCharacterAction", cEvents[e].performCharacterActions.Length, globalRngMode);
                                         bool exist = false;
 
                                         if (TryGetRandomEventResult(cEvents[e].id, out int rr))
@@ -963,6 +953,62 @@ namespace dev.susybaka.raidsim.Core
             {
                 AudioManager.Instance.Play(pauseSound, audioVolume);
             }
+        }
+
+        public void ToggleFrozenRng()
+        {
+            SetFrozenRng(!freezeRng, rngSeed);
+        }
+
+        public void SetFrozenRng(bool frozen)
+        {
+            SetFrozenRng(frozen, rngSeed);
+        }
+
+        public void SetFrozenRng(bool frozen, ulong seed)
+        {
+            freezeRng = frozen;
+            rngSeed = seed;
+        }
+
+
+        public void SetGlobalRngMode(int mode)
+        {
+            switch (mode)
+            {
+                default:
+                    if (log)
+                        Debug.Log("Global RNG mode set to PureRandom");
+                    SetGlobalRngMode(RngMode.PureRandom);
+                    break;
+                case 1:
+                    if (log)
+                        Debug.Log("Global RNG mode set to NoRepeatConsecutive");
+                    SetGlobalRngMode(RngMode.NoRepeatConsecutive);
+                    break;
+                case 2:
+                    if (log)
+                        Debug.Log("Global RNG mode set to ShuffleBag");
+                    SetGlobalRngMode(RngMode.ShuffleBag);
+                    break;
+            }
+        }
+
+        public void SetGlobalRngMode(RngMode mode)
+        {
+            globalRngMode = mode;
+        }
+
+        public void SetupRng()
+        {
+            // If frozen => repeatable runs.
+            // If not => still uses custom RNG, just changes seed each run.
+            rngSeed = freezeRng ? rngSeed : (ulong)System.DateTime.UtcNow.Ticks;
+
+            if (random == null)
+                random = new RngService(rngSeed);
+            else
+                random.Reset(rngSeed);
         }
 
         public void ChangeArena(Vector3 bounds, bool? isCircle = null)

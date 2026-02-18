@@ -42,7 +42,10 @@ namespace dev.susybaka.raidsim.Mechanics
 
         private List<CharacterState> originalTargetList = new List<CharacterState>();
         private List<CharacterState> originalPreDefinedTargets = new List<CharacterState>();
-        private List<CharacterState> lastCandidates = new List<CharacterState>();
+        private List<CharacterState> candidates = new List<CharacterState>();
+        private List<CharacterState> _sorted = new List<CharacterState>();
+        private readonly List<CharacterState> lastCandidates = new List<CharacterState>();
+        private readonly List<CharacterState> _finalTargets = new List<CharacterState>();
 
         private bool _showFallbackToRandom => (m_type == TargetingType.StatusEffect || m_type == TargetingType.Role);
         private bool _hideAmountOfTargets => (m_type == TargetingType.FullParty || (m_type == TargetingType.PreDefined && targetAllPreDefined) || pickAllWithEffect);
@@ -74,7 +77,6 @@ namespace dev.susybaka.raidsim.Mechanics
             if (noParty)
                 originalTargetList = new List<CharacterState>(targetList);
             originalPreDefinedTargets = new List<CharacterState>(preDefinedTargets);
-            lastCandidates = new List<CharacterState>();
 
             if (autoFindParty && FightTimeline.Instance != null)
             {
@@ -92,7 +94,8 @@ namespace dev.susybaka.raidsim.Mechanics
                 actionInfo = new ActionInfo(actionInfo.action, overrideSource, actionInfo.target);
             }
 
-            List<CharacterState> candidates = new List<CharacterState>();
+            candidates.Clear();
+            lastCandidates.Clear();
 
             Transform sourceTransform = actionInfo.source != null ? actionInfo.source.transform : transform;
 
@@ -104,17 +107,17 @@ namespace dev.susybaka.raidsim.Mechanics
                 }
             }
 
-            candidates.Clear();
+
             if (noParty)
             {
-                candidates = new List<CharacterState>(targetList);
+                candidates.AddRange(targetList);
             }
             else
             {
-                candidates = party.GetActiveMembers();
+                candidates.AddRange(party.GetActiveMembers());
             }
 
-            lastCandidates = new List<CharacterState>(candidates);
+            lastCandidates.AddRange(candidates);
 
             switch (m_type)
             {
@@ -155,30 +158,33 @@ namespace dev.susybaka.raidsim.Mechanics
                 case TargetingType.StatusEffect:
                     candidates = Filter(actionInfo, candidates);
 
-                    List<CharacterState> sorted = candidates;
+                    _sorted.Clear();
+                    if (_sorted.Capacity < candidates.Count)
+                        _sorted.Capacity = candidates.Count;
+                    _sorted.AddRange(candidates);
 
                     if (pickAllWithEffect)
                     {
-                        for (int i = sorted.Count - 1; i >= 0; i--)
+                        for (int i = _sorted.Count - 1; i >= 0; i--)
                         {
-                            if (!sorted[i].HasAnyVersionOfEffect(effect.data.statusName))
+                            if (!_sorted[i].HasAnyVersionOfEffect(effect.data.statusName))
                             {
-                                sorted.RemoveAt(i);
+                                _sorted.RemoveAt(i);
                             }
                         }
 
-                        amountOfTargets = sorted.Count;
+                        amountOfTargets = _sorted.Count;
                     }
                     else
                     {
                         // Sort candidates by whether they have the status effect, then randomly within each group
-                        sorted = candidates.OrderByDescending(c => c.HasAnyVersionOfEffect(effect.data.statusName)).ThenBy(c => Random.value).ToList();
+                        _sorted = candidates.OrderByDescending(c => c.HasAnyVersionOfEffect(effect.data.statusName)).ThenBy(c => timeline.random.Value01($"{mechanicName}_{gameObject}_TriggerMechanic_TargetingType_StatusEffect")).ToList(); // Random.value
                     }
 
-                    if (fallBackToRandom && sorted.Count < amountOfTargets)
-                        sorted = FillWithRandom(sorted, candidates, amountOfTargets);
+                    if (fallBackToRandom && _sorted.Count < amountOfTargets)
+                        _sorted = FillWithRandom(_sorted, candidates, amountOfTargets);
 
-                    ExecuteOnTargets(actionInfo, sorted);
+                    ExecuteOnTargets(actionInfo, _sorted);
                     break;
                 case TargetingType.Role:
                     int subListIndex = 0;
@@ -212,14 +218,14 @@ namespace dev.susybaka.raidsim.Mechanics
                             int countToPickFromThisList = perList + (i < remainder ? 1 : 0);
 
                             // Randomly pick the required amount from this role list
-                            var picked = roleCandidates.OrderBy(c => Random.value).Take(countToPickFromThisList).ToList();
+                            var picked = roleCandidates.OrderBy(c => timeline.random.Value01($"{mechanicName}_{gameObject}_TriggerMechanic_TargetingType_Role")).Take(countToPickFromThisList).ToList(); // Random.value
 
                             filtered.AddRange(picked);
                         }
                     }
                     else if (pickRandomSubList)
                     {
-                        subListIndex = Random.Range(0, availableRoles.Count);
+                        subListIndex = timeline.random.Pick($"{mechanicName}_{gameObject.name}_PickRandomSubList", availableRoles.Count, timeline.GlobalRngMode); // Random.Range(0, availableRoles.Count)
                         filtered = candidates.Where(c => availableRoles[subListIndex].roles.Contains(c.role)).ToList();
                     }
                     else
@@ -256,7 +262,8 @@ namespace dev.susybaka.raidsim.Mechanics
                     ExecuteOnTargets(actionInfo, candidates);
                     break;
                 case TargetingType.PreDefined:
-                    candidates = new List<CharacterState>(preDefinedTargets);
+                    candidates.Clear();
+                    candidates.AddRange(preDefinedTargets);
                     if (targetAllPreDefined)
                         amountOfTargets = candidates.Count; // Ensure we target all predefined targets if specified
                     candidates = Filter(actionInfo, candidates);
@@ -279,13 +286,18 @@ namespace dev.susybaka.raidsim.Mechanics
             targetList = new List<CharacterState>(originalTargetList);
         }
 
+        protected override bool UsesPCG()
+        {
+            return true;
+        }
+
         private List<CharacterState> GetRandomCandidates(List<CharacterState> candidates)
         {
             if (candidates == null || candidates.Count == 0 || amountOfTargets <= 0)
                 return new List<CharacterState>();
 
             List<CharacterState> result = new List<CharacterState>(amountOfTargets);
-            List<CharacterState> shuffled = candidates.OrderBy(c => Random.value).ToList();
+            List<CharacterState> shuffled = candidates.OrderBy(c => timeline.random.Value01($"{mechanicName}_{gameObject}_GetRandomCandidates_Shuffled")).ToList(); // Random.value
 
             int fullSets = amountOfTargets / shuffled.Count;
             int remaining = amountOfTargets % shuffled.Count;
@@ -296,7 +308,7 @@ namespace dev.susybaka.raidsim.Mechanics
             if (remaining > 0)
                 result.AddRange(shuffled.Take(remaining));
 
-            return result.OrderBy(c => Random.value).ToList();
+            return result.OrderBy(c => timeline.random.Value01($"{mechanicName}_{gameObject}_GetRandomCandidates_Result")).ToList(); // Random.value
         }
 
         private List<CharacterState> FillWithRandom(List<CharacterState> currentList, List<CharacterState> pool, int targetCount)
@@ -308,7 +320,7 @@ namespace dev.susybaka.raidsim.Mechanics
             var remaining = pool.Except(currentList).ToList();
 
             // Shuffle and take the difference
-            var fill = remaining.OrderBy(c => Random.value).Take(targetCount - currentList.Count).ToList();
+            var fill = remaining.OrderBy(c => timeline.random.Value01($"{mechanicName}_{gameObject}_FillWithRandom")).Take(targetCount - currentList.Count).ToList(); // Random.value
 
             currentList.AddRange(fill);
             return currentList;
@@ -317,20 +329,21 @@ namespace dev.susybaka.raidsim.Mechanics
         private void ExecuteOnTargets(ActionInfo actionInfo, List<CharacterState> candidates)
         {
             // Select the first amountOfTargets candidates to a final list
-            List<CharacterState> finalTargets = candidates.Take(amountOfTargets).ToList();
+            _finalTargets.Clear();
+            _finalTargets.AddRange(candidates.Take(amountOfTargets));
 
 #if UNITY_EDITOR
             if (log)
-                Debug.Log($"[TargetedMechanic ({gameObject.name})] finalTargets: '{finalTargets.Count}'");
+                Debug.Log($"[TargetedMechanic ({gameObject.name})] finalTargets: '{_finalTargets.Count}'");
 #endif
 
             int index = 0;
             // Trigger mechanic with each candidate in final list
-            foreach (CharacterState target in finalTargets)
+            foreach (CharacterState target in _finalTargets)
             {
 #if UNITY_EDITOR
                 if (log)
-                    Debug.Log($"[TargetedMechanic ({gameObject.name})] executing resulting mechanic for target: '{target.gameObject.name}' {finalTargets.IndexOf(target) + 1}/{finalTargets.Count}");
+                    Debug.Log($"[TargetedMechanic ({gameObject.name})] executing resulting mechanic for target: '{target.gameObject.name}' {_finalTargets.IndexOf(target) + 1}/{_finalTargets.Count}");
 #endif
                 resultingMechanic.TriggerMechanic(new ActionInfo(actionInfo.action, actionInfo.source, target));
 

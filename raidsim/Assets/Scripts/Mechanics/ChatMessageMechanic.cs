@@ -80,7 +80,7 @@ namespace dev.susybaka.raidsim.Mechanics
                 {
                     if (pickRandom)
                     {
-                        r = Random.Range(0, messages.Count);
+                        r = timeline.random.Pick($"{mechanicName}_PickRandom", messages.Count, timeline.GlobalRngMode);
                         msg = messages[r];
                         FightTimeline.Instance.AddRandomEventResult(fightTimelineRandomEventId, r);
                     }
@@ -106,6 +106,11 @@ namespace dev.susybaka.raidsim.Mechanics
                     chatWindow.PostLog(msg);
                 }
             }
+        }
+
+        protected override bool UsesPCG()
+        {
+            return true;
         }
     }
 }

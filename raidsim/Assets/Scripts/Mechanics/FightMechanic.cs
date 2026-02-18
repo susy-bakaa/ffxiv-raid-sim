@@ -12,6 +12,8 @@ namespace dev.susybaka.raidsim.Mechanics
 {
     public class FightMechanic : MonoBehaviour
     {
+        protected FightTimeline timeline;
+
         [Header("Basic Settings")]
         public bool mechanicEnabled = true;
         public string mechanicName = string.Empty;
@@ -26,6 +28,8 @@ namespace dev.susybaka.raidsim.Mechanics
             if (FightTimeline.Instance == null)
                 return;
 
+            timeline = FightTimeline.Instance;
+
             if (FightTimeline.Instance.log)
             {
                 log = true;
@@ -36,6 +40,7 @@ namespace dev.susybaka.raidsim.Mechanics
         {
             if (FightTimeline.Instance != null)
             {
+                timeline = FightTimeline.Instance;
                 FightTimeline.Instance.onReset.AddListener(InterruptMechanic);
             }
         }
@@ -138,6 +143,18 @@ namespace dev.susybaka.raidsim.Mechanics
 
         protected bool CanTrigger(ActionInfo actionInfo)
         {
+            if (UsesPCG() && timeline == null)
+            {
+                string nameToLog = string.IsNullOrEmpty(mechanicName) ? "Unnamed mechanic" : mechanicName;
+                Debug.LogWarning($"[FightMechanic] '{nameToLog}' ({gameObject.name}) requires a FightTimeline but none was found! Execution aborted.", gameObject);
+                return false;
+            }
+            if (UsesPCG() && timeline != null && string.IsNullOrEmpty(mechanicName))
+            {
+                string nameToLog = string.IsNullOrEmpty(mechanicName) ? "Unnamed mechanic" : mechanicName;
+                Debug.LogWarning($"[FightMechanic] '{nameToLog}' ({gameObject.name}) cannot be triggered during PCG, because the mechanic has no name! Execution aborted.", gameObject);
+                return false;
+            }
             if (global && onlyTriggerOnce)
             {
                 if (FightTimeline.Instance != null && !string.IsNullOrEmpty(mechanicName))
@@ -176,6 +193,11 @@ namespace dev.susybaka.raidsim.Mechanics
                 Debug.Log($"[FightMechanic] '{nameToLog}' ({gameObject.name}) triggered with ActionInfo (action: '{actionInfo.action?.gameObject}', source: '{actionInfo.source?.characterName}', target: '{actionInfo.target?.characterName}', targetIsPlayer: '{actionInfo.targetIsPlayer}')", gameObject);
             }
             return true;
+        }
+
+        protected virtual bool UsesPCG()
+        {
+            return false;
         }
     }
 }

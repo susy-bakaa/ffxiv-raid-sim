@@ -200,18 +200,22 @@ namespace dev.susybaka.raidsim.Mechanics
 
             if (randomizeDestinations && multipleDestinations)
             {
-                for (int i = 0; i < destinations.Count; i++)
-                {
-                    Transform temp = destinations[i];
-                    int randomIndex = Random.Range(i, destinations.Count);
-                    destinations[i] = destinations[randomIndex];
-                    destinations[randomIndex] = temp;
+                var stream = timeline.random.Stream($"{mechanicName}_{gameObject.name}_DestinationsShuffle");
 
+                int count = destinations.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    int randomIndex = stream.NextInt(i, count); // max exclusive, same as Unity int Range
+
+                    // swap destinations
+                    (destinations[i], destinations[randomIndex]) = (destinations[randomIndex], destinations[i]);
+
+                    // swap effects in the same way, to keep pairing aligned
                     if (shuffledEffects != null)
                     {
-                        StatusEffectInfo tempEffect = shuffledEffects[i];
-                        shuffledEffects[i] = shuffledEffects[randomIndex];
-                        shuffledEffects[randomIndex] = tempEffect;
+                        // Safety guard if lists can differ
+                        if (i < shuffledEffects.Count && randomIndex < shuffledEffects.Count)
+                            (shuffledEffects[i], shuffledEffects[randomIndex]) = (shuffledEffects[randomIndex], shuffledEffects[i]);
                     }
                 }
             }

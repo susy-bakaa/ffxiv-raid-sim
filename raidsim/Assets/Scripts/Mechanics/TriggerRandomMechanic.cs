@@ -63,9 +63,9 @@ namespace dev.susybaka.raidsim.Mechanics
 
             if (!chooseListBasedOnPrevious && !chooseBasedOnPreviousResult)
             {
-                r = UnityEngine.Random.Range(0, mechanics[0].fightMechanics.Count);
-
-                if (editorForcedRandomEventResult > -1)
+                if (editorForcedRandomEventResult < 0)
+                    r = timeline.random.Pick($"{mechanicName}_{gameObject}_TriggerRandomMechanic", mechanics[0].fightMechanics.Count, timeline.GlobalRngMode); // UnityEngine.Random.Range(0, mechanics[0].fightMechanics.Count)
+                else
                     r = editorForcedRandomEventResult;
 
                 if (log)
@@ -75,9 +75,11 @@ namespace dev.susybaka.raidsim.Mechanics
             }
             else if (chooseListBasedOnPrevious && !chooseBasedOnPreviousResult && previousRandomEventResultId > -1)
             {
-                int p = FightTimeline.Instance.GetRandomEventResult(previousRandomEventResultId);
+                int p = -1;
 
-                if (editorForcedPreviousRandomEventResult > -1)
+                if (editorForcedPreviousRandomEventResult < 0)
+                    p = FightTimeline.Instance.GetRandomEventResult(previousRandomEventResultId);
+                else
                     p = editorForcedPreviousRandomEventResult;
 
                 if (p <= -1)
@@ -95,17 +97,21 @@ namespace dev.susybaka.raidsim.Mechanics
                     }
                 }
 
-                if (!useMultipleResults)
+                if (editorForcedRandomEventResult < 0)
                 {
-                    r = Random.Range(0, mechanics[p].fightMechanics.Count);
+                    if (!useMultipleResults)
+                    {
+                        r = timeline.random.Pick($"{mechanicName}_{gameObject}_TriggerRandomMechanic_ChooseListBasedOnPrevious", mechanics[p].fightMechanics.Count, timeline.GlobalRngMode); // Random.Range(0, mechanics[p].fightMechanics.Count)
+                    }
+                    else if (useMultipleResults && previousRandomEventResultId2 > -1 && chooseBasedOnPreviousResult2)
+                    {
+                        r = FightTimeline.Instance.GetRandomEventResult(previousRandomEventResultId2);
+                    }
                 }
-                else if (useMultipleResults && previousRandomEventResultId2 > -1 && chooseBasedOnPreviousResult2)
+                else
                 {
-                    r = FightTimeline.Instance.GetRandomEventResult(previousRandomEventResultId2);
-                }
-
-                if (editorForcedRandomEventResult > -1)
                     r = editorForcedRandomEventResult;
+                }
 
                 if (log)
                     Debug.Log($"[{gameObject.name}] r {r} p {p}");
@@ -117,9 +123,11 @@ namespace dev.susybaka.raidsim.Mechanics
             }
             else if (chooseBasedOnPreviousResult && !chooseListBasedOnPrevious && previousRandomEventResultId > -1)
             {
-                int b = FightTimeline.Instance.GetRandomEventResult(previousRandomEventResultId);
+                int b = -1;
 
-                if (editorForcedPreviousRandomEventResult > -1)
+                if (editorForcedPreviousRandomEventResult < 0)
+                    b = FightTimeline.Instance.GetRandomEventResult(previousRandomEventResultId);
+                else
                     b = editorForcedPreviousRandomEventResult;
 
                 if (b <= -1)
@@ -156,6 +164,11 @@ namespace dev.susybaka.raidsim.Mechanics
 
             if (thisRandomEventResultId > -1)
                 FightTimeline.Instance.AddRandomEventResult(thisRandomEventResultId, r);
+        }
+
+        protected override bool UsesPCG()
+        {
+            return true;
         }
 
         public void SetEditorRandomEventResult(int result)
