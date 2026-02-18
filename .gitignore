@@ -198,8 +198,11 @@ tools/raidsim-animation-tool/xivAnim/xivAnim.Gui.Windows/bin/
 tools/raidsim-animation-tool/xivAnim/xivAnim.Gui.Windows/obj/
 tools/misc-utilities/frame-counter/.venv
 tools/misc-utilities/msdfgen-1.13/done
+tools/librsim/build
 
 # Visual Studio cache directory
+**/.vs/
+**/.vscode/
 .vs/
 raidsim/.vs/
 tools/ffxiv-raid-sim-updater/.vs/
@@ -430,7 +433,7 @@ PublishScripts/
 # NuGet Symbol Packages
 *.snupkg
 # The packages folder can be ignored because of Package Restore
-**/[Pp]ackages/*
+# **/[Pp]ackages/* (This line seemed to remove unity packages from the project which is not good)
 # except build/, which is used as an MSBuild target.
 !**/[Pp]ackages/build/
 # Uncomment if necessary however generally it will be regenerated when needed
