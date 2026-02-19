@@ -182,6 +182,11 @@ namespace dev.susybaka.raidsim.Mechanics
             }
         }
 
+        protected override bool UsesPCG()
+        {
+            return true;
+        }
+
         private IEnumerator IE_MoveObjectDelayed(WaitForSeconds wait)
         {
             yield return wait;
@@ -200,7 +205,7 @@ namespace dev.susybaka.raidsim.Mechanics
 
             if (randomizeDestinations && multipleDestinations)
             {
-                var stream = timeline.random.Stream($"{mechanicName}_{gameObject.name}_DestinationsShuffle");
+                var stream = timeline.random.Stream($"{GetUniqueName()}_DestinationsShuffle");
 
                 int count = destinations.Count;
                 for (int i = 0; i < count; i++)

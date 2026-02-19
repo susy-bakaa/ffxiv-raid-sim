@@ -1,13 +1,28 @@
 using System.Collections.Generic;
 using UnityEngine;
+using NaughtyAttributes;
 using static dev.susybaka.raidsim.Core.GlobalData;
 
 namespace dev.susybaka.raidsim.Mechanics
 {
     public class CharacterFilterMechanic : FightMechanic
     {
-        public List<string> allowCharacters = new List<string>();
+        public bool filterGhosts = false;
+        [ShowIf(nameof(filterGhosts))] public bool allow = false;
+        [HideIf(nameof(filterGhosts))] public List<string> allowCharacters = new List<string>();
         public FightMechanic mechanic;
+
+        private void OnValidate()
+        {
+            if (filterGhosts)
+            {
+                allowCharacters.Clear();
+            }
+            else
+            {
+                allow = false;
+            }
+        }
 
         public override void TriggerMechanic(ActionInfo actionInfo)
         {
@@ -36,6 +51,27 @@ namespace dev.susybaka.raidsim.Mechanics
                     {
                         if (log)
                             Debug.Log($"[CharacterFilterMechanic ({gameObject.name})] Prevented '{(actionInfo.source != null ? actionInfo.source.GetCharacterName() : actionInfo.target != null ? actionInfo.target.GetCharacterName() : "Unknown Character")}' from triggering mechanic.");
+                        return;
+                    }
+                }
+            }
+            else if (filterGhosts)
+            {
+                if (allow)
+                {
+                    if ((actionInfo.source != null && actionInfo.source.ghost) || (actionInfo.target != null && actionInfo.target.ghost))
+                    {
+                        if (log)
+                            Debug.Log($"[CharacterFilterMechanic ({gameObject.name})] Prevented '{(actionInfo.source != null ? actionInfo.source.GetCharacterName() : actionInfo.target != null ? actionInfo.target.GetCharacterName() : "Unknown Character")}' from triggering mechanic because they are a ghost.");
+                        return;
+                    }
+                }
+                else
+                {
+                    if ((actionInfo.source != null && !actionInfo.source.ghost) || (actionInfo.target != null && !actionInfo.target.ghost))
+                    {
+                        if (log)
+                            Debug.Log($"[CharacterFilterMechanic ({gameObject.name})] Prevented '{(actionInfo.source != null ? actionInfo.source.GetCharacterName() : actionInfo.target != null ? actionInfo.target.GetCharacterName() : "Unknown Character")}' from triggering mechanic because they are NOT a ghost.");
                         return;
                     }
                 }

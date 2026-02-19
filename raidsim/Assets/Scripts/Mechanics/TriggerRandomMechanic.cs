@@ -64,7 +64,7 @@ namespace dev.susybaka.raidsim.Mechanics
             if (!chooseListBasedOnPrevious && !chooseBasedOnPreviousResult)
             {
                 if (editorForcedRandomEventResult < 0)
-                    r = timeline.random.Pick($"{mechanicName}_{gameObject}_TriggerRandomMechanic", mechanics[0].fightMechanics.Count, timeline.GlobalRngMode); // UnityEngine.Random.Range(0, mechanics[0].fightMechanics.Count)
+                    r = timeline.random.Pick($"{GetUniqueName()}_TriggerRandomMechanic", mechanics[0].fightMechanics.Count, timeline.GlobalRngMode); // UnityEngine.Random.Range(0, mechanics[0].fightMechanics.Count)
                 else
                     r = editorForcedRandomEventResult;
 
@@ -101,7 +101,7 @@ namespace dev.susybaka.raidsim.Mechanics
                 {
                     if (!useMultipleResults)
                     {
-                        r = timeline.random.Pick($"{mechanicName}_{gameObject}_TriggerRandomMechanic_ChooseListBasedOnPrevious", mechanics[p].fightMechanics.Count, timeline.GlobalRngMode); // Random.Range(0, mechanics[p].fightMechanics.Count)
+                        r = timeline.random.Pick($"{GetUniqueName()}_TriggerRandomMechanic_ChooseListBasedOnPrevious", mechanics[p].fightMechanics.Count, timeline.GlobalRngMode); // Random.Range(0, mechanics[p].fightMechanics.Count)
                     }
                     else if (useMultipleResults && previousRandomEventResultId2 > -1 && chooseBasedOnPreviousResult2)
                     {

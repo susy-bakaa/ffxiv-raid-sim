@@ -65,7 +65,7 @@ namespace dev.susybaka.raidsim.Mechanics
                 partyMembers = new List<CharacterState>(party.GetActiveMembers()); // Copy the party members list
 
                 if (randomizeParty)
-                    partyMembers.ShufflePCG(timeline.random.Stream($"{mechanicName}_{gameObject.name}_Shuffle_PartyMembersList"));
+                    partyMembers.ShufflePCG(timeline.random.Stream($"{GetUniqueName()}_Shuffle_PartyMembersList"));
 
                 int currentTag = effect.tag;
                 bool cleansEffect = this.cleansEffect;
@@ -83,7 +83,7 @@ namespace dev.susybaka.raidsim.Mechanics
 
                     // If no suitable target found, apply to a random member
                     if (target == null)
-                        target = partyMembers[timeline.random.Pick($"{mechanicName}_{gameObject.name}_RandomTarget", partyMembers.Count, timeline.GlobalRngMode)]; // Random.Range(0, partyMembers.Count)
+                        target = partyMembers[timeline.random.Pick($"{GetUniqueName()}_RandomTarget", partyMembers.Count, timeline.GlobalRngMode)]; // Random.Range(0, partyMembers.Count)
 
                     if (log)
                         Debug.Log($"[RaidwideDebuffMechanic] Processing target {target.characterName} for effect {effect.data.statusName} with tag {currentTag} and stacks {effect.stacks}\n\nDoes target already have the debuff? {target.HasEffect(effect.data.statusName, currentTag)}\n");

@@ -47,9 +47,9 @@ namespace dev.susybaka.raidsim.Mechanics
                 if ((actionInfo.target?.targetController != null && actionInfo.target?.targetController?.self != null) || overrideTarget != null)
                 {
                     if (lockMovement)
-                        actionInfo.source.uncontrollable.SetFlag($"{mechanicName}_GapCloser", true);
+                        actionInfo.source.uncontrollable.SetFlag($"{GetUniqueName()}_GapCloser", true);
                     if (lockActions)
-                        actionInfo.source.canDoActions.SetFlag($"{mechanicName}_GapCloser", true);
+                        actionInfo.source.canDoActions.SetFlag($"{GetUniqueName()}_GapCloser", true);
                     if (delay > 0)
                     {
                         if (ieDelayedMovement == null)
@@ -131,9 +131,9 @@ namespace dev.susybaka.raidsim.Mechanics
             if (actionInfo.source != null)
             {
                 if (lockMovement)
-                    actionInfo.source.uncontrollable.RemoveFlag($"{mechanicName}_GapCloser");
+                    actionInfo.source.uncontrollable.RemoveFlag($"{GetUniqueName()}_GapCloser");
                 if (lockActions)
-                    actionInfo.source.canDoActions.RemoveFlag($"{mechanicName}_GapCloser");
+                    actionInfo.source.canDoActions.RemoveFlag($"{GetUniqueName()}_GapCloser");
             }
         }
     }

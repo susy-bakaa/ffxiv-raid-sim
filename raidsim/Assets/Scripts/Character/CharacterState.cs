@@ -164,6 +164,7 @@ namespace dev.susybaka.raidsim.Characters
         private bool wasDisabled = false;
         public bool canGainEnmity = true;
         private bool preventDamage = false;
+        public bool ghost = false;
 
         [Header("Effects")]
         private Dictionary<string, StatusEffect> effects = new Dictionary<string, StatusEffect>();
@@ -453,6 +454,7 @@ namespace dev.susybaka.raidsim.Characters
                     if (child.gameObject.name == "NameplateGroup")
                     {
                         nameplateGroup = child.GetComponent<CanvasGroup>();
+                        nameplateCharacterNameTextGroup = child.transform.Find("Name")?.GetComponent<CanvasGroup>();
                         break;
                     }
                 }
@@ -1580,7 +1582,7 @@ namespace dev.susybaka.raidsim.Characters
             }
         }
 
-        private void UpdateVisibility()
+        public void UpdateVisibility()
         {
             if (modelShaderFade == null)
             {

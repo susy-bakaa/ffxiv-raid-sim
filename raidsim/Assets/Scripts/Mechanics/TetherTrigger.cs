@@ -39,6 +39,7 @@ namespace dev.susybaka.raidsim.Mechanics
         public float visualBreakDelay = 0.75f;
         public bool initializeOnStart;
         public bool worldSpace = true;
+        public bool ignoreGhosts = false;
         public bool grabbable = false;
         public bool makeSourceTargetTarget = false; // If true, when forming or solving a tether, source character will change their target controller target to the target character.
         public float tickRate = 10f; // Mechanic tick (Hz). 10Hz = 0.1s.
@@ -60,6 +61,8 @@ namespace dev.susybaka.raidsim.Mechanics
         private SimpleTetherEffect[] tetherEffects;
         private float tickAccum;
         private float swapLockRemaining;
+        private bool currentState = false;
+        private bool currentRealState = false;
 
 #if UNITY_EDITOR
         [Header("Editor")]
@@ -384,9 +387,9 @@ namespace dev.susybaka.raidsim.Mechanics
             if (source.gameObject.activeInHierarchy == false || target.gameObject.activeInHierarchy == false)
                 Destroy(gameObject);
 
-            SetLineRenderersActive(true);
             tetherSource = source;
             tetherTarget = target;
+            SetLineRenderersActive(true); // This has to come after setting the tetherTarget so that it can check ghost status for visibility
 
             onForm.Invoke(new ActionInfo(null, tetherSource, tetherTarget));
         }
@@ -497,6 +500,7 @@ namespace dev.susybaka.raidsim.Mechanics
             swapLockRemaining = swapLockSeconds;
 
             onSwap?.Invoke(new ActionInfo(null, oldCarrier, bestCandidate));
+            SetLineRenderersActive(true); // In case the tether was not visible due to the old carrier being a ghost update the visuals
         }
 
         /// <summary>
@@ -549,6 +553,26 @@ namespace dev.susybaka.raidsim.Mechanics
 
         private void SetLineRenderersActive(bool state)
         {
+            bool originalState = state;
+
+            if (tetherTarget != null)
+            {
+                if (tetherTarget.ghost && !ignoreGhosts)
+                {
+                    state = false;
+                }
+
+                if (log)
+                    Debug.Log($"[TetherTrigger ({gameObject.name})] Setting line renderers active: {state} (tetherTarget '{tetherTarget.characterName} ({tetherTarget.gameObject.name})' ghost status: {tetherTarget.ghost})");
+
+                // Avoid redundant state changes which can cause visual issues with shader fades and tether effects.
+                if (state == currentState && originalState == currentRealState)
+                    return;
+
+                if (log)
+                    Debug.Log($"[TetherTrigger ({gameObject.name})] Line renderer state change: {state}");
+            }
+
             foreach (LineRenderer lineRenderer in lineRenderers)
             {
                 if (lineRenderer == null)
@@ -556,7 +580,16 @@ namespace dev.susybaka.raidsim.Mechanics
 
                 if (shaderFades == null || shaderFades.Length < 1)
                 {
-                    lineRenderer.gameObject.SetActive(state);
+                    if (lineRenderer.gameObject.CompareTag("alwaysVisible"))
+                    {
+                        // If the lineRenderer is tagged "alwaysVisible", it will ignore the ghost status and use the original state.
+                        // This is useful for lineRenderers that should still show even if the tether line is hidden due to a ghost target.
+                        lineRenderer.gameObject.SetActive(originalState);
+                    }
+                    else
+                    {
+                        lineRenderer.gameObject.SetActive(state);
+                    }
                 }
             }
 
@@ -566,13 +599,29 @@ namespace dev.susybaka.raidsim.Mechanics
                 {
                     if (shaderFade != null)
                     {
-                        if (state)
+                        // If the shaderFade is tagged "alwaysVisible", it will ignore the ghost status and use the original state.
+                        // This is useful for shaderFades that should still show even if the tether line is hidden due to a ghost target.
+                        if (shaderFade.gameObject.CompareTag("alwaysVisible"))
                         {
-                            shaderFade.FadeIn();
+                            if (originalState)
+                            {
+                                shaderFade.FadeIn();
+                            }
+                            else
+                            {
+                                shaderFade.FadeOut();
+                            }
                         }
                         else
                         {
-                            shaderFade.FadeOut();
+                            if (state)
+                            {
+                                shaderFade.FadeIn();
+                            }
+                            else
+                            {
+                                shaderFade.FadeOut();
+                            }
                         }
                     }
                 }
@@ -584,10 +633,22 @@ namespace dev.susybaka.raidsim.Mechanics
                 {
                     if (effect != null)
                     {
-                        effect.SetVisible(state);
+                        // If the effect is tagged "alwaysVisible", it will ignore the ghost status and use the original state.
+                        // This is useful for effects that should still play even if the tether line is hidden due to a ghost target.
+                        if (effect.gameObject.CompareTag("alwaysVisible"))
+                        {
+                            effect.SetVisible(originalState);
+                        }
+                        else
+                        {
+                            effect.SetVisible(state);
+                        }
                     }
                 }
             }
+
+            currentState = state;
+            currentRealState = originalState;
         }
     }
 }

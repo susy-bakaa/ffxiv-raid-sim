@@ -178,7 +178,7 @@ namespace dev.susybaka.raidsim.Mechanics
                     else
                     {
                         // Sort candidates by whether they have the status effect, then randomly within each group
-                        _sorted = candidates.OrderByDescending(c => c.HasAnyVersionOfEffect(effect.data.statusName)).ThenBy(c => timeline.random.Value01($"{mechanicName}_{gameObject}_TriggerMechanic_TargetingType_StatusEffect")).ToList(); // Random.value
+                        _sorted = candidates.OrderByDescending(c => c.HasAnyVersionOfEffect(effect.data.statusName)).ThenBy(c => timeline.random.Value01($"{GetUniqueName()}_TriggerMechanic_TargetingType_StatusEffect")).ToList(); // Random.value
                     }
 
                     if (fallBackToRandom && _sorted.Count < amountOfTargets)
@@ -218,14 +218,14 @@ namespace dev.susybaka.raidsim.Mechanics
                             int countToPickFromThisList = perList + (i < remainder ? 1 : 0);
 
                             // Randomly pick the required amount from this role list
-                            var picked = roleCandidates.OrderBy(c => timeline.random.Value01($"{mechanicName}_{gameObject}_TriggerMechanic_TargetingType_Role")).Take(countToPickFromThisList).ToList(); // Random.value
+                            var picked = roleCandidates.OrderBy(c => timeline.random.Value01($"{GetUniqueName()}_TriggerMechanic_TargetingType_Role")).Take(countToPickFromThisList).ToList(); // Random.value
 
                             filtered.AddRange(picked);
                         }
                     }
                     else if (pickRandomSubList)
                     {
-                        subListIndex = timeline.random.Pick($"{mechanicName}_{gameObject.name}_PickRandomSubList", availableRoles.Count, timeline.GlobalRngMode); // Random.Range(0, availableRoles.Count)
+                        subListIndex = timeline.random.Pick($"{GetUniqueName()}_PickRandomSubList", availableRoles.Count, timeline.GlobalRngMode); // Random.Range(0, availableRoles.Count)
                         filtered = candidates.Where(c => availableRoles[subListIndex].roles.Contains(c.role)).ToList();
                     }
                     else
@@ -297,7 +297,7 @@ namespace dev.susybaka.raidsim.Mechanics
                 return new List<CharacterState>();
 
             List<CharacterState> result = new List<CharacterState>(amountOfTargets);
-            List<CharacterState> shuffled = candidates.OrderBy(c => timeline.random.Value01($"{mechanicName}_{gameObject}_GetRandomCandidates_Shuffled")).ToList(); // Random.value
+            List<CharacterState> shuffled = candidates.OrderBy(c => timeline.random.Value01($"{GetUniqueName()}_GetRandomCandidates_Shuffled")).ToList(); // Random.value
 
             int fullSets = amountOfTargets / shuffled.Count;
             int remaining = amountOfTargets % shuffled.Count;
@@ -308,7 +308,7 @@ namespace dev.susybaka.raidsim.Mechanics
             if (remaining > 0)
                 result.AddRange(shuffled.Take(remaining));
 
-            return result.OrderBy(c => timeline.random.Value01($"{mechanicName}_{gameObject}_GetRandomCandidates_Result")).ToList(); // Random.value
+            return result.OrderBy(c => timeline.random.Value01($"{GetUniqueName()}_GetRandomCandidates_Result")).ToList(); // Random.value
         }
 
         private List<CharacterState> FillWithRandom(List<CharacterState> currentList, List<CharacterState> pool, int targetCount)
@@ -320,7 +320,7 @@ namespace dev.susybaka.raidsim.Mechanics
             var remaining = pool.Except(currentList).ToList();
 
             // Shuffle and take the difference
-            var fill = remaining.OrderBy(c => timeline.random.Value01($"{mechanicName}_{gameObject}_FillWithRandom")).Take(targetCount - currentList.Count).ToList(); // Random.value
+            var fill = remaining.OrderBy(c => timeline.random.Value01($"{GetUniqueName()}_FillWithRandom")).Take(targetCount - currentList.Count).ToList(); // Random.value
 
             currentList.AddRange(fill);
             return currentList;

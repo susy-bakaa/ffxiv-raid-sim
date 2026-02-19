@@ -87,9 +87,9 @@ namespace dev.susybaka.raidsim.Mechanics
             if (execute)
             {
                 if (lockMovement)
-                    actionInfo.source.uncontrollable.SetFlag($"{mechanicName}_Dash", true);
+                    actionInfo.source.uncontrollable.SetFlag($"{GetUniqueName()}_Dash", true);
                 if (lockActions)
-                    actionInfo.source.canDoActions.SetFlag($"{mechanicName}_Dash", true);
+                    actionInfo.source.canDoActions.SetFlag($"{GetUniqueName()}_Dash", true);
 
                 if (delay > 0)
                 {
@@ -153,7 +153,7 @@ namespace dev.susybaka.raidsim.Mechanics
                     actionInfo.source.model.LeanMoveLocal(up, upDuration).setEase(LeanTweenType.easeOutQuad).setOnComplete(() =>
                         Utilities.FunctionTimer.Create(this, () =>
                             actionInfo.source.model.LeanMoveLocal(Vector3.zero, downDuration).setEase(LeanTweenType.easeInQuad),
-                            peakDelay, $"{gameObject.name}_dash_fall_delay", false, true));
+                            peakDelay, $"{GetUniqueName()}_dash_fall_delay", false, true));
                 }
 
                 tween = actionInfo.source.transform.LeanMove(finalTargetPosition, duration).setEase(ease).setOnComplete(() => ResetState(actionInfo));
@@ -171,9 +171,9 @@ namespace dev.susybaka.raidsim.Mechanics
             if (actionInfo.source != null)
             {
                 if (lockMovement)
-                    actionInfo.source.uncontrollable.RemoveFlag($"{mechanicName}_Dash");
+                    actionInfo.source.uncontrollable.RemoveFlag($"{GetUniqueName()}_Dash");
                 if (lockActions)
-                    actionInfo.source.canDoActions.RemoveFlag($"{mechanicName}_Dash");
+                    actionInfo.source.canDoActions.RemoveFlag($"{GetUniqueName()}_Dash");
             }
         }
     }

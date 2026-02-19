@@ -88,7 +88,7 @@ namespace dev.susybaka.raidsim.Mechanics
                 }
                 else if (fallbackToRandom)
                 {
-                    picked = _candidates[timeline.random.Pick($"{mechanicName}_{gameObject.name}_FallbackToRandom", _candidates.Count, timeline.GlobalRngMode)]; // Random.Range(0, candidates.Count)
+                    picked = _candidates[timeline.random.Pick($"{GetUniqueName()}_FallbackToRandom", _candidates.Count, timeline.GlobalRngMode)]; // Random.Range(0, candidates.Count)
                     if (log)
                         Debug.Log($"[SolveTargetsMechanic ({gameObject.name})] Multiple candidates found for {character.characterName}, randomly picked {picked.characterName}.");
                 }

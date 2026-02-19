@@ -89,7 +89,7 @@ namespace dev.susybaka.raidsim.Mechanics
             _availableSectors.AddRange(arenaSectors);
 
             // Deterministic shuffle (no PickMode here)
-            var rngSectors = timeline.random.Stream($"{mechanicName}_{gameObject.name}_{id}_Shuffle_AvailableSectors");
+            var rngSectors = timeline.random.Stream($"{GetUniqueName()}_{id}_Shuffle_AvailableSectors");
             _availableSectors.ShufflePCG(rngSectors);
 
             // Collect available middle nodes from all sectors
@@ -105,14 +105,14 @@ namespace dev.susybaka.raidsim.Mechanics
             }
 
             // Deterministic shuffle (no PickMode)
-            var rngNodes = timeline.random.Stream($"{mechanicName}_{gameObject.name}_{id}_Shuffle_AvailableMiddleNodes");
+            var rngNodes = timeline.random.Stream($"{GetUniqueName()}_{id}_Shuffle_AvailableMiddleNodes");
             _availableMiddleNodes.ShufflePCG(rngNodes);
 
             if (log)
                 Debug.Log($"Available middle nodes: {_availableMiddleNodes.Count}");
 
             // Pick middle nodes until we reach minimum, using deterministic candidate-picking
-            var rngPick = timeline.random.Stream($"{mechanicName}_{gameObject.name}_{id}_PickMiddleNode");
+            var rngPick = timeline.random.Stream($"{GetUniqueName()}_{id}_PickMiddleNode");
 
             while (middleNodesUsed < minMiddle)
             {
@@ -215,7 +215,7 @@ namespace dev.susybaka.raidsim.Mechanics
             _availableSectors.Clear();
             _availableSectors.AddRange(arenaSectors);
 
-            var rngSectors = timeline.random.Stream($"{mechanicName}_{gameObject.name}_{id}_Shuffle_RemainingSectors");
+            var rngSectors = timeline.random.Stream($"{GetUniqueName()}_{id}_Shuffle_RemainingSectors");
             _availableSectors.ShufflePCG(rngSectors);
 
             // Keep original behavior: arenaSectors order becomes randomized for this run
@@ -230,7 +230,7 @@ namespace dev.susybaka.raidsim.Mechanics
                     continue;
 
                 // Per-sector deterministic stream (prevents other RNG uses from affecting this sector)
-                var rngSectorPick = timeline.random.Stream($"{mechanicName}_{gameObject.name}_{id}_RemainingPick_{sector.sector}");
+                var rngSectorPick = timeline.random.Stream($"{GetUniqueName()}_{id}_RemainingPick_{sector.sector}");
 
                 while (!sector.isFull && totalNodesUsed < maxNodes)
                 {

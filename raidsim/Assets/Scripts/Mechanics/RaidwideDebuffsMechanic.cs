@@ -100,7 +100,7 @@ namespace dev.susybaka.raidsim.Mechanics
                 if (specifiedRoles != null)
                 {
                     if (randomizeRoleGroups)
-                        specifiedRoles.ShufflePCG(timeline.random.Stream($"{mechanicName}_{gameObject.name}_Shuffle_SpecifiedRoles"));
+                        specifiedRoles.ShufflePCG(timeline.random.Stream($"{GetUniqueName()}_Shuffle_SpecifiedRoles"));
 
                     int selected = 0;
 
@@ -130,12 +130,12 @@ namespace dev.susybaka.raidsim.Mechanics
                             if (log)
                                 Debug.LogWarning($"Failed to get random event result for ID {randomEventResultId}!");
                             if (fallbackToRandom)
-                                selected = timeline.random.Pick($"{mechanicName}_{gameObject.name}_RandomBasedOnPrevious", specifiedRoles.Count, timeline.GlobalRngMode); //Random.Range(0, specifiedRoles.Count);
+                                selected = timeline.random.Pick($"{GetUniqueName()}_RandomBasedOnPrevious", specifiedRoles.Count, timeline.GlobalRngMode); //Random.Range(0, specifiedRoles.Count);
                         }
                     }
                     else
                     {
-                        selected = timeline.random.Pick($"{mechanicName}_{gameObject.name}_Random", specifiedRoles.Count, timeline.GlobalRngMode); //Random.Range(0, specifiedRoles.Count);
+                        selected = timeline.random.Pick($"{GetUniqueName()}_Random", specifiedRoles.Count, timeline.GlobalRngMode); //Random.Range(0, specifiedRoles.Count);
                     }
 
                     if (log)
@@ -170,7 +170,7 @@ namespace dev.susybaka.raidsim.Mechanics
                 if (specifiedRoles != null)
                 {
                     if (randomizeRoleGroups)
-                        specifiedRoles.ShufflePCG(timeline.random.Stream($"{mechanicName}_{gameObject.name}_Shuffle_OnlySpecifiedRoles1"));
+                        specifiedRoles.ShufflePCG(timeline.random.Stream($"{GetUniqueName()}_Shuffle_OnlySpecifiedRoles1"));
 
                     RoleSelection playerRoleGroup = specifiedRoles.FirstOrDefault(group => group.roles.Contains(player.role));
 
@@ -202,7 +202,7 @@ namespace dev.susybaka.raidsim.Mechanics
                 if (specifiedRoles != null)
                 {
                     if (randomizeRoleGroups)
-                        specifiedRoles.ShufflePCG(timeline.random.Stream($"{mechanicName}_{gameObject.name}_Shuffle_OnlySpecifiedRoles2"));
+                        specifiedRoles.ShufflePCG(timeline.random.Stream($"{GetUniqueName()}_Shuffle_OnlySpecifiedRoles2"));
 
                     RoleSelection playerRoleGroup = specifiedRoles.FirstOrDefault(group => group.roles.Contains(player.role));
 
@@ -215,7 +215,7 @@ namespace dev.susybaka.raidsim.Mechanics
 
                         if (otherGroups.Count > 0)
                         {
-                            int selected = timeline.random.Pick($"{mechanicName}_{gameObject.name}_RandomGroup", otherGroups.Count, timeline.GlobalRngMode);//Random.Range(0, otherGroups.Count);
+                            int selected = timeline.random.Pick($"{GetUniqueName()}_RandomGroup", otherGroups.Count, timeline.GlobalRngMode);//Random.Range(0, otherGroups.Count);
 
                             if (log)
                                 Debug.Log($"Role group {otherGroups[selected].name} selected out of possible {otherGroups.Count}!");
@@ -244,8 +244,8 @@ namespace dev.susybaka.raidsim.Mechanics
                 }
             }
 
-            statusEffects.ShufflePCG(timeline.random.Stream($"{mechanicName}_{gameObject.name}_Shuffle_StatusEffects"));
-            partyMembers.ShufflePCG(timeline.random.Stream($"{mechanicName}_{gameObject.name}_Shuffle_PartyMembers"));
+            statusEffects.ShufflePCG(timeline.random.Stream($"{GetUniqueName()}_Shuffle_StatusEffects"));
+            partyMembers.ShufflePCG(timeline.random.Stream($"{GetUniqueName()}_Shuffle_PartyMembers"));
 
             if (playerEffect.data != null && player != null)
             {
@@ -281,7 +281,7 @@ namespace dev.susybaka.raidsim.Mechanics
 
                     // If no suitable target found, apply to a random member if allowed
                     if (target == null && fallbackToRandom)
-                        target = partyMembers[timeline.random.Pick($"{mechanicName}_{gameObject.name}_RandomTargetMember", partyMembers.Count, timeline.GlobalRngMode)]; // Random.Range(0, partyMembers.Count)
+                        target = partyMembers[timeline.random.Pick($"{GetUniqueName()}_RandomTargetMember", partyMembers.Count, timeline.GlobalRngMode)]; // Random.Range(0, partyMembers.Count)
 
                     if (log)
                         Debug.Log($"fallbackToRandomTarget: '{target?.characterName}'");
@@ -335,7 +335,7 @@ namespace dev.susybaka.raidsim.Mechanics
                 _assignedRoles.AddRange(effect.data.assignedRoles);
 
                 // Shuffle the roles so it wont always end up picking the member with the same role that is defined first in effect.data.assignedRoles
-                _assignedRoles.ShufflePCG(timeline.random.Stream($"{mechanicName}_{gameObject.name}_Shuffle_AssignedRoles_Effect_{effect.data.statusName}_{effect.tag}"));
+                _assignedRoles.ShufflePCG(timeline.random.Stream($"{GetUniqueName()}_Shuffle_AssignedRoles_Effect_{effect.data.statusName}_{effect.tag}"));
 
                 foreach (Role role in _assignedRoles)
                 {
@@ -346,7 +346,7 @@ namespace dev.susybaka.raidsim.Mechanics
                     _candidatesCopy.AddRange(candidates);
 
                     // Shuffle candidates for more random behaviour as well
-                    _candidatesCopy.ShufflePCG(timeline.random.Stream($"{mechanicName}_{gameObject.name}_Shuffle_CandidatesCopy_Effect_{effect.data.statusName}_{effect.tag}"));
+                    _candidatesCopy.ShufflePCG(timeline.random.Stream($"{GetUniqueName()}_Shuffle_CandidatesCopy_Effect_{effect.data.statusName}_{effect.tag}"));
 
                     // Iterate through the copy of candidates
                     for (int i = 0; i < _candidatesCopy.Count; i++)
@@ -375,7 +375,7 @@ namespace dev.susybaka.raidsim.Mechanics
                 _candidatesCopy.AddRange(candidates);
 
                 // Shuffle candidates for more random behaviour as well
-                _candidatesCopy.ShufflePCG(timeline.random.Stream($"{mechanicName}_{gameObject.name}_Shuffle_CandidatesCopy_Effect_{effect.data.statusName}_{effect.tag}_IgnoreRoles"));
+                _candidatesCopy.ShufflePCG(timeline.random.Stream($"{GetUniqueName()}_Shuffle_CandidatesCopy_Effect_{effect.data.statusName}_{effect.tag}_IgnoreRoles"));
 
                 // Iterate through the copy of candidates
                 for (int i = 0; i < _candidatesCopy.Count; i++)

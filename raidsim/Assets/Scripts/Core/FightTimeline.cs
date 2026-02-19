@@ -72,6 +72,7 @@ namespace dev.susybaka.raidsim.Core
         public UnityEvent<bool> onNoNewSeedOnStartChanged;
         public UnityEvent onReset;
         public UnityEvent onPlay;
+        public UnityEvent onUpdateBotVisibility;
 
         [Header("RNG")]
         [SerializeField] private bool freezeRng = false;
@@ -103,6 +104,7 @@ namespace dev.susybaka.raidsim.Core
 
         private Dictionary<int, List<CharacterActionData>> randomEventCharacterActions = new Dictionary<int, List<CharacterActionData>>();
         private Dictionary<int, int> randomEventResults = new Dictionary<int, int>();
+        private BotVisibility[] allBotVisibilities;
         private BotTimeline[] allBotTimelines;
         private SetDynamicBotNode[] allSetDynamicBotNodes;
         private BotTimelineBranch[] allBotTimelineBranches;
@@ -269,6 +271,17 @@ namespace dev.susybaka.raidsim.Core
                 }
             }
 
+            allBotVisibilities = new BotVisibility[partyList.members.Count];
+            for (int i = 0; i < partyList.members.Count; i++)
+            {
+                allBotVisibilities[i] = partyList.members[i].characterState.transform.GetComponent<BotVisibility>();
+
+                if (allBotVisibilities[i] != null)
+                {
+                    onUpdateBotVisibility.AddListener(allBotVisibilities[i].UpdateVisibility);
+                }
+            }
+
             input = GetComponentInChildren<UserInput>();   
             fightSelector = FindFirstObjectByType<FightSelector>();
 
@@ -283,6 +296,7 @@ namespace dev.susybaka.raidsim.Core
             originalIsCircle = isCircle;
             hasBeenPlayed = false;
 
+            onNoNewSeedOnStartChanged.AddListener(SetFrozenRng);
             onNoNewSeedOnStartChanged.Invoke(noNewSeedOnStart);
 
             // Cannot use FindAnyByName here because for some reason it keeps finding the prefab and not the scene instance, even though it can only see scene objects. This is likely a Unity editor quirk.
@@ -1027,6 +1041,11 @@ namespace dev.susybaka.raidsim.Core
         {
             arenaBounds = originalArenaBounds;
             isCircle = originalIsCircle;
+        }
+
+        public void UpdateBotVisibilities()
+        {
+            onUpdateBotVisibility.Invoke();
         }
 
         [System.Serializable]

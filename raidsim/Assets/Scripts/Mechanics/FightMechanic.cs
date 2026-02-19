@@ -151,9 +151,11 @@ namespace dev.susybaka.raidsim.Mechanics
             }
             if (UsesPCG() && timeline != null && string.IsNullOrEmpty(mechanicName))
             {
-                string nameToLog = string.IsNullOrEmpty(mechanicName) ? "Unnamed mechanic" : mechanicName;
-                Debug.LogWarning($"[FightMechanic] '{nameToLog}' ({gameObject.name}) cannot be triggered during PCG, because the mechanic has no name! Execution aborted.", gameObject);
-                return false;
+                if (log)
+                {
+                    string nameToLog = string.IsNullOrEmpty(mechanicName) ? "Unnamed mechanic" : mechanicName;
+                    Debug.LogWarning($"[FightMechanic] '{nameToLog}' ({gameObject.name}) may have issues when triggered with PCG, because the mechanic has no name!", gameObject);
+                }
             }
             if (global && onlyTriggerOnce)
             {
@@ -193,6 +195,13 @@ namespace dev.susybaka.raidsim.Mechanics
                 Debug.Log($"[FightMechanic] '{nameToLog}' ({gameObject.name}) triggered with ActionInfo (action: '{actionInfo.action?.gameObject}', source: '{actionInfo.source?.characterName}', target: '{actionInfo.target?.characterName}', targetIsPlayer: '{actionInfo.targetIsPlayer}')", gameObject);
             }
             return true;
+        }
+
+        public string GetUniqueName()
+        {
+            string _name = string.IsNullOrEmpty(mechanicName) ? "UnnamedMechanic" : mechanicName.Replace(" ", string.Empty);
+
+            return $"{gameObject.name}_{_name}";
         }
 
         protected virtual bool UsesPCG()

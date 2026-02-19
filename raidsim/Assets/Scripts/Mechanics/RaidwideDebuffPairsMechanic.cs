@@ -64,8 +64,8 @@ namespace dev.susybaka.raidsim.Mechanics
 
             statusEffects = new List<StatusEffectInfoArray>(effects); // Copy the effects list
             partyMembers = new List<CharacterState>(party.GetActiveMembers()); // Copy the party members list
-            partyMembers.ShufflePCG(timeline.random.Stream($"{mechanicName}_{gameObject.name}_Shuffle_PartyMembersList"));
-            statusEffects.ShufflePCG(timeline.random.Stream($"{mechanicName}_{gameObject.name}_Shuffle_StatusEffectsList"));
+            partyMembers.ShufflePCG(timeline.random.Stream($"{GetUniqueName()}_Shuffle_PartyMembersList"));
+            statusEffects.ShufflePCG(timeline.random.Stream($"{GetUniqueName()}_Shuffle_StatusEffectsList"));
 
             if (!string.IsNullOrEmpty(playerEffect.name) && playerEffect.effectInfos.Length > 0 && player != null)
             {
@@ -91,7 +91,7 @@ namespace dev.susybaka.raidsim.Mechanics
 
                     // If no suitable target found, apply to a random member
                     if (target == null)
-                        target = partyMembers[timeline.random.Pick($"{mechanicName}_{gameObject.name}_RandomTarget", partyMembers.Count, timeline.GlobalRngMode)]; // Random.Range(0, partyMembers.Count)
+                        target = partyMembers[timeline.random.Pick($"{GetUniqueName()}_RandomTarget", partyMembers.Count, timeline.GlobalRngMode)]; // Random.Range(0, partyMembers.Count)
 
                     // Apply the effects to the target
                     for (int j = 0; j < statusEffects[i].effectInfos.Length; j++)

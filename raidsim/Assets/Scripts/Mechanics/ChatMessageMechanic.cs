@@ -80,7 +80,7 @@ namespace dev.susybaka.raidsim.Mechanics
                 {
                     if (pickRandom)
                     {
-                        r = timeline.random.Pick($"{mechanicName}_PickRandom", messages.Count, timeline.GlobalRngMode);
+                        r = timeline.random.Pick($"{GetUniqueName()}_PickRandom", messages.Count, timeline.GlobalRngMode);
                         msg = messages[r];
                         FightTimeline.Instance.AddRandomEventResult(fightTimelineRandomEventId, r);
                     }

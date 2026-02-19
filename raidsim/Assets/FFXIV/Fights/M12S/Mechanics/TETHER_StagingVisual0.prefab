@@ -406,10 +406,11 @@ MonoBehaviour:
   visualBreakDelay: 0.75
   initializeOnStart: 0
   worldSpace: 1
+  ignoreGhosts: 0
   grabbable: 0
   makeSourceTargetTarget: 0
+  tickRate: 10
   grabRadius: 0.6
-  grabTickRate: 10
   swapLockSeconds: 0.2
   carrierRegrabExtraRadius: 0.15
   onForm:
@@ -462,6 +463,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onTick:
+    m_PersistentCalls:
+      m_Calls: []
   drawDebug: 1
   attachToCharacter: {fileID: 0}
 --- !u!114 &8977385820524377663

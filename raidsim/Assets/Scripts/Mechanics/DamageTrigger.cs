@@ -86,6 +86,7 @@ namespace dev.susybaka.raidsim.Mechanics
         private bool initialized = false;
         private bool colliderWaDisabled = false;
         private HashSet<Collider> collidersInsideTrigger = new HashSet<Collider>();
+        private readonly List<CharacterState> _currentNonGhostCharacters = new List<CharacterState>();
 
 #if UNITY_EDITOR
         public int dummy = 0;
@@ -969,9 +970,18 @@ namespace dev.susybaka.raidsim.Mechanics
 
         private void UpdateOccupancyState()
         {
-            if (currentPlayers.Count > 0)
+            _currentNonGhostCharacters.Clear();
+            foreach (CharacterState player in currentPlayers)
             {
-                onOccupied.Invoke(currentPlayers);
+                if (!player.ghost)
+                {
+                    _currentNonGhostCharacters.Add(player);
+                }
+            }
+
+            if (_currentNonGhostCharacters.Count > 0)
+            {
+                onOccupied.Invoke(_currentNonGhostCharacters);
             }
             else
             {

@@ -621,7 +621,7 @@ namespace dev.susybaka.raidsim.Mechanics
                             }
 
                             // Deterministic stream for this mechanic choice
-                            var stream = timeline.random.Stream($"{mechanicName}_TargetingType_RandomPerEach");
+                            var stream = timeline.random.Stream($"{GetUniqueName()}_TargetingType_RandomPerEach");
 
                             int pick = stream.NextInt(0, _remainingTargets.Count);
                             finalTarget = _remainingTargets[pick];
@@ -638,7 +638,7 @@ namespace dev.susybaka.raidsim.Mechanics
                     case TargetingType.Random:
                         if (availableTargets.Count > 1)
                         {
-                            int r = timeline.random.Pick($"{mechanicName}_TargetingType_Random", availableTargets.Count, timeline.GlobalRngMode);
+                            int r = timeline.random.Pick($"{GetUniqueName()}_TargetingType_Random", availableTargets.Count, timeline.GlobalRngMode);
 
                             finalTarget = availableTargets[r];
                         }

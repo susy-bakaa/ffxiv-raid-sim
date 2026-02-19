@@ -53,7 +53,7 @@ namespace dev.susybaka.raidsim.Mechanics
 
                 if (useRandomMember)
                 {
-                    member = timeline.random.Pick($"{mechanicName}_{gameObject.name}_UseRandomMember", members.Count, timeline.GlobalRngMode); //Random.Range(0, members.Count);
+                    member = timeline.random.Pick($"{GetUniqueName()}_UseRandomMember", members.Count, timeline.GlobalRngMode); //Random.Range(0, members.Count);
                 }
                 else if (memberIndex > -1 && memberIndex < members.Count)
                 {
