@@ -1021,7 +1021,7 @@ namespace dev.susybaka.raidsim.Targeting
                         {
                             targetCastbar.minValue = 0f;
                             if (m_actionController.LastAction != null)
-                                targetCastbar.maxValue = m_actionController.LastAction.data.cast;
+                                targetCastbar.maxValue = m_actionController.LastAction.Data.cast;
                             else
                                 targetCastbar.maxValue = 4.7f;
                             targetCastbar.value = m_actionController.LastCastTime - m_actionController.CastTime;
@@ -1051,7 +1051,7 @@ namespace dev.susybaka.raidsim.Targeting
                         }
                         if (targetCastbarName != null)
                         {
-                            targetCastbarName.text = m_actionController.LastAction.data.GetActionName();
+                            targetCastbarName.text = m_actionController.LastAction.Data.GetActionName();
                         }
                     }
                     else

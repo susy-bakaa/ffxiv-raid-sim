@@ -28,7 +28,12 @@ namespace dev.susybaka.raidsim.Actions
         public enum RecastType { standard, longGcd, stackedOgcd }
 
         [Header("Info")]
-        public CharacterActionData data;
+        [SerializeField] private string actionId; // stable unique string
+        [SerializeField] private CharacterActionData data;
+
+        public string ActionId => actionId;
+        public CharacterActionData Data => data;
+
         private float timer = 0f;
         private float aTimer = 0f;
         public bool isAvailable { private set; get; }
@@ -95,6 +100,18 @@ namespace dev.susybaka.raidsim.Actions
         {
             return character;
         }
+
+
+#if UNITY_EDITOR
+        [ContextMenu("Generate Random Action ID")]
+        private void GenerateActionId()
+        {
+            if (!string.IsNullOrWhiteSpace(actionId))
+                return;
+            actionId = System.Guid.NewGuid().ToString("N");
+            UnityEditor.EditorUtility.SetDirty(this);
+        }
+#endif
 
         private void Awake()
         {

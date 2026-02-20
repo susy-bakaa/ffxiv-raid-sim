@@ -79,7 +79,7 @@ namespace dev.susybaka.raidsim.Mechanics
                     // Get the world position of the mouse cursor constrained to the plane
                     Vector3 mousePos = ray.GetPoint(distance);
 
-                    float range = lastActionInfo.action.data.range;
+                    float range = lastActionInfo.action.Data.range;
                     Vector3 sourcePos = lastActionInfo.source.transform.position;
 
                     // Clamp position within range

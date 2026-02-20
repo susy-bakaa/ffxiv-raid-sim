@@ -187,7 +187,7 @@ namespace dev.susybaka.raidsim.Actions
             if (autoActions != null && autoActions.Count > 0)
             {
                 autoAttack = autoActions[0];
-                autoAttackTimer = autoAttack.data.recast;
+                autoAttackTimer = autoAttack.Data.recast;
             }
             
             audioParent = transform.Find("Audio");
@@ -246,7 +246,7 @@ namespace dev.susybaka.raidsim.Actions
                         if (hasTarget)
                             actions[i].distanceToTarget = distanceToTarget;
                         actions[i].hasTarget = hasTarget;
-                        actions[i].lastAction = lastAction?.data;
+                        actions[i].lastAction = lastAction?.Data;
                     }
                 }
                 if (autoActions != null && autoActions.Count > 1)
@@ -256,7 +256,7 @@ namespace dev.susybaka.raidsim.Actions
                         if (hasTarget)
                             autoActions[i].distanceToTarget = distanceToTarget;
                         autoActions[i].hasTarget = hasTarget;
-                        autoActions[i].lastAction = lastAction?.data;
+                        autoActions[i].lastAction = lastAction?.Data;
                     }
                 }
                 else if (autoActions.Count == 1 && autoAttack != null)
@@ -264,7 +264,7 @@ namespace dev.susybaka.raidsim.Actions
                     if (hasTarget)
                         autoAttack.distanceToTarget = distanceToTarget;
                     autoAttack.hasTarget = hasTarget;
-                    autoAttack.lastAction = lastAction?.data;
+                    autoAttack.lastAction = lastAction?.Data;
                 }
             }
 
@@ -322,7 +322,7 @@ namespace dev.susybaka.raidsim.Actions
                 if (lastAction != null)
                 {
                     // Handle rotation when casting
-                    if (faceTargetWhenCasting && lastAction.data.isTargeted && targetController.currentTarget != null)
+                    if (faceTargetWhenCasting && lastAction.Data.isTargeted && targetController.currentTarget != null)
                     {
                         // Get the direction to the target but ignore the vertical component (Y-axis)
                         Vector3 directionToTarget = targetController.currentTarget.transform.position - transform.position;
@@ -336,7 +336,7 @@ namespace dev.susybaka.raidsim.Actions
                         }
                     }
 
-                    if ((!characterState.still || characterState.dead || (lastAction.data.range > 0f && lastAction.data.isTargeted && (distanceToTarget > lastAction.data.range))) && castTime > 0.5f)
+                    if ((!characterState.still || characterState.dead || (lastAction.Data.range > 0f && lastAction.Data.isTargeted && (distanceToTarget > lastAction.Data.range))) && castTime > 0.5f)
                     {
                         Interrupt();
                     }
@@ -352,7 +352,7 @@ namespace dev.susybaka.raidsim.Actions
                 {
                     if (lastAction != null)
                     {
-                        if (!lastAction.data.canBeSlideCast)
+                        if (!lastAction.Data.canBeSlideCast)
                             Interrupt();
                     }
                 }
@@ -424,7 +424,7 @@ namespace dev.susybaka.raidsim.Actions
                         if (TryPerformAutoAction(autoAttack))
                         {
                             //Debug.Log($"Auto Attack performed! {autoAttack.data.actionName} {autoAttack}");
-                            autoAttackTimer = autoAttack.data.recast;
+                            autoAttackTimer = autoAttack.Data.recast;
                         }
                     }
                 }
@@ -433,9 +433,9 @@ namespace dev.susybaka.raidsim.Actions
                     autoAttackTimer -= FightTimeline.deltaTime;
                 }
             }
-            else if (!autoAttackEnabled && autoAttack != null && autoAttack.data != null)
+            else if (!autoAttackEnabled && autoAttack != null && autoAttack.Data != null)
             {
-                autoAttackTimer = autoAttack.data.recast;
+                autoAttackTimer = autoAttack.Data.recast;
             }
 
             // Try performing actions from the queue
@@ -506,7 +506,7 @@ namespace dev.susybaka.raidsim.Actions
         {
             for (int i = 0; i < actions.Count; i++)
             {
-                if (name.Equals(actions[i].data.actionName, comparison))
+                if (name.Equals(actions[i].Data.actionName, comparison))
                 {
                     action = actions[i];
                     return true;
@@ -525,7 +525,7 @@ namespace dev.susybaka.raidsim.Actions
         {
             for (int i = 0; i < actions.Count; i++)
             {
-                if (name.Equals(actions[i].data.actionName, comparison))
+                if (name.Equals(actions[i].Data.actionName, comparison))
                 {
                     return true;
                 }
@@ -537,7 +537,7 @@ namespace dev.susybaka.raidsim.Actions
         {
             for (int i = 0; i < actions.Count; i++)
             {
-                if (action.data.actionName.Equals(actions[i].data.actionName, comparison))
+                if (action.Data.actionName.Equals(actions[i].Data.actionName, comparison))
                 {
                     action = actions[i];
                 }
@@ -554,7 +554,7 @@ namespace dev.susybaka.raidsim.Actions
             if (!TryPerformAutoAction(autoAction))
             {
                 // If it fails, enqueue it for later
-                //Debug.Log($"Failed to perform auto action {autoAction.data.actionName} {autoAction}!");
+                //Debug.Log($"Failed to perform auto action {autoAction.Data.actionName} {autoAction}!");
                 queuedAutoActions.Enqueue(autoAction);
             }
         }
@@ -581,19 +581,19 @@ namespace dev.susybaka.raidsim.Actions
             if (lockActionsWhenCasting && isCasting)
                 return false;
 
-            if (autoAction.data.range > 0f && autoAction.data.isTargeted && (distanceToTarget > autoAction.data.range))
+            if (autoAction.Data.range > 0f && autoAction.Data.isTargeted && (distanceToTarget > autoAction.Data.range))
                 return false;
 
-            if (autoAction.data.isTargeted && !hasTarget)
+            if (autoAction.Data.isTargeted && !hasTarget)
                 return false;
 
-            if (autoAction.data.isTargeted && targetController.currentTarget != null && !autoAction.data.targetGroups.Contains(targetController.currentTarget.Group))
+            if (autoAction.Data.isTargeted && targetController.currentTarget != null && !autoAction.Data.targetGroups.Contains(targetController.currentTarget.Group))
                 return false;
 
-            if (autoAction.data.charges > 1 && autoAction.chargesLeft < 1)
+            if (autoAction.Data.charges > 1 && autoAction.chargesLeft < 1)
                 return false;
 
-            if (autoAction.data.hasMovement && (characterState.bound.value || characterState.uncontrollable.value))
+            if (autoAction.Data.hasMovement && (characterState.bound.value || characterState.uncontrollable.value))
                 return false;
 
             bool autoActionCondition = false;
@@ -609,7 +609,7 @@ namespace dev.susybaka.raidsim.Actions
 
             if (autoActionCondition)
             {
-                if (autoAction.data.actionType == CharacterActionData.ActionType.Auto)
+                if (autoAction.Data.actionType == CharacterActionData.ActionType.Auto)
                 {
                     CharacterState currentTarget = null;
 
@@ -622,15 +622,15 @@ namespace dev.susybaka.raidsim.Actions
                         currentTarget = characterState;
                     }
 
-                    if (currentTarget.targetController != null && currentTarget.targetController.self != null && autoAction.data.targetGroups.Length > 0 && autoAction.data.isTargeted)
+                    if (currentTarget.targetController != null && currentTarget.targetController.self != null && autoAction.Data.targetGroups.Length > 0 && autoAction.Data.isTargeted)
                     {
-                        if (!autoAction.data.targetGroups.Contains(currentTarget.targetController.self.Group))
+                        if (!autoAction.Data.targetGroups.Contains(currentTarget.targetController.self.Group))
                         {
                             return false;
                         }
                     }
 
-                    autoAction.data.damage = new Damage(autoAction.data.damage, characterState);
+                    autoAction.Data.damage = new Damage(autoAction.Data.damage, characterState);
 
                     autoAction.chargesLeft--;
 
@@ -643,44 +643,44 @@ namespace dev.susybaka.raidsim.Actions
                     HandleActionAudio(autoAction, false);
                     HandleActionAudio(autoAction, true);
 
-                    if (animator != null && !string.IsNullOrEmpty(autoAction.data.animationName) && !autoAction.data.playAnimationDirectly)
+                    if (animator != null && !string.IsNullOrEmpty(autoAction.Data.animationName) && !autoAction.Data.playAnimationDirectly)
                     {
-                        if (autoAction.data.animationDelay > 0f)
+                        if (autoAction.Data.animationDelay > 0f)
                         {
-                            Utilities.FunctionTimer.Create(this, () => animator.SetTrigger(autoAction.data.animationName), autoAction.data.animationDelay, $"{autoAction.data.actionName}_animation_{autoAction.data.animationName}_delay");
+                            Utilities.FunctionTimer.Create(this, () => animator.SetTrigger(autoAction.Data.animationName), autoAction.Data.animationDelay, $"{autoAction.Data.actionName}_animation_{autoAction.Data.animationName}_delay");
                         }
                         else
                         {
-                            animator.SetTrigger(autoAction.data.animationName);
+                            animator.SetTrigger(autoAction.Data.animationName);
                         }
                     }
-                    else if (animator != null && !string.IsNullOrEmpty(autoAction.data.animationName) && autoAction.data.playAnimationDirectly)
+                    else if (animator != null && !string.IsNullOrEmpty(autoAction.Data.animationName) && autoAction.Data.playAnimationDirectly)
                     {
-                        if (autoAction.data.animationDelay > 0f)
+                        if (autoAction.Data.animationDelay > 0f)
                         {
-                            Utilities.FunctionTimer.Create(this, () => animator.CrossFadeInFixedTime(autoAction.data.animationName, autoAction.data.animationCrossFade), autoAction.data.animationDelay, $"{autoAction.data.actionName}_animation_{autoAction.data.animationName}_delay");
+                            Utilities.FunctionTimer.Create(this, () => animator.CrossFadeInFixedTime(autoAction.Data.animationName, autoAction.Data.animationCrossFade), autoAction.Data.animationDelay, $"{autoAction.Data.actionName}_animation_{autoAction.Data.animationName}_delay");
                         }
                         else
                         {
-                            animator.CrossFadeInFixedTime(autoAction.data.animationName, autoAction.data.animationCrossFade);
+                            animator.CrossFadeInFixedTime(autoAction.Data.animationName, autoAction.Data.animationCrossFade);
                         }
                     }
-                    if (animator != null && autoAction.data.onAnimationFinishId >= 0)
+                    if (animator != null && autoAction.Data.onAnimationFinishId >= 0)
                     {
-                        if (autoAction.data.animationDelay > 0f)
+                        if (autoAction.Data.animationDelay > 0f)
                         {
-                            Utilities.FunctionTimer.Create(this, () => animator.SetInteger(animatorParameterCastFinishId, autoAction.data.onAnimationFinishId), autoAction.data.animationDelay, $"{autoAction.data.actionName}_animation_{autoAction.data.animationName}_delay");
+                            Utilities.FunctionTimer.Create(this, () => animator.SetInteger(animatorParameterCastFinishId, autoAction.Data.onAnimationFinishId), autoAction.Data.animationDelay, $"{autoAction.Data.actionName}_animation_{autoAction.Data.animationName}_delay");
                         }
                         else
                         {
-                            animator.SetInteger(animatorParameterCastFinishId, autoAction.data.onAnimationFinishId);
+                            animator.SetInteger(animatorParameterCastFinishId, autoAction.Data.onAnimationFinishId);
                         }
                     }
                     else if (animator != null)
                     {
-                        if (autoAction.data.animationDelay > 0f)
+                        if (autoAction.Data.animationDelay > 0f)
                         {
-                            Utilities.FunctionTimer.Create(this, () => animator.SetInteger(animatorParameterCastFinishId, 0), autoAction.data.animationDelay, $"{autoAction.data.actionName}_animation_{autoAction.data.animationName}_delay");
+                            Utilities.FunctionTimer.Create(this, () => animator.SetInteger(animatorParameterCastFinishId, 0), autoAction.Data.animationDelay, $"{autoAction.Data.actionName}_animation_{autoAction.Data.animationName}_delay");
                         }
                         else
                         {
@@ -718,7 +718,7 @@ namespace dev.susybaka.raidsim.Actions
 
             for (int i = 0; i < actions.Count; i++)
             {
-                if (actions[i].data.actionName == name)
+                if (actions[i].Data.actionName == name)
                 {
                     QueueAction(actions[i]);
                 }
@@ -813,7 +813,7 @@ namespace dev.susybaka.raidsim.Actions
 
             for (int i = 0; i < actions.Count; i++)
             {
-                if (actions[i].data.actionName == name)
+                if (actions[i].Data.actionName == name)
                 {
                     PerformAction(actions[i]);
                     break;
@@ -839,7 +839,7 @@ namespace dev.susybaka.raidsim.Actions
         {
             for (int i = 0; i < actions.Count; i++)
             {
-                if (actions[i].data.actionName == name)
+                if (actions[i].Data.actionName == name)
                 {
                     PerformActionUnrestricted(actions[i]);
                     break;
@@ -856,7 +856,7 @@ namespace dev.susybaka.raidsim.Actions
         {
             for (int i = 0; i < actions.Count; i++)
             {
-                if (actions[i].data.actionName == name)
+                if (actions[i].Data.actionName == name)
                 {
                     PerformActionHidden(actions[i]);
                     break;
@@ -871,7 +871,7 @@ namespace dev.susybaka.raidsim.Actions
 
         private void PerformActionInternal(CharacterAction action, bool hidden)
         {
-            //Debug.Log($"[ActionController ({gameObject.name})] Performing action {action.data.actionName} ({action}), hidden {hidden}");
+            //Debug.Log($"[ActionController ({gameObject.name})] Performing action {action.Data.actionName} ({action}), hidden {hidden}");
 
             if (action == null)
                 return;
@@ -879,33 +879,33 @@ namespace dev.susybaka.raidsim.Actions
             if (action.unavailable)
                 return;
 
-            //Debug.Log($"[ActionController ({gameObject.name})] Action {action.data.actionName} passed 1. checks");
+            //Debug.Log($"[ActionController ({gameObject.name})] Action {action.Data.actionName} passed 1. checks");
 
             action.OnPointerClick(null);
 
             if (lockActionsWhenCasting && isCasting && !hidden)
                 return;
 
-            if ((targetController.currentTarget != null && action.data.targetGroups.Contains(targetController.self.Group)) && action.data.range > 0f && action.data.isTargeted && (distanceToTarget > action.data.range) && !hidden)
+            if ((targetController.currentTarget != null && action.Data.targetGroups.Contains(targetController.self.Group)) && action.Data.range > 0f && action.Data.isTargeted && (distanceToTarget > action.Data.range) && !hidden)
                 return;
 
-            //Debug.Log($"[ActionController ({gameObject.name})] Action {action.data.actionName} passed 2. checks");
+            //Debug.Log($"[ActionController ({gameObject.name})] Action {action.Data.actionName} passed 2. checks");
 
-            if ((targetController.currentTarget != null && action.data.targetGroups.Contains(targetController.self.Group)) && action.data.isTargeted && !hasTarget && !hidden)
+            if ((targetController.currentTarget != null && action.Data.targetGroups.Contains(targetController.self.Group)) && action.Data.isTargeted && !hasTarget && !hidden)
                 return;
 
-            if (action.data.isTargeted && targetController.currentTarget != null && !action.data.targetGroups.Contains(targetController.currentTarget.Group) && !hidden)
+            if (action.Data.isTargeted && targetController.currentTarget != null && !action.Data.targetGroups.Contains(targetController.currentTarget.Group) && !hidden)
                 return;
 
-            //Debug.Log($"[ActionController ({gameObject.name})] Action {action.data.actionName} passed 3. checks");
+            //Debug.Log($"[ActionController ({gameObject.name})] Action {action.Data.actionName} passed 3. checks");
 
-            if (action.data.charges > 1 && action.chargesLeft < 1 && !hidden)
+            if (action.Data.charges > 1 && action.chargesLeft < 1 && !hidden)
                 return;
 
-            if (action.data.hasMovement && (characterState.bound.value || characterState.uncontrollable.value) && !hidden)
+            if (action.Data.hasMovement && (characterState.bound.value || characterState.uncontrollable.value) && !hidden)
                 return;
 
-            //Debug.Log($"[ActionController ({gameObject.name})] Action {action.data.actionName} passed 4. checks");
+            //Debug.Log($"[ActionController ({gameObject.name})] Action {action.Data.actionName} passed 4. checks");
 
             interrupted = false;
             if (castBarElement != null)
@@ -936,16 +936,16 @@ namespace dev.susybaka.raidsim.Actions
                     currentTarget = characterState;
                 }
 
-                if (currentTarget.targetController != null && currentTarget.targetController.self != null && action.data.targetGroups.Length > 0 && action.data.isTargeted)
+                if (currentTarget.targetController != null && currentTarget.targetController.self != null && action.Data.targetGroups.Length > 0 && action.Data.isTargeted)
                 {
-                    if (!action.data.targetGroups.Contains(currentTarget.targetController.self.Group))
+                    if (!action.Data.targetGroups.Contains(currentTarget.targetController.self.Group))
                     {
                         return;
                     }
                 }
                 // ---
 
-                if (action.data.cast <= 0f || (action.data.cast > 0f && instantCast))
+                if (action.Data.cast <= 0f || (action.Data.cast > 0f && instantCast))
                 {
                     Utilities.FunctionTimer.StopTimer($"{characterState.characterName}_{this}_castBar_fade_out_if_interrupted");
                     //Utilities.FunctionTimer.StopTimer($"{this}_castBarParty_fade_out_if_interrupted");
@@ -962,8 +962,8 @@ namespace dev.susybaka.raidsim.Actions
                         currentTarget = characterState;
                     } */
 
-                    action.data.damage = new Damage(action.data.damage, characterState);
-                    if (!action.data.isGroundTargeted && action.data.recast > 0f && !hidden)
+                    action.Data.damage = new Damage(action.Data.damage, characterState);
+                    if (!action.Data.isGroundTargeted && action.Data.recast > 0f && !hidden)
                         action.chargesLeft--;
                     lastAction = action;
 
@@ -971,9 +971,9 @@ namespace dev.susybaka.raidsim.Actions
                     action.onCast.Invoke(newActionInfo);
                     action.ExecuteAction(newActionInfo);
 
-                    if (action.data.animationLock > 0f && !action.data.isGroundTargeted)
+                    if (action.Data.animationLock > 0f && !action.Data.isGroundTargeted)
                         action.ActivateAnimationLock();
-                    if (action.data.rollsGcd && action.data.recast > 0f && !action.data.isGroundTargeted)
+                    if (action.Data.rollsGcd && action.Data.recast > 0f && !action.Data.isGroundTargeted)
                         action.ActivateCooldown();
 
                     onCast.Invoke(new CastInfo(newActionInfo, instantCast, characterState.GetEffects()));
@@ -983,24 +983,24 @@ namespace dev.susybaka.raidsim.Actions
                         animator.SetBool(animatorParameterCasting, false);
                     }
 
-                    if (!action.data.isGroundTargeted)
+                    if (!action.Data.isGroundTargeted)
                         HandleAnimation(action);
 
                     HandleSpeech(action);
                     HandleActionAudio(action, false);
                     HandleActionAudio(action, true);
 
-                    if (action.data.cast > 0f && instantCast && instantCastEffect != null && !action.data.isGroundTargeted)
+                    if (action.Data.cast > 0f && instantCast && instantCastEffect != null && !action.Data.isGroundTargeted)
                     {
                         characterState.RemoveEffect(instantCastEffect, false, characterState, instantCastEffect.uniqueTag, 1);
                     }
-                    else if (action.data.cast > 0f && instantCast && instantCastEffect == null && !action.data.isGroundTargeted)
+                    else if (action.Data.cast > 0f && instantCast && instantCastEffect == null && !action.Data.isGroundTargeted)
                     {
                         instantCast = false;
                     }
 
                     // Handle rotation when casting
-                    if (faceTargetWhenCasting && action.data.isTargeted && targetController.currentTarget != null && !action.data.isGroundTargeted)
+                    if (faceTargetWhenCasting && action.Data.isTargeted && targetController.currentTarget != null && !action.Data.isGroundTargeted)
                     {
                         // Get the direction to the target but ignore the vertical component (Y-axis)
                         Vector3 directionToTarget = targetController.currentTarget.transform.position - transform.position;
@@ -1014,7 +1014,7 @@ namespace dev.susybaka.raidsim.Actions
                         }
                     }
 
-                    if (action.data.isGroundTargeted)
+                    if (action.Data.isGroundTargeted)
                     {
                         isGroundTargeting = true;
                     }
@@ -1032,12 +1032,12 @@ namespace dev.susybaka.raidsim.Actions
 
                     isCasting = true;
                     lastAction = action;
-                    castTime = action.data.cast;
+                    castTime = action.Data.cast;
                     lastCastTime = castTime;
 
-                    if (action.data.animationLock > 0f && !action.data.isGroundTargeted)
+                    if (action.Data.animationLock > 0f && !action.Data.isGroundTargeted)
                         action.ActivateAnimationLock();
-                    if (action.data.rollsGcd && action.data.recast > 0f && !action.data.isGroundTargeted)
+                    if (action.Data.rollsGcd && action.Data.recast > 0f && !action.Data.isGroundTargeted)
                         action.ActivateCooldown();
 
                     /*CharacterState currentTarget = null;
@@ -1046,19 +1046,19 @@ namespace dev.susybaka.raidsim.Actions
                     {
                         currentTarget = targetController.currentTarget.GetCharacterState();
                     }
-                    if (currentTarget == null || !action.data.isTargeted)
+                    if (currentTarget == null || !action.Data.isTargeted)
                     {
                         currentTarget = characterState;
                     }*/
 
-                    action.data.damage = new Damage(action.data.damage, characterState);
+                    action.Data.damage = new Damage(action.Data.damage, characterState);
 
                     ActionInfo newActionInfo = new ActionInfo(action, characterState, currentTarget);
                     action.onCast.Invoke(newActionInfo);
-                    StartCoroutine(IE_Cast(castTime, () => { if (!action.data.isGroundTargeted && action.data.recast > 0f && !hidden) { action.chargesLeft--; } action.ExecuteAction(newActionInfo); if (action.data.playAnimationOnFinish) { HandleAnimation(action); } HandleActionAudio(action, true); }));
+                    StartCoroutine(IE_Cast(castTime, () => { if (!action.Data.isGroundTargeted && action.Data.recast > 0f && !hidden) { action.chargesLeft--; } action.ExecuteAction(newActionInfo); if (action.Data.playAnimationOnFinish) { HandleAnimation(action); } HandleActionAudio(action, true); }));
                     onCast.Invoke(new CastInfo(newActionInfo, instantCast, characterState.GetEffects()));
 
-                    if (!action.data.playAnimationOnFinish && !action.data.isGroundTargeted)
+                    if (!action.Data.playAnimationOnFinish && !action.Data.isGroundTargeted)
                         HandleAnimation(action);
 
                     UpdateCharacterName();
@@ -1066,11 +1066,11 @@ namespace dev.susybaka.raidsim.Actions
                     HandleSpeech(action);
                     HandleActionAudio(action, false);
 
-                    if (animator != null && !action.data.isGroundTargeted)
+                    if (animator != null && !action.Data.isGroundTargeted)
                     {
-                        if (action.data.playCastingAnimationDirectly)
+                        if (action.Data.playCastingAnimationDirectly)
                         {
-                            animator.CrossFadeInFixedTime(action.data.castingAnimationName, action.data.castingAnimationCrossFade);
+                            animator.CrossFadeInFixedTime(action.Data.castingAnimationName, action.Data.castingAnimationCrossFade);
                         }
                         else
                         {
@@ -1078,7 +1078,7 @@ namespace dev.susybaka.raidsim.Actions
                         }
                     }
 
-                    if (action.data.isGroundTargeted)
+                    if (action.Data.isGroundTargeted)
                     {
                         isGroundTargeting = true;
                     }
@@ -1133,9 +1133,9 @@ namespace dev.susybaka.raidsim.Actions
             }
             if (lastAction != null)
             {
-                if (lastAction.data.animationLock > 0f)
+                if (lastAction.Data.animationLock > 0f)
                     lastAction.ResetAnimationLock();
-                if (lastAction.data.recast > 0f)
+                if (lastAction.Data.recast > 0f)
                     lastAction.ResetCooldown();
                 lastAction.onInterrupt.Invoke(new ActionInfo(lastAction, characterState, null));
                 lastAction = null;
@@ -1192,46 +1192,46 @@ namespace dev.susybaka.raidsim.Actions
 
         private void HandleAnimation(CharacterAction action)
         {
-            if (animator != null && !string.IsNullOrEmpty(action.data.animationName))
+            if (animator != null && !string.IsNullOrEmpty(action.Data.animationName))
             {
-                if (!action.data.playAnimationDirectly)
+                if (!action.Data.playAnimationDirectly)
                 {
-                    if (action.data.animationDelay > 0f)
+                    if (action.Data.animationDelay > 0f)
                     {
-                        Utilities.FunctionTimer.Create(this, () => animator.SetTrigger(action.data.animationName), action.data.animationDelay, $"{action.data.actionName}_animation_{action.data.animationName}_delay");
+                        Utilities.FunctionTimer.Create(this, () => animator.SetTrigger(action.Data.animationName), action.Data.animationDelay, $"{action.Data.actionName}_animation_{action.Data.animationName}_delay");
                     }
                     else
                     {
-                        animator.SetTrigger(action.data.animationName);
+                        animator.SetTrigger(action.Data.animationName);
                     }
                 }
                 else
                 {
-                    if (action.data.animationDelay > 0f)
+                    if (action.Data.animationDelay > 0f)
                     {
-                        Utilities.FunctionTimer.Create(this, () => animator.CrossFadeInFixedTime(action.data.animationName, action.data.animationCrossFade), action.data.animationDelay, $"{action.data.actionName}_animation_{action.data.animationName}_delay");
+                        Utilities.FunctionTimer.Create(this, () => animator.CrossFadeInFixedTime(action.Data.animationName, action.Data.animationCrossFade), action.Data.animationDelay, $"{action.Data.actionName}_animation_{action.Data.animationName}_delay");
                     }
                     else
                     {
-                        animator.CrossFadeInFixedTime(action.data.animationName, action.data.animationCrossFade);
+                        animator.CrossFadeInFixedTime(action.Data.animationName, action.Data.animationCrossFade);
                     }
                 }
-                if (action.data.onAnimationFinishId >= 0)
+                if (action.Data.onAnimationFinishId >= 0)
                 {
-                    if (action.data.animationDelay > 0f)
+                    if (action.Data.animationDelay > 0f)
                     {
-                        Utilities.FunctionTimer.Create(this, () => animator.SetInteger(animatorParameterCastFinishId, action.data.onAnimationFinishId), action.data.animationDelay, $"{action.data.actionName}_animation_{action.data.animationName}_delay");
+                        Utilities.FunctionTimer.Create(this, () => animator.SetInteger(animatorParameterCastFinishId, action.Data.onAnimationFinishId), action.Data.animationDelay, $"{action.Data.actionName}_animation_{action.Data.animationName}_delay");
                     }
                     else
                     {
-                        animator.SetInteger(animatorParameterCastFinishId, action.data.onAnimationFinishId);
+                        animator.SetInteger(animatorParameterCastFinishId, action.Data.onAnimationFinishId);
                     }
                 }
                 else
                 {
-                    if (action.data.animationDelay > 0f)
+                    if (action.Data.animationDelay > 0f)
                     {
-                        Utilities.FunctionTimer.Create(this, () => animator.SetInteger(animatorParameterCastFinishId, 0), action.data.animationDelay, $"{action.data.actionName}_animation_{action.data.animationName}_delay");
+                        Utilities.FunctionTimer.Create(this, () => animator.SetInteger(animatorParameterCastFinishId, 0), action.Data.animationDelay, $"{action.Data.actionName}_animation_{action.Data.animationName}_delay");
                     }
                     else
                     {
@@ -1260,7 +1260,7 @@ namespace dev.susybaka.raidsim.Actions
         {
             if (castBar != null)
             {
-                castBar.maxValue = actionInfo.action.data.cast;
+                castBar.maxValue = actionInfo.action.Data.cast;
                 castBar.value = 0f;
             }
             if (castLengthText != null)
@@ -1269,26 +1269,26 @@ namespace dev.susybaka.raidsim.Actions
             }
             if (castNameText != null)
             {
-                castNameText.text = actionInfo.action.data.GetActionName();
+                castNameText.text = actionInfo.action.Data.GetActionName();
             }
             if (castBarParty != null)
             {
-                castBarParty.maxValue = actionInfo.action.data.cast;
+                castBarParty.maxValue = actionInfo.action.Data.cast;
                 castBarParty.value = 0f;
             }
             if (castNameTextParty != null)
             {
                 if (actionInfo.target != null && showCastTargetLetter)
                 {
-                    castNameTextParty.text = $"{actionInfo.action.data.GetActionName()}<sprite=\"{actionInfo.target.letterSpriteAsset}\" name=\"{actionInfo.target.characterLetter}\">";
+                    castNameTextParty.text = $"{actionInfo.action.Data.GetActionName()}<sprite=\"{actionInfo.target.letterSpriteAsset}\" name=\"{actionInfo.target.characterLetter}\">";
                 }
                 else if (actionInfo.source != null && showCastTargetLetter)
                 {
-                    castNameTextParty.text = $"{actionInfo.action.data.GetActionName()}<sprite=\"{actionInfo.source.letterSpriteAsset}\" name=\"{actionInfo.source.characterLetter}\">";
+                    castNameTextParty.text = $"{actionInfo.action.Data.GetActionName()}<sprite=\"{actionInfo.source.letterSpriteAsset}\" name=\"{actionInfo.source.characterLetter}\">";
                 }
                 else
                 {
-                    castNameTextParty.text = actionInfo.action.data.GetActionName();
+                    castNameTextParty.text = actionInfo.action.Data.GetActionName();
                 }
             }
             if (interruptText != null)
@@ -1299,11 +1299,11 @@ namespace dev.susybaka.raidsim.Actions
 
         private void HandleSpeech(CharacterAction action)
         {
-            if (!string.IsNullOrEmpty(action.data.speech))
+            if (!string.IsNullOrEmpty(action.Data.speech))
             {
                 if (speechBubbleText != null)
                 {
-                    speechBubbleText.text = action.data.speech;
+                    speechBubbleText.text = action.Data.speech;
                 }
                 if (speechBubbleGroup != null)
                 {
@@ -1311,17 +1311,17 @@ namespace dev.susybaka.raidsim.Actions
                     Utilities.FunctionTimer.Create(this, () => speechBubbleGroup.LeanAlpha(0f, 0.25f), speechBubbleDuration, $"{characterState.characterName}_{this}_speech_bubble_fade_out", true);
                 }
             }
-            if (action.data.speechAudio != null)
+            if (action.Data.speechAudio != null)
             {
                 if (speechBubbleAudio != null)
                 {
-                    if (FightTimeline.Instance != null && FightTimeline.Instance.jon && action.data.jonSpeechAudio != null)
+                    if (FightTimeline.Instance != null && FightTimeline.Instance.jon && action.Data.jonSpeechAudio != null)
                     {
-                        speechBubbleAudio.clip = action.data.jonSpeechAudio;
+                        speechBubbleAudio.clip = action.Data.jonSpeechAudio;
                     }
-                    else if (action.data.speechAudio != null)
+                    else if (action.Data.speechAudio != null)
                     {
-                        speechBubbleAudio.clip = action.data.speechAudio;
+                        speechBubbleAudio.clip = action.Data.speechAudio;
                     }
                     if (speechBubbleAudio.clip != null)
                         speechBubbleAudio.Play();
@@ -1336,16 +1336,16 @@ namespace dev.susybaka.raidsim.Actions
 
             if (onExecute)
             {
-                if (!string.IsNullOrEmpty(action.data.onExecuteAudio) && AudioManager.Instance != null)
+                if (!string.IsNullOrEmpty(action.Data.onExecuteAudio) && AudioManager.Instance != null)
                 {
-                    AudioManager.Instance.PlayAt(action.data.onExecuteAudio, transform.position, audioParent, audioVolume);
+                    AudioManager.Instance.PlayAt(action.Data.onExecuteAudio, transform.position, audioParent, audioVolume);
                 }
             }
             else
             {
-                if (!string.IsNullOrEmpty(action.data.onCastAudio) && AudioManager.Instance != null)
+                if (!string.IsNullOrEmpty(action.Data.onCastAudio) && AudioManager.Instance != null)
                 {
-                    AudioManager.Instance.PlayAt(action.data.onCastAudio, transform.position, audioParent, audioVolume);
+                    AudioManager.Instance.PlayAt(action.Data.onCastAudio, transform.position, audioParent, audioVolume);
                 }
             }
         }

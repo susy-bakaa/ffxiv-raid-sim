@@ -523,7 +523,7 @@ namespace dev.susybaka.raidsim.Core
 
                                         for (int a = 0; a < cEvents[e].performCharacterActions.Length; a++)
                                         {
-                                            if (cEvents[e].performCharacterActions[a].data == temp)
+                                            if (cEvents[e].performCharacterActions[a].Data == temp)
                                             {
                                                 cEvents[e].actions.PerformAction(cEvents[e].performCharacterActions[a]);
                                                 randomEventResults.Add(cEvents[e].id, a);

@@ -470,7 +470,7 @@ namespace dev.susybaka.raidsim.Mechanics
                         continue;
                     }
                     if (log)
-                        Debug.Log($"[CharacterStateMechanic ({gameObject.name})] Having {character.characterName} execute action {(action != null ? action.data.actionName : actionData != null ? actionData.actionName : "Unknown Action")}{(action != null ? $" ({action.gameObject.name})" : "")}.");
+                        Debug.Log($"[CharacterStateMechanic ({gameObject.name})] Having {character.characterName} execute action {(action != null ? action.Data.actionName : actionData != null ? actionData.actionName : "Unknown Action")}{(action != null ? $" ({action.gameObject.name})" : "")}.");
 
                     switch (executionType)
                     {

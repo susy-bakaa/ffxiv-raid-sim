@@ -33,9 +33,9 @@ namespace dev.susybaka.raidsim.Mechanics
             {
                 if (!string.IsNullOrEmpty(mechanicName))
                 {
-                    if (actionInfo.action != null && actionInfo.action.data != null && useActionDamage)
+                    if (actionInfo.action != null && actionInfo.action.Data != null && useActionDamage)
                     {
-                        character.ModifyHealth(new Damage(actionInfo.action.data.damage, mechanicName));
+                        character.ModifyHealth(new Damage(actionInfo.action.Data.damage, mechanicName));
                     }
                     else if (!useActionDamage)
                     {
@@ -44,9 +44,9 @@ namespace dev.susybaka.raidsim.Mechanics
                 }
                 else
                 {
-                    if (actionInfo.action != null && actionInfo.action.data != null && useActionDamage)
+                    if (actionInfo.action != null && actionInfo.action.Data != null && useActionDamage)
                     {
-                        character.ModifyHealth(actionInfo.action.data.damage);
+                        character.ModifyHealth(actionInfo.action.Data.damage);
                     }
                     else if (!useActionDamage)
                     {

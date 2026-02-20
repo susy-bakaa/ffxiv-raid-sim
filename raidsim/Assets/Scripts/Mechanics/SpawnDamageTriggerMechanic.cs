@@ -154,8 +154,8 @@ namespace dev.susybaka.raidsim.Mechanics
             {
                 if (owner != null)
                     damageTrigger.owner = owner;
-                if (actionInfo.action != null && actionInfo.action.data != null)
-                    damageTrigger.data = actionInfo.action.data;
+                if (actionInfo.action != null && actionInfo.action.Data != null)
+                    damageTrigger.data = actionInfo.action.Data;
 
                 if ((faceTarget && actionInfo.target != null) || (faceSource && actionInfo.source != null))
                 {
@@ -219,20 +219,20 @@ namespace dev.susybaka.raidsim.Mechanics
                 {
                     if (usePlayerHealth)
                     {
-                        damageTrigger.isAShield = actionInfo.action.data.isShield;
+                        damageTrigger.isAShield = actionInfo.action.Data.isShield;
                         damageTrigger.self = actionInfo.sourceIsPlayer;
                         damageTrigger.damage = new Damage(Mathf.RoundToInt(damageMultiplier * actionInfo.source.health), false, true, DamageType.unique, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.normal, actionInfo.source, "White Wind");
                     }
                     else if (useActionDamage)
                     {
-                        damageTrigger.isAShield = actionInfo.action.data.isShield;
+                        damageTrigger.isAShield = actionInfo.action.Data.isShield;
                         damageTrigger.self = actionInfo.sourceIsPlayer;
-                        damageTrigger.damage = new Damage(actionInfo.action.data.damage, Mathf.RoundToInt(actionInfo.action.data.damage.value * damageMultiplier));
+                        damageTrigger.damage = new Damage(actionInfo.action.Data.damage, Mathf.RoundToInt(actionInfo.action.Data.damage.value * damageMultiplier));
 
                         if (increaseEnmity)
                         {
                             damageTrigger.increaseEnmity = true;
-                            damageTrigger.topEnmity = actionInfo.action.data.topEnmity;
+                            damageTrigger.topEnmity = actionInfo.action.Data.topEnmity;
                         }
                     }
                 }
