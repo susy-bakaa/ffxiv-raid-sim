@@ -19,11 +19,21 @@ MonoBehaviour:
   infinite: 0
   toggle: 0
   rollsCooldown: 1
+  hidden: 0
+  lostOnDeath: 1
+  unaffectedByTimeScale: 0
+  instantCasts: 0
+  reducesCastTimes: 0
   length: 6
   maxLength: 6
   appliedStacks: 1
   maxStacks: 1
   statusEffect: {fileID: 6380499260985097114, guid: 9a6467cf71ca9784a8a702932e40c7b2, type: 3}
   hudElement: {fileID: 2287955757171077410, guid: 42186591e6aaab646a983bd05ac84198, type: 3}
+  icons:
+  - {fileID: 21300000, guid: 600e6cd8c93559143978348b7cba2af0, type: 3}
   incompatableStatusEffects: []
+  refreshStatusEffects: []
   assignedRoles: 
+  applySoundFx: status_apply_positive
+  expireSoundFx: status_expire_positive

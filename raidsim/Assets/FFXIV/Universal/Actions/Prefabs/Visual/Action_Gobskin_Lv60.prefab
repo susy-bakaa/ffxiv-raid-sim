@@ -144,6 +144,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10af295d51be1ef478048c378d84d972, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  actionId: Gobskin60
   data: {fileID: 11400000, guid: 0fdf45bd7aef6054a8ee4d8e6766ecb6, type: 2}
   isAutoAction: 0
   isDisabled: 0
@@ -161,7 +162,10 @@ MonoBehaviour:
     control: 0
     shift: 0
   availableForRoles: 
-  sharedRecasts: []
+  sharedRecasts:
+  - Gobskin70
+  - Gobskin80
+  - Gobskin90
   comboOutlineEffects: []
   hideWhileEffects: []
   showInsteadWithEffects: 0
@@ -234,6 +238,8 @@ MonoBehaviour:
   enableInstead: 0
   spawnLocation: {fileID: 0}
   copyRotation: 0
+  setRotation: 0
+  rotation: {x: 0, y: 0, z: 0}
   delay: 0
   autoAssignOwner: 0
   autoAssignLocation: 0
@@ -241,6 +247,7 @@ MonoBehaviour:
   usePlayerHealth: 0
   useTargetControllerCurrentTargetAsLocation: 0
   faceTarget: 0
+  faceSource: 0
   rotateSource: 0
   axis:
     x: 0
@@ -309,6 +316,7 @@ MonoBehaviour:
   onPointerClick:
     m_PersistentCalls:
       m_Calls: []
+  otherPointerEventsEnabled: 1
   dummy: 0
 --- !u!1 &606325861372962512
 GameObject:

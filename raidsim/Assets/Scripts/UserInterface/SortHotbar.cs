@@ -31,8 +31,8 @@ namespace dev.susybaka.raidsim.UI
                 }
             }
 
-            if (actions != null && actions.Count > 0)
-                character = actions[0].GetCharacter();
+            //if (actions != null && actions.Count > 0)
+            //    character = actions[0].GetCharacter();
 
             OnStart();
 

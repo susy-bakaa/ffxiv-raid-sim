@@ -54,6 +54,8 @@ namespace dev.susybaka.raidsim.Core
         [Header("Current")]
         public string timelineName = "Unnamed fight timeline";
         public string timelineAbbreviation = string.Empty;
+        public int timelineLevel = 50;
+        public long timelinePlayerHealth = 3000;
         public bool playing = false;
         public bool paused = false;
         public List<string> pausedBy = new List<string>();
@@ -220,6 +222,9 @@ namespace dev.susybaka.raidsim.Core
             }
             Instance = this;
 
+            // Give lean tween more slots because in some scenes we are hitting the default limit of 400 on start when all effects fade out at the same time.
+            LeanTween.init(600);
+
             // Always setup when starting fresh
             SetupRng();
 
@@ -301,6 +306,8 @@ namespace dev.susybaka.raidsim.Core
 
             // Cannot use FindAnyByName here because for some reason it keeps finding the prefab and not the scene instance, even though it can only see scene objects. This is likely a Unity editor quirk.
             simulationSpeedLabel = GameObject.Find("SimulationSpeedLabel").GetComponentInChildren<TextMeshProUGUI>(true);
+
+            partyList?.LevelSync(timelineLevel, timelinePlayerHealth);
         }
 
         private void Update()

@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using NaughtyAttributes;
+using dev.susybaka.raidsim.Characters;
 using static dev.susybaka.raidsim.Core.GlobalData;
 
 namespace dev.susybaka.raidsim.Nodes
@@ -15,6 +16,7 @@ namespace dev.susybaka.raidsim.Nodes
         public bool occupied = false;
         public MechanicNode mechanicNode;
         public bool hasMechanic;
+        public CharacterState[] isDefaultClockSpotFor;
         public List<SectorPriority> sectorPriorities = new List<SectorPriority>();
         public List<int> groupPriorities = new List<int>();
         public List<Role> allowedRoles = new List<Role>();
@@ -22,6 +24,25 @@ namespace dev.susybaka.raidsim.Nodes
         private void Awake()
         {
             nodeName = gameObject.name;
+
+            if (isDefaultClockSpotFor != null && isDefaultClockSpotFor.Length > 0)
+            {
+                for (int i = 0; i < isDefaultClockSpotFor.Length; i++)
+                {
+                    if (isDefaultClockSpotFor[i].aiController != null)
+                    {
+                        isDefaultClockSpotFor[i].aiController.clockSpot = this;
+                    }
+                    else if (isDefaultClockSpotFor[i].playerController != null)
+                    {
+                        isDefaultClockSpotFor[i].playerController.clockSpot = this;
+                    }
+                    else if (isDefaultClockSpotFor[i].bossController != null)
+                    {
+                        // Implement? Or maybe not since I don't think any bosses will have clock spots
+                    }
+                }
+            }
         }
 
         private void Update()

@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: Hell'sEgress
   actionType: 2
+  icon: {fileID: 21300000, guid: 8310fb4c99d10f4438f2bb302ab0c032, type: 3}
   damage:
     name: Hell's Egress
     value: 0
@@ -28,6 +29,7 @@ MonoBehaviour:
   isShield: 0
   isHeal: 0
   isTargeted: 0
+  isGroundTargeted: 0
   topEnmity: 0
   hasMovement: 1
   targetGroups: 0100000002000000030000000400000005000000060000000700000008000000090000000a000000
@@ -48,9 +50,18 @@ MonoBehaviour:
   debuff: {fileID: 0}
   dispelDebuffInstead: 0
   comboAction: {fileID: 0}
+  comboActionIds: []
+  playCastingAnimationDirectly: 0
+  castingAnimationName: 
+  castingAnimationCrossFade: 0.2
   animationName: 
   playAnimationDirectly: 0
+  animationCrossFade: 0.2
   playAnimationOnFinish: 0
   onAnimationFinishId: -1
+  animationDelay: 0
   speech: 
   speechAudio: {fileID: 0}
+  jonSpeechAudio: {fileID: 0}
+  onCastAudio: <None>
+  onExecuteAudio: <None>

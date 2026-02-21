@@ -18,6 +18,8 @@ namespace dev.susybaka.raidsim.Actions
 
         private void Start()
         {
+            if (actionController == null)
+                actionController = transform.GetComponentInParents<ActionController>();
             if (actionController != null)
                 state = actionController.autoAttackEnabled;
             if (statusText != null)

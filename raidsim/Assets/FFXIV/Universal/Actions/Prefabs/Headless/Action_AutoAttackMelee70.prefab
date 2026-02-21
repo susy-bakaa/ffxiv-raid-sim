@@ -44,15 +44,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10af295d51be1ef478048c378d84d972, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  actionId: AutoAttackMelee70
   data: {fileID: 11400000, guid: 3102ce3d70044c441873315c6228cfc1, type: 2}
   isAutoAction: 1
   isDisabled: 0
   unavailable: 0
+  invisible: 0
   hasTarget: 0
   damageMultiplier: 1
   distanceToTarget: 0
+  chargesLeft: 0
   lastAction: {fileID: 0}
+  currentKeybind:
+    keyCode: 0
+    mouseButton: 0
+    alt: 0
+    control: 0
+    shift: 0
+  availableForRoles: 
+  sharedRecasts: []
+  comboOutlineEffects: []
+  hideWhileEffects: []
+  showInsteadWithEffects: 0
+  invisibilityAlsoDisables: 0
   onExecute:
+    m_PersistentCalls:
+      m_Calls: []
+  onCast:
+    m_PersistentCalls:
+      m_Calls: []
+  onInterrupt:
     m_PersistentCalls:
       m_Calls: []
   recastType: 0
@@ -65,6 +86,7 @@ MonoBehaviour:
   comboOutlineGroup: {fileID: 0}
   recastTimeText: {fileID: 0}
   resourceCostText: {fileID: 0}
+  keybindText: {fileID: 0}
   hudElements: []
   defaultColors: []
   unavailableColors: []

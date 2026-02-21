@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: Toggle Auto Attacks
   actionType: 2
+  icon: {fileID: 21300000, guid: 51dd2cfe21a3ef8408910b5a094a9732, type: 3}
   damage:
     name: 
     value: 0
@@ -23,10 +24,14 @@ MonoBehaviour:
     elementalAspect: 1
     physicalAspect: 0
     applicationType: 0
+    source: {fileID: 0}
+  causesDirectDamage: 1
   isShield: 0
   isHeal: 0
   isTargeted: 0
+  isGroundTargeted: 0
   topEnmity: 0
+  hasMovement: 0
   targetGroups: 
   maxTargets: 1
   range: 0
@@ -37,6 +42,7 @@ MonoBehaviour:
   cast: 0
   recast: 1
   animationLock: 0.4
+  charges: 1
   canBeSlideCast: 1
   rollsGcd: 1
   buff: {fileID: 0}
@@ -44,6 +50,18 @@ MonoBehaviour:
   debuff: {fileID: 0}
   dispelDebuffInstead: 0
   comboAction: {fileID: 0}
+  comboActionIds: []
+  playCastingAnimationDirectly: 0
+  castingAnimationName: 
+  castingAnimationCrossFade: 0.2
   animationName: 
   playAnimationDirectly: 0
+  animationCrossFade: 0.2
+  playAnimationOnFinish: 0
   onAnimationFinishId: -1
+  animationDelay: 0
+  speech: 
+  speechAudio: {fileID: 0}
+  jonSpeechAudio: {fileID: 0}
+  onCastAudio: <None>
+  onExecuteAudio: <None>

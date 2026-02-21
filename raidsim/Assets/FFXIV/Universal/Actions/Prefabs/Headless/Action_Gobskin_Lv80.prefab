@@ -1,0 +1,152 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5438266747378256910
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7188901702623534776}
+  - component: {fileID: 1815760385792242663}
+  - component: {fileID: 1961406569611848547}
+  m_Layer: 3
+  m_Name: Action_Gobskin_Lv80
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7188901702623534776
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5438266747378256910}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1815760385792242663
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5438266747378256910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10af295d51be1ef478048c378d84d972, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionId: Gobskin80
+  data: {fileID: 11400000, guid: 0fdf45bd7aef6054a8ee4d8e6766ecb6, type: 2}
+  isAutoAction: 0
+  isDisabled: 0
+  unavailable: 0
+  invisible: 0
+  hasTarget: 0
+  damageMultiplier: 1
+  distanceToTarget: 0
+  chargesLeft: 0
+  lastAction: {fileID: 0}
+  currentKeybind:
+    keyCode: 0
+    mouseButton: 0
+    alt: 0
+    control: 0
+    shift: 0
+  availableForRoles: 
+  sharedRecasts:
+  - Gobskin60
+  - Gobskin70
+  - Gobskin90
+  comboOutlineEffects: []
+  hideWhileEffects: []
+  showInsteadWithEffects: 0
+  invisibilityAlsoDisables: 0
+  onExecute:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1961406569611848547}
+        m_TargetAssemblyTypeName: SpawnDamageTriggerMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onCast:
+    m_PersistentCalls:
+      m_Calls: []
+  onInterrupt:
+    m_PersistentCalls:
+      m_Calls: []
+  recastType: 0
+  borderStandard: {fileID: 0}
+  borderDark: {fileID: 0}
+  recastFillAnimator: {fileID: 0}
+  recastFillGroup: {fileID: 0}
+  selectionBorder: {fileID: 0}
+  clickHighlight: {fileID: 0}
+  comboOutlineGroup: {fileID: 0}
+  recastTimeText: {fileID: 0}
+  resourceCostText: {fileID: 0}
+  keybindText: {fileID: 0}
+  hudElements: []
+  defaultColors: []
+  unavailableColors: []
+--- !u!114 &1961406569611848547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5438266747378256910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f11e796dcb6bd64eada356ab536e195, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: Gobskin
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  owner: {fileID: 0}
+  targetController: {fileID: 0}
+  damageTriggerPrefab: {fileID: 5514952723103972580, guid: c8b312e5174626246a671c19b95465b3, type: 3}
+  enableInstead: 0
+  spawnLocation: {fileID: 0}
+  copyRotation: 0
+  setRotation: 0
+  rotation: {x: 0, y: 0, z: 0}
+  delay: 0
+  autoAssignOwner: 0
+  autoAssignLocation: 0
+  useActionDamage: 1
+  usePlayerHealth: 0
+  useTargetControllerCurrentTargetAsLocation: 0
+  faceTarget: 0
+  faceSource: 0
+  rotateSource: 0
+  axis:
+    x: 0
+    y: 0
+    z: 0
+  dealDamage: 0
+  damageMultiplier: 1
+  increaseEnmity: 0
+  onSpawn:
+    m_PersistentCalls:
+      m_Calls: []

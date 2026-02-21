@@ -45,13 +45,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10af295d51be1ef478048c378d84d972, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  actionId: Gobskin60
   data: {fileID: 11400000, guid: 0fdf45bd7aef6054a8ee4d8e6766ecb6, type: 2}
+  isAutoAction: 0
   isDisabled: 0
   unavailable: 0
+  invisible: 0
   hasTarget: 0
   damageMultiplier: 1
   distanceToTarget: 0
+  chargesLeft: 0
   lastAction: {fileID: 0}
+  currentKeybind:
+    keyCode: 0
+    mouseButton: 0
+    alt: 0
+    control: 0
+    shift: 0
+  availableForRoles: 01000000
+  sharedRecasts:
+  - Gobskin70
+  - Gobskin80
+  - Gobskin90
+  comboOutlineEffects: []
+  hideWhileEffects: []
+  showInsteadWithEffects: 0
+  invisibilityAlsoDisables: 0
   onExecute:
     m_PersistentCalls:
       m_Calls:
@@ -67,6 +86,12 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onCast:
+    m_PersistentCalls:
+      m_Calls: []
+  onInterrupt:
+    m_PersistentCalls:
+      m_Calls: []
   recastType: 0
   borderStandard: {fileID: 0}
   borderDark: {fileID: 0}
@@ -77,6 +102,7 @@ MonoBehaviour:
   comboOutlineGroup: {fileID: 0}
   recastTimeText: {fileID: 0}
   resourceCostText: {fileID: 0}
+  keybindText: {fileID: 0}
   hudElements: []
   defaultColors: []
   unavailableColors: []
@@ -94,15 +120,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mechanicEnabled: 1
   mechanicName: Gobskin
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
   owner: {fileID: 0}
   targetController: {fileID: 0}
   damageTriggerPrefab: {fileID: 5514952723103972580, guid: c8b312e5174626246a671c19b95465b3, type: 3}
+  enableInstead: 0
   spawnLocation: {fileID: 0}
+  copyRotation: 0
+  setRotation: 0
+  rotation: {x: 0, y: 0, z: 0}
   delay: 0
   autoAssignOwner: 0
+  autoAssignLocation: 0
   useActionDamage: 1
   usePlayerHealth: 0
   useTargetControllerCurrentTargetAsLocation: 0
+  faceTarget: 0
+  faceSource: 0
+  rotateSource: 0
+  axis:
+    x: 0
+    y: 0
+    z: 0
   dealDamage: 0
-  increaseEnmity: 0
   damageMultiplier: 0.357
+  increaseEnmity: 0
+  onSpawn:
+    m_PersistentCalls:
+      m_Calls: []

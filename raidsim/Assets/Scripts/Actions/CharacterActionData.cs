@@ -18,6 +18,7 @@ namespace dev.susybaka.raidsim.Actions
         [Header("Info")]
         public string actionName = "Unnamed Action";
         public ActionType actionType = ActionType.Spell;
+        [ShowAssetPreview] public Sprite icon;
         public Damage damage = new Damage(0, true);
         public bool causesDirectDamage = true;
         public bool isShield = false;
@@ -44,6 +45,7 @@ namespace dev.susybaka.raidsim.Actions
         public StatusEffectData debuff;
         public bool dispelDebuffInstead = false;
         public CharacterActionData comboAction;
+        public string[] comboActionIds = new string[0];
         public bool playCastingAnimationDirectly = false;
         [ShowIf("playCastingAnimationDirectly")] public string castingAnimationName = string.Empty;
         [ShowIf("playCastingAnimationDirectly")] [Min(0f)] public float castingAnimationCrossFade = 0.2f;
@@ -68,6 +70,8 @@ namespace dev.susybaka.raidsim.Actions
         {
             enmity = damage.value;
             damage = new Damage(0, true);
+            icon = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/FFXIV/Universal/Icons/000405_hr1.png");
+            UnityEditor.EditorUtility.SetDirty(this);
         }
 
 #if UNITY_EDITOR
@@ -78,10 +82,17 @@ namespace dev.susybaka.raidsim.Actions
             if (string.IsNullOrEmpty(onCastAudio))
             {
                 onCastAudio = "<None>";
+                UnityEditor.EditorUtility.SetDirty(this);
             }
             if (string.IsNullOrEmpty(onExecuteAudio))
             {
                 onExecuteAudio = "<None>";
+                UnityEditor.EditorUtility.SetDirty(this);
+            }
+            if (icon == null)
+            {
+                icon = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/FFXIV/Universal/Icons/000405_hr1.png");
+                UnityEditor.EditorUtility.SetDirty(this);
             }
         }
 #endif

@@ -42,6 +42,8 @@ namespace dev.susybaka.raidsim.Characters
         public Transform dashKnockbackPivot;
         [Hidden]
         public ModelHandler modelHandler;
+        [Hidden]
+        public PivotController pivotController;
 
         #region Stat Variables
         [Header("Status")]
@@ -403,6 +405,16 @@ namespace dev.susybaka.raidsim.Characters
             if (actionController != null)
                 actionController.SetAnimator(animator);
         }
+
+        public void LevelSync(int level, long health)
+        {
+            characterLevel = level;
+            currentMaxHealth = health;
+            defaultMaxHealth = health;
+            this.health = health;
+            UpdateCharacterName();
+            RefreshUserInterface();
+        }
         #endregion
 
         #region BuiltIn Unity Functions
@@ -414,20 +426,32 @@ namespace dev.susybaka.raidsim.Characters
             targetController = GetComponent<TargetController>();
             actionController = GetComponent<ActionController>();
             modelHandler = GetComponentInChildren<ModelHandler>(true);
-            if (pivot == null)
-                pivot = transform.Find("Pivot");
-            TaggedObject[] taggedObjects = pivot?.GetComponentsInChildren<TaggedObject>();
+            pivotController = GetComponentInChildren<PivotController>(true);
 
-            if (taggedObjects != null && taggedObjects.Length > 0)
+            if (pivot == null && pivotController != null)
+                pivot = pivotController.MainPivot;
+            else if (pivot == null)
+                pivot = transform.Find("Pivot");
+            
+            if (pivotController == null)
             {
-                foreach (TaggedObject tagged in taggedObjects)
+                TaggedObject[] taggedObjects = pivot?.GetComponentsInChildren<TaggedObject>();
+
+                if (taggedObjects != null && taggedObjects.Length > 0)
                 {
-                    if (tagged.m_tag == "dashPivot")
+                    foreach (TaggedObject tagged in taggedObjects)
                     {
-                        dashKnockbackPivot = tagged.transform;
-                        break;
+                        if (tagged.m_tag == "dashPivot")
+                        {
+                            dashKnockbackPivot = tagged.transform;
+                            break;
+                        }
                     }
                 }
+            }
+            else
+            {
+                dashKnockbackPivot = pivotController.DashKnockbackPivot;
             }
 
             if (pivot == null)

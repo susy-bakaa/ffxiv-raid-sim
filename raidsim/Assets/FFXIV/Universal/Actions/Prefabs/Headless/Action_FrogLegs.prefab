@@ -45,14 +45,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10af295d51be1ef478048c378d84d972, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  actionId: FrogLegs
   data: {fileID: 11400000, guid: d55aef14ca639db4ba0be8b23403b5a0, type: 2}
   isAutoAction: 0
   isDisabled: 0
   unavailable: 0
+  invisible: 0
   hasTarget: 0
   damageMultiplier: 1
   distanceToTarget: 0
+  chargesLeft: 0
   lastAction: {fileID: 0}
+  currentKeybind:
+    keyCode: 0
+    mouseButton: 0
+    alt: 0
+    control: 0
+    shift: 0
+  availableForRoles: 01000000
+  sharedRecasts: []
+  comboOutlineEffects: []
+  hideWhileEffects: []
+  showInsteadWithEffects: 0
+  invisibilityAlsoDisables: 0
   onExecute:
     m_PersistentCalls:
       m_Calls:
@@ -68,6 +83,12 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onCast:
+    m_PersistentCalls:
+      m_Calls: []
+  onInterrupt:
+    m_PersistentCalls:
+      m_Calls: []
   recastType: 0
   borderStandard: {fileID: 0}
   borderDark: {fileID: 0}
@@ -78,6 +99,7 @@ MonoBehaviour:
   comboOutlineGroup: {fileID: 0}
   recastTimeText: {fileID: 0}
   resourceCostText: {fileID: 0}
+  keybindText: {fileID: 0}
   hudElements: []
   defaultColors: []
   unavailableColors: []
@@ -95,15 +117,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mechanicEnabled: 1
   mechanicName: Frog Legs
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
   owner: {fileID: 0}
   targetController: {fileID: 0}
   damageTriggerPrefab: {fileID: 3384804277230888301, guid: fa64c084896c4c949876dc31d679143c, type: 3}
+  enableInstead: 0
   spawnLocation: {fileID: 0}
+  copyRotation: 0
+  setRotation: 0
+  rotation: {x: 0, y: 0, z: 0}
   delay: 0
   autoAssignOwner: 1
+  autoAssignLocation: 0
   useActionDamage: 1
   usePlayerHealth: 0
   useTargetControllerCurrentTargetAsLocation: 0
+  faceTarget: 0
+  faceSource: 0
+  rotateSource: 0
+  axis:
+    x: 0
+    y: 0
+    z: 0
   dealDamage: 1
-  increaseEnmity: 1
   damageMultiplier: 1
+  increaseEnmity: 1
+  onSpawn:
+    m_PersistentCalls:
+      m_Calls: []

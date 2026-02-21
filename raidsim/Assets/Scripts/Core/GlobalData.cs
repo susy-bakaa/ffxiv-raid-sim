@@ -16,6 +16,8 @@ namespace dev.susybaka.raidsim.Core
         public enum Sector { N, E, S, W }
         public enum SubSector { NE, SE, SW, NW }
         public enum RngMode { PureRandom, NoRepeatConsecutive, ShuffleBag }
+        public enum SlotKind { Empty, Action, Macro }
+        public enum RecastType { standard, longGcd, stackedOgcd }
 
         public struct ActionInfo
         {
@@ -562,6 +564,13 @@ namespace dev.susybaka.raidsim.Core
                 this.scale = scale;
                 this.relative = relative;
             }
+        }
+
+        [System.Serializable]
+        public struct SlotBinding
+        {
+            public SlotKind kind;
+            public string id; // ActionId or MacroId (or empty)
         }
     }
 }

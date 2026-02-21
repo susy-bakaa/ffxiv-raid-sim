@@ -18,7 +18,6 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using static System.Collections.Specialized.BitVector32;
 using static dev.susybaka.raidsim.Core.GlobalData;
 
 namespace dev.susybaka.raidsim.Actions
@@ -29,8 +28,10 @@ namespace dev.susybaka.raidsim.Actions
         CharacterState characterState;
         TargetController targetController;
 
-        public Transform actionParent;
-        public List<CharacterAction> actions = new List<CharacterAction>();
+        //public Transform actionParent;
+        [SerializeField] private CharacterActionRegistry actionRegistry;
+        public CharacterActionRegistry ActionRegistry => actionRegistry;
+        [UnityEngine.Serialization.FormerlySerializedAs("actions")] public List<CharacterAction> _actions = new List<CharacterAction>();
         public List<CharacterAction> autoActions = new List<CharacterAction>();
 #if UNITY_EDITOR
         public List<CharacterAction> _actionQueue = new List<CharacterAction>();
@@ -134,7 +135,12 @@ namespace dev.susybaka.raidsim.Actions
                 interruptText.alpha = 0f;
             }
 
-            if (loadAutomatically && actionParent != null)
+            if (actionRegistry == null)
+            {
+                actionRegistry = GetComponentInChildren<CharacterActionRegistry>();
+            }
+
+            /*if (loadAutomatically && actionParent != null)
             {
                 actions.Clear();
                 autoActions.Clear();
@@ -150,9 +156,9 @@ namespace dev.susybaka.raidsim.Actions
                         actions.Add(allActions[i]);
                     }
                 }
-            }
+            }*/
 
-            if (characterState != null)
+            /*if (characterState != null)
             {
                 List<CharacterAction> invalidActions = new List<CharacterAction>();
 
@@ -176,7 +182,7 @@ namespace dev.susybaka.raidsim.Actions
                         actions.Remove(invalidActions[i]);
                     }
                 }
-            }
+            }*/
             if (characterState != null)
                 previousCanDoActions = characterState.canDoActions.value;
             else
@@ -239,14 +245,14 @@ namespace dev.susybaka.raidsim.Actions
                     distanceToTarget = Mathf.Max(0, rawDistanceToTarget - radiusOffset); // Ensure the distance is not negative
                 }
 
-                if (actions != null && actions.Count > 0)
+                if (actionRegistry.AllActions != null && actionRegistry.AllActions.Count > 0)
                 {
-                    for (int i = 0; i < actions.Count; i++)
+                    for (int i = 0; i < actionRegistry.AllActions.Count; i++)
                     {
                         if (hasTarget)
-                            actions[i].distanceToTarget = distanceToTarget;
-                        actions[i].hasTarget = hasTarget;
-                        actions[i].lastAction = lastAction?.Data;
+                            actionRegistry.AllActions[i].distanceToTarget = distanceToTarget;
+                        actionRegistry.AllActions[i].hasTarget = hasTarget;
+                        actionRegistry.AllActions[i].lastAction = lastAction;
                     }
                 }
                 if (autoActions != null && autoActions.Count > 1)
@@ -256,7 +262,7 @@ namespace dev.susybaka.raidsim.Actions
                         if (hasTarget)
                             autoActions[i].distanceToTarget = distanceToTarget;
                         autoActions[i].hasTarget = hasTarget;
-                        autoActions[i].lastAction = lastAction?.Data;
+                        autoActions[i].lastAction = lastAction;
                     }
                 }
                 else if (autoActions.Count == 1 && autoAttack != null)
@@ -264,7 +270,7 @@ namespace dev.susybaka.raidsim.Actions
                     if (hasTarget)
                         autoAttack.distanceToTarget = distanceToTarget;
                     autoAttack.hasTarget = hasTarget;
-                    autoAttack.lastAction = lastAction?.Data;
+                    autoAttack.lastAction = lastAction;
                 }
             }
 
@@ -274,11 +280,11 @@ namespace dev.susybaka.raidsim.Actions
                 previousIsCasting = isCasting;
                 if (characterState.canDoActions.value && ((!isCasting && lockActionsWhenCasting) || (!lockActionsWhenCasting)))
                 {
-                    if (actions != null && actions.Count > 0)
+                    if (actionRegistry.AllActions != null && actionRegistry.AllActions.Count > 0)
                     {
-                        for (int i = 0; i < actions.Count; i++)
+                        for (int i = 0; i < actionRegistry.AllActions.Count; i++)
                         {
-                            actions[i].isDisabled = false;
+                            actionRegistry.AllActions[i].isDisabled = false;
                         }
                     }
                     if (autoActions != null && autoActions.Count > 1)
@@ -295,11 +301,11 @@ namespace dev.susybaka.raidsim.Actions
                 }
                 else
                 {
-                    if (actions != null && actions.Count > 0)
+                    if (actionRegistry.AllActions != null && actionRegistry.AllActions.Count > 0)
                     {
-                        for (int i = 0; i < actions.Count; i++)
+                        for (int i = 0; i < actionRegistry.AllActions.Count; i++)
                         {
-                            actions[i].isDisabled = true;
+                            actionRegistry.AllActions[i].isDisabled = true;
                         }
                     }
                     if (autoActions != null && autoActions.Count > 1)
@@ -474,10 +480,10 @@ namespace dev.susybaka.raidsim.Actions
             isCasting = false;
             isGroundTargeting = false;
             lastAction = null;
-            for (int i = 0; i < actions.Count; i++)
+            for (int i = 0; i < actionRegistry.AllActions.Count; i++)
             {
-                actions[i].gameObject.SetActive(true);
-                actions[i].ResetAction();
+                actionRegistry.AllActions[i].gameObject.SetActive(true);
+                actionRegistry.AllActions[i].ResetAction();
             }
             Utilities.FunctionTimer.StopTimer($"{characterState.characterName}_{this}_castBar_fade_out_if_interrupted");
             Utilities.FunctionTimer.StopTimer($"{characterState.characterName}_{this}_interrupted_status");
@@ -504,7 +510,19 @@ namespace dev.susybaka.raidsim.Actions
 
         public bool TryGetAction(string name, out CharacterAction action, StringComparison comparison = StringComparison.Ordinal)
         {
-            for (int i = 0; i < actions.Count; i++)
+            if (actionRegistry == null || string.IsNullOrEmpty(name))
+            {
+                action = null;
+                return false;
+            }
+
+            // Here we use the action name instead of the more up to date and unique ActionId,
+            // because the ActionId is not always the same as the name of the action,
+            // which is used by players typing into the chat to perform actions, and we want to support that use case with this method.
+            action = actionRegistry.GetFirstByName(name, comparison);
+            return action != null;
+
+            /*for (int i = 0; i < actions.Count; i++)
             {
                 if (name.Equals(actions[i].Data.actionName, comparison))
                 {
@@ -513,7 +531,7 @@ namespace dev.susybaka.raidsim.Actions
                 }
             }
             action = null;
-            return false;
+            return false;*/
         }
 
         public bool HasAction(CharacterActionData actionData, StringComparison comparison = StringComparison.Ordinal)
@@ -523,26 +541,35 @@ namespace dev.susybaka.raidsim.Actions
 
         public bool HasAction(string name, StringComparison comparison = StringComparison.Ordinal)
         {
-            for (int i = 0; i < actions.Count; i++)
+            return actionRegistry.GetFirstByName(name) != null;
+
+            /*for (int i = 0; i < actions.Count; i++)
             {
                 if (name.Equals(actions[i].Data.actionName, comparison))
                 {
                     return true;
                 }
             }
-            return false;
+            return false;*/
         }
 
         public bool HasAction(CharacterAction action, StringComparison comparison = StringComparison.Ordinal)
         {
-            for (int i = 0; i < actions.Count; i++)
+            if (actionRegistry == null || action == null)
+                return false;
+
+            CharacterAction hasAction = actionRegistry.GetById(action.ActionId);
+
+            return hasAction != null;
+
+            /*for (int i = 0; i < actions.Count; i++)
             {
                 if (action.Data.actionName.Equals(actions[i].Data.actionName, comparison))
                 {
                     action = actions[i];
                 }
             }
-            return false;
+            return false;*/
         }
 
         public void PerformAutoAction(CharacterAction autoAction)
@@ -575,8 +602,6 @@ namespace dev.susybaka.raidsim.Actions
 
             if (autoAction.unavailable)
                 return false;
-
-            autoAction.OnPointerClick(null);
 
             if (lockActionsWhenCasting && isCasting)
                 return false;
@@ -716,13 +741,22 @@ namespace dev.susybaka.raidsim.Actions
             if (!gameObject.activeSelf)
                 return;
 
-            for (int i = 0; i < actions.Count; i++)
+            QueueAction(actionRegistry.GetFirstByName(name));
+            /*for (int i = 0; i < actions.Count; i++)
             {
                 if (actions[i].Data.actionName == name)
                 {
                     QueueAction(actions[i]);
                 }
-            }
+            }*/
+        }
+
+        public void QueueAction(CharacterActionData actionData)
+        {
+            if (!gameObject.activeSelf)
+                return;
+
+            QueueAction(actionRegistry.GetFirstByData(actionData));
         }
 
         public void QueueAction(CharacterAction action)
@@ -811,14 +845,21 @@ namespace dev.susybaka.raidsim.Actions
             if (Time.timeScale <= 0f)
                 return;
 
-            for (int i = 0; i < actions.Count; i++)
-            {
-                if (actions[i].Data.actionName == name)
-                {
-                    PerformAction(actions[i]);
-                    break;
-                }
-            }
+            PerformAction(actionRegistry.GetFirstByName(name));
+        }
+
+        public void PerformAction(CharacterActionData actionData)
+        {
+            if (!gameObject.activeSelf)
+                return;
+
+            if (characterState.dead)
+                return;
+
+            if (Time.timeScale <= 0f)
+                return;
+
+            PerformAction(actionRegistry.GetFirstByData(actionData));
         }
 
         public void PerformAction(CharacterAction action)
@@ -837,14 +878,12 @@ namespace dev.susybaka.raidsim.Actions
 
         public void PerformActionUnrestricted(string name)
         {
-            for (int i = 0; i < actions.Count; i++)
-            {
-                if (actions[i].Data.actionName == name)
-                {
-                    PerformActionUnrestricted(actions[i]);
-                    break;
-                }
-            }
+            PerformActionUnrestricted(actionRegistry.GetFirstByName(name));
+        }
+
+        public void PerformActionUnrestricted(CharacterActionData actionData)
+        {
+            PerformActionUnrestricted(actionRegistry.GetFirstByData(actionData));
         }
 
         public void PerformActionUnrestricted(CharacterAction action)
@@ -854,14 +893,12 @@ namespace dev.susybaka.raidsim.Actions
 
         public void PerformActionHidden(string name)
         {
-            for (int i = 0; i < actions.Count; i++)
-            {
-                if (actions[i].Data.actionName == name)
-                {
-                    PerformActionHidden(actions[i]);
-                    break;
-                }
-            }
+            PerformActionHidden(actionRegistry.GetFirstByName(name));
+        }
+
+        public void PerformActionHidden(CharacterActionData actionData)
+        {
+            PerformActionHidden(actionRegistry.GetFirstByData(actionData));
         }
 
         public void PerformActionHidden(CharacterAction action)
@@ -880,8 +917,6 @@ namespace dev.susybaka.raidsim.Actions
                 return;
 
             //Debug.Log($"[ActionController ({gameObject.name})] Action {action.Data.actionName} passed 1. checks");
-
-            action.OnPointerClick(null);
 
             if (lockActionsWhenCasting && isCasting && !hidden)
                 return;

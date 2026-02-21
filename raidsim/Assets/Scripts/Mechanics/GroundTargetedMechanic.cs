@@ -23,15 +23,19 @@ namespace dev.susybaka.raidsim.Mechanics
         public bool groundTargetActive = false;
         public UnityEvent<ActionInfo> onExecute;
 
+        private CharacterState lastSource;
         private ActionController lastActionController;
         private ActionInfo lastActionInfo;
         private GameObject groundTargetInstance;
         private bool shouldTrigger = false;
+        private CharacterState originalGroundTargetPivot;
 
         private void Awake()
         {
             m_camera = Camera.main;
             userInput = FindObjectOfType<UserInput>();
+            originalGroundTargetPivot = groundTargetPivot;
+            lastSource = null;
         }
 
         public override void TriggerMechanic(ActionInfo actionInfo)
@@ -41,8 +45,15 @@ namespace dev.susybaka.raidsim.Mechanics
 
             if (actionInfo.source == null || actionInfo.action == null)
                 return;
-            else if (actionInfo.source != null)
+            else if (actionInfo.source != null && lastSource != actionInfo.source)
+            {
+                if (groundTargetPivot == null || (groundTargetPivot != null && groundTargetPivot != actionInfo.source.pivotController.GroundTargetingPivot))
+                {
+                    groundTargetPivot = actionInfo.source.pivotController.GroundTargetingPivot.GetComponent<CharacterState>();
+                }
                 lastActionController = actionInfo.source.GetComponent<ActionController>();
+                lastSource = actionInfo.source;
+            }
 
             if (groundTargetActive)
                 shouldTrigger = true;
@@ -62,6 +73,8 @@ namespace dev.susybaka.raidsim.Mechanics
             {
                 Destroy(groundTargetInstance);
             }
+            groundTargetPivot = originalGroundTargetPivot;
+            lastSource = null;
         }
 
         private void Update()

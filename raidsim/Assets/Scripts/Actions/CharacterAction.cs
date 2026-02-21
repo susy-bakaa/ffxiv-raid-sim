@@ -7,7 +7,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 using TMPro;
 using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.Characters;
@@ -19,13 +18,10 @@ using static dev.susybaka.raidsim.Core.GlobalData;
 
 namespace dev.susybaka.raidsim.Actions
 {
-    public class CharacterAction : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
+    public class CharacterAction : MonoBehaviour
     {
-        CanvasGroup group;
-        HudElement element;
-        CharacterState character;
-        Button button;
-        public enum RecastType { standard, longGcd, stackedOgcd }
+        private CharacterState character;
+        private CharacterActionRegistry actionRegistry;
 
         [Header("Info")]
         [SerializeField] private string actionId; // stable unique string
@@ -33,9 +29,11 @@ namespace dev.susybaka.raidsim.Actions
 
         public string ActionId => actionId;
         public CharacterActionData Data => data;
+        public float RecastTimer => recastTimer;
+        public float LastRecastTimer => lastRecast;
+        public RecastType RecastType => recastType;
+        public RecastType NormalRecastType => normalRecastType;
 
-        private float timer = 0f;
-        private float aTimer = 0f;
         public bool isAvailable { private set; get; }
         public bool isAnimationLocked { private set; get; }
         public bool isAutoAction = false;
@@ -47,13 +45,14 @@ namespace dev.susybaka.raidsim.Actions
         public bool invisible = false;
         private bool wasInvisible = false;
         public bool hasTarget = false;
+        public bool showOutline = false;
         public float damageMultiplier = 1f;
         public float distanceToTarget;
         public int chargesLeft = 0;
-        public CharacterActionData lastAction;
+        public CharacterAction lastAction;
         public KeyBind currentKeybind;
         public List<Role> availableForRoles;
-        public List<CharacterAction> sharedRecasts;
+        public List<string> sharedRecasts;
         public List<StatusEffectData> comboOutlineEffects;
         public List<StatusEffectData> hideWhileEffects;
         public bool showInsteadWithEffects = false;
@@ -65,41 +64,34 @@ namespace dev.susybaka.raidsim.Actions
         public UnityEvent<ActionInfo> onInterrupt;
 
         [Header("Visuals")]
-        public RecastType recastType = RecastType.standard;
-        public CanvasGroup borderStandard;
-        public CanvasGroup borderDark;
-        public Animator recastFillAnimator;
-        public CanvasGroup recastFillGroup;
-        public CanvasGroup selectionBorder;
-        public CanvasGroup clickHighlight;
-        public CanvasGroup comboOutlineGroup;
-        public TextMeshProUGUI recastTimeText;
-        public TextMeshProUGUI resourceCostText;
-        public TextMeshProUGUI keybindText;
-        public HudElementColor[] hudElements;
-        public List<Color> defaultColors;
-        public List<Color> unavailableColors;
+        [SerializeField] private RecastType recastType = RecastType.standard;
+        [SerializeField] private CanvasGroup borderStandard;
+        [SerializeField] private CanvasGroup borderDark;
+        [SerializeField] private Animator recastFillAnimator;
+        [SerializeField] private CanvasGroup recastFillGroup;
+        [SerializeField] private CanvasGroup selectionBorder;
+        [SerializeField] private CanvasGroup clickHighlight;
+        [SerializeField] private CanvasGroup comboOutlineGroup;
+        [SerializeField] private TextMeshProUGUI recastTimeText;
+        [SerializeField] private TextMeshProUGUI resourceCostText;
+        [SerializeField] private TextMeshProUGUI keybindText;
+        [SerializeField] private HudElementColor[] hudElements;
+        [SerializeField] private List<Color> defaultColors;
+        [SerializeField] private List<Color> unavailableColors;
 
-        private string[] animations = new string[]
-        {
-        "ui_hotbar_recast_type1_none",
-        "ui_hotbar_recast_type1_fill",
-        "ui_hotbar_recast_type2_fill",
-        "ui_hotbar_recast_type3_fill"
-        };
-        private int[] animationHashes = new int[0];
-        private bool pointer;
-        private bool colorsFlag;
-        private bool animFlag;
+        // Private
+        private float recastTimer = 0f;
+        private float animationLockTimer = 0f;
+        private List<CharacterAction> actionsWithSharedRecasts = new List<CharacterAction>();
         private RecastType normalRecastType;
         private bool chargeRestored = false;
         private bool permanentlyUnavailable = false;
         private float lastRecast = 0f;
-        private int id = 0;
-        public CharacterState GetCharacter()
+
+        /*public CharacterState GetCharacter()
         {
             return character;
-        }
+        }*/
 
 
 #if UNITY_EDITOR
@@ -115,78 +107,20 @@ namespace dev.susybaka.raidsim.Actions
 
         private void Awake()
         {
-            button = GetComponent<Button>();
-            group = GetComponent<CanvasGroup>();
-            element = GetComponent<HudElement>();
-
             chargesLeft = data.charges;
             permanentlyUnavailable = unavailable;
-
-            if (borderStandard != null)
-            {
-                borderStandard.alpha = 1f;
-            }
-            if (borderDark != null)
-            {
-                borderDark.alpha = 0f;
-            }
-            if (selectionBorder != null)
-            {
-                selectionBorder.alpha = 0f;
-            }
-            if (clickHighlight != null)
-            {
-                clickHighlight.alpha = 0f;
-            }
-            if (recastFillGroup != null)
-            {
-                recastFillGroup.alpha = 0f;
-            }
-            if (recastFillAnimator != null)
-            {
-                recastFillAnimator.speed = 0f;
-                recastFillAnimator.Play("ui_hotbar_recast_type1_none");
-            }
-            if (resourceCostText != null)
-            {
-                if (data.manaCost > 0)
-                {
-                    resourceCostText.text = data.manaCost.ToString();
-                }
-                else
-                {
-                    resourceCostText.text = string.Empty;
-                }
-            }
-            if (comboOutlineGroup != null)
-            {
-                comboOutlineGroup.alpha = 0f;
-            }
-
-            for (int i = 0; i < hudElements.Length; i++)
-            {
-                hudElements[i].SetColor(defaultColors);
-            }
-
             normalRecastType = recastType;
-
-            animationHashes = new int[animations.Length];
-            for (int i = 0; i < animations.Length; i++)
-            {
-                animationHashes[i] = Animator.StringToHash(animations[i]);
-            }
-
-            id = UnityEngine.Random.Range(0, 10000);
         }
 
         private void Start()
         {
             if (unavailable)
-                Utilities.FunctionTimer.Create(this, () => gameObject.SetActive(false), 0.2f, $"{data.actionName}_{gameObject.name}_{id}_start_disable_delay");
+                Utilities.FunctionTimer.Create(this, () => gameObject.SetActive(false), 0.2f, $"{actionId}_start_disable_delay");
         }
 
         private void Update()
         {
+            // Role availability logic
             if (character != null && availableForRoles != null && availableForRoles.Count > 0)
             {
                 foreach (Role role in availableForRoles)
@@ -206,27 +140,15 @@ namespace dev.susybaka.raidsim.Actions
                 }
             }
 
+            // Reset action when it is unavailable
             if (unavailable)
             {
-                if (!colorsFlag)
-                {
-                    for (int i = 0; i < hudElements.Length; i++)
-                    {
-                        hudElements[i].SetColor(unavailableColors);
-                    }
-                    colorsFlag = true;
-                }
-
-                if (resourceCostText != null)
-                {
-                    resourceCostText.text = "X";
-                }
-
                 ResetAnimationLock();
                 ResetCooldown();
                 chargesLeft = data.charges;
             }
 
+            // Invisibility logic
             if (hideWhileEffects != null && hideWhileEffects.Count > 0 && character != null)
             {
                 if (!showInsteadWithEffects)
@@ -245,57 +167,26 @@ namespace dev.susybaka.raidsim.Actions
                 }
             }
 
-            if (group != null)
+            // Disable logic
+            if (invisible)
             {
-                if (invisible)
+                if (invisibilityAlsoDisables)
                 {
-                    if (invisibilityAlsoDisables)
-                    {
-                        isDisabled = true;
-                    }
-                    group.alpha = 0f;
-                    group.interactable = false;
-                    group.blocksRaycasts = false;
+                    isDisabled = true;
                 }
-                else
+            }
+            else
+            {
+                if (invisibilityAlsoDisables)
                 {
-                    if (invisibilityAlsoDisables)
-                    {
-                        isDisabled = false;
-                    }
-                    group.alpha = 1f;
-                    group.interactable = true;
-                    group.blocksRaycasts = true;
+                    isDisabled = false;
                 }
             }
 
+            // Availability logic (Range, target and distance)
             if (data.range > 0f && data.isTargeted && (distanceToTarget > data.range) && hasTarget && !unavailable)
             {
                 isAvailable = false;
-                if (!colorsFlag)
-                {
-                    for (int i = 0; i < hudElements.Length; i++)
-                    {
-                        hudElements[i].SetColor(unavailableColors);
-                    }
-                    colorsFlag = true;
-                }
-
-                if (resourceCostText != null)
-                {
-                    if (data.manaCost <= 0 && data.charges < 2)
-                    {
-                        resourceCostText.text = "X";
-                    }
-                    else if (data.manaCost > 0)
-                    {
-                        resourceCostText.text = data.manaCost.ToString();
-                    }
-                    else if (data.charges > 1)
-                    {
-                        resourceCostText.text = chargesLeft.ToString();
-                    }
-                }
             }
             else if (!unavailable)
             {
@@ -303,46 +194,22 @@ namespace dev.susybaka.raidsim.Actions
                 {
                     isAvailable = true;
                 }
-
-                if (colorsFlag)
-                {
-                    for (int i = 0; i < hudElements.Length; i++)
-                    {
-                        hudElements[i].SetColor(defaultColors);
-                    }
-                    colorsFlag = false;
-                }
-
-                if (resourceCostText != null)
-                {
-                    if (data.manaCost <= 0 && data.charges < 2)
-                    {
-                        resourceCostText.text = string.Empty;
-                    }
-                    else if (data.manaCost > 0)
-                    {
-                        resourceCostText.text = data.manaCost.ToString();
-                    }
-                    else if (data.charges > 1)
-                    {
-                        resourceCostText.text = chargesLeft.ToString();
-                    }
-                }
             }
 
-            if (aTimer > 0f)
+            // Cooldown, animation lock and charge logic
+            if (animationLockTimer > 0f)
             {
-                aTimer -= Time.unscaledDeltaTime;
+                animationLockTimer -= Time.unscaledDeltaTime;
                 isAnimationLocked = true;
             }
             else
             {
-                aTimer = 0f;
+                animationLockTimer = 0f;
                 isAnimationLocked = false;
             }
-            if (timer > 0f)
+            if (recastTimer > 0f)
             {
-                timer -= FightTimeline.deltaTime;
+                recastTimer -= FightTimeline.deltaTime;
                 chargeRestored = false;
                 if (chargesLeft < 1)
                 {
@@ -356,18 +223,10 @@ namespace dev.susybaka.raidsim.Actions
                 {
                     recastType = RecastType.stackedOgcd;
                 }
-                if (recastFillGroup != null)
-                {
-                    recastFillGroup.alpha = 1f;
-                }
-                if (recastTimeText != null && lastRecast > 2.5f)
-                {
-                    recastTimeText.text = timer.ToString("F0");
-                }
             }
             else
             {
-                timer = 0f;
+                recastTimer = 0f;
                 if (!chargeRestored || chargesLeft < 1)
                 {
                     chargesLeft++;
@@ -385,27 +244,12 @@ namespace dev.susybaka.raidsim.Actions
                 {
                     isAvailable = true;
                 }
-                if (recastFillGroup != null)
-                {
-                    recastFillGroup.alpha = 0f;
-                }
-                if (recastTimeText != null)
-                {
-                    recastTimeText.text = "";
-                }
-                if (borderStandard != null)
-                {
-                    borderStandard.alpha = 1f;
-                }
-                if (recastType == RecastType.longGcd && borderDark != null)
-                {
-                    borderDark.alpha = 0f;
-                }
             }
 
-            if ((lastAction != null && data.comboAction != null) || (comboOutlineEffects != null && comboOutlineEffects.Count > 0))
+            // Combo outline logic
+            if ((lastAction != null && data.comboActionIds != null && data.comboActionIds.Length > 0) || (comboOutlineEffects != null && comboOutlineEffects.Count > 0))
             {
-                bool showOutline = false;
+                showOutline = false;
 
                 if (comboOutlineEffects != null && comboOutlineEffects.Count > 0 && character != null)
                 {
@@ -419,90 +263,34 @@ namespace dev.susybaka.raidsim.Actions
                     }
                 }
 
-                if (lastAction != null && data.comboAction != null)
+                if (lastAction != null && !string.IsNullOrEmpty(lastAction.actionId) && data.comboActionIds != null && data.comboActionIds.Length > 0)
                 {
-                    if (lastAction == data.comboAction && comboOutlineGroup != null)
+                    foreach (string comboActionId in data.comboActionIds)
                     {
-                        showOutline = true;
+                        if (lastAction.actionId.Equals(comboActionId))
+                        {
+                            showOutline = true;
+                            break;
+                        }
                     }
-                }
-
-                if (showOutline)
-                {
-                    comboOutlineGroup.alpha = 1f;
-                }
-                else if (comboOutlineGroup != null)
-                {
-                    comboOutlineGroup.alpha = 0f;
-                }
-            }
-            else if (comboOutlineGroup != null)
-            {
-                comboOutlineGroup.alpha = 0f;
-            }
-
-            if (borderStandard != null && timer > 0f)
-            {
-                if (recastType == RecastType.stackedOgcd)
-                {
-                    borderStandard.alpha = 1f;
-                }
-                else
-                {
-                    borderStandard.alpha = 0f;
-                }
-
-                if (recastType == RecastType.longGcd && borderDark != null)
-                {
-                    borderDark.alpha = 1f;
-                }
-            }
-            if (recastFillAnimator != null && timer > 0f)
-            {
-                animFlag = false;
-                //Debug.Log($"new '{animations[(int)recastType + 1]}' old 'ui_hotbar_recast_type{(int)recastType + 1}_fill'");
-                recastFillAnimator.Play(animationHashes[(int)recastType + 1], 0, Utilities.Map(lastRecast - timer, 0f, lastRecast, 0f, 1f));
-            }
-            else if (recastFillAnimator != null && !animFlag)
-            {
-                animFlag = true;
-                recastFillAnimator.Play(animationHashes[0]);
-            }
-
-            if (button != null)
-            {
-                if (!isDisabled && !unavailable)
-                {
-                    button.interactable = isAvailable;
-                }
-                else
-                {
-                    button.interactable = false;
-                }
-            }
-
-            if (keybindText != null)
-            {
-                if (currentKeybind != null)
-                {
-                    keybindText.text = currentKeybind.ToShortString();
-                }
-                else
-                {
-                    keybindText.text = string.Empty;
                 }
             }
         }
 
         public void Initialize(ActionController controller)
         {
-            if (button == null)
-                button = GetComponent<Button>();
+            actionRegistry = controller.ActionRegistry;
 
-            if (button != null)
+            if (actionRegistry != null)
             {
-                //Debug.Log($"action {gameObject.name} of {controller.gameObject.name} button was linked!");
-                button.onClick.AddListener(() => { controller.PerformAction(this); });
+                foreach (string actionId in sharedRecasts)
+                {
+                    CharacterAction sharedAction = actionRegistry.GetById(actionId);
+                    if (sharedAction != null)
+                    {
+                        actionsWithSharedRecasts.Add(sharedAction);
+                    }
+                }
             }
 
             if (controller != null)
@@ -613,7 +401,6 @@ namespace dev.susybaka.raidsim.Actions
             chargesLeft--;
             ActivateCooldown();
             ActivateAnimationLock();
-            OnPointerClick(null);
         }
 
         public void ActivateCooldown(bool shared = false)
@@ -625,17 +412,17 @@ namespace dev.susybaka.raidsim.Actions
             {
                 isAvailable = false;
             }
-            if (timer <= 0f)
+            if (recastTimer <= 0f)
             {
                 lastRecast = data.recast;
-                timer = data.recast;
+                recastTimer = data.recast;
             }
 
             if (!shared)
             {
                 if (sharedRecasts != null && sharedRecasts.Count > 0)
                 {
-                    foreach (CharacterAction sharedRecast in sharedRecasts)
+                    foreach (CharacterAction sharedRecast in actionsWithSharedRecasts)
                     {
                         sharedRecast.chargesLeft--;
                         sharedRecast.ActivateCooldown(true);
@@ -655,10 +442,10 @@ namespace dev.susybaka.raidsim.Actions
             {
                 isAvailable = false;
             }
-            if (timer <= 0f)
+            if (recastTimer <= 0f)
             {
                 lastRecast = recast;
-                timer = recast;
+                recastTimer = recast;
             }
         }
 
@@ -668,13 +455,13 @@ namespace dev.susybaka.raidsim.Actions
                 return;
 
             isAnimationLocked = true;
-            aTimer = data.animationLock;
+            animationLockTimer = data.animationLock;
 
             if (!shared)
             {
                 if (sharedRecasts != null && sharedRecasts.Count > 0)
                 {
-                    foreach (CharacterAction sharedRecast in sharedRecasts)
+                    foreach (CharacterAction sharedRecast in actionsWithSharedRecasts)
                     {
                         sharedRecast.ActivateAnimationLock(true);
                     }
@@ -688,7 +475,7 @@ namespace dev.susybaka.raidsim.Actions
                 return;
 
             isAnimationLocked = true;
-            aTimer = duration;
+            animationLockTimer = duration;
         }
 
         public void ResetCooldown(bool shared = false)
@@ -699,13 +486,13 @@ namespace dev.susybaka.raidsim.Actions
                 chargesLeft = data.charges;
             }
             isAvailable = true;
-            timer = 0f;
+            recastTimer = 0f;
 
             if (!shared)
             {
                 if (sharedRecasts != null && sharedRecasts.Count > 0)
                 {
-                    foreach (CharacterAction sharedRecast in sharedRecasts)
+                    foreach (CharacterAction sharedRecast in actionsWithSharedRecasts)
                     {
                         sharedRecast.ResetCooldown(true);
                     }
@@ -716,13 +503,13 @@ namespace dev.susybaka.raidsim.Actions
         public void ResetAnimationLock(bool shared = false)
         {
             isAnimationLocked = false;
-            aTimer = 0f;
+            animationLockTimer = 0f;
 
             if (!shared)
             {
                 if (sharedRecasts != null && sharedRecasts.Count > 0)
                 {
-                    foreach (CharacterAction sharedRecast in sharedRecasts)
+                    foreach (CharacterAction sharedRecast in actionsWithSharedRecasts)
                     {
                         sharedRecast.ResetAnimationLock(true);
                     }
@@ -750,49 +537,6 @@ namespace dev.susybaka.raidsim.Actions
         public void ToggleState(bool state)
         {
             unavailable = !state;
-        }
-
-        public void OnPointerEnter(PointerEventData eventData)
-        {
-            if (unavailable)
-                return;
-
-            pointer = true;
-            if (selectionBorder != null)
-                selectionBorder.LeanAlpha(1f, 0.25f);
-        }
-
-        public void OnPointerExit(PointerEventData eventData)
-        {
-            if (unavailable)
-                return;
-
-            pointer = false;
-            if (selectionBorder != null)
-                selectionBorder.LeanAlpha(0f, 0.25f);
-        }
-
-        public void OnPointerClick(PointerEventData eventData)
-        {
-            if (unavailable)
-                return;
-
-            if (clickHighlight == null) //(eventData == null && pointer) || 
-            {
-                return;
-            }
-
-            if (element != null)
-            {
-                element.onPointerClick.Invoke(new HudElementEventInfo(element, eventData));
-            }
-
-            clickHighlight.transform.localScale = new Vector3(0f, 0f, 1f);
-            clickHighlight.transform.LeanScale(new Vector3(1.5f, 1.5f, 1f), 0.5f);//.setOnComplete(() => { clickHighlight.LeanAlpha(0f, 0.15f); });
-            Utilities.FunctionTimer.Create(this, () => clickHighlight.LeanAlpha(0f, 0.15f), 0.3f, $"{transform.parent.gameObject.name}_{gameObject.name}_click_animation_fade_delay", true, false);
-            clickHighlight.LeanAlpha(1f, 0.15f);
-            if (!pointer)
-                selectionBorder.LeanAlpha(1f, 0.15f).setOnComplete(() => Utilities.FunctionTimer.Create(this, () => selectionBorder.LeanAlpha(0f, 0.15f), 0.2f, $"{transform.parent.gameObject.name}_{gameObject.name}_click_highlight_fade_delay", true, false));
         }
     }
 }

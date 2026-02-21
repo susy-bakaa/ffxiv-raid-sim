@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: Apply Regeneration
   actionType: 3
+  icon: {fileID: 21300000, guid: a684c5fe923ba6543bf46dc7cdc48b79, type: 3}
   damage:
     name: 
     value: 0
@@ -23,10 +24,14 @@ MonoBehaviour:
     elementalAspect: 1
     physicalAspect: 0
     applicationType: 0
+    source: {fileID: 0}
+  causesDirectDamage: 1
   isShield: 0
   isHeal: 1
   isTargeted: 0
+  isGroundTargeted: 0
   topEnmity: 0
+  hasMovement: 0
   targetGroups: 
   maxTargets: 1
   range: 0
@@ -37,6 +42,7 @@ MonoBehaviour:
   cast: 0
   recast: 0
   animationLock: 0
+  charges: 1
   canBeSlideCast: 1
   rollsGcd: 0
   buff: {fileID: 11400000, guid: 71d233740ed67324f89c0ee13cf5807a, type: 2}
@@ -44,6 +50,18 @@ MonoBehaviour:
   debuff: {fileID: 0}
   dispelDebuffInstead: 0
   comboAction: {fileID: 0}
+  comboActionIds: []
+  playCastingAnimationDirectly: 0
+  castingAnimationName: 
+  castingAnimationCrossFade: 0.2
   animationName: 
   playAnimationDirectly: 0
+  animationCrossFade: 0.2
+  playAnimationOnFinish: 0
   onAnimationFinishId: -1
+  animationDelay: 0
+  speech: 
+  speechAudio: {fileID: 0}
+  jonSpeechAudio: {fileID: 0}
+  onCastAudio: <None>
+  onExecuteAudio: <None>

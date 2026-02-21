@@ -198,6 +198,19 @@ namespace dev.susybaka.raidsim.UI
             }
         }
 
+        // This is used to simulate a FF level sync, so we can get all the players to the right level and health values
+        // Since there is no gear or stats otherwise, nothing is technically being synced for real.
+        public void LevelSync(int level, long health)
+        {
+            for (int i = 0; i < members.Count; i++)
+            {
+                if (members[i].characterState == null)
+                    continue;
+
+                members[i].characterState.LevelSync(level, health);
+            }
+        }
+
         public List<CharacterState> GetActiveMembers()
         {
             List<CharacterState> m = new List<CharacterState>();

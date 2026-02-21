@@ -90,7 +90,9 @@ namespace dev.susybaka.raidsim.Characters
             }
             if (cameraT == null)
             {
-                Debug.LogError($"Camera Transform not set for PlayerController ({gameObject.name})!");
+                cameraT = Camera.main.transform;
+                if (cameraT == null)
+                    Debug.LogError($"Camera Transform not set for PlayerController ({gameObject.name})!");
             }
             if (cameraScript == null)
             {
