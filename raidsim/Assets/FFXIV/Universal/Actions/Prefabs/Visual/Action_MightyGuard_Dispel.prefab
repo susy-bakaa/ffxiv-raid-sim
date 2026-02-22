@@ -264,11 +264,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionId: MightyGuardDispel
   data: {fileID: 11400000, guid: 1db7566dbb09f894f9f9b9562a17470c, type: 2}
+  kind: 4
+  recastType: 0
   isAutoAction: 0
   isDisabled: 0
   unavailable: 0
   invisible: 0
   hasTarget: 0
+  showOutline: 0
   damageMultiplier: 1
   distanceToTarget: 0
   chargesLeft: 0
@@ -295,30 +298,6 @@ MonoBehaviour:
   onInterrupt:
     m_PersistentCalls:
       m_Calls: []
-  recastType: 0
-  borderStandard: {fileID: 6945369102978285250}
-  borderDark: {fileID: 5779664714561845083}
-  recastFillAnimator: {fileID: 3192988257217511625}
-  recastFillGroup: {fileID: 346963169274903022}
-  selectionBorder: {fileID: 2339496773631589332}
-  clickHighlight: {fileID: 8366129671122954606}
-  comboOutlineGroup: {fileID: 6971033045855302131}
-  recastTimeText: {fileID: 8646691070028307286}
-  resourceCostText: {fileID: 3044300764509568490}
-  keybindText: {fileID: 2608044984029633717}
-  hudElements:
-  - {fileID: 892811605802258508}
-  - {fileID: 2480389308428868694}
-  - {fileID: 6419685418201402538}
-  - {fileID: 6662860428352725970}
-  defaultColors:
-  - {r: 1, g: 1, b: 1, a: 1}
-  - {r: 1, g: 0.64705884, b: 0.8156863, a: 1}
-  - {r: 1, g: 1, b: 1, a: 1}
-  unavailableColors:
-  - {r: 0.801, g: 0.317997, b: 0.317997, a: 1}
-  - {r: 0.8, g: 0.31764707, b: 0.31764707, a: 1}
-  - {r: 0.8, g: 0.31764707, b: 0.31764707, a: 1}
 --- !u!114 &9092548675253362662
 MonoBehaviour:
   m_ObjectHideFlags: 0

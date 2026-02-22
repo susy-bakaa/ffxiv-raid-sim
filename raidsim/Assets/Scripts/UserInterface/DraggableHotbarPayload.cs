@@ -3,6 +3,7 @@
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
 using UnityEngine;
 using UnityEngine.EventSystems;
+using dev.susybaka.Shared;
 using static dev.susybaka.raidsim.Core.GlobalData;
 
 namespace dev.susybaka.raidsim.UI
@@ -11,10 +12,15 @@ namespace dev.susybaka.raidsim.UI
 
     public class DraggableHotbarPayload : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
+        public HotbarController controller;
+        [SerializeField] private bool ignoreLock = false;
+
         [Header("Payload")]
         public DragSourceKind sourceKind;
-        public int fromSlotIndex = -1;   // if HotbarSlot
-        public SlotBinding binding;      // what to place (Action/Macro + id)
+        public string fromGroupId = string.Empty;
+        public int fromPageIndex = -1;
+        public int fromSlotIndex = -1;
+        public SlotBinding binding;
 
         [Header("Drag visuals")]
         [SerializeField] private Canvas rootCanvas;
@@ -24,10 +30,20 @@ namespace dev.susybaka.raidsim.UI
         private Transform originalParent;
         private Vector2 originalAnchoredPos;
 
+        private void Awake()
+        {
+            if (rootCanvas == null)
+                rootCanvas = transform.GetComponentInParents<Canvas>();
+        }
+
         public void OnBeginDrag(PointerEventData eventData)
         {
             originalParent = transform.parent;
             originalAnchoredPos = rectTransform.anchoredPosition;
+
+            // Don't allow dragging if the source is locked, unless ignoreLock is true (for example, dragging from the palette should be allowed even if the hotbar is locked).
+            if (controller != null && !ignoreLock && controller.locked)
+                return;
 
             transform.SetParent(rootCanvas.transform, true);
             canvasGroup.blocksRaycasts = false;
@@ -35,6 +51,9 @@ namespace dev.susybaka.raidsim.UI
 
         public void OnDrag(PointerEventData eventData)
         {
+            if (controller != null && !ignoreLock && controller.locked)
+                return;
+
             rectTransform.position = eventData.position;
         }
 
@@ -50,16 +69,16 @@ namespace dev.susybaka.raidsim.UI
             }
         }
 
-        public void ApplyDrop(HotbarController controller, int targetSlotIndex)
+        public void ApplyDrop(HotbarController controller, string targetGroupId, int targetSlotIndex)
         {
             if (sourceKind == DragSourceKind.HotbarSlot && fromSlotIndex >= 0)
             {
-                controller.SwapSlots(fromSlotIndex, targetSlotIndex);
+                controller.SwapSlots(fromGroupId, fromPageIndex, fromSlotIndex, targetGroupId, controller.GetActivePage(targetGroupId), targetSlotIndex);
                 // You'll want to Refresh() both slot UIs; easiest is a HotbarUI root controller that refreshes all.
             }
             else
             {
-                controller.SetSlot(targetSlotIndex, binding);
+                controller.SetSlot(targetGroupId, targetSlotIndex, binding);
             }
         }
     }

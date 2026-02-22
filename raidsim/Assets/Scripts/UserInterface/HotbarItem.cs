@@ -12,20 +12,22 @@ using static dev.susybaka.raidsim.Core.GlobalData;
 
 namespace dev.susybaka.raidsim.UI
 {
-    public class HotbarItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
+    public class HotbarItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler, IDragHandler, IEndDragHandler, IDropHandler
     {
         public enum BindType { none, action, macro }
 
         private HotbarController controller;
-        private Image image;
-        private Button button;
+        private HotbarSlot slot;
+        private DraggableHotbarPayload payload;
         private CanvasGroup group;
+        private Image image;
         private HudElement element;
 
         [Header("Info")]
         [SerializeField] private CharacterAction action;
         //private Macro macro;
         [SerializeField] private CharacterActionData lastAction;
+        private string groupId;
         private int slotIndex;
         private SlotBinding binding;
 
@@ -39,12 +41,13 @@ namespace dev.susybaka.raidsim.UI
         [SerializeField] private CanvasGroup comboOutlineGroup;
         [SerializeField] private TextMeshProUGUI recastTimeText;
         [SerializeField] private TextMeshProUGUI resourceCostText;
+        [SerializeField] private TextMeshProUGUI chargesText;
         [SerializeField] private TextMeshProUGUI keybindText;
         [SerializeField] private HudElementColor[] hudElements;
         [SerializeField] private List<Color> defaultColors;
         [SerializeField] private List<Color> unavailableColors;
 
-        private string[] animations = new string[]
+        private readonly string[] animations = new string[]
         {
         "ui_hotbar_recast_type1_none",
         "ui_hotbar_recast_type1_fill",
@@ -55,11 +58,12 @@ namespace dev.susybaka.raidsim.UI
         private bool pointer;
         private bool colorsFlag;
         private bool animFlag;
+        private bool dragging = false;
 
         private void Awake()
         {
+            payload = GetComponent<DraggableHotbarPayload>();
             image = GetComponent<Image>();
-            button = GetComponent<Button>();
             group = GetComponent<CanvasGroup>();
             element = GetComponent<HudElement>();
 
@@ -77,11 +81,13 @@ namespace dev.susybaka.raidsim.UI
             UpdateRuntimeVisuals();
         }
 
-        public void Bind(HotbarController controller, int slotIndex, SlotBinding binding)
+        public void Bind(HotbarController controller, HotbarSlot slot, SlotBinding binding)
         {
             this.controller = controller;
-            this.slotIndex = slotIndex;
             this.binding = binding;
+            this.slot = slot;
+            this.slotIndex = this.slot.SlotIndex;
+            this.groupId = this.slot.GroupId;
 
             switch (binding.kind)
             {
@@ -99,10 +105,15 @@ namespace dev.susybaka.raidsim.UI
                     break;
             }
 
-            if (button != null)
+            // Set an optional payload for this item so that it can be moved with drag and drop even after it is placed into a slot.
+            if (payload != null)
             {
-                //Debug.Log($"action {gameObject.name} of {controller.gameObject.name} button was linked!");
-                //button.onClick.AddListener(() => { controller.PerformAction(action); });
+                payload.controller = controller;
+                payload.sourceKind = DragSourceKind.HotbarSlot;
+                payload.binding = binding;
+                payload.fromGroupId = groupId;
+                payload.fromPageIndex = controller.GetActivePage(groupId);
+                payload.fromSlotIndex = slotIndex;
             }
 
             // Set visuals once (icon/name)
@@ -153,6 +164,17 @@ namespace dev.susybaka.raidsim.UI
                     resourceCostText.text = string.Empty;
                 }
             }
+            if (chargesText != null)
+            {
+                if (action.Data.charges > 1)
+                {
+                    chargesText.text = action.Data.charges.ToString();
+                }
+                else
+                {
+                    chargesText.text = string.Empty;
+                }
+            }
             if (comboOutlineGroup != null)
             {
                 comboOutlineGroup.alpha = 0f;
@@ -200,25 +222,42 @@ namespace dev.susybaka.raidsim.UI
 
                 if (resourceCostText != null)
                 {
-                    resourceCostText.text = "X";
+                    resourceCostText.text = "<b>X</b>";
                 }
-                
                 //chargesLeft = action.Data.charges;
             }
 
             if (group != null)
             {
-                if (action.invisible)
+                if (dragging)
                 {
-                    group.alpha = 0f;
-                    group.interactable = false;
                     group.blocksRaycasts = false;
+
+                    if (action.invisible)
+                    {
+                        group.alpha = 0f;
+                        group.interactable = false;
+                    }
+                    else
+                    {
+                        group.alpha = 1f;
+                        group.interactable = true;
+                    }
                 }
                 else
                 {
-                    group.alpha = 1f;
-                    group.interactable = true;
-                    group.blocksRaycasts = true;
+                    if (action.invisible)
+                    {
+                        group.alpha = 0f;
+                        group.interactable = false;
+                        group.blocksRaycasts = false;
+                    }
+                    else
+                    {
+                        group.alpha = 1f;
+                        group.interactable = true;
+                        group.blocksRaycasts = true;
+                    }
                 }
             }
 
@@ -235,17 +274,24 @@ namespace dev.susybaka.raidsim.UI
 
                 if (resourceCostText != null)
                 {
-                    if (action.Data.manaCost <= 0 && action.Data.charges < 2)
+                    if (action.Data.manaCost <= 0)
                     {
-                        resourceCostText.text = "X";
+                        resourceCostText.text = "<b>X</b>";
                     }
                     else if (action.Data.manaCost > 0)
                     {
                         resourceCostText.text = action.Data.manaCost.ToString();
                     }
-                    else if (action.Data.charges > 1)
+                }
+                if (chargesText != null)
+                {
+                    if (action.Data.charges > 1)
                     {
-                        resourceCostText.text = action.chargesLeft.ToString();
+                        chargesText.text = action.chargesLeft.ToString();
+                    }
+                    else
+                    {
+                        chargesText.text = string.Empty;
                     }
                 }
             }
@@ -262,7 +308,7 @@ namespace dev.susybaka.raidsim.UI
 
                 if (resourceCostText != null)
                 {
-                    if (action.Data.manaCost <= 0 && action.Data.charges < 2)
+                    if (action.Data.manaCost <= 0)
                     {
                         resourceCostText.text = string.Empty;
                     }
@@ -270,9 +316,16 @@ namespace dev.susybaka.raidsim.UI
                     {
                         resourceCostText.text = action.Data.manaCost.ToString();
                     }
-                    else if (action.Data.charges > 1)
+                }
+                if (chargesText != null)
+                {
+                    if (action.Data.charges > 1)
                     {
-                        resourceCostText.text = action.chargesLeft.ToString();
+                        chargesText.text = action.chargesLeft.ToString();
+                    }
+                    else
+                    {
+                        chargesText.text = string.Empty;
                     }
                 }
             }
@@ -344,7 +397,7 @@ namespace dev.susybaka.raidsim.UI
                 recastFillAnimator.Play(animationHashes[0]);
             }
 
-            if (button != null)
+            /*if (button != null)
             {
                 if (!action.isDisabled && !action.unavailable)
                 {
@@ -354,7 +407,7 @@ namespace dev.susybaka.raidsim.UI
                 {
                     button.interactable = false;
                 }
-            }
+            }*/
 
             if (keybindText != null)
             {
@@ -394,6 +447,17 @@ namespace dev.susybaka.raidsim.UI
             if (action.unavailable)
                 return;
 
+            // If we're dragging, we don't want to trigger click events on the item itself since it's being dropped onto something else.
+            if (dragging)
+                return;
+
+            // If we have a slot this item is assigned into, forward the click event to it so it can do whatever it needs to do.
+            // We need to do this because the UI layering gets really complicated otherwise.
+            if (slot != null)
+            {
+                slot.OnPointerClick(eventData);
+            }
+
             if (clickHighlight == null) //(eventData == null && pointer) || 
             {
                 return;
@@ -410,6 +474,31 @@ namespace dev.susybaka.raidsim.UI
             clickHighlight.LeanAlpha(1f, 0.15f);
             if (!pointer)
                 selectionBorder.LeanAlpha(1f, 0.15f).setOnComplete(() => Utilities.FunctionTimer.Create(this, () => selectionBorder.LeanAlpha(0f, 0.15f), 0.2f, $"{action.ActionId}_ui_click_highlight_fade_delay", true, false));
+        }
+
+        public void OnDrop(PointerEventData eventData)
+        {
+            // If we're dragging, we don't want to trigger drop events on the item itself since it's being dropped onto something else.
+            // We are only interested in drop events if we're dropping something onto this item, not if this item is being dropped onto something else.
+            if (dragging)
+                return;
+
+            // If we have a slot this item is assigned into, forward the drop event to it so it can do whatever it needs to do.
+            // We need to do this because the UI layering gets really complicated otherwise.
+            if (slot != null)
+            {
+                slot.OnDrop(eventData);
+            }
+        }
+
+        public void OnDrag(PointerEventData eventData)
+        {
+            dragging = true;
+        }
+
+        public void OnEndDrag(PointerEventData eventData)
+        {
+            dragging = false;
         }
     }
 }

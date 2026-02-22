@@ -20,12 +20,16 @@ namespace dev.susybaka.raidsim.Actions
 {
     public class CharacterAction : MonoBehaviour
     {
+        public enum ActionKind { Standard, Role, General, BlueMage, Hidden }
+
         private CharacterState character;
         private CharacterActionRegistry actionRegistry;
 
         [Header("Info")]
         [SerializeField] private string actionId; // stable unique string
         [SerializeField] private CharacterActionData data;
+        [SerializeField] private ActionKind kind = ActionKind.Standard;
+        [SerializeField] private RecastType recastType = RecastType.standard;
 
         public string ActionId => actionId;
         public CharacterActionData Data => data;
@@ -33,6 +37,7 @@ namespace dev.susybaka.raidsim.Actions
         public float LastRecastTimer => lastRecast;
         public RecastType RecastType => recastType;
         public RecastType NormalRecastType => normalRecastType;
+        public ActionKind Kind => kind;
 
         public bool isAvailable { private set; get; }
         public bool isAnimationLocked { private set; get; }
@@ -62,22 +67,6 @@ namespace dev.susybaka.raidsim.Actions
         public UnityEvent<ActionInfo> onExecute;
         public UnityEvent<ActionInfo> onCast;
         public UnityEvent<ActionInfo> onInterrupt;
-
-        [Header("Visuals")]
-        [SerializeField] private RecastType recastType = RecastType.standard;
-        [SerializeField] private CanvasGroup borderStandard;
-        [SerializeField] private CanvasGroup borderDark;
-        [SerializeField] private Animator recastFillAnimator;
-        [SerializeField] private CanvasGroup recastFillGroup;
-        [SerializeField] private CanvasGroup selectionBorder;
-        [SerializeField] private CanvasGroup clickHighlight;
-        [SerializeField] private CanvasGroup comboOutlineGroup;
-        [SerializeField] private TextMeshProUGUI recastTimeText;
-        [SerializeField] private TextMeshProUGUI resourceCostText;
-        [SerializeField] private TextMeshProUGUI keybindText;
-        [SerializeField] private HudElementColor[] hudElements;
-        [SerializeField] private List<Color> defaultColors;
-        [SerializeField] private List<Color> unavailableColors;
 
         // Private
         private float recastTimer = 0f;

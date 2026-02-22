@@ -18,6 +18,7 @@ namespace dev.susybaka.raidsim.Core
         public enum RngMode { PureRandom, NoRepeatConsecutive, ShuffleBag }
         public enum SlotKind { Empty, Action, Macro }
         public enum RecastType { standard, longGcd, stackedOgcd }
+        public enum HotbarSaveScope { TimelineOnly, TimelineAndRole, Global }
 
         public struct ActionInfo
         {
@@ -571,6 +572,28 @@ namespace dev.susybaka.raidsim.Core
         {
             public SlotKind kind;
             public string id; // ActionId or MacroId (or empty)
+        }
+
+        [System.Serializable]
+        public class HotbarGroupDefinition
+        {
+            public string groupId;
+            public int slotsPerPage;
+            public int pageCount = 1;
+            public HotbarSaveScope saveScope;
+        }
+
+        [System.Serializable]
+        public class HotbarGroupSnapshot
+        {
+            public int version = 1;
+
+            public string groupId;
+            public int slotsPerPage;
+            public int pageCount;
+
+            // Flattened: pages * slotsPerPage
+            public SlotBinding[] slots;
         }
     }
 }

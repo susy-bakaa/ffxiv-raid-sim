@@ -798,11 +798,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionId: CommandPanel
   data: {fileID: 11400000, guid: 694a67cf5b6e4034191479056ccb2b64, type: 2}
+  kind: 2
+  recastType: 0
   isAutoAction: 0
   isDisabled: 0
   unavailable: 0
   invisible: 0
   hasTarget: 0
+  showOutline: 0
   damageMultiplier: 1
   distanceToTarget: 0
   chargesLeft: 0
@@ -841,30 +844,6 @@ MonoBehaviour:
   onInterrupt:
     m_PersistentCalls:
       m_Calls: []
-  recastType: 0
-  borderStandard: {fileID: 3769859615817774735}
-  borderDark: {fileID: 271893239407453192}
-  recastFillAnimator: {fileID: 3570413506352283549}
-  recastFillGroup: {fileID: 3861795063287593868}
-  selectionBorder: {fileID: 3681535892422072864}
-  clickHighlight: {fileID: 1295381895657170746}
-  comboOutlineGroup: {fileID: 3381140474067130221}
-  recastTimeText: {fileID: 4068806945681647085}
-  resourceCostText: {fileID: 2253808590823548683}
-  keybindText: {fileID: 2116343577357380136}
-  hudElements:
-  - {fileID: 1984292152867149138}
-  - {fileID: 8203510060079947753}
-  - {fileID: 5769226576711695392}
-  - {fileID: 3736150045626564860}
-  defaultColors:
-  - {r: 1, g: 1, b: 1, a: 1}
-  - {r: 1, g: 0.64705884, b: 0.8156863, a: 1}
-  - {r: 1, g: 1, b: 1, a: 1}
-  unavailableColors:
-  - {r: 0.801, g: 0.317997, b: 0.317997, a: 1}
-  - {r: 0.8, g: 0.31764707, b: 0.31764707, a: 1}
-  - {r: 0.8, g: 0.31764707, b: 0.31764707, a: 1}
 --- !u!114 &1451810873292491139
 MonoBehaviour:
   m_ObjectHideFlags: 0

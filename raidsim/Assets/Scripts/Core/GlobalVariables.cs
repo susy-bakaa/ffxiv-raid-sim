@@ -49,5 +49,6 @@ namespace dev.susybaka.raidsim.Core
         public static readonly string[] botRoleEasternShortNames = { "MT", "ST", "H1", "H2", "D1", "D2", "D3", "D4" };
         public static readonly string[] botRoleWesternShortNames = { "MT", "OT", "H1", "H2", "M1", "M2", "R1", "R2" };
         public static readonly Color[] botRoleColors = { new Color(0f, 0.396f, 1f), new Color(0f, 0.396f, 1f), new Color(0.337f, 0.827f, 0.173f), new Color(0.337f, 0.827f, 0.173f), new Color(0.89f, 0.38f, 0.38f), new Color(0.89f, 0.38f, 0.38f), new Color(0.89f, 0.38f, 0.38f), new Color(0.89f, 0.38f, 0.38f) }; //{ "#0065FF", "#0065FF", "#56D32C", "#56D32C", "#DB4E4E", "#DB4E4E", "#DB4E4E", "#DB4E4E" };
+        public static readonly string[] roleNames = { "Melee", "Caster", "Ranged", "Tank", "Healer", "Unassigned" };
     }
 }

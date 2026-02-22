@@ -1110,11 +1110,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionId: PlayTimeline
   data: {fileID: 11400000, guid: b97190d6f9212384db359026b8d560c6, type: 2}
+  kind: 2
+  recastType: 0
   isAutoAction: 0
   isDisabled: 0
-  unavailable: 1
+  unavailable: 0
   invisible: 0
   hasTarget: 0
+  showOutline: 0
   damageMultiplier: 1
   distanceToTarget: 0
   chargesLeft: 0
@@ -1127,7 +1130,6 @@ MonoBehaviour:
     shift: 0
   availableForRoles: 
   sharedRecasts: []
-  _sharedRecasts: []
   comboOutlineEffects: []
   hideWhileEffects: []
   showInsteadWithEffects: 0
@@ -1154,30 +1156,6 @@ MonoBehaviour:
   onInterrupt:
     m_PersistentCalls:
       m_Calls: []
-  recastType: 0
-  borderStandard: {fileID: 8517781323552356241}
-  borderDark: {fileID: 5825910878501684475}
-  recastFillAnimator: {fileID: 7721343961138112583}
-  recastFillGroup: {fileID: 4896035218875346665}
-  selectionBorder: {fileID: 8417927076475548494}
-  clickHighlight: {fileID: 6957687720652425854}
-  comboOutlineGroup: {fileID: 1540867105720776091}
-  recastTimeText: {fileID: 2323633435487936054}
-  resourceCostText: {fileID: 2246072839651867393}
-  keybindText: {fileID: 2106905094565714095}
-  hudElements:
-  - {fileID: 3711198974548135379}
-  - {fileID: 7108613375670633472}
-  - {fileID: 6280465843399452577}
-  - {fileID: 1029206223919703970}
-  defaultColors:
-  - {r: 1, g: 1, b: 1, a: 1}
-  - {r: 1, g: 0.64705884, b: 0.8156863, a: 1}
-  - {r: 1, g: 1, b: 1, a: 1}
-  unavailableColors:
-  - {r: 0.801, g: 0.317997, b: 0.317997, a: 1}
-  - {r: 0.8, g: 0.31764707, b: 0.31764707, a: 1}
-  - {r: 0.8, g: 0.31764707, b: 0.31764707, a: 1}
 --- !u!114 &6718012791880794068
 MonoBehaviour:
   m_ObjectHideFlags: 0
