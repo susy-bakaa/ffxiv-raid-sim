@@ -594,6 +594,40 @@ namespace dev.susybaka.raidsim.Core
 
             // Flattened: pages * slotsPerPage
             public SlotBinding[] slots;
+
+            public bool ValueEquals(object obj)
+            {
+                if (obj == null || obj is not HotbarGroupSnapshot)
+                {
+                    return Equals(obj);
+                }
+                else
+                {
+                    var g1 = this;
+                    var g2 = (HotbarGroupSnapshot)obj;
+
+                    if (g1.groupId == g2.groupId &&
+                        g1.slotsPerPage == g2.slotsPerPage &&
+                        g1.pageCount == g2.pageCount &&
+                        g1.slots.Length == g2.slots.Length)
+                    {
+                        if (g1.slots == null || g2.slots == null)
+                            return g1.slots == g2.slots;
+                        else
+                        {
+                            for (int i = 0; i < g1.slots.Length; i++)
+                            {
+                                if (g1.slots[i].kind != g2.slots[i].kind || g1.slots[i].id != g2.slots[i].id)
+                                {
+                                    return false;
+                                }
+                            }
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            }
         }
     }
 }

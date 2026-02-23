@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8830808929515967526}
   - component: {fileID: -5832776785855365814}
+  - component: {fileID: -7363363084580336204}
   m_Layer: 3
   m_Name: Threshold
   m_TagString: Untagged
@@ -61,7 +62,20 @@ MonoBehaviour:
     source: {fileID: 0}
   onApplication:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: -7363363084580336204}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.StatusEffects.StatusEffectActionOverrides,
+          Assembly-CSharp
+        m_MethodName: Apply
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onTick:
     m_PersistentCalls:
       m_Calls: []
@@ -70,11 +84,40 @@ MonoBehaviour:
       m_Calls: []
   onExpire:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: -7363363084580336204}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.StatusEffects.StatusEffectActionOverrides,
+          Assembly-CSharp
+        m_MethodName: Remove
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onCleanse:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: -7363363084580336204}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.StatusEffects.StatusEffectActionOverrides,
+          Assembly-CSharp
+        m_MethodName: Remove
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onReduce:
+    m_PersistentCalls:
+      m_Calls: []
+  onAddStack:
     m_PersistentCalls:
       m_Calls: []
   onMaxStacks:
@@ -83,3 +126,25 @@ MonoBehaviour:
   location: {x: 0, y: 0, z: 0}
   effectPrefab: {fileID: 4937433959277856594, guid: 1cc735aa11dde3c4dbccbfd419bb0ef6, type: 3}
   fadeDuration: 0.5
+--- !u!114 &-7363363084580336204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 546024176543058318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1637091244b4cf74d8713d838ea1605c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  statusKey: threshold
+  overrides:
+  - baseActionId: HellsIngress
+    executionActionId: Regress
+    presentationActionId: 
+    priority: 1
+  - baseActionId: HellsEgress
+    executionActionId: Regress
+    presentationActionId: 
+    priority: 1

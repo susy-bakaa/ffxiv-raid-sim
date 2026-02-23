@@ -22,6 +22,7 @@ namespace dev.susybaka.raidsim.UI
         private CanvasGroup group;
         private Image image;
         private HudElement element;
+        private CanvasGroup tooltipGroup;
 
         [Header("Info")]
         [SerializeField] private CharacterAction action;
@@ -42,7 +43,7 @@ namespace dev.susybaka.raidsim.UI
         [SerializeField] private TextMeshProUGUI recastTimeText;
         [SerializeField] private TextMeshProUGUI resourceCostText;
         [SerializeField] private TextMeshProUGUI chargesText;
-        [SerializeField] private TextMeshProUGUI keybindText;
+        [SerializeField] private TextMeshProUGUI tooltipText;
         [SerializeField] private HudElementColor[] hudElements;
         [SerializeField] private List<Color> defaultColors;
         [SerializeField] private List<Color> unavailableColors;
@@ -59,6 +60,7 @@ namespace dev.susybaka.raidsim.UI
         private bool colorsFlag;
         private bool animFlag;
         private bool dragging = false;
+        private string tooltip = string.Empty;
 
         private void Awake()
         {
@@ -66,6 +68,8 @@ namespace dev.susybaka.raidsim.UI
             image = GetComponent<Image>();
             group = GetComponent<CanvasGroup>();
             element = GetComponent<HudElement>();
+            tooltipGroup = tooltipText?.transform.GetComponentInParent<CanvasGroup>();
+            tooltipGroup.gameObject.SetActive(false);
 
             animationHashes = new int[animations.Length];
             for (int i = 0; i < animations.Length; i++)
@@ -88,6 +92,7 @@ namespace dev.susybaka.raidsim.UI
             this.slot = slot;
             this.slotIndex = this.slot.SlotIndex;
             this.groupId = this.slot.GroupId;
+            this.tooltip = string.Empty;
 
             switch (binding.kind)
             {
@@ -96,12 +101,16 @@ namespace dev.susybaka.raidsim.UI
                     //macro = null;
                     break;
                 case SlotKind.Action:
-                    action = controller.Registry.GetById(binding.id);
+                    // Resolve the action for presentation (icon/name) purposes.
+                    action = controller.GetResolvedAction(binding.id, ActionResolveMode.Presentation);
+
                     //macro = null;
+                    tooltip = action.GetFullActionName();
                     break;
                 case SlotKind.Macro:
                     //action = null;
                     //macro = controller.MacroLibrary.Get(binding.id);
+                    //tooltip = macro.name;
                     break;
             }
 
@@ -155,13 +164,17 @@ namespace dev.susybaka.raidsim.UI
             }
             if (resourceCostText != null)
             {
-                if (action.Data.manaCost > 0)
+                if (action.Data.manaCost <= 0 && !string.IsNullOrEmpty(action.overrideResourceText))
+                {
+                    resourceCostText.text = string.Empty;
+                }
+                else if (action.Data.manaCost > 0 && !string.IsNullOrEmpty(action.overrideResourceText))
                 {
                     resourceCostText.text = action.Data.manaCost.ToString();
                 }
                 else
                 {
-                    resourceCostText.text = string.Empty;
+                    resourceCostText.text = action.overrideResourceText;
                 }
             }
             if (chargesText != null)
@@ -173,6 +186,19 @@ namespace dev.susybaka.raidsim.UI
                 else
                 {
                     chargesText.text = string.Empty;
+                }
+            }
+            if (tooltipText != null)
+            {
+                tooltipText.text = tooltip;
+
+                if (!string.IsNullOrEmpty(tooltip))
+                {
+                    tooltipGroup.alpha = 1f;
+                }
+                else
+                {
+                    tooltipGroup.alpha = 0f;
                 }
             }
             if (comboOutlineGroup != null)
@@ -274,13 +300,17 @@ namespace dev.susybaka.raidsim.UI
 
                 if (resourceCostText != null)
                 {
-                    if (action.Data.manaCost <= 0)
+                    if (action.Data.manaCost <= 0 && string.IsNullOrEmpty(action.overrideResourceText))
                     {
                         resourceCostText.text = "<b>X</b>";
                     }
-                    else if (action.Data.manaCost > 0)
+                    else if (action.Data.manaCost > 0 && string.IsNullOrEmpty(action.overrideResourceText))
                     {
                         resourceCostText.text = action.Data.manaCost.ToString();
+                    }
+                    else
+                    {
+                        resourceCostText.text = action.overrideResourceText;
                     }
                 }
                 if (chargesText != null)
@@ -308,13 +338,17 @@ namespace dev.susybaka.raidsim.UI
 
                 if (resourceCostText != null)
                 {
-                    if (action.Data.manaCost <= 0)
+                    if (action.Data.manaCost <= 0 && string.IsNullOrEmpty(action.overrideResourceText))
                     {
                         resourceCostText.text = string.Empty;
                     }
-                    else if (action.Data.manaCost > 0)
+                    else if (action.Data.manaCost > 0 && string.IsNullOrEmpty(action.overrideResourceText))
                     {
                         resourceCostText.text = action.Data.manaCost.ToString();
+                    }
+                    else
+                    {
+                        resourceCostText.text = action.overrideResourceText;
                     }
                 }
                 if (chargesText != null)
@@ -396,37 +430,88 @@ namespace dev.susybaka.raidsim.UI
                 animFlag = true;
                 recastFillAnimator.Play(animationHashes[0]);
             }
+        }
 
-            /*if (button != null)
+        public void RefreshStaticVisuals()
+        {
+            switch (binding.kind)
             {
-                if (!action.isDisabled && !action.unavailable)
+                case SlotKind.Empty:
+                    action = null;
+                    //macro = null;
+                    break;
+                case SlotKind.Action:
+                    // Resolve the action for presentation (icon/name) purposes.
+                    action = controller.GetResolvedAction(binding.id, ActionResolveMode.Presentation);
+
+                    //macro = null;
+                    tooltip = action.GetFullActionName();
+                    break;
+                case SlotKind.Macro:
+                    //action = null;
+                    //macro = controller.MacroLibrary.Get(binding.id);
+                    //tooltip = macro.name;
+                    break;
+            }
+
+            image.sprite = action.Data.icon;
+
+            if (resourceCostText != null)
+            {
+                if (action.Data.manaCost <= 0 && !string.IsNullOrEmpty(action.overrideResourceText))
                 {
-                    button.interactable = action.isAvailable;
+                    resourceCostText.text = string.Empty;
+                }
+                else if (action.Data.manaCost > 0 && !string.IsNullOrEmpty(action.overrideResourceText))
+                {
+                    resourceCostText.text = action.Data.manaCost.ToString();
                 }
                 else
                 {
-                    button.interactable = false;
+                    resourceCostText.text = action.overrideResourceText;
                 }
-            }*/
-
-            if (keybindText != null)
-            {
-                //if (currentKeybind != null)
-                //{
-                //    keybindText.text = currentKeybind.ToShortString();
-                //}
-                //else
-                //{
-                    keybindText.text = string.Empty;
-                //}
             }
+            if (chargesText != null)
+            {
+                if (action.Data.charges > 1)
+                {
+                    chargesText.text = action.chargesLeft.ToString();
+                }
+                else
+                {
+                    chargesText.text = string.Empty;
+                }
+            }
+            if (tooltipText != null)
+            {
+                tooltipText.text = tooltip;
+
+                if (!string.IsNullOrEmpty(tooltip))
+                {
+                    tooltipGroup.alpha = 1f;
+                }
+                else
+                {
+                    tooltipGroup.alpha = 0f;
+                }
+            }
+        }
+
+        public void OnClick()
+        {
+            if (clickHighlight == null)
+                return;
+
+            clickHighlight.transform.localScale = new Vector3(0f, 0f, 1f);
+            clickHighlight.transform.LeanScale(new Vector3(1.5f, 1.5f, 1f), 0.5f);//.setOnComplete(() => { clickHighlight.LeanAlpha(0f, 0.15f); });
+            Utilities.FunctionTimer.Create(this, () => clickHighlight.LeanAlpha(0f, 0.15f), 0.3f, $"{action.ActionId}_ui_click_animation_fade_delay", true, false);
+            clickHighlight.LeanAlpha(1f, 0.15f);
+            if (!pointer)
+                selectionBorder.LeanAlpha(1f, 0.15f).setOnComplete(() => Utilities.FunctionTimer.Create(this, () => selectionBorder.LeanAlpha(0f, 0.15f), 0.2f, $"{action.ActionId}_ui_click_highlight_fade_delay", true, false));
         }
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (action.unavailable)
-                return;
-
             pointer = true;
             if (selectionBorder != null)
                 selectionBorder.LeanAlpha(1f, 0.25f);
@@ -434,9 +519,6 @@ namespace dev.susybaka.raidsim.UI
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            if (action.unavailable)
-                return;
-
             pointer = false;
             if (selectionBorder != null)
                 selectionBorder.LeanAlpha(0f, 0.25f);
@@ -444,9 +526,6 @@ namespace dev.susybaka.raidsim.UI
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (action.unavailable)
-                return;
-
             // If we're dragging, we don't want to trigger click events on the item itself since it's being dropped onto something else.
             if (dragging)
                 return;
@@ -458,22 +537,12 @@ namespace dev.susybaka.raidsim.UI
                 slot.OnPointerClick(eventData);
             }
 
-            if (clickHighlight == null) //(eventData == null && pointer) || 
-            {
-                return;
-            }
-
             if (element != null)
             {
                 element.onPointerClick.Invoke(new HudElementEventInfo(element, eventData));
             }
 
-            clickHighlight.transform.localScale = new Vector3(0f, 0f, 1f);
-            clickHighlight.transform.LeanScale(new Vector3(1.5f, 1.5f, 1f), 0.5f);//.setOnComplete(() => { clickHighlight.LeanAlpha(0f, 0.15f); });
-            Utilities.FunctionTimer.Create(this, () => clickHighlight.LeanAlpha(0f, 0.15f), 0.3f, $"{action.ActionId}_ui_click_animation_fade_delay", true, false);
-            clickHighlight.LeanAlpha(1f, 0.15f);
-            if (!pointer)
-                selectionBorder.LeanAlpha(1f, 0.15f).setOnComplete(() => Utilities.FunctionTimer.Create(this, () => selectionBorder.LeanAlpha(0f, 0.15f), 0.2f, $"{action.ActionId}_ui_click_highlight_fade_delay", true, false));
+            OnClick();
         }
 
         public void OnDrop(PointerEventData eventData)

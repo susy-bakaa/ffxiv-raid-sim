@@ -2,13 +2,14 @@
 // This file is part of ffxiv-raid-sim. Linking with the Unity runtime
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
-using TMPro;
 using dev.susybaka.raidsim.Actions;
 using dev.susybaka.raidsim.Characters;
 using dev.susybaka.Shared;
+using TMPro;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.XR;
+using UnityEngine.UI;
 using static dev.susybaka.raidsim.Core.GlobalData;
 
 namespace dev.susybaka.raidsim.UI
@@ -19,9 +20,10 @@ namespace dev.susybaka.raidsim.UI
         private CanvasGroup group;
         private Image image;
         private HudElement element;
+        private CanvasGroup tooltipGroup;
 
         [Header("Info")]
-        [SerializeField] private CharacterActionRegistry registry;
+        [SerializeField] private HotbarController controller;
         [SerializeField] private CharacterAction action;
         //private Macro macro;
         [SerializeField] private SlotBinding binding;
@@ -38,7 +40,7 @@ namespace dev.susybaka.raidsim.UI
         [SerializeField] private TextMeshProUGUI recastTimeText;
         [SerializeField] private TextMeshProUGUI resourceCostText;
         [SerializeField] private TextMeshProUGUI chargesText;
-        [SerializeField] private TextMeshProUGUI keybindText;
+        [SerializeField] private TextMeshProUGUI tooltipText;
         [SerializeField] private HudElementColor[] hudElements;
         [SerializeField] private List<Color> defaultColors;
         [SerializeField] private List<Color> unavailableColors;
@@ -55,6 +57,7 @@ namespace dev.susybaka.raidsim.UI
         private bool colorsFlag;
         private bool animFlag;
         private bool dragging = false;
+        private string tooltip = string.Empty;
 
         private void Awake()
         {
@@ -62,6 +65,8 @@ namespace dev.susybaka.raidsim.UI
             image = GetComponent<Image>();
             group = GetComponent<CanvasGroup>();
             element = GetComponent<HudElement>();
+            tooltipGroup = tooltipText?.GetComponentInParent<CanvasGroup>();
+            tooltipGroup.gameObject.SetActive(false);
 
             animationHashes = new int[animations.Length];
             for (int i = 0; i < animations.Length; i++)
@@ -77,10 +82,11 @@ namespace dev.susybaka.raidsim.UI
             UpdateRuntimeVisuals();
         }
 
-        public void Initialize(CharacterActionRegistry registry, SlotBinding binding)
+        public void Initialize(HotbarController controller, SlotBinding binding)
         {
-            this.registry = registry;
+            this.controller = controller;
             this.binding = binding;
+            this.tooltip = string.Empty;
 
             switch (binding.kind)
             {
@@ -91,16 +97,19 @@ namespace dev.susybaka.raidsim.UI
                         payload.sourceKind = DragSourceKind.PaletteAction;
                     break;
                 case SlotKind.Action:
-                    action = this.registry.GetById(binding.id);
+                    // Resolve the action for presentation (icon/name) purposes.
+                    action = controller.GetResolvedAction(binding.id, ActionResolveMode.Presentation);
+                    //macro = null;
+                    tooltip = action.GetFullActionName();
                     if (payload != null)
                         payload.sourceKind = DragSourceKind.PaletteAction;
-                    //macro = null;
                     break;
                 case SlotKind.Macro:
                     //action = null;
+                    //macro = controller.MacroLibrary.Get(binding.id);
+                    //tooltip = macro.name;
                     if (payload != null)
                         payload.sourceKind = DragSourceKind.PaletteMacro;
-                    //macro = controller.MacroLibrary.Get(binding.id);
                     break;
             }
 
@@ -175,6 +184,19 @@ namespace dev.susybaka.raidsim.UI
             if (comboOutlineGroup != null)
             {
                 comboOutlineGroup.alpha = 0f;
+            }
+            if (tooltipText != null)
+            {
+                tooltipText.text = tooltip;
+
+                if (!string.IsNullOrEmpty(tooltip))
+                {
+                    tooltipGroup.alpha = 1f;
+                }
+                else
+                {
+                    tooltipGroup.alpha = 0f;
+                }
             }
 
             for (int i = 0; i < hudElements.Length; i++)
@@ -393,37 +415,75 @@ namespace dev.susybaka.raidsim.UI
                 animFlag = true;
                 recastFillAnimator.Play(animationHashes[0]);
             }
+        }
 
-            /*if (button != null)
+        public void RefreshStaticVisuals()
+        {
+            switch (binding.kind)
             {
-                if (!action.isDisabled && !action.unavailable)
+                case SlotKind.Empty:
+                    action = null;
+                    //macro = null;
+                    break;
+                case SlotKind.Action:
+                    // Resolve the action for presentation (icon/name) purposes.
+                    action = controller.GetResolvedAction(binding.id, ActionResolveMode.Presentation);
+
+                    //macro = null;
+                    tooltip = action.GetFullActionName();
+                    break;
+                case SlotKind.Macro:
+                    //action = null;
+                    //macro = controller.MacroLibrary.Get(binding.id);
+                    //tooltip = macro.name;
+                    break;
+            }
+
+            image.sprite = action.Data.icon;
+
+            if (resourceCostText != null)
+            {
+                if (action.Data.manaCost <= 0 && !string.IsNullOrEmpty(action.overrideResourceText))
                 {
-                    button.interactable = action.isAvailable;
+                    resourceCostText.text = string.Empty;
+                }
+                else if (action.Data.manaCost > 0 && !string.IsNullOrEmpty(action.overrideResourceText))
+                {
+                    resourceCostText.text = action.Data.manaCost.ToString();
                 }
                 else
                 {
-                    button.interactable = false;
+                    resourceCostText.text = action.overrideResourceText;
                 }
-            }*/
-
-            if (keybindText != null)
+            }
+            if (chargesText != null)
             {
-                //if (currentKeybind != null)
-                //{
-                //    keybindText.text = currentKeybind.ToShortString();
-                //}
-                //else
-                //{
-                    keybindText.text = string.Empty;
-                //}
+                if (action.Data.charges > 1)
+                {
+                    chargesText.text = action.chargesLeft.ToString();
+                }
+                else
+                {
+                    chargesText.text = string.Empty;
+                }
+            }
+            if (tooltipText != null)
+            {
+                tooltipText.text = tooltip;
+
+                if (!string.IsNullOrEmpty(tooltip))
+                {
+                    tooltipGroup.alpha = 1f;
+                }
+                else
+                {
+                    tooltipGroup.alpha = 0f;
+                }
             }
         }
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (action.unavailable)
-                return;
-
             pointer = true;
             if (selectionBorder != null)
                 selectionBorder.LeanAlpha(1f, 0.25f);
@@ -431,9 +491,6 @@ namespace dev.susybaka.raidsim.UI
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            if (action.unavailable)
-                return;
-
             pointer = false;
             if (selectionBorder != null)
                 selectionBorder.LeanAlpha(0f, 0.25f);
@@ -441,14 +498,12 @@ namespace dev.susybaka.raidsim.UI
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (action.unavailable)
-                return;
-
             // If we're dragging, we don't want to trigger click events on the item itself since it's being dropped onto something else.
             if (dragging)
                 return;
 
-            OnClick.Invoke(binding);
+            if (!action.unavailable)
+                OnClick.Invoke(binding);
 
             if (clickHighlight == null) //(eventData == null && pointer) || 
             {

@@ -2,11 +2,12 @@
 // This file is part of ffxiv-raid-sim. Linking with the Unity runtime
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
 using System.Collections.Generic;
+using UnityEngine;
 using dev.susybaka.raidsim.Actions;
+using dev.susybaka.raidsim.Attributes;
 using dev.susybaka.raidsim.Characters;
 using dev.susybaka.raidsim.Core;
-using Unity.VisualScripting;
-using UnityEngine;
+using dev.susybaka.raidsim.Inputs;
 using static dev.susybaka.raidsim.Core.GlobalData;
 
 namespace dev.susybaka.raidsim.UI
@@ -14,14 +15,17 @@ namespace dev.susybaka.raidsim.UI
     public class HotbarController : MonoBehaviour
     {
         [Header("Runtime refs")]
+        [SerializeField] private UserInput input;
         [SerializeField] private CharacterState character;
         [SerializeField] private CharacterActionRegistry registry;
-        [SerializeField] private MacroLibrary macroLibrary; // your library
-        [SerializeField] private ChatHandler chat;      // your sender
+        [SerializeField] private ActionOverrideResolver overrideResolverBehaviour;
+        [SerializeField] private MacroLibrary macroLibrary;
+        [SerializeField] private ChatHandler chat;
         public bool locked = false;
 
         public CharacterState Character => character;
         public CharacterActionRegistry Registry => registry;
+        public ActionOverrideResolver OverrideResolver => overrideResolverBehaviour;
         public MacroLibrary MacroLibrary => macroLibrary;
         public ChatHandler Chat => chat;
 
@@ -29,26 +33,65 @@ namespace dev.susybaka.raidsim.UI
         [SerializeField] private HotbarGroupDefinition[] groupDefinitions;
         public HotbarGroupDefinition[] GroupDefinitions => groupDefinitions;
 
-        //[Header("Temp keybinds (replace with your input system later)")]
-        //[SerializeField] private KeyCode[] slotKeys; // length slotCount
+        [Header("Keybinds")]
+        [SerializeField] private GroupKeybind[] groupBinds;
 
         public event System.Action<string> OnGroupChanged;
+        public event System.Action OnRefreshHotbars;
         private readonly Dictionary<string, GroupState> groups = new();
+        private IActionOverrideResolver overrideResolver;
 
         private void Awake()
         {
+            input = FightTimeline.Instance.input;
+            if (overrideResolverBehaviour == null)
+                overrideResolverBehaviour = GetComponentInChildren<ActionOverrideResolver>();
+            overrideResolver = overrideResolverBehaviour as IActionOverrideResolver;
             RebuildGroups();
+        }
+
+        private void OnEnable()
+        {
+            overrideResolverBehaviour.OnOverridesChanged += RefreshAllHotbars;
+        }
+
+        private void OnDisable()
+        {
+            overrideResolverBehaviour.OnOverridesChanged -= RefreshAllHotbars;
         }
 
         private void Update()
         {
-            // Minimal keybind support; replace with your input layer later
-            /*for (int i = 0; i < slotCount; i++)
+            if (input == null)
+                return;
+
+            foreach (var groupBind in groupBinds)
             {
-                var key = slotKeys[i];
-                if (key != KeyCode.None && Input.GetKeyDown(key))
-                    ExecuteSlot(i);
-            }*/
+                if (string.IsNullOrWhiteSpace(groupBind.groupId))
+                    continue;
+
+                if (!TryGetGroupState(groupBind.groupId, out var groupState))
+                    continue;
+
+                if (groupBind.binds == null || groupBind.binds.Length == 0)
+                    continue;
+
+                int maxSlots = Mathf.Min(groupBind.binds.Length, groupState.slotsPerPage);
+
+                for (int i = 0; i < maxSlots; i++)
+                {
+                    string bind = groupBind.binds[i];
+                    if (string.IsNullOrWhiteSpace(bind))
+                        continue;
+
+                    if (input.GetButtonDown(bind))
+                    {
+                        groupBind.onPress?.Invoke(i);
+                        ExecuteSlot(groupBind.groupId, i);
+                        return; // Only one action per frame
+                    }
+                }
+            }
         }
 
         private void RebuildGroups()
@@ -97,6 +140,47 @@ namespace dev.susybaka.raidsim.UI
             return g.pages[pageIndex][slotIndex];
         }
 
+        public string GetGroupKeybind(string groupId, int slotIndex)
+        {
+            foreach (GroupKeybind groupBind in groupBinds)
+            {
+                if (groupBind.groupId == groupId)
+                {
+                    if (groupBind.binds != null && slotIndex >= 0 && slotIndex < groupBind.binds.Length)
+                        return groupBind.binds[slotIndex];
+                }
+            }
+            return null;
+        }
+
+        public void AttachToGroupKeybind(string groupId, System.Action<int> callback)
+        {
+            for (int i = 0; i < groupBinds.Length; i++)
+            {
+                if (groupBinds[i].groupId == groupId)
+                {
+                    var bind = groupBinds[i];
+                    bind.onPress += callback;
+                    groupBinds[i] = bind; // struct, need to re-assign
+                    return;
+                }
+            }
+        }
+
+        public void DetachFromGroupKeybind(string groupId, System.Action<int> callback)
+        {
+            for (int i = 0; i < groupBinds.Length; i++)
+            {
+                if (groupBinds[i].groupId == groupId)
+                {
+                    var bind = groupBinds[i];
+                    bind.onPress -= callback;
+                    groupBinds[i] = bind; // struct, need to re-assign
+                    return;
+                }
+            }
+        }
+
         public void SetSlot(string groupId, int slotIndex, SlotBinding binding)
         {
             var g = groups[groupId];
@@ -131,6 +215,18 @@ namespace dev.susybaka.raidsim.UI
             NotifyGroupChanged(gA);
             if (gB != gA)
                 NotifyGroupChanged(gB);
+        }
+
+        public CharacterAction GetResolvedAction(string actionId, ActionResolveMode mode = ActionResolveMode.Execution)
+        {
+            // binding.id is the BASE action id stored in the slot
+            var effectiveId = ResolveActionIdSafe(actionId, ActionResolveMode.Execution);
+            var action = registry.GetById(effectiveId);
+
+            if (action == null)
+                action = registry.GetById(actionId); // fallback to un-resolved id if override fails
+
+            return action;
         }
 
         public HotbarGroupSnapshot CreateSnapshot(string groupId)
@@ -198,7 +294,7 @@ namespace dev.susybaka.raidsim.UI
 
         public void ExecuteSlot(string groupId, int slotIndex)
         {
-            Debug.Log($"Executing slot {slotIndex} in group {groupId} with binding {GetBinding(groupId, slotIndex).kind} ({GetBinding(groupId, slotIndex).id})");
+            //Debug.Log($"Executing slot {slotIndex} in group {groupId} with binding {GetBinding(groupId, slotIndex).kind} ({GetBinding(groupId, slotIndex).id})");
             var binding = GetBinding(groupId, slotIndex);
             ExecuteBinding(binding);
         }
@@ -212,14 +308,13 @@ namespace dev.susybaka.raidsim.UI
 
                 case SlotKind.Action:
                 {
-                    var action = registry.GetById(binding.id);
+                    var action = GetResolvedAction(binding.id);
+
                     if (!action)
                         return;
-
-                    // Call your existing execution entry point here:
-                    // - action.Execute(...)
-                    // - actionController.Execute(action)
-                    // - executor.Execute(action)
+                    if (action.isDisabled || action.unavailable)
+                        return;
+                    
                     ExecuteAction(action);
                     return;
                 }
@@ -234,9 +329,9 @@ namespace dev.susybaka.raidsim.UI
             }
         }
 
-        public void UpdateSlots()
+        public void RefreshAllHotbars()
         {
-            // TODO: make this update every hotbar script so all hotbars get updated when one updates.
+            OnRefreshHotbars.Invoke();
         }
 
         public HotbarGroupDefinition GetGroupDefinition(string groupId)
@@ -249,16 +344,33 @@ namespace dev.susybaka.raidsim.UI
 
         private void ExecuteAction(CharacterAction action)
         {
-            // Keep this as a thin adapter so you don’t rewrite action logic.
-            // Example:
-            // action.Execute();
-
             character.actionController.PerformAction(action);
         }
 
         private void NotifyGroupChanged(string groupId)
         {
             OnGroupChanged?.Invoke(groupId);
+        }
+
+        private string ResolveActionIdSafe(string baseId, ActionResolveMode mode)
+        {
+            if (overrideResolver == null || string.IsNullOrWhiteSpace(baseId))
+                return baseId;
+
+            // Follow override chain up to N steps (prevents infinite loops)
+            const int maxHops = 4;
+            string current = baseId;
+
+            for (int i = 0; i < maxHops; i++)
+            {
+                string next = overrideResolver.ResolveActionId(current, mode);
+                if (string.IsNullOrWhiteSpace(next) || next == current)
+                    break;
+
+                current = next;
+            }
+
+            return current;
         }
 
         private SlotBinding ValidateBinding(SlotBinding b)
@@ -307,6 +419,14 @@ namespace dev.susybaka.raidsim.UI
             public int activePage;
 
             public SlotBinding[][] pages; // [page][slot]
+        }
+
+        [System.Serializable]
+        public struct GroupKeybind
+        {
+            public string groupId;
+            [KeybindName] public string[] binds;
+            [System.NonSerialized] public System.Action<int> onPress;
         }
     }
 }

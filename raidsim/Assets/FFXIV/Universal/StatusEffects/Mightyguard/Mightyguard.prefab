@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6137364295999111457}
   - component: {fileID: 685845828985186620}
+  - component: {fileID: 7088917410218328605}
   m_Layer: 3
   m_Name: MightyGuard
   m_TagString: Untagged
@@ -58,9 +59,23 @@ MonoBehaviour:
     elementalAspect: 0
     physicalAspect: 0
     applicationType: 0
+    source: {fileID: 0}
   onApplication:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7088917410218328605}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.StatusEffects.StatusEffectActionOverrides,
+          Assembly-CSharp
+        m_MethodName: Apply
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onTick:
     m_PersistentCalls:
       m_Calls: []
@@ -69,13 +84,63 @@ MonoBehaviour:
       m_Calls: []
   onExpire:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7088917410218328605}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.StatusEffects.StatusEffectActionOverrides,
+          Assembly-CSharp
+        m_MethodName: Remove
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onCleanse:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7088917410218328605}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.StatusEffects.StatusEffectActionOverrides,
+          Assembly-CSharp
+        m_MethodName: Remove
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onReduce:
+    m_PersistentCalls:
+      m_Calls: []
+  onAddStack:
+    m_PersistentCalls:
+      m_Calls: []
+  onMaxStacks:
     m_PersistentCalls:
       m_Calls: []
   incomingDamageReduction: 0.6
   outgoingDamageReduction: 0.6
   enmityGenerationModifier: 11
+--- !u!114 &7088917410218328605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3925799627608278257}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1637091244b4cf74d8713d838ea1605c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  statusKey: mightyguard
+  overrides:
+  - baseActionId: MightyGuard
+    executionActionId: MightyGuardDispel
+    presentationActionId: 
+    priority: 0

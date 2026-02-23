@@ -32,12 +32,14 @@ namespace dev.susybaka.raidsim.UI
                 Debug.LogError("Hotbar missing reference to HotbarController!", gameObject);
 
             controller.OnGroupChanged += HandleGroupChanged;
+            controller.OnRefreshHotbars += RefreshSlotsStatic;
             RefreshSlots();
         }
 
         private void OnDisable()
         {
             controller.OnGroupChanged -= HandleGroupChanged;
+            controller.OnRefreshHotbars -= RefreshSlotsStatic;
         }
 
         public void RegisterSlot(HotbarSlot slot)
@@ -74,6 +76,14 @@ namespace dev.susybaka.raidsim.UI
                 slot.Refresh();
             }
             onSlotsUpdated?.Invoke();
+        }
+
+        public void RefreshSlotsStatic()
+        {
+            foreach (HotbarSlot slot in slots)
+            {
+                slot.RefreshStatic();
+            }
         }
 
         private void HandleGroupChanged(string changedGroupId)

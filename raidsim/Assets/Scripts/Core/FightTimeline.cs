@@ -56,6 +56,7 @@ namespace dev.susybaka.raidsim.Core
         public string timelineAbbreviation = string.Empty;
         public int timelineLevel = 50;
         public long timelinePlayerHealth = 3000;
+        public List<string> timelineForbiddenActionIds = new();
         public bool playing = false;
         public bool paused = false;
         public List<string> pausedBy = new List<string>();

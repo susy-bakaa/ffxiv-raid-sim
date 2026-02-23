@@ -18,6 +18,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using static dev.susybaka.raidsim.Actions.CharacterAction;
 using static dev.susybaka.raidsim.Core.GlobalData;
 
 namespace dev.susybaka.raidsim.Actions
@@ -27,6 +28,7 @@ namespace dev.susybaka.raidsim.Actions
         Animator animator;
         CharacterState characterState;
         TargetController targetController;
+        ComboOverrideDriver comboDriver;
 
         //public Transform actionParent;
         [SerializeField] private CharacterActionRegistry actionRegistry;
@@ -121,6 +123,7 @@ namespace dev.susybaka.raidsim.Actions
             animator = GetComponentInChildren<Animator>();
             characterState = GetComponent<CharacterState>();
             targetController = GetComponent<TargetController>();
+            comboDriver = GetComponentInChildren<ComboOverrideDriver>();
 
             if (characterState != null)
                 characterState.onInstantCastsChanged.AddListener(UpdateInstantCasts);
@@ -140,49 +143,14 @@ namespace dev.susybaka.raidsim.Actions
                 actionRegistry = GetComponentInChildren<CharacterActionRegistry>();
             }
 
-            /*if (loadAutomatically && actionParent != null)
+            if (actionRegistry != null)
             {
-                actions.Clear();
-                autoActions.Clear();
-                CharacterAction[] allActions = actionParent.GetComponentsInChildren<CharacterAction>();
-                for (int i = 0; i < allActions.Length; i++)
+                foreach (CharacterAction action in actionRegistry.AllActions)
                 {
-                    if (allActions[i].isAutoAction)
-                    {
-                        autoActions.Add(allActions[i]);
-                    }
-                    else
-                    {
-                        actions.Add(allActions[i]);
-                    }
+                    action.Initialize(this);
                 }
-            }*/
+            }
 
-            /*if (characterState != null)
-            {
-                List<CharacterAction> invalidActions = new List<CharacterAction>();
-
-                for (int i = 0; i < actions.Count; i++)
-                {
-                    if (actions[i] != null)
-                    {
-                        actions[i].Initialize(this);
-                    }
-                    else
-                    {
-                        invalidActions.Add(actions[i]);
-                        Debug.LogWarning($"Found an invalid (null) CharacterAction (Index {i}) from the Character {characterState.characterName} ({gameObject.name})!\nIt has been automatically removed from the list of available actions for now, but to get rid of this warning permanently please remove it manually from the list in the editor!");
-                    }
-                }
-
-                if (invalidActions.Count > 0)
-                {
-                    for (int i = 0; i < invalidActions.Count; i++)
-                    {
-                        actions.Remove(invalidActions[i]);
-                    }
-                }
-            }*/
             if (characterState != null)
                 previousCanDoActions = characterState.canDoActions.value;
             else
@@ -1053,6 +1021,8 @@ namespace dev.susybaka.raidsim.Actions
                     {
                         isGroundTargeting = true;
                     }
+
+                    comboDriver.OnActionExecuted(action.ActionId);
                 }
                 else
                 {
@@ -1090,7 +1060,7 @@ namespace dev.susybaka.raidsim.Actions
 
                     ActionInfo newActionInfo = new ActionInfo(action, characterState, currentTarget);
                     action.onCast.Invoke(newActionInfo);
-                    StartCoroutine(IE_Cast(castTime, () => { if (!action.Data.isGroundTargeted && action.Data.recast > 0f && !hidden) { action.chargesLeft--; } action.ExecuteAction(newActionInfo); if (action.Data.playAnimationOnFinish) { HandleAnimation(action); } HandleActionAudio(action, true); }));
+                    StartCoroutine(IE_Cast(castTime, () => { if (!action.Data.isGroundTargeted && action.Data.recast > 0f && !hidden) { action.chargesLeft--; } action.ExecuteAction(newActionInfo); if (action.Data.playAnimationOnFinish) { HandleAnimation(action); } HandleActionAudio(action, true); comboDriver.OnActionExecuted(action.ActionId); }));
                     onCast.Invoke(new CastInfo(newActionInfo, instantCast, characterState.GetEffects()));
 
                     if (!action.Data.playAnimationOnFinish && !action.Data.isGroundTargeted)

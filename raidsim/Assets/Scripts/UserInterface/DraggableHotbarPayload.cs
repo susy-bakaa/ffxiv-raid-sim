@@ -3,8 +3,10 @@
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
 using UnityEngine;
 using UnityEngine.EventSystems;
+using dev.susybaka.raidsim.Inputs;
 using dev.susybaka.Shared;
 using static dev.susybaka.raidsim.Core.GlobalData;
+using dev.susybaka.raidsim.Core;
 
 namespace dev.susybaka.raidsim.UI
 {
@@ -12,6 +14,7 @@ namespace dev.susybaka.raidsim.UI
 
     public class DraggableHotbarPayload : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
+        private UserInput input;
         public HotbarController controller;
         [SerializeField] private bool ignoreLock = false;
 
@@ -29,11 +32,23 @@ namespace dev.susybaka.raidsim.UI
 
         private Transform originalParent;
         private Vector2 originalAnchoredPos;
+        private bool dragging = false;
 
         private void Awake()
         {
             if (rootCanvas == null)
                 rootCanvas = transform.GetComponentInParents<Canvas>();
+            input = FightTimeline.Instance.input;
+        }
+
+        void Update()
+        {
+            if (dragging)
+            {
+                input.rotationInputEnabled = false;
+                input.zoomInputEnabled = false;
+                input.targetRaycastInputEnabled = false;
+            }
         }
 
         public void OnBeginDrag(PointerEventData eventData)
@@ -47,6 +62,7 @@ namespace dev.susybaka.raidsim.UI
 
             transform.SetParent(rootCanvas.transform, true);
             canvasGroup.blocksRaycasts = false;
+            dragging = true;
         }
 
         public void OnDrag(PointerEventData eventData)
@@ -67,6 +83,10 @@ namespace dev.susybaka.raidsim.UI
                 transform.SetParent(originalParent, false);
                 rectTransform.anchoredPosition = originalAnchoredPos;
             }
+            dragging = false;
+            input.rotationInputEnabled = true;
+            input.zoomInputEnabled = true;
+            input.targetRaycastInputEnabled = true;
         }
 
         public void ApplyDrop(HotbarController controller, string targetGroupId, int targetSlotIndex)

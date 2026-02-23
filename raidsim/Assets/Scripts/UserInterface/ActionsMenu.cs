@@ -10,6 +10,7 @@ using dev.susybaka.raidsim.Actions;
 using dev.susybaka.raidsim.Characters;
 using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.Inputs;
+using dev.susybaka.raidsim.SaveLoad;
 using static dev.susybaka.raidsim.Core.GlobalData;
 
 namespace dev.susybaka.raidsim.UI
@@ -22,7 +23,8 @@ namespace dev.susybaka.raidsim.UI
 
         [SerializeField] private CharacterState character;
         [SerializeField] private ActionController actionController;
-        [SerializeField] private CharacterActionRegistry registry;
+        [SerializeField] private HotbarController hotbarController;
+        [SerializeField] private SaveHotbar mainHotbar;
         [SerializeField] private PresetHotbarItem itemPrefab;
         [SerializeField] private Transform standardActionParent;
         [SerializeField] private Transform roleActionParent;
@@ -41,7 +43,7 @@ namespace dev.susybaka.raidsim.UI
 
             window.CloseWindow();
 
-            foreach (CharacterAction action in registry.AllActions)
+            foreach (CharacterAction action in hotbarController.Registry.AllActions)
             {
                 // Skip hidden actions, as they are not meant to be shown in the UI or assigned to hotbars.
                 if (action.Kind == CharacterAction.ActionKind.Hidden)
@@ -58,7 +60,7 @@ namespace dev.susybaka.raidsim.UI
                 };
 
                 PresetHotbarItem item = Instantiate(itemPrefab, parent);
-                item.Initialize(registry, new SlotBinding { kind = SlotKind.Action, id = action.ActionId });
+                item.Initialize(hotbarController, new SlotBinding { kind = SlotKind.Action, id = action.ActionId });
                 item.OnClick += OnClick;
                 items.Add(item);
             }
@@ -68,6 +70,16 @@ namespace dev.susybaka.raidsim.UI
             {
                 roleIndicator.text = $"Lv{character.characterLevel} {character.role.ToString().ToUpper()}";
             }
+        }
+
+        private void OnEnable()
+        {
+            hotbarController.OnRefreshHotbars += RefreshAll;
+        }
+
+        private void OnDisable()
+        {
+            hotbarController.OnRefreshHotbars -= RefreshAll;
         }
 
         private void Update()
@@ -92,15 +104,28 @@ namespace dev.susybaka.raidsim.UI
             }
         }
 
+        public void RefreshAll()
+        {
+            foreach (PresetHotbarItem item in items)
+            {
+                item.RefreshStaticVisuals();
+            }
+        }
+
+        public void ResetHotbar()
+        {
+            mainHotbar.LoadDefaults();
+        }
+
         private void OnClick(SlotBinding binding)
         {
             if (binding.kind != SlotKind.Action)
                 return;
 
-            if (actionController == null || registry == null)
+            if (actionController == null || hotbarController == null || hotbarController.Registry == null)
                 return;
 
-            actionController.PerformAction(registry.GetById(binding.id));
+            actionController.PerformAction(hotbarController.GetResolvedAction(binding.id, ActionResolveMode.Execution));
         }
     }
 }

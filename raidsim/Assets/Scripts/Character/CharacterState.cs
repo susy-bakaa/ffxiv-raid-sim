@@ -39,6 +39,8 @@ namespace dev.susybaka.raidsim.Characters
         [Hidden]
         public ActionController actionController;
         [Hidden]
+        public HotbarController hotbarController;
+        [Hidden]
         public Transform dashKnockbackPivot;
         [Hidden]
         public ModelHandler modelHandler;
@@ -425,6 +427,7 @@ namespace dev.susybaka.raidsim.Characters
             bossController = GetComponent<BossController>();
             targetController = GetComponent<TargetController>();
             actionController = GetComponent<ActionController>();
+            hotbarController = GetComponent<HotbarController>();
             modelHandler = GetComponentInChildren<ModelHandler>(true);
             pivotController = GetComponentInChildren<PivotController>(true);
 

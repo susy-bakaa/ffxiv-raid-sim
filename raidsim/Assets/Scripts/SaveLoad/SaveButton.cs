@@ -21,6 +21,7 @@ namespace dev.susybaka.raidsim.SaveLoad
         public bool runInAwake = false;
         public bool runOnReset = false;
         public bool useTimelineGroup = false;
+        public bool onlySaveOnChange = false;
         public float startDelay = 0f;
 
         public UnityEvent<bool> onStart;
@@ -28,6 +29,7 @@ namespace dev.susybaka.raidsim.SaveLoad
         IniStorage ini;
         int id = 0;
         float wait;
+        bool lastValue = false;
 
 #if UNITY_EDITOR
         private void OnValidate()
@@ -49,6 +51,7 @@ namespace dev.susybaka.raidsim.SaveLoad
             ini = new IniStorage(GlobalVariables.configPath);
             wait = UnityEngine.Random.Range(0.15f, 0.65f);
             id = Random.Range(0, 10000);
+            lastValue = defaultValue;
 
             if (runInAwake)
             {
@@ -119,10 +122,12 @@ namespace dev.susybaka.raidsim.SaveLoad
             Utilities.FunctionTimer.Create(this, () => {
                 ini.Load(GlobalVariables.configPath);
 
-                savedValue = value.ToInt();
-                ini.Set(group, $"i{key}", savedValue);
-
-                ini.Save();
+                if (lastValue != value || !onlySaveOnChange) // Only save if the value changed, or if we're not checking for changes
+                {
+                    savedValue = value.ToInt();
+                    ini.Set(group, $"i{key}", savedValue);
+                    ini.Save();
+                }
             }, wait, $"SaveButton_{id}_{n}_savevalue_delay", false, true);
         }
     }

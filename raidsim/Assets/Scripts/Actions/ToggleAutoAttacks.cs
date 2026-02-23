@@ -11,7 +11,7 @@ namespace dev.susybaka.raidsim.Actions
     public class ToggleAutoAttacks : MonoBehaviour
     {
         [SerializeField] private ActionController actionController;
-        [SerializeField] private TextMeshProUGUI statusText;
+        [SerializeField] private CharacterAction action;
         public UnityEvent<bool> onToggle;
 
         bool state = false;
@@ -22,9 +22,9 @@ namespace dev.susybaka.raidsim.Actions
                 actionController = transform.GetComponentInParents<ActionController>();
             if (actionController != null)
                 state = actionController.autoAttackEnabled;
-            if (statusText != null)
+            if (action != null)
             {
-                statusText.text = this.state ? "<color=green>ON</color>" : "<color=red>OFF</color>";
+                action.overrideResourceText = this.state ? "<color=green>ON</color>" : "<color=red>OFF</color>";
             }
         }
 
@@ -36,9 +36,9 @@ namespace dev.susybaka.raidsim.Actions
             if (Utilities.RateLimiter(63))
             {
                 state = actionController.autoAttackEnabled;
-                if (statusText != null)
+                if (action != null)
                 {
-                    statusText.text = this.state ? "<color=green>ON</color>" : "<color=red>OFF</color>";
+                    action.overrideResourceText = this.state ? "<color=green>ON</color>" : "<color=red>OFF</color>";
                 }
             }
         }
@@ -57,9 +57,9 @@ namespace dev.susybaka.raidsim.Actions
             this.state = state;
 
             actionController.autoAttackEnabled = this.state;
-            if (statusText != null)
+            if (action != null)
             {
-                statusText.text = this.state ? "<color=green>ON</color>" : "<color=red>OFF</color>";
+                action.overrideResourceText = this.state ? "<color=green>ON</color>" : "<color=red>OFF</color>";
             }
             onToggle.Invoke(this.state);
         }

@@ -30,6 +30,8 @@ namespace dev.susybaka.raidsim.Actions
         [SerializeField] private CharacterActionData data;
         [SerializeField] private ActionKind kind = ActionKind.Standard;
         [SerializeField] private RecastType recastType = RecastType.standard;
+        [SerializeField] private string fullName = "{0}";
+        public string overrideResourceText = string.Empty;
 
         public string ActionId => actionId;
         public CharacterActionData Data => data;
@@ -57,6 +59,7 @@ namespace dev.susybaka.raidsim.Actions
         public CharacterAction lastAction;
         public KeyBind currentKeybind;
         public List<Role> availableForRoles;
+        public List<int> availableForLevels;
         public List<string> sharedRecasts;
         public List<StatusEffectData> comboOutlineEffects;
         public List<StatusEffectData> hideWhileEffects;
@@ -77,11 +80,20 @@ namespace dev.susybaka.raidsim.Actions
         private bool permanentlyUnavailable = false;
         private float lastRecast = 0f;
 
-        /*public CharacterState GetCharacter()
+        public string GetFullActionName()
         {
-            return character;
-        }*/
+            string name = data.GetActionName();
 
+            if (string.IsNullOrEmpty(fullName))
+                return name;
+            return string.Format(fullName, name);
+        }
+
+        public void SetPermanentlyUnavailable()
+        {
+            permanentlyUnavailable = true;
+            unavailable = true;
+        }
 
 #if UNITY_EDITOR
         [ContextMenu("Generate Random Action ID")]
@@ -110,21 +122,38 @@ namespace dev.susybaka.raidsim.Actions
         private void Update()
         {
             // Role availability logic
-            if (character != null && availableForRoles != null && availableForRoles.Count > 0)
+            if (character != null)
             {
-                foreach (Role role in availableForRoles)
+                if (availableForRoles != null && availableForRoles.Count > 0)
                 {
-                    if (role == character.role)
+                    foreach (Role role in availableForRoles)
+                    {
+                        if (role == character.role)
+                        {
+                            if (!permanentlyUnavailable)
+                            {
+                                unavailable = false;
+                            }
+                            break;
+                        }
+                        else
+                        {
+                            unavailable = true;
+                        }
+                    }
+                }
+                if (availableForLevels != null && availableForLevels.Count > 0)
+                {
+                    if (!availableForLevels.Contains(character.characterLevel))
+                    {
+                        unavailable = true;
+                    }
+                    else
                     {
                         if (!permanentlyUnavailable)
                         {
                             unavailable = false;
                         }
-                        break;
-                    }
-                    else
-                    {
-                        unavailable = true;
                     }
                 }
             }

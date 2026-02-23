@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using dev.susybaka.raidsim.Characters;
@@ -766,6 +767,16 @@ namespace dev.susybaka.Shared
                 result = (duration / 86400).ToString("F0") + "d";
             }
             return result;
+        }
+
+        public static string FirstCharToUpper(this string input)
+        {
+            return input switch
+            {
+                null => throw new ArgumentNullException(nameof(input)),
+                "" => throw new ArgumentException($"{nameof(input)} cannot be empty", nameof(input)),
+                _ => string.Concat(input[0].ToString().ToUpper(), input.Substring(1))
+            };
         }
 
         /// <summary>

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using dev.susybaka.raidsim.Core;
 
 namespace dev.susybaka.raidsim.Actions
 {
@@ -18,8 +19,21 @@ namespace dev.susybaka.raidsim.Actions
         private readonly Dictionary<string, List<CharacterAction>> byName = new();
         private readonly Dictionary<CharacterActionData, List<CharacterAction>> byData = new();
 
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (!actionsRoot)
+                actionsRoot = transform.Find("Actions");
+        }
+#endif
+
+        private void Awake() => Rebuild();
+
         public void Rebuild()
         {
+            FightTimeline timeline = FightTimeline.Instance;
+
             allActions.Clear();
             byId.Clear();
             byName.Clear();
@@ -46,6 +60,12 @@ namespace dev.susybaka.raidsim.Actions
                 {
                     Debug.LogWarning($"Duplicate ActionId '{action.ActionId}' on '{action.name}'.", action);
                     continue;
+                }
+
+                if (timeline != null && timeline.timelineForbiddenActionIds.Contains(action.ActionId))
+                {
+                    //Debug.LogWarning($"Action '{action.name}' has ID '{action.ActionId}' which is forbidden by the timeline.", action);
+                    action.SetPermanentlyUnavailable(); // Mark as unavailable but still include in registry for reference (e.g. to show as disabled in UI).
                 }
 
                 // Name groups
@@ -121,14 +141,5 @@ namespace dev.susybaka.raidsim.Actions
                     stack.Push(t.GetChild(i));
             }
         }
-
-        private void Awake() => Rebuild();
-#if UNITY_EDITOR
-        private void OnValidate()
-        {
-            if (!actionsRoot)
-                actionsRoot = transform.Find("Actions");
-        }
-#endif
     }
 }
