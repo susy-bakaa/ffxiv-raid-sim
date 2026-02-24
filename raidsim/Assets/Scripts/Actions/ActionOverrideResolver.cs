@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// This file is part of ffxiv-raid-sim. Linking with the Unity runtime
+// is permitted under the Unity Runtime Linking Exception (see LICENSE).
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,10 +16,10 @@ namespace dev.susybaka.raidsim.Actions
             public string baseId;
 
             public string presentationId; // can be empty -> use executionId or none
-            public string executionId;    // can be empty -> no override
+            public string executionId; // can be empty -> no override
 
-            public float expiresAt;      // Time.time, <=0 means no expiry
-            public int priority;         // higher wins
+            public float expiresAt; // Time.time, <=0 means no expiry
+            public int priority; // higher wins
         }
 
         // baseId -> list of overrides from different sources

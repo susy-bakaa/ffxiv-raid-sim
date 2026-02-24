@@ -629,5 +629,12 @@ namespace dev.susybaka.raidsim.Core
                 }
             }
         }
+
+        [System.Serializable]
+        public class MacroLibrarySnapshot
+        {
+            public int version = 1;
+            public MacroEntry[] entries;
+        }
     }
 }

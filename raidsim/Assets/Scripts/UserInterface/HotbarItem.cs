@@ -2,12 +2,13 @@
 // This file is part of ffxiv-raid-sim. Linking with the Unity runtime
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
 using System.Collections.Generic;
+using dev.susybaka.raidsim.Actions;
+using dev.susybaka.Shared;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using TMPro;
-using dev.susybaka.raidsim.Actions;
-using dev.susybaka.Shared;
 using static dev.susybaka.raidsim.Core.GlobalData;
 
 namespace dev.susybaka.raidsim.UI
@@ -17,16 +18,18 @@ namespace dev.susybaka.raidsim.UI
         public enum BindType { none, action, macro }
 
         private HotbarController controller;
+        private MacroEditor macroEditor;
         private HotbarSlot slot;
         private DraggableHotbarPayload payload;
         private CanvasGroup group;
         private Image image;
         private HudElement element;
         private CanvasGroup tooltipGroup;
+        private MacroSlot macroSlot;
 
         [Header("Info")]
         [SerializeField] private CharacterAction action;
-        //private Macro macro;
+        [SerializeField] private MacroEntry macro;
         [SerializeField] private CharacterActionData lastAction;
         private string groupId;
         private int slotIndex;
@@ -85,9 +88,10 @@ namespace dev.susybaka.raidsim.UI
             UpdateRuntimeVisuals();
         }
 
-        public void Bind(HotbarController controller, HotbarSlot slot, SlotBinding binding)
+        public void Bind(HotbarController controller, MacroEditor editor, HotbarSlot slot, SlotBinding binding)
         {
             this.controller = controller;
+            this.macroEditor = editor;
             this.binding = binding;
             this.slot = slot;
             this.slotIndex = this.slot.SlotIndex;
@@ -98,19 +102,24 @@ namespace dev.susybaka.raidsim.UI
             {
                 case SlotKind.Empty:
                     action = null;
-                    //macro = null;
+                    macro = new MacroEntry { isValid = false }; // empty
                     break;
                 case SlotKind.Action:
                     // Resolve the action for presentation (icon/name) purposes.
                     action = controller.GetResolvedAction(binding.id, ActionResolveMode.Presentation);
-
-                    //macro = null;
+                    macro = new MacroEntry { isValid = false }; // empty
                     tooltip = action.GetFullActionName();
                     break;
                 case SlotKind.Macro:
-                    //action = null;
-                    //macro = controller.MacroLibrary.Get(binding.id);
-                    //tooltip = macro.name;
+                    action = null;
+                    action = null;
+                    int i = -1;
+                    MacroLibrary.TryParseMacroId(binding.id, out i);
+                    macro = editor.Library.Get(i);
+                    if (macro.isValid && !string.IsNullOrEmpty(macro.name))
+                        tooltip = macro.name;
+                    else
+                        tooltip = $"Macro #{i}";
                     break;
             }
 
@@ -135,7 +144,21 @@ namespace dev.susybaka.raidsim.UI
             // Action: pull icon/name from CharacterActionData
             // Keep this lightweight and cached if you want.
 
-            image.sprite = action.Data.icon;
+            if (action != null)
+            {
+                image.sprite = action.Data.icon;
+                image.color = Color.white;
+            }
+            else if (macro.isValid && macroEditor != null)
+            {
+                image.sprite = macroEditor.Resolver.ResolveIconSprite(macro);
+                image.color = Color.white;
+            }
+            else
+            {
+                image.sprite = null;
+                image.color = new Color(1f, 1f, 1f, 0f); // hide the image if there's no valid action or macro assigned
+            }
 
             if (borderStandard != null)
             {
@@ -162,7 +185,7 @@ namespace dev.susybaka.raidsim.UI
                 recastFillAnimator.speed = 0f;
                 recastFillAnimator.Play("ui_hotbar_recast_type1_none");
             }
-            if (resourceCostText != null)
+            if (resourceCostText != null && action != null)
             {
                 if (action.Data.manaCost <= 0 && !string.IsNullOrEmpty(action.overrideResourceText))
                 {
@@ -177,9 +200,13 @@ namespace dev.susybaka.raidsim.UI
                     resourceCostText.text = action.overrideResourceText;
                 }
             }
+            else if (resourceCostText != null)
+            {
+                resourceCostText.text = string.Empty;
+            }
             if (chargesText != null)
             {
-                if (action.Data.charges > 1)
+                if (action != null && action.Data.charges > 1)
                 {
                     chargesText.text = action.Data.charges.ToString();
                 }
@@ -214,26 +241,11 @@ namespace dev.susybaka.raidsim.UI
 
         private void UpdateRuntimeVisuals()
         {
-            // Default:
-            //disabledOverlay?.SetActive(false);
-            //cooldownFill.fillAmount = 0f;
-
-            if (binding.kind != SlotKind.Action)
+            if (binding.kind == SlotKind.Empty)
                 return;
 
-            // Resolve action runtime state
-            // You need SOME way to query cooldown/usable. Best is to add a tiny interface on CharacterAction.
-            //var action = /* resolve via registry somehow or cache during ApplyStaticVisuals */;
             if (!action)
                 return;
-
-            // Example shape (adapt to your system):
-            // float cdRemaining = action.CooldownRemaining;
-            // float cdTotal = action.CooldownDuration;
-            // bool can = action.CanExecute(out var reason);
-
-            // cooldownFill.fillAmount = (cdTotal > 0f) ? Mathf.Clamp01(cdRemaining / cdTotal) : 0f;
-            // disabledOverlay.SetActive(!can);
 
             if (action.unavailable)
             {
@@ -250,7 +262,6 @@ namespace dev.susybaka.raidsim.UI
                 {
                     resourceCostText.text = "<b>X</b>";
                 }
-                //chargesLeft = action.Data.charges;
             }
 
             if (group != null)
@@ -438,25 +449,43 @@ namespace dev.susybaka.raidsim.UI
             {
                 case SlotKind.Empty:
                     action = null;
-                    //macro = null;
+                    macro = new MacroEntry { isValid = false }; // empty
                     break;
                 case SlotKind.Action:
                     // Resolve the action for presentation (icon/name) purposes.
                     action = controller.GetResolvedAction(binding.id, ActionResolveMode.Presentation);
-
-                    //macro = null;
+                    macro = new MacroEntry { isValid = false }; // empty
                     tooltip = action.GetFullActionName();
                     break;
                 case SlotKind.Macro:
-                    //action = null;
-                    //macro = controller.MacroLibrary.Get(binding.id);
-                    //tooltip = macro.name;
+                    action = null;
+                    int i = -1;
+                    MacroLibrary.TryParseMacroId(binding.id, out i);
+                    macro = macroEditor.Library.Get(i);
+                    if (macro.isValid && !string.IsNullOrEmpty(macro.name))
+                        tooltip = macro.name;
+                    else
+                        tooltip = $"Macro #{i}";
                     break;
             }
 
-            image.sprite = action.Data.icon;
+            if (action != null)
+            {
+                image.sprite = action.Data.icon;
+                image.color = Color.white;
+            }
+            else if (macro.isValid && macroEditor != null)
+            {
+                image.sprite = macroEditor.Resolver.ResolveIconSprite(macro);
+                image.color = Color.white;
+            }
+            else
+            {
+                image.sprite = null;
+                image.color = new Color(1f, 1f, 1f, 0f); // hide the image if there's no valid action or macro assigned
+            }
 
-            if (resourceCostText != null)
+            if (resourceCostText != null && action != null)
             {
                 if (action.Data.manaCost <= 0 && !string.IsNullOrEmpty(action.overrideResourceText))
                 {
@@ -471,9 +500,13 @@ namespace dev.susybaka.raidsim.UI
                     resourceCostText.text = action.overrideResourceText;
                 }
             }
+            else if (resourceCostText != null)
+            {
+                resourceCostText.text = string.Empty;
+            }
             if (chargesText != null)
             {
-                if (action.Data.charges > 1)
+                if (action != null && action.Data.charges > 1)
                 {
                     chargesText.text = action.chargesLeft.ToString();
                 }
@@ -502,12 +535,14 @@ namespace dev.susybaka.raidsim.UI
             if (clickHighlight == null)
                 return;
 
+            string id = (action != null && !macro.isValid) ? action.ActionId : macro.isValid ? macro.name : gameObject.name;
+
             clickHighlight.transform.localScale = new Vector3(0f, 0f, 1f);
             clickHighlight.transform.LeanScale(new Vector3(1.5f, 1.5f, 1f), 0.5f);//.setOnComplete(() => { clickHighlight.LeanAlpha(0f, 0.15f); });
-            Utilities.FunctionTimer.Create(this, () => clickHighlight.LeanAlpha(0f, 0.15f), 0.3f, $"{action.ActionId}_ui_click_animation_fade_delay", true, false);
+            Utilities.FunctionTimer.Create(this, () => clickHighlight.LeanAlpha(0f, 0.15f), 0.3f, $"{id}_ui_click_animation_fade_delay", true, false);
             clickHighlight.LeanAlpha(1f, 0.15f);
             if (!pointer)
-                selectionBorder.LeanAlpha(1f, 0.15f).setOnComplete(() => Utilities.FunctionTimer.Create(this, () => selectionBorder.LeanAlpha(0f, 0.15f), 0.2f, $"{action.ActionId}_ui_click_highlight_fade_delay", true, false));
+                selectionBorder.LeanAlpha(1f, 0.15f).setOnComplete(() => Utilities.FunctionTimer.Create(this, () => selectionBorder.LeanAlpha(0f, 0.15f), 0.2f, $"{id}_ui_click_highlight_fade_delay", true, false));
         }
 
         public void OnPointerEnter(PointerEventData eventData)

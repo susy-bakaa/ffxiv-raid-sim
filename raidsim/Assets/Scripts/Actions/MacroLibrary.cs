@@ -1,17 +1,49 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // This file is part of ffxiv-raid-sim. Linking with the Unity runtime
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 namespace dev.susybaka.raidsim.Actions
 {
-    public class MacroLibrary : MonoBehaviour
+    public sealed class MacroLibrary : MonoBehaviour
     {
-        public string Get(string id)
+        public const int GridW = 10;
+        public const int GridH = 10;
+        public const int Count = GridW * GridH;
+
+        [SerializeField] private MacroEntry[] entries = new MacroEntry[Count];
+
+        public event Action<int> OnMacroChanged; // slot index
+        public event Action OnAnyChanged;
+
+        public MacroEntry Get(int index) => entries[index];
+
+        public void Set(int index, MacroEntry entry)
         {
-            return string.Empty;
+            entries[index] = entry;
+            OnMacroChanged?.Invoke(index);
+            OnAnyChanged?.Invoke();
         }
+
+        public void Clear(int index)
+        {
+            entries[index] = default;
+            entries[index].isValid = false;
+            entries[index].name = "";
+            entries[index].body = "";
+            entries[index].iconMode = MacroIconMode.Default;
+            entries[index].customIconId = "";
+            entries[index].actionIconId = "";
+
+            OnMacroChanged?.Invoke(index);
+            OnAnyChanged?.Invoke();
+        }
+
+        public bool IsValid(int index) => entries[index].isValid;
+
+        // Convenience: stable ID stored in hotbar binding
+        public static string MacroIdFromIndex(int index) => index.ToString();
+        public static bool TryParseMacroId(string id, out int index) => int.TryParse(id, out index);
     }
 }

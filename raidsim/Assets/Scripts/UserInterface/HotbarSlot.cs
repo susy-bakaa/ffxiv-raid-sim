@@ -102,7 +102,7 @@ namespace dev.susybaka.raidsim.UI
             else
                 hotbar.Controller.DetachFromGroupKeybind(groupId, ClickCurrentItem); // Unregister the click callback from the controller before rebinding
 
-            current.Bind(hotbar.Controller, this, binding);
+            current.Bind(hotbar.Controller, hotbar.Controller.MacroEditor, this, binding);
             hotbar.Controller.AttachToGroupKeybind(groupId, ClickCurrentItem); // Register the click callback with the controller so it can be invoked when the keybind is pressed
         }
 

@@ -2,12 +2,13 @@
 // This file is part of ffxiv-raid-sim. Linking with the Unity runtime
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
 using System.Collections.Generic;
-using UnityEngine;
 using dev.susybaka.raidsim.Actions;
 using dev.susybaka.raidsim.Attributes;
 using dev.susybaka.raidsim.Characters;
 using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.Inputs;
+using UnityEngine;
+using UnityEngine.UIElements;
 using static dev.susybaka.raidsim.Core.GlobalData;
 
 namespace dev.susybaka.raidsim.UI
@@ -19,15 +20,15 @@ namespace dev.susybaka.raidsim.UI
         [SerializeField] private CharacterState character;
         [SerializeField] private CharacterActionRegistry registry;
         [SerializeField] private ActionOverrideResolver overrideResolverBehaviour;
-        [SerializeField] private MacroLibrary macroLibrary;
-        [SerializeField] private ChatHandler chat;
+        [SerializeField] private MacroEditor macroEditor;
+        [SerializeField] private MacroExecutor macroExecutor;
         public bool locked = false;
 
         public CharacterState Character => character;
         public CharacterActionRegistry Registry => registry;
         public ActionOverrideResolver OverrideResolver => overrideResolverBehaviour;
-        public MacroLibrary MacroLibrary => macroLibrary;
-        public ChatHandler Chat => chat;
+        public MacroEditor MacroEditor => macroEditor;
+        public MacroExecutor MacroExecutor => macroExecutor;
 
         [Header("Layout")]
         [SerializeField] private HotbarGroupDefinition[] groupDefinitions;
@@ -47,6 +48,8 @@ namespace dev.susybaka.raidsim.UI
             if (overrideResolverBehaviour == null)
                 overrideResolverBehaviour = GetComponentInChildren<ActionOverrideResolver>();
             overrideResolver = overrideResolverBehaviour as IActionOverrideResolver;
+            if (macroEditor == null)
+                macroEditor = FindFirstObjectByType<MacroEditor>();
             RebuildGroups();
         }
 
@@ -321,9 +324,11 @@ namespace dev.susybaka.raidsim.UI
 
                 case SlotKind.Macro:
                 {
-                    var macro = macroLibrary.Get(binding.id);
-                    //if (macro != null)
-                    //chat.Send(macro.body); // your existing macro handling
+                    if (MacroLibrary.TryParseMacroId(binding.id, out int idx))
+                    {
+                        var entry = macroEditor.Library.Get(idx);
+                        macroExecutor.Execute(entry);
+                    }
                     return;
                 }
             }
@@ -394,7 +399,7 @@ namespace dev.susybaka.raidsim.UI
                     return b;
 
                 case SlotKind.Macro:
-                    if (string.IsNullOrWhiteSpace(b.id) || macroLibrary.Get(b.id) == null)
+                    if (string.IsNullOrWhiteSpace(b.id) || (MacroLibrary.TryParseMacroId(b.id, out int idx) && !macroEditor.Library.IsValid(idx)))
                     {
                         Debug.LogWarning($"Hotbar load: unknown MacroId '{b.id}', clearing slot.");
                         return new SlotBinding { kind = SlotKind.Empty, id = "" };

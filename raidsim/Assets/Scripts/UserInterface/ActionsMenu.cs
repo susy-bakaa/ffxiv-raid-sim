@@ -60,7 +60,7 @@ namespace dev.susybaka.raidsim.UI
                 };
 
                 PresetHotbarItem item = Instantiate(itemPrefab, parent);
-                item.Initialize(hotbarController, new SlotBinding { kind = SlotKind.Action, id = action.ActionId });
+                item.Initialize(hotbarController, null, new SlotBinding { kind = SlotKind.Action, id = action.ActionId });
                 item.OnClick += OnClick;
                 items.Add(item);
             }
@@ -68,7 +68,7 @@ namespace dev.susybaka.raidsim.UI
 
             if (roleIndicator != null)
             {
-                roleIndicator.text = $"Lv{character.characterLevel} {character.role.ToString().ToUpper()}";
+                roleIndicator.text = $"Lv{character.characterLevel} {GlobalVariables.roleNames[(int)character.role]}";
             }
         }
 

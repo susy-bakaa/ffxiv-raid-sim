@@ -11,6 +11,7 @@ using dev.susybaka.raidsim.Characters;
 using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.StatusEffects;
 using dev.susybaka.raidsim.Targeting;
+using static dev.susybaka.raidsim.Core.GlobalData;
 
 namespace dev.susybaka.raidsim.Inputs
 {
@@ -23,6 +24,7 @@ namespace dev.susybaka.raidsim.Inputs
         public ThirdPersonCamera cam;
         public TargetController targetController;
         public CanvasGroupToggleChildren debugOverlays;
+        public Flag isTyping = new Flag("isTyping", Flag.AggregateLogic.AnyTrue);
         public bool inputEnabled = true;
         public bool movementInputEnabled = true;
         public bool rotationInputEnabled = true;
@@ -153,7 +155,7 @@ namespace dev.susybaka.raidsim.Inputs
             if (cam == null)
                 return;
 
-            if (!inputEnabled)
+            if (!inputEnabled || isTyping.value)
             {
                 characterController.enableInput = false;
                 freecam.enableSpeed = false;
@@ -186,17 +188,20 @@ namespace dev.susybaka.raidsim.Inputs
                 {
                     if (inputEnabled || keys[i].neverDisable)
                     {
-                        if (keys[i].bind != null && BindedKey(keys[i].bind))
+                        if (keys[i].ignoreTyping || !isTyping.value)
                         {
-                            if (keys[i].action != null && characterAction != null)
-                                characterAction.PerformAction(keys[i].action);
-                            if (keys[i].statusEffect != null && characterState != null)
-                                characterState.AddEffect(keys[i].statusEffect, characterState);
-                            keys[i].onInput.Invoke();
-                        }
-                        else if (keys[i].bind != null && BindedKeyHeld(keys[i].bind))
-                        {
-                            keys[i].onHeld.Invoke();
+                            if (keys[i].bind != null && BindedKey(keys[i].bind))
+                            {
+                                if (keys[i].action != null && characterAction != null)
+                                    characterAction.PerformAction(keys[i].action);
+                                if (keys[i].statusEffect != null && characterState != null)
+                                    characterState.AddEffect(keys[i].statusEffect, characterState);
+                                keys[i].onInput.Invoke();
+                            }
+                            else if (keys[i].bind != null && BindedKeyHeld(keys[i].bind))
+                            {
+                                keys[i].onHeld.Invoke();
+                            }
                         }
                     }
                 }
@@ -207,29 +212,32 @@ namespace dev.susybaka.raidsim.Inputs
                 {
                     if (inputEnabled || axes[i].neverDisable)
                     {
-                        if (axes[i].positive.bind != null && BindedKey(axes[i].positive.bind))
+                        if (axes[i].ignoreTyping || !isTyping.value)
                         {
-                            if (axes[i].positive.action != null && characterAction != null)
-                                characterAction.PerformAction(axes[i].positive.action);
-                            if (axes[i].positive.statusEffect != null && characterState != null)
-                                characterState.AddEffect(axes[i].positive.statusEffect, characterState);
-                            axes[i].positive.onInput.Invoke();
-                        }
-                        else if (axes[i].positive.bind != null && BindedKeyHeld(axes[i].positive.bind))
-                        {
-                            axes[i].positive.onHeld.Invoke();
-                        }
-                        if (axes[i].negative.bind != null && BindedKey(axes[i].negative.bind))
-                        {
-                            if (axes[i].negative.action != null && characterAction != null)
-                                characterAction.PerformAction(axes[i].negative.action);
-                            if (axes[i].negative.statusEffect != null && characterState != null)
-                                characterState.AddEffect(axes[i].negative.statusEffect, characterState);
-                            axes[i].negative.onInput.Invoke();
-                        }
-                        else if (axes[i].negative.bind != null && BindedKeyHeld(axes[i].negative.bind))
-                        {
-                            axes[i].negative.onHeld.Invoke();
+                            if (axes[i].positive.bind != null && BindedKey(axes[i].positive.bind))
+                            {
+                                if (axes[i].positive.action != null && characterAction != null)
+                                    characterAction.PerformAction(axes[i].positive.action);
+                                if (axes[i].positive.statusEffect != null && characterState != null)
+                                    characterState.AddEffect(axes[i].positive.statusEffect, characterState);
+                                axes[i].positive.onInput.Invoke();
+                            }
+                            else if (axes[i].positive.bind != null && BindedKeyHeld(axes[i].positive.bind))
+                            {
+                                axes[i].positive.onHeld.Invoke();
+                            }
+                            if (axes[i].negative.bind != null && BindedKey(axes[i].negative.bind))
+                            {
+                                if (axes[i].negative.action != null && characterAction != null)
+                                    characterAction.PerformAction(axes[i].negative.action);
+                                if (axes[i].negative.statusEffect != null && characterState != null)
+                                    characterState.AddEffect(axes[i].negative.statusEffect, characterState);
+                                axes[i].negative.onInput.Invoke();
+                            }
+                            else if (axes[i].negative.bind != null && BindedKeyHeld(axes[i].negative.bind))
+                            {
+                                axes[i].negative.onHeld.Invoke();
+                            }
                         }
                     }
                 }
@@ -242,6 +250,9 @@ namespace dev.susybaka.raidsim.Inputs
 
             if (BindedKey(KeyBind.Keys["ToggleDebugOverlaysKey"]))
             {
+                if (isTyping.value)
+                    return;
+
                 if (debugOverlays != null && debugOverlays.Group != null)
                 {
                     if (debugOverlays.Group.alpha == 0f)
@@ -263,6 +274,9 @@ namespace dev.susybaka.raidsim.Inputs
         {
             if (keys.Count > index)
             {
+                if (!keys[index].ignoreTyping && isTyping.value)
+                    return;
+
                 if (keys[index].action != null && characterAction != null)
                     characterAction.PerformAction(keys[index].action);
                 if (keys[index].statusEffect != null && characterState != null)
@@ -277,6 +291,9 @@ namespace dev.susybaka.raidsim.Inputs
             {
                 if (keys[i].name == name)
                 {
+                    if (!keys[i].ignoreTyping && isTyping.value)
+                        return;
+
                     if (keys[i].action != null && characterAction != null)
                         characterAction.PerformAction(keys[i].action);
                     if (keys[i].statusEffect != null && characterState != null)
@@ -366,6 +383,13 @@ namespace dev.susybaka.raidsim.Inputs
             float axis = 0;
             if (m_axes.TryGetValue(name, out InputAxis inputAxis))
             {
+                // If the key is not set to bypass typing checks and the user is currently typing, ignore the input
+                // This has to be done so that players can type into chat or other input fields without triggering keybinds
+                if (!inputAxis.ignoreTyping && isTyping.value)
+                {
+                    return 0f;
+                }
+
                 if (inputAxis.hasControllerBinding && inputAxis.controllerBind != null)
                 {
                     Vector2 controllerVector = inputAxis.controllerBind.action.ReadValue<Vector2>();
@@ -392,11 +416,17 @@ namespace dev.susybaka.raidsim.Inputs
                 {
                     if (inputAxis.positive.bind != null && AnyBindedKey(inputAxis.positive.bind))
                     {
+                        if (!inputAxis.positive.ignoreTyping && isTyping.value)
+                            return 0f;
+
                         usingController = false;
                         axis += 1;
                     }
                     if (inputAxis.negative.bind != null && AnyBindedKey(inputAxis.negative.bind))
                     {
+                        if (!inputAxis.negative.ignoreTyping && isTyping.value)
+                            return 0f;
+
                         usingController = false;
                         axis -= 1;
                     }
@@ -405,11 +435,17 @@ namespace dev.susybaka.raidsim.Inputs
                 {
                     if (inputAxis.positive.bind != null && BindedKey(inputAxis.positive.bind))
                     {
+                        if (!inputAxis.positive.ignoreTyping && isTyping.value)
+                            return 0f;
+
                         usingController = false;
                         axis += 1;
                     }
                     if (inputAxis.negative.bind != null && BindedKey(inputAxis.negative.bind))
                     {
+                        if (!inputAxis.negative.ignoreTyping && isTyping.value)
+                            return 0f;
+
                         usingController = false;
                         axis -= 1;
                     }
@@ -424,6 +460,13 @@ namespace dev.susybaka.raidsim.Inputs
 
             if (m_axes.TryGetValue(name, out InputAxis inputAxis))
             {
+                // If the key is not set to bypass typing checks and the user is currently typing, ignore the input
+                // This has to be done so that players can type into chat or other input fields without triggering keybinds
+                if (!inputAxis.ignoreTyping && isTyping.value)
+                {
+                    return 0f;
+                }
+
                 if (inputAxis.hasControllerBinding && inputAxis.controllerBind != null)
                 {
                     Vector2 controllerVector = inputAxis.controllerBind.action.ReadValue<Vector2>();
@@ -452,11 +495,17 @@ namespace dev.susybaka.raidsim.Inputs
                 {
                     if (inputAxis.positive.bind != null && AnyBindedKeyHeld(inputAxis.positive.bind))
                     {
+                        if (!inputAxis.positive.ignoreTyping && isTyping.value)
+                            return 0f;
+
                         usingController = false;
                         axis += 1;
                     }
                     if (inputAxis.negative.bind != null && AnyBindedKeyHeld(inputAxis.negative.bind))
                     {
+                        if (!inputAxis.negative.ignoreTyping && isTyping.value)
+                            return 0f;
+
                         usingController = false;
                         axis -= 1;
                     }
@@ -465,11 +514,17 @@ namespace dev.susybaka.raidsim.Inputs
                 {
                     if (inputAxis.positive.bind != null && BindedKeyHeld(inputAxis.positive.bind))
                     {
+                        if (!inputAxis.positive.ignoreTyping && isTyping.value)
+                            return 0f;
+
                         usingController = false;
                         axis += 1;
                     }
                     if (inputAxis.negative.bind != null && BindedKeyHeld(inputAxis.negative.bind))
                     {
+                        if (!inputAxis.negative.ignoreTyping && isTyping.value)
+                            return 0f;
+
                         usingController = false;
                         axis -= 1;
                     }
@@ -482,6 +537,13 @@ namespace dev.susybaka.raidsim.Inputs
         {
             if (m_axes.TryGetValue(name, out InputAxis inputAxis))
             {
+                // If the key is not set to bypass typing checks and the user is currently typing, ignore the input
+                // This has to be done so that players can type into chat or other input fields without triggering keybinds
+                if (!inputAxis.ignoreTyping && isTyping.value)
+                {
+                    return false;
+                }
+
                 if (inputAxis.hasControllerBinding && inputAxis.controllerBind != null)
                 {
                     Vector2 controllerVector = inputAxis.controllerBind.action.ReadValue<Vector2>();
@@ -507,11 +569,17 @@ namespace dev.susybaka.raidsim.Inputs
                 {
                     if (inputAxis.positive.bind != null && AnyBindedKeyHeld(inputAxis.positive.bind))
                     {
+                        if (!inputAxis.positive.ignoreTyping && isTyping.value)
+                            return false;
+
                         usingController = false;
                         return true;
                     }
                     else if (inputAxis.negative.bind != null && AnyBindedKeyHeld(inputAxis.negative.bind))
                     {
+                        if (!inputAxis.negative.ignoreTyping && isTyping.value)
+                            return false;
+
                         usingController = false;
                         return true;
                     }
@@ -520,11 +588,17 @@ namespace dev.susybaka.raidsim.Inputs
                 {
                     if (inputAxis.positive.bind != null && BindedKeyHeld(inputAxis.positive.bind))
                     {
+                        if (!inputAxis.positive.ignoreTyping && isTyping.value)
+                            return false;
+
                         usingController = false;
                         return true;
                     }
                     else if (inputAxis.negative.bind != null && BindedKeyHeld(inputAxis.negative.bind))
                     {
+                        if (!inputAxis.negative.ignoreTyping && isTyping.value)
+                            return false;
+
                         usingController = false;
                         return true;
                     }
@@ -537,6 +611,13 @@ namespace dev.susybaka.raidsim.Inputs
         {
             if (m_axes.TryGetValue(name, out InputAxis inputAxis))
             {
+                // If the key is not set to bypass typing checks and the user is currently typing, ignore the input
+                // This has to be done so that players can type into chat or other input fields without triggering keybinds
+                if (!inputAxis.ignoreTyping && isTyping.value)
+                {
+                    return false;
+                }
+
                 if (inputAxis.hasControllerBinding && inputAxis.controllerBind != null)
                 {
                     Vector2 controllerVector = inputAxis.controllerBind.action.ReadValue<Vector2>();
@@ -562,11 +643,17 @@ namespace dev.susybaka.raidsim.Inputs
                 {
                     if (inputAxis.positive.bind != null && AnyBindedKey(inputAxis.positive.bind))
                     {
+                        if (!inputAxis.positive.ignoreTyping && isTyping.value)
+                            return false;
+
                         usingController = false;
                         return true;
                     }
                     else if (inputAxis.negative.bind != null && AnyBindedKey(inputAxis.negative.bind))
                     {
+                        if (!inputAxis.negative.ignoreTyping && isTyping.value)
+                            return false;
+
                         usingController = false;
                         return true;
                     }
@@ -575,11 +662,17 @@ namespace dev.susybaka.raidsim.Inputs
                 {
                     if (inputAxis.positive.bind != null && BindedKey(inputAxis.positive.bind))
                     {
+                        if (!inputAxis.positive.ignoreTyping && isTyping.value)
+                            return false;
+
                         usingController = false;
                         return true;
                     }
                     else if (inputAxis.negative.bind != null && BindedKey(inputAxis.negative.bind))
                     {
+                        if (!inputAxis.negative.ignoreTyping && isTyping.value)
+                            return false;
+
                         usingController = false;
                         return true;
                     }
@@ -596,6 +689,13 @@ namespace dev.susybaka.raidsim.Inputs
             if (m_keys.TryGetValue(name, out InputBinding key))
             {
                 //Debug.Log($"key {name} key.hasControllerBinding {key.hasControllerBinding} key.controllerBind {key.controllerBind}");
+
+                // If the key is not set to bypass typing checks and the user is currently typing, ignore the input
+                // This has to be done so that players can type into chat or other input fields without triggering keybinds
+                if (!key.ignoreTyping && isTyping.value)
+                {
+                    return false;
+                }
 
                 if (key.hasControllerBinding && key.controllerBind != null)
                 {
@@ -639,6 +739,13 @@ namespace dev.susybaka.raidsim.Inputs
             if (m_keys.TryGetValue(name, out InputBinding key))
             {
                 //Debug.Log($"key {name} key.hasControllerBinding {key.hasControllerBinding} key.controllerBind {key.controllerBind}");
+
+                // If the key is not set to bypass typing checks and the user is currently typing, ignore the input
+                // This has to be done so that players can type into chat or other input fields without triggering keybinds
+                if (!key.ignoreTyping && isTyping.value)
+                {
+                    return false;
+                }
 
                 if (key.hasControllerBinding && key.controllerBind != null)
                 {
@@ -729,6 +836,11 @@ namespace dev.susybaka.raidsim.Inputs
             }
         }
 
+        public void SetTypingState(string label, bool state)
+        {
+            isTyping.SetFlag(label, state);
+        }
+
         [System.Serializable]
         public struct InputBinding
         {
@@ -741,9 +853,10 @@ namespace dev.susybaka.raidsim.Inputs
             public bool hasControllerBinding;
             public bool requiresModifier;
             public bool neverDisable;
+            public bool ignoreTyping;
             public InputActionReference controllerBind;
 
-            public InputBinding(string name, KeyBind bind, CharacterAction action, StatusEffectData statusEffect, UnityEvent onInput, UnityEvent onHeld, bool hasControllerBinding, bool requiresModifier, bool neverDisable, InputActionReference controllerBind)
+            public InputBinding(string name, KeyBind bind, CharacterAction action, StatusEffectData statusEffect, UnityEvent onInput, UnityEvent onHeld, bool hasControllerBinding, bool requiresModifier, bool neverDisable, bool ignoreTyping, InputActionReference controllerBind)
             {
                 this.name = name;
                 this.bind = bind;
@@ -754,6 +867,7 @@ namespace dev.susybaka.raidsim.Inputs
                 this.hasControllerBinding = hasControllerBinding;
                 this.requiresModifier = requiresModifier;
                 this.neverDisable = neverDisable;
+                this.ignoreTyping = ignoreTyping;
                 this.controllerBind = controllerBind;
             }
 
@@ -776,10 +890,11 @@ namespace dev.susybaka.raidsim.Inputs
             public bool weakModifierKeys;
             public bool hasControllerBinding;
             public bool neverDisable;
+            public bool ignoreTyping;
             public InputActionReference controllerBind;
             public NewInputAxis controllerBindUseAxis;
 
-            public InputAxis(string name, InputBinding positive, InputBinding negative, bool weakModifierKeys, bool hasControllerBinding, bool neverDisable, InputActionReference controllerBind, NewInputAxis controllerBindUseAxis)
+            public InputAxis(string name, InputBinding positive, InputBinding negative, bool weakModifierKeys, bool hasControllerBinding, bool neverDisable, bool ignoreTyping, InputActionReference controllerBind, NewInputAxis controllerBindUseAxis)
             {
                 this.name = name;
                 this.positive = positive;
@@ -793,6 +908,7 @@ namespace dev.susybaka.raidsim.Inputs
                 this.weakModifierKeys = weakModifierKeys;
                 this.hasControllerBinding = hasControllerBinding;
                 this.neverDisable = neverDisable;
+                this.ignoreTyping = ignoreTyping;
                 this.controllerBind = controllerBind;
                 this.controllerBindUseAxis = controllerBindUseAxis;
             }

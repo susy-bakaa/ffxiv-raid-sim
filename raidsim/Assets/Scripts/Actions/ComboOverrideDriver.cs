@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// This file is part of ffxiv-raid-sim. Linking with the Unity runtime
+// is permitted under the Unity Runtime Linking Exception (see LICENSE).
 using UnityEngine;
 
 namespace dev.susybaka.raidsim.Actions
@@ -7,14 +10,13 @@ namespace dev.susybaka.raidsim.Actions
         [System.Serializable]
         public struct ComboLink
         {
-            public string baseActionId;     // the slot’s base action id that should morph
-            public string nextActionId;     // what it becomes
-            public float windowSeconds;     // combo window duration
+            public string baseActionId; // the slot's base action id that should morph
+            public string nextActionId; // what it becomes
+            public float windowSeconds; // combo window duration
         }
 
         [SerializeField] private ActionOverrideResolver resolver;
 
-        // You decide how to populate this: inspector, SO, generated, etc.
         [SerializeField] private ComboLink[] links;
 
         private readonly System.Collections.Generic.Dictionary<string, ComboLink> byBase = new();
@@ -26,11 +28,8 @@ namespace dev.susybaka.raidsim.Actions
                     byBase[l.baseActionId] = l;
         }
 
-        /// Call this from your action system when an action executes successfully.
         public void OnActionExecuted(string executedActionId)
         {
-            // Example rule: executing baseActionId activates its nextActionId for windowSeconds.
-            // If your combo rules are different, adapt this mapping.
 
             if (string.IsNullOrWhiteSpace(executedActionId))
                 return;
@@ -41,11 +40,10 @@ namespace dev.susybaka.raidsim.Actions
                 return;
             }
 
-            // If you want combos to break when using anything else, you can clear overrides here.
+            // If combos should break when using anything else, clear overrides here.
             // resolver.ClearAll();
         }
 
-        /// Optional: call this when combo is broken (miss, wrong skill, timeout, etc.)
         public void BreakCombo(string baseActionId)
         {
             resolver.ClearOverride("combo", baseActionId);
