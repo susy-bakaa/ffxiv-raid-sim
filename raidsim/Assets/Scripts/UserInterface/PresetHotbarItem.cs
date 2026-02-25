@@ -80,8 +80,6 @@ namespace dev.susybaka.raidsim.UI
 
         private void Update()
         {
-            if (action == null)
-                return;
             UpdateRuntimeVisuals();
         }
 
@@ -113,6 +111,8 @@ namespace dev.susybaka.raidsim.UI
                     int i = -1;
                     MacroLibrary.TryParseMacroId(binding.id, out i);
                     macro = macroEditor.Library.Get(i);
+                    if (!macro.isValid)
+                        macro = new MacroEntry { isValid = false };
                     if (macro.isValid && !string.IsNullOrEmpty(macro.name))
                         tooltip = macro.name;
                     else
@@ -143,14 +143,14 @@ namespace dev.susybaka.raidsim.UI
             // Action: pull icon/name from CharacterActionData
             // Keep this lightweight and cached if you want.
 
-            if (action != null)
+            if (macro.isValid && macroEditor != null)
+            {
+                image.sprite = macroEditor.Resolver.ResolveIconSprite(macro, out action);
+                image.color = Color.white;
+            }
+            else if (action != null)
             {
                 image.sprite = action.Data.icon;
-                image.color = Color.white;
-            } 
-            else if (macro.isValid && macroEditor != null)
-            {
-                image.sprite = macroEditor.Resolver.ResolveIconSprite(macro);
                 image.color = Color.white;
             }
             else
@@ -243,8 +243,46 @@ namespace dev.susybaka.raidsim.UI
             if (binding.kind == SlotKind.Empty)
                 return;
 
-            if (!action)
+            if (action == null)
+            {
+                if (recastFillGroup != null)
+                {
+                    recastFillGroup.alpha = 0f;
+                }
+                if (recastTimeText != null)
+                {
+                    recastTimeText.text = string.Empty;
+                }
+                if (borderStandard != null)
+                {
+                    borderStandard.alpha = 1f;
+                }
+                if (borderDark != null)
+                {
+                    borderDark.alpha = 0f;
+                }
+                if (comboOutlineGroup != null)
+                {
+                    comboOutlineGroup.alpha = 0f;
+                }
+                if (resourceCostText != null)
+                {
+                    resourceCostText.text = string.Empty;
+                }
+                if (chargesText != null)
+                {
+                    chargesText.text = string.Empty;
+                }
+                if (colorsFlag)
+                {
+                    for (int i = 0; i < hudElements.Length; i++)
+                    {
+                        hudElements[i].SetColor(defaultColors);
+                    }
+                    colorsFlag = false;
+                }
                 return;
+            }
 
             if (action.unavailable)
             {
@@ -453,6 +491,8 @@ namespace dev.susybaka.raidsim.UI
                     int i = -1;
                     MacroLibrary.TryParseMacroId(binding.id, out i);
                     macro = macroEditor.Library.Get(i);
+                    if (!macro.isValid)
+                        macro = new MacroEntry { isValid = false };
                     if (macro.isValid && !string.IsNullOrEmpty(macro.name))
                         tooltip = macro.name;
                     else
@@ -460,14 +500,14 @@ namespace dev.susybaka.raidsim.UI
                     break;
             }
 
-            if (action != null)
+            if (macro.isValid && macroEditor != null)
             {
-                image.sprite = action.Data.icon;
+                image.sprite = macroEditor.Resolver.ResolveIconSprite(macro, out action);
                 image.color = Color.white;
             }
-            else if (macro.isValid && macroEditor != null)
+            else if (action != null)
             {
-                image.sprite = macroEditor.Resolver.ResolveIconSprite(macro);
+                image.sprite = action.Data.icon;
                 image.color = Color.white;
             }
             else

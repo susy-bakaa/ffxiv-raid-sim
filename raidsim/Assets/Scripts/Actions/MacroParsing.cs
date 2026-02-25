@@ -19,13 +19,11 @@ namespace dev.susybaka.raidsim.Actions
             return string.Join("\n", lines, 0, 15);
         }
 
-        // Finds first /micon or /macroicon line and extracts ActionId token.
-        // Accepts: /micon Sprint
-        //          /micon "Sprint"
-        //          /macroicon Sprint
-        public static bool TryExtractMiconActionId(string body, out string actionId)
+        public static bool TryExtractMicon(string body, out string name, out MacroMiconType type)
         {
-            actionId = null;
+            name = null;
+            type = MacroMiconType.None;
+
             body = NormalizeNewlines(body);
             var lines = body.Split('\n');
 
@@ -35,32 +33,60 @@ namespace dev.susybaka.raidsim.Actions
                 if (line.Length == 0)
                     continue;
 
-                if (StartsWithCmd(line, "/micon") || StartsWithCmd(line, "/macroicon"))
+                if (!StartsWithCmd(line, "/micon") && !StartsWithCmd(line, "/macroicon"))
+                    continue;
+
+                var rest = line;
+                rest = RemoveLeadingCmd(rest, "/micon");
+                rest = RemoveLeadingCmd(rest, "/macroicon");
+                rest = rest.Trim();
+
+                // First arg: quoted or token
+                if (rest.StartsWith("\""))
                 {
-                    // Remove command word
-                    var rest = line;
-                    rest = RemoveLeadingCmd(rest, "/micon");
-                    rest = RemoveLeadingCmd(rest, "/macroicon");
-                    rest = rest.Trim();
-
-                    if (rest.StartsWith("\""))
+                    int end = rest.IndexOf('"', 1);
+                    if (end > 1)
                     {
-                        int end = rest.IndexOf('"', 1);
-                        if (end > 1)
-                            actionId = rest.Substring(1, end - 1).Trim();
+                        name = rest.Substring(1, end - 1).Trim();
+                        rest = rest.Substring(end + 1).Trim();
                     }
-                    else
-                    {
-                        // token until whitespace
-                        int sp = rest.IndexOf(' ');
-                        actionId = (sp >= 0 ? rest.Substring(0, sp) : rest).Trim();
-                    }
-
-                    return !string.IsNullOrWhiteSpace(actionId);
                 }
+                else
+                {
+                    int sp = rest.IndexOf(' ');
+                    name = (sp >= 0 ? rest.Substring(0, sp) : rest).Trim();
+                    rest = (sp >= 0 ? rest.Substring(sp + 1).Trim() : "");
+                }
+
+                // Second arg: type token (optional, default action)
+                var typeTok = "";
+                if (!string.IsNullOrWhiteSpace(rest))
+                {
+                    int sp = rest.IndexOf(' ');
+                    typeTok = (sp >= 0 ? rest.Substring(0, sp) : rest).Trim();
+                }
+
+                type = ParseMiconType(typeTok);
+                if (type == MacroMiconType.None)
+                    type = MacroMiconType.Action; // default
+
+                return !string.IsNullOrWhiteSpace(name);
             }
 
             return false;
+        }
+
+        private static MacroMiconType ParseMiconType(string tok)
+        {
+            tok = (tok ?? "").Trim().ToLowerInvariant();
+            return tok switch
+            {
+                "action" => MacroMiconType.Action,
+                "waymark" => MacroMiconType.Waymark,
+                "enemysign" => MacroMiconType.Sign,
+                "" => MacroMiconType.None,
+                _ => MacroMiconType.None
+            };
         }
 
         public static bool IsMacroMetaLine(string line)

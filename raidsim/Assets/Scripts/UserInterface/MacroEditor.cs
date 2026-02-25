@@ -7,6 +7,7 @@ using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.Inputs;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace dev.susybaka.raidsim.UI
 {
@@ -31,13 +32,13 @@ namespace dev.susybaka.raidsim.UI
         [SerializeField] private HudWindow macroIconPickerPopup;
         [SerializeField] private MacroSlot macroSlotPrefab;
         [SerializeField] private Transform macroSlotParent;
+        [SerializeField] private UnityEvent onChange;
 
-
-        // Optional icon UI: dropdown/picker for custom icons
-        [SerializeField] private MacroIconMode defaultIconMode = MacroIconMode.Default;
+        private MacroIconMode defaultIconMode = MacroIconMode.Default;
 
         public System.Action<int> OnMacroSelected;
         private int currentIndex = -1;
+        private MacroSlot[] slots = new MacroSlot[MacroLibrary.Count];
 
         private void Awake()
         {
@@ -51,12 +52,16 @@ namespace dev.susybaka.raidsim.UI
                 slot.Initialize(this, hotbarController, index);
                 slot.OnEditRequested += Open;
                 OnMacroSelected += slot.HandleChanged;
+                OnMacroSelected += OnChange;
+                slots[index] = slot;
             }
 
             if (roleIndicator != null)
             {
                 roleIndicator.text = $"Lv{character.characterLevel} {GlobalVariables.roleNames[(int)character.role]}";
             }
+
+            library.OnBulkChanged += RefreshAll;
 
             macroIconPickerPopup.CloseWindow();
             hudWindow.CloseWindow();
@@ -92,6 +97,8 @@ namespace dev.susybaka.raidsim.UI
 
         public void Open(int macroIndex)
         {
+            int previousIndex = currentIndex;
+
             currentIndex = macroIndex;
             var e = library.Get(macroIndex);
 
@@ -99,14 +106,17 @@ namespace dev.susybaka.raidsim.UI
             bodyField.text = e.body ?? "";
             if (!hudWindow.isOpen)
                 hudWindow.OpenWindow();
+            if (previousIndex != macroIndex && macroIconPickerPopup != null)
+                macroIconPickerPopup.CloseWindow(); // Close icon picker when switching macros to avoid issues
             OnMacroSelected?.Invoke(macroIndex);
+            onChange?.Invoke();
         }
 
         public void Close()
         {
             if (hudWindow.isOpen)
                 hudWindow.CloseWindow();
-            currentIndex = -1;
+            currentIndex = 0;
         }
 
         public int GetCurrentIndex() => currentIndex;
@@ -130,7 +140,8 @@ namespace dev.susybaka.raidsim.UI
             {
                 e.iconMode = MacroIconMode.Default;
                 e.customIconId = "";
-                e.actionIconId = "";
+                e.miconType = MacroMiconType.None;
+                e.miconName = "";
                 library.Set(currentIndex, e);
                 return;
             }
@@ -140,11 +151,35 @@ namespace dev.susybaka.raidsim.UI
                 e.iconMode = defaultIconMode;
 
             // Auto-detect /micon or /macroicon
-            if (MacroParsing.TryExtractMiconActionId(body, out var actionId))
+            if (MacroParsing.TryExtractMicon(body, out var mname, out var type))
             {
                 e.iconMode = MacroIconMode.ActionIcon;
-                e.actionIconId = actionId;
-                // You can optionally clear customIconId here
+                e.miconName = mname;
+                e.miconType = type;
+                
+                if (type == MacroMiconType.Action)
+                {
+                    if (!string.IsNullOrEmpty(mname))
+                    {
+                        var a = hotbarController.Registry.GetFirstByName(mname, System.StringComparison.OrdinalIgnoreCase);
+                        e.miconName = a != null ? a.ActionId : string.Empty;
+                    }
+                    else
+                        e.miconName = string.Empty;
+                }
+
+                // Fallback to custom/default if no valid action found
+                if (string.IsNullOrEmpty(e.miconName))
+                {
+                    if (!string.IsNullOrEmpty(e.customIconId))
+                    {
+                        e.iconMode = MacroIconMode.CustomSprite;
+                    }
+                    else
+                    {
+                        e.iconMode = MacroIconMode.Default;
+                    }
+                }
             }
 
             library.Set(currentIndex, e);
@@ -159,6 +194,8 @@ namespace dev.susybaka.raidsim.UI
             e.isValid = true;
             e.iconMode = MacroIconMode.CustomSprite;
             e.customIconId = iconId ?? "";
+            e.miconType = MacroMiconType.None;
+            e.miconName = "";
             library.Set(currentIndex, e);
             Save();
         }
@@ -170,9 +207,18 @@ namespace dev.susybaka.raidsim.UI
             var e = library.Get(currentIndex);
             e.iconMode = MacroIconMode.Default;
             e.customIconId = "";
-            e.actionIconId = "";
+            e.miconType = MacroMiconType.None;
+            e.miconName = "";
             library.Set(currentIndex, e);
             Save();
+        }
+
+        public void ClearAllMacros()
+        {
+            library.ClearAll();
+            library.NotifyBulkChanged();
+            if (currentIndex > 0 && currentIndex < MacroLibrary.Count)
+                Open(currentIndex);
         }
 
         public void UpdateIconPreview(PresetHotbarItem preset)
@@ -183,17 +229,36 @@ namespace dev.susybaka.raidsim.UI
             iconField.Copy(preset);
         }
 
+        public void RefreshAll()
+        {
+            for (int i = 0; i < MacroLibrary.Count; i++)
+            {
+                slots[i].HandleChanged(currentIndex);
+                if (currentIndex != i)
+                    slots[i].Refresh();
+            }
+            if (currentIndex > 0 && currentIndex < MacroLibrary.Count)
+                Open(currentIndex);
+            onChange?.Invoke();
+        }
+
         public void OpenIconPicker()
         {
             if (currentIndex < 0)
                 return;
 
+            resolver.RefreshIconPicker();
             macroIconPickerPopup.OpenWindow();
         }
 
         public void CloseIconPicker()
         {
             macroIconPickerPopup.CloseWindow(); 
+        }
+
+        private void OnChange(int _)
+        {
+            onChange?.Invoke();
         }
     }
 }

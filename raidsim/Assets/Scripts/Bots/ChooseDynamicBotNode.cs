@@ -17,6 +17,8 @@ namespace dev.susybaka.raidsim.Bots
 {
     public class ChooseDynamicBotNode : MonoBehaviour
     {
+        [SerializeField, Multiline(3)] private string _info = string.Empty;
+        [Space]
         public BotNodeGroup nodeGroup;
         public List<BotNode> availableNodes = new List<BotNode>();
         [ShowIf(nameof(useIndexMapping))] public List<IndexMapping> indexMapping = new List<IndexMapping>();

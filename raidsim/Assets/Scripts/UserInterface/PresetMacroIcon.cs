@@ -1,15 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // This file is part of ffxiv-raid-sim. Linking with the Unity runtime
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using TMPro;
 using dev.susybaka.raidsim.Actions;
 using dev.susybaka.Shared;
-using static dev.susybaka.raidsim.Core.GlobalData;
 using static dev.susybaka.raidsim.UI.MacroIconData;
 
 namespace dev.susybaka.raidsim.UI
@@ -31,8 +27,8 @@ namespace dev.susybaka.raidsim.UI
         [SerializeField] private Image selectionIcon;
 
         private bool pointer;
-        private System.Action onClick;
-        private int index;
+        private System.Action<int> onClick;
+        private int index = 0;
 
         private void Awake()
         {
@@ -40,7 +36,7 @@ namespace dev.susybaka.raidsim.UI
             element = GetComponent<HudElement>();
         }
 
-        public void Initialize(MacroLibrary library, MacroEditor editor, Entry icon, int index, System.Action callback)
+        public void Initialize(MacroLibrary library, MacroEditor editor, Entry icon, int index, System.Action<int> callback)
         {
             this.library = library;
             this.editor = editor;
@@ -70,15 +66,37 @@ namespace dev.susybaka.raidsim.UI
             }
             if (selectionIcon != null)
             {
-                if (index == editor.GetCurrentIndex())
+                int i = editor.GetCurrentIndex();
+                if (i < 0 || i > MacroLibrary.Count)
+                    i = 0;
+                string iconId = library.Get(i).customIconId;
+                if (!string.IsNullOrEmpty(iconId) && iconId == iconData.id)
                 {
-                    if (library.Get(index).customIconId == iconData.id)
-                    {
-                        selectionIcon.gameObject.SetActive(true);
-                        return;
-                    }
+                    selectionIcon.gameObject.SetActive(true);
                 }
-                selectionIcon.gameObject.SetActive(false);
+                else
+                {
+                    selectionIcon.gameObject.SetActive(false);
+                }
+            }
+        }
+
+        public void RefreshVisuals()
+        {
+            if (selectionIcon != null)
+            {
+                int i = editor.GetCurrentIndex();
+                if (i < 0 || i > MacroLibrary.Count)
+                    i = 0;
+                string iconId = library.Get(i).customIconId;
+                if (!string.IsNullOrEmpty(iconId) && iconId == iconData.id)
+                {
+                    selectionIcon.gameObject.SetActive(true);
+                }
+                else
+                {
+                    selectionIcon.gameObject.SetActive(false);
+                }
             }
         }
 
@@ -98,20 +116,7 @@ namespace dev.susybaka.raidsim.UI
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            onClick?.Invoke();
-
-            if (selectionIcon != null)
-            {
-                if (index == editor.GetCurrentIndex())
-                {
-                    if (library.Get(index).customIconId == iconData.id)
-                    {
-                        selectionIcon.gameObject.SetActive(true);
-                        return;
-                    }
-                }
-                selectionIcon.gameObject.SetActive(false);
-            }
+            onClick?.Invoke(index);
 
             if (clickHighlight == null)
             {

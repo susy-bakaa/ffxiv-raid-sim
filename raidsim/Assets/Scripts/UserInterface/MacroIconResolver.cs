@@ -2,7 +2,9 @@
 // This file is part of ffxiv-raid-sim. Linking with the Unity runtime
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
 using UnityEngine;
+using UnityEngine.Events;
 using dev.susybaka.raidsim.Actions;
+using static dev.susybaka.raidsim.UI.MacroIconData;
 
 namespace dev.susybaka.raidsim.UI
 {
@@ -12,12 +14,17 @@ namespace dev.susybaka.raidsim.UI
         [SerializeField] private MacroEditor editor;
         [SerializeField] private Sprite defaultMacroIcon;
         [SerializeField] private MacroIconData iconData; // optional
+        [SerializeField] private MacroIconCatalogData iconCatalogData;
         [SerializeField] private CharacterActionRegistry registry; // for action icons
         [Header("Icon Picker")]
         [SerializeField] private PresetMacroIcon iconPrefab;
         [SerializeField] private Transform iconPageParent;
         [SerializeField] private int pages = 4;
         [SerializeField] private int iconsPerPage = 25;
+        [Header("Events")]
+        public UnityEvent onIconsInitialized;
+
+        private System.Action onRefreshIconPicker;
 
         void Start()
         {
@@ -37,7 +44,8 @@ namespace dev.susybaka.raidsim.UI
                     int index = i * iconsPerPage + j;
                     if (index < iconData.Entries.Length)
                     {
-                        icon.Initialize(editor.Library, editor, iconData.Entries[index], index, () => editor.SetCustomIcon(iconData.Entries[index].id));
+                        icon.Initialize(editor.Library, editor, iconData.Entries[index], index, SetCustomIconForIndex);
+                        onRefreshIconPicker += icon.RefreshVisuals;
                     }
                     else
                     {
@@ -45,10 +53,13 @@ namespace dev.susybaka.raidsim.UI
                     }
                 }
             }
+            onIconsInitialized.Invoke();
         }
 
-        public Sprite ResolveIconSprite(MacroEntry e)
+        public Sprite ResolveIconSprite(MacroEntry e, out CharacterAction iconAction)
         {
+            iconAction = null;
+
             if (!e.isValid)
                 return null;
 
@@ -59,12 +70,45 @@ namespace dev.susybaka.raidsim.UI
 
                 case MacroIconMode.ActionIcon:
                 {
-                    if (registry == null || string.IsNullOrWhiteSpace(e.actionIconId))
-                        return defaultMacroIcon;
+                    switch (e.miconType)
+                    {
+                        case MacroMiconType.Action:
+                        {
+                            if (registry == null || string.IsNullOrWhiteSpace(e.miconName))
+                            {
+                                if (!string.IsNullOrEmpty(e.customIconId))
+                                {
+                                    return iconData ? iconData.Get(e.customIconId) : defaultMacroIcon;
+                                }
+                                else
+                                    return defaultMacroIcon;
+                            }
 
-                    var a = registry.GetById(e.actionIconId);
-                    var s = a != null ? a.Data.icon : null;
-                    return s ? s : defaultMacroIcon;
+                            var a = registry.GetById(e.miconName);
+                            var s = a != null ? a.Data.icon : null;
+                            iconAction = a;
+
+                            if (s == null && !string.IsNullOrEmpty(e.customIconId))
+                            {
+                                return iconData ? iconData.Get(e.customIconId) : defaultMacroIcon;
+                            }
+
+                            return s;
+                        }
+
+                        case MacroMiconType.Waymark:
+                        {
+                            var s = iconCatalogData ? iconCatalogData.GetWaymark(e.miconName) : null;
+                            return s ? s : defaultMacroIcon;
+                        }
+
+                        case MacroMiconType.Sign:
+                        {
+                            var s = iconCatalogData ? iconCatalogData.GetSign(e.miconName) : null;
+                            return s ? s : defaultMacroIcon;
+                        }
+                    }
+                    return defaultMacroIcon;
                 }
 
                 default:
@@ -72,11 +116,51 @@ namespace dev.susybaka.raidsim.UI
             }
         }
 
+        // Only Action-type micon should inherit cooldown/charges visuals
         public string ResolveStateSourceActionId(MacroEntry e)
         {
             if (!e.isValid)
                 return null;
-            return e.iconMode == MacroIconMode.ActionIcon ? e.actionIconId : null;
+            if (e.iconMode != MacroIconMode.ActionIcon)
+                return null;
+            if (e.miconType != MacroMiconType.Action)
+                return null;
+
+            return e.miconName; // if storing ActionId here
+        }
+
+        public int GetCustomIconIndex(Entry e)
+        {
+            for (int i = 0; i < iconData.Entries.Length; i++)
+            {
+                if (iconData.Entries[i].id == e.id)
+                    return i;
+            }
+            return 0; // We can safely return 0 here since the default icon is always at index 0 in the icon picker
+        }
+
+        public int GetCustomIconIndex(MacroEntry e)
+        {
+            if (!e.isValid || e.iconMode != MacroIconMode.CustomSprite || string.IsNullOrWhiteSpace(e.customIconId))
+                return 0; // We can safely return 0 here since the default icon is always at index 0 in the icon picker
+
+            for (int i = 0; i < iconData.Entries.Length; i++)
+            {
+                if (iconData.Entries[i].id == e.customIconId)
+                    return i;
+            }
+            return 0; // We can safely return 0 here since the default icon is always at index 0 in the icon picker
+        }
+
+        public void RefreshIconPicker()
+        {
+            onRefreshIconPicker?.Invoke();
+        }
+
+        private void SetCustomIconForIndex(int index)
+        {
+            editor.SetCustomIcon(iconData.Entries[index].id);
+            onRefreshIconPicker?.Invoke();
         }
     }
 }

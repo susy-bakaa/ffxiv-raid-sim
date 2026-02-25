@@ -72,7 +72,6 @@ namespace dev.susybaka.raidsim.UI
 
             if (idx == macroIndex)
             {
-                editor.UpdateIconPreview(current);
                 Refresh();
             }
             if (selectionOutline != null)
@@ -100,11 +99,13 @@ namespace dev.susybaka.raidsim.UI
 
             if (current != null)
                 current.Initialize(hotbarController, editor, new SlotBinding { id = MacroLibrary.MacroIdFromIndex(macroIndex), kind = SlotKind.Macro});
+
+            editor.UpdateIconPreview(current);
         }
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            Debug.Log($"MacroSlot {macroIndex} clicked with button {eventData.button}");
+            //Debug.Log($"MacroSlot {macroIndex} clicked with button {eventData.button}");
             if (eventData.button == PointerEventData.InputButton.Left)
             {
                 OnEditRequested?.Invoke(macroIndex);
@@ -112,6 +113,7 @@ namespace dev.susybaka.raidsim.UI
             else if (eventData.button == PointerEventData.InputButton.Right)
             {
                 editor.Library.Clear(macroIndex);
+                OnEditRequested?.Invoke(macroIndex); // Open editor with cleared macro for convenience
             }
         }
     }

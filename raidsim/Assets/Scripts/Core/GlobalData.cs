@@ -631,10 +631,17 @@ namespace dev.susybaka.raidsim.Core
         }
 
         [System.Serializable]
+        public struct MacroSlotSave
+        {
+            public int index;
+            public MacroEntry entry;
+        }
+
+        [System.Serializable]
         public class MacroLibrarySnapshot
         {
             public int version = 1;
-            public MacroEntry[] entries;
+            public MacroSlotSave[] slots;
         }
     }
 }

@@ -1022,7 +1022,8 @@ namespace dev.susybaka.raidsim.Actions
                         isGroundTargeting = true;
                     }
 
-                    comboDriver.OnActionExecuted(action.ActionId);
+                    if (comboDriver != null)
+                        comboDriver.OnActionExecuted(action.ActionId);
                 }
                 else
                 {
@@ -1060,7 +1061,7 @@ namespace dev.susybaka.raidsim.Actions
 
                     ActionInfo newActionInfo = new ActionInfo(action, characterState, currentTarget);
                     action.onCast.Invoke(newActionInfo);
-                    StartCoroutine(IE_Cast(castTime, () => { if (!action.Data.isGroundTargeted && action.Data.recast > 0f && !hidden) { action.chargesLeft--; } action.ExecuteAction(newActionInfo); if (action.Data.playAnimationOnFinish) { HandleAnimation(action); } HandleActionAudio(action, true); comboDriver.OnActionExecuted(action.ActionId); }));
+                    StartCoroutine(IE_Cast(castTime, () => { if (!action.Data.isGroundTargeted && action.Data.recast > 0f && !hidden) { action.chargesLeft--; } action.ExecuteAction(newActionInfo); if (action.Data.playAnimationOnFinish) { HandleAnimation(action); } HandleActionAudio(action, true); if (comboDriver != null) { comboDriver.OnActionExecuted(action.ActionId); } }));
                     onCast.Invoke(new CastInfo(newActionInfo, instantCast, characterState.GetEffects()));
 
                     if (!action.Data.playAnimationOnFinish && !action.Data.isGroundTargeted)

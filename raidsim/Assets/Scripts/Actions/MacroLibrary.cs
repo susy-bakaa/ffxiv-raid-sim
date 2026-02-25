@@ -16,6 +16,7 @@ namespace dev.susybaka.raidsim.Actions
 
         public event Action<int> OnMacroChanged; // slot index
         public event Action OnAnyChanged;
+        public event Action OnBulkChanged;
 
         public MacroEntry Get(int index) => entries[index];
 
@@ -34,10 +35,31 @@ namespace dev.susybaka.raidsim.Actions
             entries[index].body = "";
             entries[index].iconMode = MacroIconMode.Default;
             entries[index].customIconId = "";
-            entries[index].actionIconId = "";
+            entries[index].miconType = MacroMiconType.None;
+            entries[index].miconName = "";
 
             OnMacroChanged?.Invoke(index);
             OnAnyChanged?.Invoke();
+        }
+
+        public void ClearAll()
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                entries[i] = default;
+                entries[i].isValid = false;
+                entries[i].name = "";
+                entries[i].body = "";
+                entries[i].iconMode = MacroIconMode.Default;
+                entries[i].customIconId = "";
+                entries[i].miconType = MacroMiconType.None;
+                entries[i].miconName = "";
+            }
+        }
+
+        public void NotifyBulkChanged()
+        {
+            OnBulkChanged?.Invoke();
         }
 
         public bool IsValid(int index) => entries[index].isValid;

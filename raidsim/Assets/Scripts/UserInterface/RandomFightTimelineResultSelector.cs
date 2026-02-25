@@ -68,6 +68,11 @@ namespace dev.susybaka.raidsim.UI
             }
         }
 
+        public void Select()
+        {
+            Select(selectedValue);
+        }
+
         public void Select(int value)
         {
             if (id > -1 && results != null && results.Length > 0)

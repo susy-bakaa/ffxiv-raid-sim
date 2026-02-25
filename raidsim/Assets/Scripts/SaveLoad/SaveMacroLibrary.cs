@@ -53,13 +53,23 @@ namespace dev.susybaka.raidsim.SaveLoad
 
             ini.Load(GlobalVariables.configPath);
 
-            var snap = new MacroLibrarySnapshot { entries = new MacroEntry[MacroLibrary.Count] };
-            for (int i = 0; i < MacroLibrary.Count; i++)
-                snap.entries[i] = library.Get(i);
+            var list = new System.Collections.Generic.List<MacroSlotSave>();
 
+            for (int i = 0; i < MacroLibrary.Count; i++)
+            {
+                var e = library.Get(i);
+                if (!e.isValid)
+                    continue;
+
+                if (string.IsNullOrWhiteSpace(e.name) && string.IsNullOrWhiteSpace(e.body)) 
+                    continue;
+
+                list.Add(new MacroSlotSave { index = i, entry = e });
+            }
+
+            var snap = new MacroLibrarySnapshot { slots = list.ToArray() };
             var json = JsonUtility.ToJson(snap);
 
-            // If you ever hit INI escaping issues, base64 it:
             //json = Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
 
             ini.Set(group, key, json);
@@ -68,23 +78,35 @@ namespace dev.susybaka.raidsim.SaveLoad
 
         public void LoadValue()
         {
-            var ini = new IniStorage();
             ini.Load(GlobalVariables.configPath);
 
             var json = ini.GetString(group, key);
             if (string.IsNullOrWhiteSpace(json))
                 return;
 
-            // If base64:
-            //json = Encoding.UTF8.GetString(Convert.FromBase64String(json));
-
             var snap = JsonUtility.FromJson<MacroLibrarySnapshot>(json);
-            if (snap?.entries == null)
+            if (snap?.slots == null)
                 return;
 
-            int n = Mathf.Min(MacroLibrary.Count, snap.entries.Length);
-            for (int i = 0; i < n; i++)
-                library.Set(i, snap.entries[i]);
+            for (int i = 0; i < MacroLibrary.Count; i++)
+                library.Clear(i);
+
+            foreach (var s in snap.slots)
+            {
+                if (s.index < 0 || s.index >= MacroLibrary.Count)
+                    continue;
+
+                library.Set(s.index, s.entry);
+            }
+        }
+
+        public void ClearValue()
+        {
+            ini.Load(GlobalVariables.configPath);
+
+            ini.Remove(group, key);
+
+            ini.Save();
         }
     }
 }

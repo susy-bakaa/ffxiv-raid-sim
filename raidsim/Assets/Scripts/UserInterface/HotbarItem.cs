@@ -151,7 +151,7 @@ namespace dev.susybaka.raidsim.UI
             }
             else if (macro.isValid && macroEditor != null)
             {
-                image.sprite = macroEditor.Resolver.ResolveIconSprite(macro);
+                image.sprite = macroEditor.Resolver.ResolveIconSprite(macro, out action);
                 image.color = Color.white;
             }
             else
@@ -476,7 +476,7 @@ namespace dev.susybaka.raidsim.UI
             }
             else if (macro.isValid && macroEditor != null)
             {
-                image.sprite = macroEditor.Resolver.ResolveIconSprite(macro);
+                image.sprite = macroEditor.Resolver.ResolveIconSprite(macro, out action);
                 image.color = Color.white;
             }
             else

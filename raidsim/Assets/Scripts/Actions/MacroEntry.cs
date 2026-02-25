@@ -10,8 +10,10 @@ namespace dev.susybaka.raidsim.Actions
     {
         Default,
         CustomSprite,
-        ActionIcon // /micon or /macroicon ActionId
+        ActionIcon
     }
+
+    public enum MacroMiconType { None, Action, Waymark, Sign }
 
     [Serializable]
     public struct MacroEntry
@@ -22,10 +24,9 @@ namespace dev.susybaka.raidsim.Actions
 
         public MacroIconMode iconMode;
 
-        // For CustomSprite: key into your icon DB
         public string customIconId;
 
-        // For ActionIcon: an ActionId (must exist in registry)
-        public string actionIconId;
+        public MacroMiconType miconType;
+        public string miconName;
     }
 }
