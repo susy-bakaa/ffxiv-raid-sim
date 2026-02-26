@@ -21,7 +21,6 @@ namespace dev.susybaka.raidsim.Core
         public IReadOnlyList<ChatMessage> History => _history;
 
         private readonly List<ChatMessage> _history = new(512);
-        private readonly Dictionary<string, string> _macros = new(StringComparer.OrdinalIgnoreCase);
 
         private long _nextId = 1;
         private int _maxHistory = 500;
@@ -34,7 +33,7 @@ namespace dev.susybaka.raidsim.Core
 
         private ChatHandler() { }
 
-        public void PostUser(CharacterState sender, string text, ChatChannel channel = ChatChannel.Party)
+        public void PostUser(CharacterState sender, List<CharacterState> targets, string text, ChatChannel channel = ChatChannel.Party)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return;
@@ -43,7 +42,7 @@ namespace dev.susybaka.raidsim.Core
 
             // commands/macros start with "/"
             string trimmedText = text.Trim();
-            if (TryExecuteCommand(sender, trimmedText, ref channel))
+            if (TryExecuteCommand(sender, targets, trimmedText, ref channel))
                 return;
 
             // If the text started with a command that just changed the channel,
@@ -97,7 +96,7 @@ namespace dev.susybaka.raidsim.Core
             MessageAdded?.Invoke(msg);
         }
 
-        private bool TryExecuteCommand(CharacterState sender, string raw, ref ChatChannel channel)
+        private bool TryExecuteCommand(CharacterState sender, List<CharacterState> targets, string raw, ref ChatChannel channel)
         {
             if (string.IsNullOrWhiteSpace(raw) || !raw.StartsWith("/"))
                 return false;
@@ -134,51 +133,147 @@ namespace dev.susybaka.raidsim.Core
                     channel = ChatChannel.Party;
                     return false;
 
-                // /note this is a thing to remember
-                case "note":
-                    PostSystem(string.IsNullOrWhiteSpace(args) ? "Usage: /note <text>" : $"NOTE: {args}");
-                    return true;
-
-                // /macro set name some text
-                // /macro name  (exec)
-                case "macro":
-                {
+                case "mark":
                     if (string.IsNullOrWhiteSpace(args))
                     {
-                        PostSystem("Usage: /macro set <name> <text>  OR  /macro <name>");
+                        PostSystem("Usage: /mark <markName> <target> OR /mk <markName> <target>");
                         return true;
                     }
-
-                    parts = args.Split(' ', 3, StringSplitOptions.RemoveEmptyEntries);
-                    if (parts.Length >= 2 && parts[0].Equals("set", StringComparison.OrdinalIgnoreCase))
+                    
+                    // Extract markName (first word) and targetSpec (rest)
+                    int spaceIdx = args.IndexOf(' ');
+                    string markName;
+                    string targetSpec = null;
+                    
+                    if (spaceIdx < 0)
                     {
-                        if (parts.Length < 3)
-                        {
-                            PostSystem("Usage: /macro set <name> <text>");
-                            return true;
-                        }
-
-                        var name = parts[1];
-                        var body = parts[2];
-                        _macros[name] = body;
-                        PostSystem($"Macro '{name}' saved.");
-                        return true;
+                        markName = args.Trim();
                     }
                     else
                     {
-                        var name = parts[0];
-                        if (_macros.TryGetValue(name, out var body))
+                        markName = args.Substring(0, spaceIdx).Trim();
+                        targetSpec = args.Substring(spaceIdx + 1).Trim();
+                    }
+                    
+                    CharacterState targetChar = sender; // Default to sender
+                    
+                    if (!string.IsNullOrWhiteSpace(targetSpec))
+                    {
+                        // Remove wrapping <> or ""
+                        if (targetSpec.StartsWith("<") && targetSpec.EndsWith(">"))
+                            targetSpec = targetSpec.Substring(1, targetSpec.Length - 2);
+                        else if (targetSpec.StartsWith("\"") && targetSpec.EndsWith("\""))
+                            targetSpec = targetSpec.Substring(1, targetSpec.Length - 2);
+                        
+                        // Check if it's a number (index into targets list)
+                        if (int.TryParse(targetSpec, out int index))
                         {
-                            // For now: macros become system messages. Later: broadcast to party/raid.
-                            PostSystem(body);
+                            if (targets != null && index >= 0 && index < targets.Count)
+                                targetChar = targets[index];
+                        }
+                        // Check if it's "me"
+                        else if (targetSpec.Equals("me", StringComparison.OrdinalIgnoreCase))
+                        {
+                            targetChar = sender;
+                        }
+                        // Try to find by character name
+                        else if (targets != null)
+                        {
+                            CharacterState found = targets.Find(c => c.characterName.Equals(targetSpec, StringComparison.OrdinalIgnoreCase));
+                            if (found != null)
+                                targetChar = found;
+                        }
+                    }
+                    
+                    if (targetChar != null)
+                    {
+                        if (!markName.Equals("clear", StringComparison.OrdinalIgnoreCase) && !markName.Equals("off", StringComparison.OrdinalIgnoreCase))
+                        {
+                            PostSystem($"{sender.characterName} marked {targetChar.characterName} as {markName}");
+                            targetChar.Mark(markName);
                         }
                         else
                         {
-                            PostSystem($"Macro '{name}' not found.");
+                            PostSystem($"{sender.characterName} cleared marks from {targetChar.characterName}");
+                            targetChar.Mark(string.Empty);
                         }
+                    }
+                    else
+                    {
+                        PostSystem("No valid target found.", ChatKind.Error);
+                    }
+                    return true;
+                
+                case "mk":
+                    if (string.IsNullOrWhiteSpace(args))
+                    {
+                        PostSystem("Usage: /mark <markName> <target> OR /mk <markName> <target>");
                         return true;
                     }
-                }
+                    
+                    // Extract markName (first word) and targetSpec (rest)
+                    int spaceIdxMk = args.IndexOf(' ');
+                    string markNameMk;
+                    string targetSpecMk = null;
+                    
+                    if (spaceIdxMk < 0)
+                    {
+                        markNameMk = args.Trim();
+                    }
+                    else
+                    {
+                        markNameMk = args.Substring(0, spaceIdxMk).Trim();
+                        targetSpecMk = args.Substring(spaceIdxMk + 1).Trim();
+                    }
+                    
+                    CharacterState targetCharMk = sender; // Default to sender
+                    
+                    if (!string.IsNullOrWhiteSpace(targetSpecMk))
+                    {
+                        // Remove wrapping <> or ""
+                        if (targetSpecMk.StartsWith("<") && targetSpecMk.EndsWith(">"))
+                            targetSpecMk = targetSpecMk.Substring(1, targetSpecMk.Length - 2);
+                        else if (targetSpecMk.StartsWith("\"") && targetSpecMk.EndsWith("\""))
+                            targetSpecMk = targetSpecMk.Substring(1, targetSpecMk.Length - 2);
+                        
+                        // Check if it's a number (index into targets list)
+                        if (int.TryParse(targetSpecMk, out int indexMk))
+                        {
+                            if (targets != null && indexMk >= 0 && indexMk < targets.Count)
+                                targetCharMk = targets[indexMk];
+                        }
+                        // Check if it's "me"
+                        else if (targetSpecMk.Equals("me", StringComparison.OrdinalIgnoreCase))
+                        {
+                            targetCharMk = sender;
+                        }
+                        // Try to find by character name
+                        else if (targets != null)
+                        {
+                            CharacterState foundMk = targets.Find(c => c.characterName.Equals(targetSpecMk, StringComparison.OrdinalIgnoreCase));
+                            if (foundMk != null)
+                                targetCharMk = foundMk;
+                        }
+                    }
+                    
+                    if (targetCharMk != null)
+                    {
+                        if (!markNameMk.Equals("clear", StringComparison.OrdinalIgnoreCase) && !markNameMk.Equals("off", StringComparison.OrdinalIgnoreCase))
+                        {
+                            PostSystem($"{sender.characterName} marked {targetCharMk.characterName} as {markNameMk}");
+                            targetCharMk.Mark(markNameMk);
+                        }
+                        else
+                        {
+                            PostSystem($"{sender.characterName} cleared marks from {targetCharMk.characterName}");
+                            targetCharMk.Mark(string.Empty);
+                        }
+                    }
+                    else
+                    {
+                        PostSystem("No valid target found.", ChatKind.Error);
+                    }
+                    return true;
 
                 // /time, /t, /lt -> convenient local timestamp insert and then /servertime, /stime, /st -> UTC timestamp
                 case "time":
@@ -329,7 +424,7 @@ namespace dev.susybaka.raidsim.Core
 
                 // /help -> list available commands
                 case "help":
-                    PostSystem("Available commands:\n/clear, /echo (or /e), /party (or /p), /note, /macro, /time (or /t, /lt), /servertime (or /stime, /st), /start, /pause, /reset, /reload, /action (or /ac), /exit (or /quit, /close)");
+                    PostSystem("Available commands:\n/clear, /echo (or /e), /party (or /p), /time (or /t, /lt), /servertime (or /stime, /st), /start, /pause, /reset, /reload, /action (or /ac), /mark (or /mk), /exit (or /quit, /close)");
                     return true;
 
                 // /exit, /quit, /close -> shutdown application

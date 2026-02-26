@@ -69,7 +69,7 @@ namespace dev.susybaka.raidsim.Actions
                 }
 
                 // Name groups
-                var n = action.name;
+                var n = action.Data.actionName;
                 if (!byName.TryGetValue(n, out var listN))
                     byName[n] = listN = new List<CharacterAction>(1);
                 listN.Add(action);

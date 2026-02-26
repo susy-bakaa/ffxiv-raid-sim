@@ -876,7 +876,7 @@ namespace dev.susybaka.raidsim.Actions
 
         private void PerformActionInternal(CharacterAction action, bool hidden)
         {
-            //Debug.Log($"[ActionController ({gameObject.name})] Performing action {action.Data.actionName} ({action}), hidden {hidden}");
+            //Debug.Log($"[ActionController ({gameObject.name})] Performing action {(action != null ? action.Data.actionName : "null")} ({(action != null ? action : "null")}), hidden {hidden}");
 
             if (action == null)
                 return;

@@ -31,6 +31,7 @@ namespace dev.susybaka.raidsim.UI
         [SerializeField] private bool autoScrollIfNearBottom = true;
         [SerializeField, Range(0f, 1f)] private float autoScrollThreshold = 0.02f;
 
+        private PartyList allies;
         private CharacterState player;
         private readonly StringBuilder _sb = new(16_384);
         private bool _wantsAutoScroll = true;
@@ -45,6 +46,7 @@ namespace dev.susybaka.raidsim.UI
         private void Awake()
         {
             Instance = this;
+            allies = FightTimeline.Instance.partyList;
             player = FightTimeline.Instance.player;
             input = FightTimeline.Instance.input;
             if (temp == null)
@@ -210,7 +212,7 @@ namespace dev.susybaka.raidsim.UI
             if (string.IsNullOrWhiteSpace(value))
                 return;
 
-            ChatHandler.Instance.PostUser(player, value);
+            ChatHandler.Instance.PostUser(player, allies.GetActiveMembers(), value);
             sentMessages.Add(value);
             currentMessageDraft = string.Empty;
             messageHistoryIndex = sentMessages.Count; // Reset history index to end after sending

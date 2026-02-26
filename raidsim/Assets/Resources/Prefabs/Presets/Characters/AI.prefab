@@ -371,6 +371,7 @@ MonoBehaviour:
   bossController: {fileID: 0}
   targetController: {fileID: 0}
   actionController: {fileID: 0}
+  hotbarController: {fileID: 0}
   dashKnockbackPivot: {fileID: 0}
   modelHandler: {fileID: 0}
   pivotController: {fileID: 0}
@@ -774,6 +775,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8951856766963084256}
   - component: {fileID: 1549458670551072906}
+  - component: {fileID: 1389183814252120838}
+  - component: {fileID: 2118444275420188541}
   m_Layer: 3
   m_Name: Actions
   m_TagString: Untagged
@@ -832,6 +835,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   actionsRoot: {fileID: 8951856766963084256}
+--- !u!114 &1389183814252120838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 769421925893526474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 738c2d855a3c71f4aabb13531ea287ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2118444275420188541
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 769421925893526474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4121ba817a0556244ae1117da77b1567, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  resolver: {fileID: 1389183814252120838}
+  links: []
 --- !u!1 &958666519881545317
 GameObject:
   m_ObjectHideFlags: 0
@@ -2486,6 +2515,7 @@ MonoBehaviour:
   bossController: {fileID: 0}
   targetController: {fileID: 0}
   actionController: {fileID: 0}
+  hotbarController: {fileID: 0}
   dashKnockbackPivot: {fileID: 0}
   modelHandler: {fileID: 0}
   pivotController: {fileID: 0}

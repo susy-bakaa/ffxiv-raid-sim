@@ -417,6 +417,64 @@ namespace dev.susybaka.raidsim.Characters
             UpdateCharacterName();
             RefreshUserInterface();
         }
+
+        public void Mark(string markName)
+        {
+            if (signMarkers != null && signMarkers.Count > 0)
+            {
+                if (!string.IsNullOrEmpty(markName))
+                {
+                    SignMarker marker = signMarkers.FirstOrDefault(m => markName.Contains(m.markerName));
+                    if (marker != null)
+                    {
+                        int markerIndex = 0;
+
+                        // Extract trailing digits from markName
+                        string digits = "";
+                        for (int i = markName.Length - 1; i >= 0; i--)
+                        {
+                            if (char.IsDigit(markName[i]))
+                            {
+                                digits = markName[i] + digits;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+
+                        if (!string.IsNullOrEmpty(digits))
+                        {
+                            if (int.TryParse(digits, out markerIndex))
+                                markerIndex -= 1; // Convert to 0-based index
+                        }
+
+                        // Clamp markerIndex to valid range
+                        if (markerIndex < 0)
+                            markerIndex = 0;
+                        else if (markerIndex > marker.sprites.Count - 1)
+                            markerIndex = marker.sprites.Count - 1;
+
+                        marker.AssignMarker(markerIndex);
+                    }
+                    // Reset other markers that aren't assigned
+                    foreach (SignMarker m in signMarkers)
+                    {
+                        if (m != marker)
+                        {
+                            m.ResetMarker();
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (SignMarker marker in signMarkers)
+                    {
+                        marker.ResetMarker();
+                    }
+                }
+            }
+        }
         #endregion
 
         #region BuiltIn Unity Functions

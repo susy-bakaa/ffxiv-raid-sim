@@ -3,6 +3,7 @@
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
 using dev.susybaka.raidsim.Characters;
 using dev.susybaka.raidsim.Core;
+using dev.susybaka.raidsim.UI;
 using UnityEngine;
 
 namespace dev.susybaka.raidsim.Actions
@@ -12,12 +13,16 @@ namespace dev.susybaka.raidsim.Actions
         [SerializeField] private CharacterState owner;
         [SerializeField] private ChatHandler chat;
 
+        private PartyList party;
+
         private void Awake()
         {
             if (owner == null)
                 Debug.LogError("MacroExecutor: owner is not set");
 
             chat = ChatHandler.Instance;
+            if (owner != null)
+                party = owner.partyList;
         }
 
         public void Execute(MacroEntry macro)
@@ -35,7 +40,7 @@ namespace dev.susybaka.raidsim.Actions
                     continue;
 
                 // You can add more macro-only commands later (wait, echo, etc.)
-                chat.PostUser(owner, line);
+                chat.PostUser(owner, party.GetActiveMembers(), line);
             }
         }
     }

@@ -211,7 +211,20 @@ namespace dev.susybaka.raidsim.Bots
                 {
                     TeleportAfterClose = false;
                 }
-                if (events[i].action != null)
+                if (!string.IsNullOrEmpty(events[i].actionId))
+                {
+                    if (events[i].waitForAction > 0f)
+                    {
+                        yield return new WaitForSeconds(events[i].waitForAction);
+                    }
+                    if (!events[i].unrestrictedAction)
+                        controller.PerformAction(controller.ActionRegistry.GetById(events[i].actionId));
+                    else
+                        controller.PerformActionHidden(controller.ActionRegistry.GetById(events[i].actionId));
+                    if (FightTimeline.Instance.log)
+                        Debug.Log($"[BotTimeline] {controller.gameObject.name} perform action {events[i].actionId}");
+                }
+                else if (events[i].action != null) // for backwards compatibility, actionId is now the recommended way to specify actions to perform in a BotTimeline, but the old method of directly specifying an action in the inspector still works
                 {
                     if (events[i].waitForAction > 0f)
                     {
@@ -310,7 +323,9 @@ namespace dev.susybaka.raidsim.Bots
             public float waitAtNode;
             public float randomWaitVariance;
             public bool teleportAfterCloseEnough;
+            [Tooltip("This is not the recommended method to execute actions anymore. Please use actionId instead.")] 
             public CharacterActionData action;
+            public string actionId;
             public bool unrestrictedAction;
             public float waitForAction;
             public Vector3 rotation;
@@ -322,7 +337,7 @@ namespace dev.susybaka.raidsim.Bots
             public BotEventUnityEvent onEvent;
             public int index; // used for debugging purposes, not saved in the inspector
 
-            public BotEvent(string name, int index, Transform node, bool dynamic, float waitAtNode, float randomWaitVariance, bool teleportAfterCloseEnough, CharacterActionData action, bool unrestrictedAction, float waitForAction, Vector3 rotation, Transform faceTowards, Transform faceAway, float waitForRotation, TargetNode cycleTarget, StatusEffectInfo targetStatusEffectHolder, BotEventUnityEvent onEvent)
+            public BotEvent(string name, int index, Transform node, bool dynamic, float waitAtNode, float randomWaitVariance, bool teleportAfterCloseEnough, CharacterActionData action, string actionId, bool unrestrictedAction, float waitForAction, Vector3 rotation, Transform faceTowards, Transform faceAway, float waitForRotation, TargetNode cycleTarget, StatusEffectInfo targetStatusEffectHolder, BotEventUnityEvent onEvent)
             {
                 this.name = name;
                 this.node = node;
@@ -331,6 +346,7 @@ namespace dev.susybaka.raidsim.Bots
                 this.randomWaitVariance = randomWaitVariance;
                 this.teleportAfterCloseEnough = teleportAfterCloseEnough;
                 this.action = action;
+                this.actionId = actionId;
                 this.unrestrictedAction = unrestrictedAction;
                 this.waitForAction = waitForAction;
                 this.rotation = rotation;

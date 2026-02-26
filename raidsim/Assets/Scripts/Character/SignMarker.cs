@@ -16,6 +16,7 @@ namespace dev.susybaka.raidsim.Characters
         private CanvasGroup group;
         private Image image;
 
+        public string markerName;
         public List<Sprite> sprites = new List<Sprite>();
         public int index = 0;
 
