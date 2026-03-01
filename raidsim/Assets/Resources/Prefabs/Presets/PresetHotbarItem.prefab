@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6425067182179038682}
   - component: {fileID: 8671183893159727461}
   - component: {fileID: 2277564970258009225}
+  - component: {fileID: 8910044295741116700}
   m_Layer: 5
   m_Name: Tooltip
   m_TagString: Untagged
@@ -92,6 +93,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 2
   m_VerticalFit: 0
+--- !u!223 &8910044295741116700
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 642491054398758679}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 0
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 1
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
+  m_AdditionalShaderChannelsFlag: 25
+  m_UpdateRectTransformForStandalone: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 3
+  m_TargetDisplay: 0
 --- !u!1 &855849772595861324
 GameObject:
   m_ObjectHideFlags: 0
@@ -103,6 +127,7 @@ GameObject:
   - component: {fileID: 4388817766110664795}
   - component: {fileID: 5992737695312822448}
   - component: {fileID: 2636779696358050848}
+  - component: {fileID: 8407810366484899890}
   - component: {fileID: 6922498859110094843}
   m_Layer: 5
   m_Name: Charges
@@ -229,6 +254,29 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!223 &8407810366484899890
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 855849772595861324}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 1
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 1
+  m_AdditionalShaderChannelsFlag: 25
+  m_UpdateRectTransformForStandalone: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 1
+  m_TargetDisplay: 0
 --- !u!114 &6922498859110094843
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -258,6 +306,7 @@ GameObject:
   - component: {fileID: 1572369929561498444}
   - component: {fileID: 7620016427637082910}
   - component: {fileID: 8887141521198934661}
+  - component: {fileID: 4089285260576412997}
   m_Layer: 5
   m_Name: Cost
   m_TagString: Untagged
@@ -400,6 +449,29 @@ MonoBehaviour:
   image: {fileID: 0}
   text: {fileID: 7620016427637082910}
   outline: {fileID: 0}
+--- !u!223 &4089285260576412997
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1283090769485096887}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 1
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 1
+  m_AdditionalShaderChannelsFlag: 25
+  m_UpdateRectTransformForStandalone: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 1
+  m_TargetDisplay: 0
 --- !u!1 &1305710762144523656
 GameObject:
   m_ObjectHideFlags: 0
@@ -1385,7 +1457,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 0}
+  macroEditor: {fileID: 0}
   action: {fileID: 0}
+  macro:
+    isValid: 0
+    name: 
+    body: 
+    iconMode: 0
+    customIconId: 
+    miconType: 0
+    miconName: 
   binding:
     kind: 1
     id: 

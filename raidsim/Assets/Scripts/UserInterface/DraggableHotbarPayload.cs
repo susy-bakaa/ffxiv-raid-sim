@@ -32,6 +32,7 @@ namespace dev.susybaka.raidsim.UI
 
         private Transform originalParent;
         private Vector2 originalAnchoredPos;
+        private int originalSiblingIndex;
         private bool dragging = false;
 
         private void Awake()
@@ -55,6 +56,7 @@ namespace dev.susybaka.raidsim.UI
         {
             originalParent = transform.parent;
             originalAnchoredPos = rectTransform.anchoredPosition;
+            originalSiblingIndex = transform.GetSiblingIndex();
 
             // Don't allow dragging if the source is locked, unless ignoreLock is true (for example, dragging from the palette should be allowed even if the hotbar is locked).
             if (controller != null && !ignoreLock && controller.locked)
@@ -82,6 +84,7 @@ namespace dev.susybaka.raidsim.UI
             {
                 transform.SetParent(originalParent, false);
                 rectTransform.anchoredPosition = originalAnchoredPos;
+                transform.SetSiblingIndex(originalSiblingIndex);
             }
             dragging = false;
             input.rotationInputEnabled = true;

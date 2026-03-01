@@ -78,6 +78,7 @@ namespace dev.susybaka.raidsim.Actions
         private RecastType normalRecastType;
         private bool chargeRestored = false;
         private bool permanentlyUnavailable = false;
+        private bool flag1 = false;
         private float lastRecast = 0f;
 
         public string GetFullActionName()
@@ -111,6 +112,7 @@ namespace dev.susybaka.raidsim.Actions
             chargesLeft = data.charges;
             permanentlyUnavailable = unavailable;
             normalRecastType = recastType;
+            flag1 = unavailable;
         }
 
         private void Start()
@@ -159,8 +161,9 @@ namespace dev.susybaka.raidsim.Actions
             }
 
             // Reset action when it is unavailable
-            if (unavailable)
+            if (unavailable != flag1)
             {
+                flag1 = unavailable;
                 ResetAnimationLock();
                 ResetCooldown();
                 chargesLeft = data.charges;
@@ -214,10 +217,20 @@ namespace dev.susybaka.raidsim.Actions
                 }
             }
 
+            // If this action is part of the Global Cooldown, use those timers instead
+            if (Data.isGlobalCooldown && character != null && character.actionController != null)
+            {
+                animationLockTimer = character.actionController.GlobalAnimationLockTimer;
+                recastTimer = character.actionController.GlobalRecastTimer;
+                lastRecast = character.actionController.LastGloabalRecastTimer;
+            }
+
             // Cooldown, animation lock and charge logic
             if (animationLockTimer > 0f)
             {
-                animationLockTimer -= Time.unscaledDeltaTime;
+                if (!Data.isGlobalCooldown)
+                    animationLockTimer -= Time.unscaledDeltaTime;
+
                 isAnimationLocked = true;
             }
             else
@@ -227,7 +240,9 @@ namespace dev.susybaka.raidsim.Actions
             }
             if (recastTimer > 0f)
             {
-                recastTimer -= FightTimeline.deltaTime;
+                if (!Data.isGlobalCooldown)
+                    recastTimer -= FightTimeline.deltaTime;
+
                 chargeRestored = false;
                 if (chargesLeft < 1)
                 {
@@ -432,8 +447,19 @@ namespace dev.susybaka.raidsim.Actions
             }
             if (recastTimer <= 0f)
             {
-                lastRecast = data.recast;
-                recastTimer = data.recast;
+                if (!Data.isGlobalCooldown || character == null)
+                {
+                    lastRecast = data.recast;
+                    recastTimer = data.recast;
+                }
+                else if (character.actionController != null)
+                {
+                    character.actionController.ActivateGlobalCooldown(this);
+                }
+                else if (character.actionController == null)
+                {
+                    Debug.LogWarning($"{gameObject.name} character.actionController is null!");
+                }
             }
 
             if (!shared)
@@ -462,8 +488,19 @@ namespace dev.susybaka.raidsim.Actions
             }
             if (recastTimer <= 0f)
             {
-                lastRecast = recast;
-                recastTimer = recast;
+                if (!Data.isGlobalCooldown || character == null)
+                {
+                    lastRecast = recast;
+                    recastTimer = recast;
+                }
+                else if (character.actionController != null)
+                {
+                    character.actionController.ActivateGlobalCooldown(this);
+                }
+                else if (character.actionController == null)
+                {
+                    Debug.LogWarning($"{gameObject.name} character.actionController is null!");
+                }
             }
         }
 
@@ -473,7 +510,19 @@ namespace dev.susybaka.raidsim.Actions
                 return;
 
             isAnimationLocked = true;
-            animationLockTimer = data.animationLock;
+
+            if (!Data.isGlobalCooldown || character == null)
+            {
+                animationLockTimer = data.animationLock;
+            }
+            else if (character.actionController != null)
+            {
+                character.actionController.ActivateGlobalAnimationLock(this);
+            }
+            else if (character.actionController == null)
+            {
+                Debug.LogWarning($"{gameObject.name} character.actionController is null!");
+            }
 
             if (!shared)
             {
@@ -493,7 +542,19 @@ namespace dev.susybaka.raidsim.Actions
                 return;
 
             isAnimationLocked = true;
-            animationLockTimer = duration;
+
+            if (!Data.isGlobalCooldown || character == null)
+            {
+                animationLockTimer = duration;
+            }
+            else if (character.actionController != null)
+            {
+                character.actionController.ActivateGlobalAnimationLock(this);
+            }
+            else if (character.actionController == null)
+            {
+                Debug.LogWarning($"{gameObject.name} character.actionController is null!");
+            }
         }
 
         public void ResetCooldown(bool shared = false)
@@ -504,7 +565,19 @@ namespace dev.susybaka.raidsim.Actions
                 chargesLeft = data.charges;
             }
             isAvailable = true;
-            recastTimer = 0f;
+            
+            if (!Data.isGlobalCooldown || character == null)
+            {
+                recastTimer = 0f;
+            }
+            else if (character.actionController != null)
+            {
+                character.actionController.ResetGlobalCooldown();
+            }
+            else if (character.actionController == null)
+            {
+                Debug.LogWarning($"{gameObject.name} character.actionController is null!");
+            }
 
             if (!shared)
             {
@@ -521,7 +594,19 @@ namespace dev.susybaka.raidsim.Actions
         public void ResetAnimationLock(bool shared = false)
         {
             isAnimationLocked = false;
-            animationLockTimer = 0f;
+
+            if (!Data.isGlobalCooldown || character == null)
+            {
+                animationLockTimer = 0f;
+            }
+            else if (character.actionController != null)
+            {
+                character.actionController.ResetGlobalAnimationLock();
+            }
+            else if (character.actionController == null)
+            {
+                Debug.LogWarning($"{gameObject.name} character.actionController is null!");
+            }
 
             if (!shared)
             {

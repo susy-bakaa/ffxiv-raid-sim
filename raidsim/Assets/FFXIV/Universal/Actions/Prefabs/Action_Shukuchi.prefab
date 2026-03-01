@@ -1,0 +1,196 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6650477344276985178
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2594049203972023873}
+  - component: {fileID: 2381172846448275890}
+  - component: {fileID: 1268291548387920879}
+  - component: {fileID: 8195919381193062820}
+  m_Layer: 0
+  m_Name: Action_Shukuchi
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2594049203972023873
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6650477344276985178}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2381172846448275890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6650477344276985178}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10af295d51be1ef478048c378d84d972, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionId: Shukuchi
+  data: {fileID: 11400000, guid: 2933c29f43a136c45a1dd357433ef70c, type: 2}
+  kind: 0
+  recastType: 0
+  fullName: '{0}'
+  overrideResourceText: 
+  isAutoAction: 0
+  isDisabled: 0
+  unavailable: 0
+  invisible: 0
+  hasTarget: 0
+  showOutline: 0
+  damageMultiplier: 1
+  distanceToTarget: 0
+  chargesLeft: 0
+  lastAction: {fileID: 0}
+  currentKeybind:
+    keyCode: 56
+    mouseButton: -1
+    alt: 0
+    control: 0
+    shift: 0
+  availableForRoles: 00000000
+  availableForLevels: 
+  sharedRecasts: []
+  comboOutlineEffects: []
+  hideWhileEffects: []
+  showInsteadWithEffects: 0
+  invisibilityAlsoDisables: 0
+  onExecute:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1268291548387920879}
+        m_TargetAssemblyTypeName: GroundTargetedMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onCast:
+    m_PersistentCalls:
+      m_Calls: []
+  onInterrupt:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1268291548387920879}
+        m_TargetAssemblyTypeName: GroundTargetedMechanic, Assembly-CSharp
+        m_MethodName: InterruptMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &1268291548387920879
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6650477344276985178}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f383832bad9240e44a4e9243e8511e0b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: ShukuchiTargeting
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  groundTargetPivot: {fileID: 0}
+  groundTargetPrefab: {fileID: 6593151431145343211, guid: d19e86d38c561324dabbe35bf460074f, type: 3}
+  groundTargetPrefabElevation: 0
+  groundTargetActive: 0
+  onExecute:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8195919381193062820}
+        m_TargetAssemblyTypeName: DashMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2381172846448275890}
+        m_TargetAssemblyTypeName: CharacterAction, Assembly-CSharp
+        m_MethodName: ActivateActionUse
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &8195919381193062820
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6650477344276985178}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8657138b821026d4cb38011b4367e75d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: Shukuchi
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  lockActions: 1
+  lockMovement: 1
+  dashToTarget: 1
+  delay: 0.2
+  duration: 0.4
+  dashHeight: 0
+  overrideTargetPosition: {x: 0, y: 0, z: 0}
+  overrideTarget: {fileID: 0}
+  overrideTargetTag: 
+  overrideTargetEffect:
+    name: 
+    data: {fileID: 0}
+    tag: 0
+    stacks: 0
+  dashDirection: {x: 0, y: 0, z: 1}
+  dashDistance: 10
+  ease: 4
+  moveAxis:
+    x: 1
+    y: 0
+    z: 1

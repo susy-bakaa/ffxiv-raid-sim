@@ -20,6 +20,7 @@ namespace dev.susybaka.raidsim.UI
     {
         private HudWindow window;
         private UserInput input;
+        public HudWindow Window => window;
 
         [SerializeField] private CharacterState character;
         [SerializeField] private ActionController actionController;

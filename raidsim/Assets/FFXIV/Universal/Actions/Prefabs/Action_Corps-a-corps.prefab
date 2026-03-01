@@ -1,0 +1,140 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1289482086639129927
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4296779897042378492}
+  - component: {fileID: 7784811110848756485}
+  - component: {fileID: 6493973089778050971}
+  m_Layer: 0
+  m_Name: Action_Corps-a-corps
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4296779897042378492
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1289482086639129927}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7784811110848756485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1289482086639129927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10af295d51be1ef478048c378d84d972, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionId: CorpsACorps
+  data: {fileID: 11400000, guid: 53748e3d0622b334ba26f228fab8def2, type: 2}
+  kind: 0
+  recastType: 0
+  fullName: '{0}'
+  overrideResourceText: 
+  isAutoAction: 0
+  isDisabled: 0
+  unavailable: 0
+  invisible: 0
+  hasTarget: 0
+  showOutline: 0
+  damageMultiplier: 1
+  distanceToTarget: 0
+  chargesLeft: 2
+  lastAction: {fileID: 0}
+  currentKeybind:
+    keyCode: 52
+    mouseButton: -1
+    alt: 0
+    control: 0
+    shift: 0
+  availableForRoles: 01000000
+  availableForLevels: 
+  sharedRecasts: []
+  comboOutlineEffects: []
+  hideWhileEffects: []
+  showInsteadWithEffects: 0
+  invisibilityAlsoDisables: 0
+  onExecute:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6493973089778050971}
+        m_TargetAssemblyTypeName: GapCloserMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onCast:
+    m_PersistentCalls:
+      m_Calls: []
+  onInterrupt:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6493973089778050971}
+        m_TargetAssemblyTypeName: GapCloserMechanic, Assembly-CSharp
+        m_MethodName: InterruptMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &6493973089778050971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1289482086639129927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2789eabbee316004ea4792a837cb602a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: Corps-a-corps
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  lockMovement: 1
+  lockActions: 1
+  fakeKnockback: 0
+  ignoreTargetHitbox: 0
+  canBeResisted: 0
+  duration: 0.6
+  delay: 0.2
+  maxMelee: 2
+  ease: 4
+  moveAxis:
+    x: 1
+    y: 0
+    z: 1
+  overrideTarget: {fileID: 0}

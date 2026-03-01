@@ -662,6 +662,7 @@ GameObject:
   - component: {fileID: 3195001638661402138}
   - component: {fileID: 2623645106646967504}
   - component: {fileID: 4292983068677357833}
+  - component: {fileID: 6081440248435521896}
   m_Layer: 5
   m_Name: Tooltip
   m_TagString: Untagged
@@ -742,6 +743,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 2
   m_VerticalFit: 0
+--- !u!223 &6081440248435521896
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5738875386187447750}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 0
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 1
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
+  m_AdditionalShaderChannelsFlag: 25
+  m_UpdateRectTransformForStandalone: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 3
+  m_TargetDisplay: 0
 --- !u!1 &5938942676120716377
 GameObject:
   m_ObjectHideFlags: 0
@@ -1227,6 +1251,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   action: {fileID: 0}
+  macro:
+    isValid: 0
+    name: 
+    body: 
+    iconMode: 0
+    customIconId: 
+    miconType: 0
+    miconName: 
   lastAction: {fileID: 0}
   borderStandard: {fileID: 1939709004847853276}
   borderDark: {fileID: 5822182124434888217}
@@ -1239,7 +1271,6 @@ MonoBehaviour:
   resourceCostText: {fileID: 3866384762750865168}
   chargesText: {fileID: 2791491363151938689}
   tooltipText: {fileID: 3727127823965945176}
-  keybindText: {fileID: 150103298227228632}
   hudElements:
   - {fileID: 6106573465080160179}
   - {fileID: 8220095161651254906}

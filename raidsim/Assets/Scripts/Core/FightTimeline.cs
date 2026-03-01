@@ -920,6 +920,12 @@ namespace dev.susybaka.raidsim.Core
             onUseAutomarkerChanged.Invoke(useAutomarker);
         }
 
+        public void SetAutomarker(bool state)
+        {
+            useAutomarker = state;
+            onUseAutomarkerChanged.Invoke(useAutomarker);
+        }
+
         public void TogglePause(string label)
         {
             if (pausedBy.Contains(label))

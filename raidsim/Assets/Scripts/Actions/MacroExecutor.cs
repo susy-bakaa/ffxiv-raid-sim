@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // This file is part of ffxiv-raid-sim. Linking with the Unity runtime
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
+using System.Collections;
 using dev.susybaka.raidsim.Characters;
 using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.UI;
@@ -12,6 +13,7 @@ namespace dev.susybaka.raidsim.Actions
     {
         [SerializeField] private CharacterState owner;
         [SerializeField] private ChatHandler chat;
+        [SerializeField] private bool executeFrameByFrame = true;
 
         private PartyList party;
 
@@ -33,14 +35,36 @@ namespace dev.susybaka.raidsim.Actions
             var body = MacroParsing.NormalizeNewlines(macro.body);
             var lines = body.Split('\n');
 
+            if (executeFrameByFrame)
+            {
+                StartCoroutine(IE_ExecuteMacroLines(lines));
+            }
+            else
+            {
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    var line = lines[i];
+                    if (MacroParsing.IsMacroMetaLine(line))
+                        continue;
+
+                    chat.PostUser(owner, party.GetActiveMembers(), line);
+                }
+            }
+        }
+
+        private IEnumerator IE_ExecuteMacroLines(string[] lines)
+        {
             for (int i = 0; i < lines.Length; i++)
             {
                 var line = lines[i];
                 if (MacroParsing.IsMacroMetaLine(line))
+                {
+                    yield return null;
                     continue;
+                }
 
-                // You can add more macro-only commands later (wait, echo, etc.)
                 chat.PostUser(owner, party.GetActiveMembers(), line);
+                yield return null;
             }
         }
     }

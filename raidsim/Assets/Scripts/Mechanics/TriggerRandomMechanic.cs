@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using NaughtyAttributes;
+using dev.susybaka.raidsim.Characters;
 using dev.susybaka.raidsim.Core;
 using static dev.susybaka.raidsim.Core.GlobalData;
 
@@ -22,6 +23,9 @@ namespace dev.susybaka.raidsim.Mechanics
         [HideIf("chooseBasedOnPreviousResult")] public bool chooseListBasedOnPrevious = false;
         [HideIf("chooseListBasedOnPrevious")] public bool chooseBasedOnPreviousResult = false;
         [ShowIf("showBased2")] public bool chooseBasedOnPreviousResult2 = false;
+        public bool setCharacterEventResult = false;
+        [ShowIf(nameof(setCharacterEventResult))] public List<CharacterState> setForCharacters = new List<CharacterState>();
+        [ShowIf(nameof(setCharacterEventResult))] public int characterEventResultId = -1;
         public bool useIndexMapping = false;
         public List<IndexMapping> indexMapping = new List<IndexMapping>();
 
@@ -164,6 +168,29 @@ namespace dev.susybaka.raidsim.Mechanics
 
             if (thisRandomEventResultId > -1)
                 FightTimeline.Instance.AddRandomEventResult(thisRandomEventResultId, r);
+
+            if (setCharacterEventResult && characterEventResultId > -1)
+            {
+                if (setForCharacters != null && setForCharacters.Count > 0)
+                {
+                    foreach (var character in setForCharacters)
+                    {
+                        if (character != null && !character.disabled && character.gameObject.activeSelf)
+                        {
+                            character.AddCharacterEventResult(characterEventResultId, r);
+                            break; // Only set for the first valid character in the list
+                        }
+                    }
+                }
+                else if (actionInfo.target != null)
+                {
+                    actionInfo.target.AddCharacterEventResult(characterEventResultId, r);
+                }
+                else if (actionInfo.source != null)
+                {
+                    actionInfo.source.AddCharacterEventResult(characterEventResultId, r);
+                } 
+            }
         }
 
         protected override bool UsesPCG()

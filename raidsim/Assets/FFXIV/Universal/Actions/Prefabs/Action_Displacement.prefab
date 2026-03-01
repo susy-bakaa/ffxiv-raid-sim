@@ -1,0 +1,147 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6397230595893849777
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4758983085908328985}
+  - component: {fileID: 898379746990218269}
+  - component: {fileID: 257344909629143918}
+  m_Layer: 0
+  m_Name: Action_Displacement
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4758983085908328985
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6397230595893849777}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &898379746990218269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6397230595893849777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10af295d51be1ef478048c378d84d972, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionId: Displacement
+  data: {fileID: 11400000, guid: 54685f03b2de74147b5a807b290c019e, type: 2}
+  kind: 0
+  recastType: 0
+  fullName: '{0}'
+  overrideResourceText: 
+  isAutoAction: 0
+  isDisabled: 0
+  unavailable: 0
+  invisible: 0
+  hasTarget: 0
+  showOutline: 0
+  damageMultiplier: 1
+  distanceToTarget: 0
+  chargesLeft: 2
+  lastAction: {fileID: 0}
+  currentKeybind:
+    keyCode: 53
+    mouseButton: -1
+    alt: 0
+    control: 0
+    shift: 0
+  availableForRoles: 01000000
+  availableForLevels: 
+  sharedRecasts: []
+  comboOutlineEffects: []
+  hideWhileEffects: []
+  showInsteadWithEffects: 0
+  invisibilityAlsoDisables: 0
+  onExecute:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 257344909629143918}
+        m_TargetAssemblyTypeName: DashMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onCast:
+    m_PersistentCalls:
+      m_Calls: []
+  onInterrupt:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 257344909629143918}
+        m_TargetAssemblyTypeName: FightMechanic, Assembly-CSharp
+        m_MethodName: InterruptMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &257344909629143918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6397230595893849777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8657138b821026d4cb38011b4367e75d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: Displacement
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  lockActions: 1
+  lockMovement: 1
+  dashToTarget: 0
+  delay: 0.2
+  duration: 0.75
+  dashHeight: 0
+  overrideTargetPosition: {x: 0, y: 0, z: 0}
+  overrideTarget: {fileID: 0}
+  overrideTargetTag: 
+  overrideTargetEffect:
+    name: 
+    data: {fileID: 0}
+    tag: 0
+    stacks: 0
+  dashDirection: {x: 0, y: 0, z: -1}
+  dashDistance: -15
+  ease: 4
+  moveAxis:
+    x: 1
+    y: 0
+    z: 1

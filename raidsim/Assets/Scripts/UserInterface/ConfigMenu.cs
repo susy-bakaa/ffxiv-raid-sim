@@ -47,6 +47,8 @@ namespace dev.susybaka.raidsim.UI
         [SerializeField] private TMP_Dropdown botNameTypeDropdown;
         [SerializeField] private Toggle botNameRoleColorsToggle;
         [SerializeField] private TMP_Dropdown rngTypeDropdown;
+        [Header("Sub Menus")]
+        [SerializeField] private Button keybindsButton;
         float scale = 50;
         float newScale = 50;
         bool legacy = true;
@@ -509,6 +511,11 @@ namespace dev.susybaka.raidsim.UI
             newBotNameRoleColors = botNameRoleColors;
             newRngType = rngType;
             ApplySettings();
+        }
+
+        public void OpenKeybinds()
+        {
+            keybindsButton.onClick.Invoke();
         }
 
 #if UNITY_EDITOR

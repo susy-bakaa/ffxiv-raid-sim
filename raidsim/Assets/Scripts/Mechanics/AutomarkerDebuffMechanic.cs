@@ -14,10 +14,12 @@ namespace dev.susybaka.raidsim.Mechanics
 {
     public class AutomarkerDebuffMechanic : FightMechanic
     {
+        [Header("Info")]
         public PartyList targetParty;
         public bool autoObtainParty = false;
         public StatusEffectInfo targetEffect;
         public int usedSignMarkerIndex = 0;
+        [Header("Visuals")]
         public float initialDelay = 0f;
         public float markingDelay = 0.25f;
         public bool clearAutomatically = false;

@@ -1,0 +1,147 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &147444740203548303
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 122503477424671463}
+  - component: {fileID: 7555205068161692625}
+  - component: {fileID: 5175019015282950182}
+  m_Layer: 0
+  m_Name: Action_HissatsuYaten
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &122503477424671463
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 147444740203548303}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7555205068161692625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 147444740203548303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10af295d51be1ef478048c378d84d972, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionId: HissatsuYaten
+  data: {fileID: 11400000, guid: b9a75286fbe8a514b9964b30a26f46d6, type: 2}
+  kind: 0
+  recastType: 0
+  fullName: '{0}'
+  overrideResourceText: 
+  isAutoAction: 0
+  isDisabled: 0
+  unavailable: 0
+  invisible: 0
+  hasTarget: 0
+  showOutline: 0
+  damageMultiplier: 1
+  distanceToTarget: 0
+  chargesLeft: 0
+  lastAction: {fileID: 0}
+  currentKeybind:
+    keyCode: 53
+    mouseButton: -1
+    alt: 0
+    control: 0
+    shift: 0
+  availableForRoles: 00000000
+  availableForLevels: 
+  sharedRecasts: []
+  comboOutlineEffects: []
+  hideWhileEffects: []
+  showInsteadWithEffects: 0
+  invisibilityAlsoDisables: 0
+  onExecute:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5175019015282950182}
+        m_TargetAssemblyTypeName: DashMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onCast:
+    m_PersistentCalls:
+      m_Calls: []
+  onInterrupt:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5175019015282950182}
+        m_TargetAssemblyTypeName: FightMechanic, Assembly-CSharp
+        m_MethodName: InterruptMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &5175019015282950182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 147444740203548303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8657138b821026d4cb38011b4367e75d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: HissatsuYaten
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  lockActions: 1
+  lockMovement: 1
+  dashToTarget: 0
+  delay: 0.1
+  duration: 0.6
+  dashHeight: 0
+  overrideTargetPosition: {x: 0, y: 0, z: 0}
+  overrideTarget: {fileID: 0}
+  overrideTargetTag: 
+  overrideTargetEffect:
+    name: 
+    data: {fileID: 0}
+    tag: 0
+    stacks: 0
+  dashDirection: {x: 0, y: 0, z: -1}
+  dashDistance: -10
+  ease: 4
+  moveAxis:
+    x: 1
+    y: 0
+    z: 1

@@ -19,6 +19,7 @@ using dev.susybaka.raidsim.UI;
 using dev.susybaka.raidsim.Visuals;
 using dev.susybaka.Shared;
 using dev.susybaka.Shared.Audio;
+using static dev.susybaka.raidsim.Core.FightTimeline;
 using static dev.susybaka.raidsim.Core.GlobalData;
 using static dev.susybaka.raidsim.Core.GlobalData.Damage;
 using static dev.susybaka.raidsim.Core.GlobalData.Flag;
@@ -184,6 +185,10 @@ namespace dev.susybaka.raidsim.Characters
         public UnityEvent onDeath;
         public UnityEvent onSpawn;
         public UnityEvent<CharacterState> onModifyHealth;
+        private Dictionary<int, int> characterEventResults = new Dictionary<int, int>();
+#if UNITY_EDITOR
+        [SerializeField] private List<RandomEventResult> m_characterEventResults = new List<RandomEventResult>();
+#endif
 
         [Header("Config")]
         public CharacterState mirror;
@@ -475,6 +480,89 @@ namespace dev.susybaka.raidsim.Characters
                 }
             }
         }
+
+        public int GetCharacterEventResult(int id)
+        {
+            if (characterEventResults.TryGetValue(id, out int value))
+            {
+                return value;
+            }
+
+            return -1;
+        }
+
+        public bool TryGetCharacterEventResult(int id, out int value)
+        {
+            if (characterEventResults.TryGetValue(id, out int v))
+            {
+                value = v;
+                return true;
+            }
+            value = -1;
+            return false;
+        }
+
+        public void SetCharacterEventResult(int id, int result)
+        {
+            if (characterEventResults.ContainsKey(id))
+            {
+                characterEventResults[id] = result;
+#if UNITY_EDITOR
+                for (int i = 0; i < m_characterEventResults.Count; i++)
+                {
+                    if (m_characterEventResults[i].id == id)
+                    {
+                        RandomEventResult rer = m_characterEventResults[i];
+                        rer.value = result;
+                        m_characterEventResults[i] = rer;
+                        break;
+                    }
+                }
+#endif
+            }
+            else
+            {
+                if (characterEventResults.Count < 1)
+                {
+                    characterEventResults = new Dictionary<int, int>();
+                }
+                characterEventResults.Add(id, result);
+#if UNITY_EDITOR
+                m_characterEventResults.Add(new RandomEventResult(id, result));
+#endif
+            }
+        }
+
+        public void AddCharacterEventResult(int id, int result)
+        {
+            int newId = id;
+            while (characterEventResults.ContainsKey(newId))
+            {
+                newId++;
+            }
+            characterEventResults.Add(newId, result);
+#if UNITY_EDITOR
+            m_characterEventResults.Add(new RandomEventResult(newId, result));
+#endif
+        }
+
+        public void ClearCharacterEventResult(int id)
+        {
+            if (characterEventResults.ContainsKey(id))
+            {
+                characterEventResults.Remove(id);
+#if UNITY_EDITOR
+                for (int i = 0; i < m_characterEventResults.Count; i++)
+                {
+                    if (m_characterEventResults[i].id == id)
+                    {
+                        m_characterEventResults.RemoveAt(i);
+                        break;
+                    }
+                }
+#endif
+            }
+        }
         #endregion
 
         #region BuiltIn Unity Functions
@@ -489,8 +577,11 @@ namespace dev.susybaka.raidsim.Characters
             modelHandler = GetComponentInChildren<ModelHandler>(true);
             pivotController = GetComponentInChildren<PivotController>(true);
 
-            if (pivot == null && pivotController != null)
+            if (pivotController != null && pivotController.MainPivot != null)
+            {
                 pivot = pivotController.MainPivot;
+                statusPopupPivot = pivotController.MainPivot; // Also set the status popup pivot to the main pivot if the controller exists, because it is supposed to be the same point.
+            }
             else if (pivot == null)
                 pivot = transform.Find("Pivot");
             
@@ -1279,8 +1370,12 @@ namespace dev.susybaka.raidsim.Characters
 #if UNITY_EDITOR
             m_enmity.Clear();
             m_effects.Clear();
-
+            m_characterEventResults.Clear();
+            m_characterEventResults = new List<RandomEventResult>();
 #endif
+
+            characterEventResults.Clear();
+            characterEventResults = new Dictionary<int, int>();
 
             currentMaxHealth = defaultMaxHealth;
             health = defaultMaxHealth;

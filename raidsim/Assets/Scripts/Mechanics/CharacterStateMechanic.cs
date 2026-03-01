@@ -5,7 +5,6 @@ using System.Collections;
 using System.Collections.Generic;
 using dev.susybaka.raidsim.Actions;
 using dev.susybaka.raidsim.Characters;
-using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.Targeting;
 using dev.susybaka.Shared;
 using NaughtyAttributes;
@@ -18,7 +17,7 @@ namespace dev.susybaka.raidsim.Mechanics
 {
     public class CharacterStateMechanic : FightMechanic
     {
-        public enum Type { Enable, Disable, Spawn, Destroy, ExecuteAction, SetTarget, ExecuteMechanic }
+        public enum Type { Enable, Disable, Spawn, Destroy, ExecuteAction, ExecuteMechanic, SetTarget, SetCharacterEventResult }
         public enum ActionExecutionType { Standard, Hidden, Unrestricted }
         public enum TargetingType { Nearest, Furthest, OnePerEach, RandomPerEach, Random }
 
@@ -93,6 +92,10 @@ namespace dev.susybaka.raidsim.Mechanics
         [ShowIf(nameof(behaviorType), Type.ExecuteMechanic)] public FightMechanic mechanic;
         [Tooltip("If executing a mechanic, an optional override for the source character of the mechanic.")]
         [ShowIf(nameof(behaviorType), Type.ExecuteMechanic)] public CharacterState overrideMechanicSource = null;
+        [Tooltip("If setting a character event result, the ID of the result to set on the character.")]
+        [ShowIf(nameof(behaviorType), Type.SetCharacterEventResult), Min(-1)] public int characterEventResultId = -1;
+        [Tooltip("If setting a character event result, the value to set for the result on the character.")]
+        [ShowIf(nameof(behaviorType), Type.SetCharacterEventResult)] public int characterEventResultValue = 0;
         [Space(10)]
         public UnityEvent<CharacterState> onProcessCharacter;
 
@@ -102,25 +105,36 @@ namespace dev.susybaka.raidsim.Mechanics
         // Editor only
         private bool _hideStateFields = false;
         private bool _hideGameObjectStateDelay => (_hideStateFields || !setGameObjectState);
+        private Type _lastType;
 
 #if UNITY_EDITOR
         public void OnValidate()
         {
+            if (behaviorType == _lastType)
+                return;
+
             if (behaviorType != Type.Spawn)
             {
+                _lastType = behaviorType;
                 spawnLocation = null;
+                UnityEditor.EditorUtility.SetDirty(this);
             }
             if (behaviorType != Type.ExecuteAction)
             {
+                _lastType = behaviorType;
                 useQueuedActions = true;
                 action = null;
+                UnityEditor.EditorUtility.SetDirty(this);
             }
             if (behaviorType != Type.ExecuteAction && behaviorType != Type.SetTarget && behaviorType != Type.ExecuteMechanic)
             {
+                _lastType = behaviorType;
                 _hideStateFields = false;
+                UnityEditor.EditorUtility.SetDirty(this);
             }
-            if (behaviorType == Type.ExecuteAction || behaviorType == Type.SetTarget || behaviorType == Type.ExecuteMechanic)
+            if (behaviorType == Type.ExecuteAction || behaviorType == Type.SetTarget || behaviorType == Type.ExecuteMechanic || behaviorType == Type.SetCharacterEventResult)
             {
+                _lastType = behaviorType;
                 setCharacterState = false;
                 setGameObjectState = false;
                 setNameplateVisibility = false;
@@ -129,6 +143,7 @@ namespace dev.susybaka.raidsim.Mechanics
                 setModelVisibility = false;
                 fadeModelVisibility = false;
                 _hideStateFields = true;
+                UnityEditor.EditorUtility.SetDirty(this);
             }
         }
 #endif
@@ -190,6 +205,13 @@ namespace dev.susybaka.raidsim.Mechanics
                         Debug.Log($"[CharacterStateMechanic ({gameObject.name})] Executing requested mechanic for {characters.Count} characters.");
 
                     MechanicCharacters(actionInfo);
+                    break;
+
+                case Type.SetCharacterEventResult:
+                    if (log)
+                        Debug.Log($"[CharacterStateMechanic ({gameObject.name})] Setting character event result for {characters.Count} characters.");
+
+                    SetEventsCharacters();
                     break;
             }
         }
@@ -731,6 +753,33 @@ namespace dev.susybaka.raidsim.Mechanics
 
                 mechanic.TriggerMechanic(new ActionInfo(actionInfo.action, source, character));
 
+                onProcessCharacter.Invoke(character);
+            }
+        }
+
+        private void SetEventsCharacters()
+        {
+            foreach (CharacterState character in characters)
+            {
+                if (character == null)
+                {
+                    if (log)
+                        Debug.Log($"[CharacterStateMechanic ({gameObject.name})] CharacterState is null or invalid, skipping.");
+                    continue;
+                }
+                if (!TryFilter(character))
+                {
+                    if (log)
+                        Debug.Log($"[CharacterStateMechanic ({gameObject.name})] {character.characterName} did not pass filtering, skipping character event result assignment.");
+                    continue;
+                }
+                if (characterEventResultId < 0)
+                {
+                    if (log)
+                        Debug.LogWarning($"[CharacterStateMechanic ({gameObject.name})] Invalid character event result ID specified, skipping character event result assignment for {character.characterName}.");
+                    continue;
+                }
+                character.SetCharacterEventResult(characterEventResultId, characterEventResultValue);
                 onProcessCharacter.Invoke(character);
             }
         }

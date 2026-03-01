@@ -39,7 +39,8 @@ namespace dev.susybaka.raidsim.Actions
         public float animationLock = 0.6f;
         public int charges = 1;
         public bool canBeSlideCast = true;
-        public bool rollsGcd = true;
+        [UnityEngine.Serialization.FormerlySerializedAs("rollsGcd")] public bool hasCooldown = true;
+        [ShowIf(nameof(hasCooldown))] public bool isGlobalCooldown = false;
         public StatusEffectData buff;
         public bool dispelBuffInstead = false;
         public StatusEffectData debuff;

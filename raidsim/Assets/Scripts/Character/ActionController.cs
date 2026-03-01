@@ -110,6 +110,12 @@ namespace dev.susybaka.raidsim.Actions
         public bool Interrupted { get { return interrupted; } }
         private bool hasTarget;
         private int rateLimit;
+        private float globalRecastTimer = 0f;
+        public float GlobalRecastTimer { get { return globalRecastTimer; } }
+        private float lastGlobalRecastTimer;
+        public float LastGloabalRecastTimer { get { return lastGlobalRecastTimer; } }
+        private float globalAnimationLockTimer = 0f;
+        public float GlobalAnimationLockTimer { get { return globalAnimationLockTimer; } }
         private float autoAttackTimer;
         private Queue<CharacterAction> queuedAutoActions = new Queue<CharacterAction>();
         private Queue<CharacterAction> actionQueue = new Queue<CharacterAction>();
@@ -387,6 +393,26 @@ namespace dev.susybaka.raidsim.Actions
                         castBarGroupParty.alpha = 0f;
                     }
                 }
+            }
+
+            // Cooldown, animation lock and charge logic
+            if (globalAnimationLockTimer > 0f)
+            {
+                globalAnimationLockTimer -= FightTimeline.deltaTime;
+                isAnimationLocked = true;
+            }
+            else if (globalAnimationLockTimer < 0f)
+            {
+                globalAnimationLockTimer = 0f;
+                isAnimationLocked = false;
+            }
+            if (globalRecastTimer > 0f)
+            {
+                globalRecastTimer -= FightTimeline.deltaTime;
+            }
+            else if (globalRecastTimer < 0f)
+            {
+                globalRecastTimer = 0f;
             }
 
             if (autoAttack != null && hasTarget && autoAttackEnabled)
@@ -976,7 +1002,7 @@ namespace dev.susybaka.raidsim.Actions
 
                     if (action.Data.animationLock > 0f && !action.Data.isGroundTargeted)
                         action.ActivateAnimationLock();
-                    if (action.Data.rollsGcd && action.Data.recast > 0f && !action.Data.isGroundTargeted)
+                    if (action.Data.hasCooldown && action.Data.recast > 0f && !action.Data.isGroundTargeted)
                         action.ActivateCooldown();
 
                     onCast.Invoke(new CastInfo(newActionInfo, instantCast, characterState.GetEffects()));
@@ -1043,7 +1069,7 @@ namespace dev.susybaka.raidsim.Actions
 
                     if (action.Data.animationLock > 0f && !action.Data.isGroundTargeted)
                         action.ActivateAnimationLock();
-                    if (action.Data.rollsGcd && action.Data.recast > 0f && !action.Data.isGroundTargeted)
+                    if (action.Data.hasCooldown && action.Data.recast > 0f && !action.Data.isGroundTargeted)
                         action.ActivateCooldown();
 
                     /*CharacterState currentTarget = null;
@@ -1120,6 +1146,71 @@ namespace dev.susybaka.raidsim.Actions
                 return;
 
             // IDK
+        }
+
+        public void ActivateGlobalCooldown(CharacterAction action)
+        {
+            if (!gameObject.activeSelf) 
+                return;
+
+            if (Time.timeScale <= 0f)
+                return;
+
+            if (characterState.dead)
+                return;
+
+            if (action == null || (action.Data.hasCooldown && !action.Data.isGlobalCooldown))
+                return;
+
+            lastGlobalRecastTimer = action.Data.recast;
+            globalRecastTimer = action.Data.recast;
+        }
+
+        public void ActivateGlobalAnimationLock(CharacterAction action)
+        {
+            if (!gameObject.activeSelf)
+                return;
+
+            if (Time.timeScale <= 0f)
+                return;
+
+            if (characterState.dead)
+                return;
+
+            if (action == null || action.Data.animationLock <= 0f)
+                return;
+
+            globalAnimationLockTimer = action.Data.animationLock;
+        }
+
+        public void ResetGlobalCooldown()
+        {
+            if (!gameObject.activeSelf)
+                return;
+
+            if (Time.timeScale <= 0f)
+                return;
+
+            if (characterState.dead)
+                return;
+
+            Debug.Log("augh");
+
+            globalRecastTimer = 0f;
+        }
+
+        public void ResetGlobalAnimationLock()
+        {
+            if (!gameObject.activeSelf)
+                return;
+
+            if (Time.timeScale <= 0f)
+                return;
+
+            if (characterState.dead)
+                return;
+
+            globalAnimationLockTimer = 0f;
         }
 
         private void Interrupt()

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7968994889274011622}
   - component: {fileID: 219202917762846167}
+  - component: {fileID: 6885024741055951536}
   - component: {fileID: -4388705746086010468}
   - component: {fileID: -5559141224366815223}
   - component: {fileID: 4545985534812168824}
@@ -79,6 +80,31 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 6885024741055951536}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Mechanics.CharacterStateMechanic,
+          Assembly-CSharp
+        m_MethodName: AddCharacter
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 6885024741055951536}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Mechanics.FightMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onTick:
     m_PersistentCalls:
       m_Calls: []
@@ -134,6 +160,62 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   onMaxStacks:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &6885024741055951536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2952943525002301481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9d9b4c40d20dbf4ba9f2e114fb86f1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: 
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  behaviorType: 7
+  characters: []
+  setNameplateVisibility: 0
+  invertNameplate: 0
+  setPartyListVisibility: 0
+  invertPartyList: 0
+  setTargetability: 0
+  invertTargetable: 0
+  setModelVisibility: 0
+  invertModelVisibility: 0
+  fadeModelVisibility: 0
+  modelVisibilityFadeTime: 0.5
+  setGameObjectState: 0
+  gameObjectStateDelay: 0
+  setCharacterState: 0
+  allowDynamicCharacters: 1
+  toggleInstead: 0
+  filterByStatusEffects: 0
+  requireAllStatusEffects: 0
+  ignoreUnfiltered: 0
+  requiredStatusEffects: []
+  changeModel: 0
+  modelIndex: 0
+  spawnLocation: {fileID: 0}
+  executionType: 0
+  useQueuedActions: 1
+  action: {fileID: 0}
+  actionData: {fileID: 0}
+  targetingType: 0
+  filterTargetsInstead: 0
+  setRotationTarget: 0
+  targetList: []
+  mechanic: {fileID: 0}
+  overrideMechanicSource: {fileID: 0}
+  characterEventResultId: 30
+  characterEventResultValue: 1
+  onProcessCharacter:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &-4388705746086010468
@@ -208,6 +290,7 @@ MonoBehaviour:
     applicationType: 0
     source: {fileID: 0}
   kill: 0
+  onlyHitCharacterName: 
 --- !u!114 &4545985534812168824
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -267,6 +350,7 @@ MonoBehaviour:
   fadeModelVisibility: 0
   modelVisibilityFadeTime: 0.5
   setGameObjectState: 0
+  gameObjectStateDelay: 0
   setCharacterState: 0
   allowDynamicCharacters: 1
   toggleInstead: 0
@@ -281,6 +365,14 @@ MonoBehaviour:
   useQueuedActions: 0
   action: {fileID: 0}
   actionData: {fileID: 11400000, guid: c2093dffe57f3ba4ebc737605c371dd1, type: 2}
+  targetingType: 0
+  filterTargetsInstead: 0
+  setRotationTarget: 0
+  targetList: []
+  mechanic: {fileID: 0}
+  overrideMechanicSource: {fileID: 0}
+  characterEventResultId: -1
+  characterEventResultValue: 0
   onProcessCharacter:
     m_PersistentCalls:
       m_Calls: []
