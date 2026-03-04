@@ -58,7 +58,19 @@ namespace dev.susybaka.raidsim.UI
 
         private void Update()
         {
-            if (isEditorOpen && userInput != null)
+            if (userInput == null)
+                return;
+
+            if (userInput.GetButtonDown("ToggleUserInterfaceEditMode"))
+            {
+                ToggleHudEditor();
+            }
+            if (userInput.GetButtonDown("CancelKey"))
+            {
+                ToggleHudEditorMenu();
+            }
+
+            if (isEditorOpen)
             {
                 userInput.inputEnabled = false;
                 userInput.zoomInputEnabled = false;

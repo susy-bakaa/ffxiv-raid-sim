@@ -229,65 +229,6 @@ namespace dev.susybaka.raidsim.Core
             // Always setup when starting fresh
             SetupRng();
 
-            if (mechanicParent == null)
-            {
-                mechanicParent = Utilities.FindAnyByName("Mechanics").transform;
-            }
-
-            if (enemiesParent == null)
-            {
-                enemiesParent = Utilities.FindAnyByName("Enemies").transform;
-            }
-
-            if (charactersParent == null)
-            {
-                charactersParent = Utilities.FindAnyByName("Characters").transform;
-            }
-
-            if (charactersParent != null)
-            {
-                allCharacters.Clear();
-                allCharacters.AddRange(charactersParent.GetComponentsInChildren<CharacterState>());
-                allCharacters.AddRange(enemiesParent.GetComponentsInChildren<CharacterState>());
-            }
-
-            if (botNodeParent == null)
-            {
-                botNodeParent = Utilities.FindAnyByName("AINodes").transform;
-            }
-
-            if (botNodeParent != null)
-            {
-                allBotNodes = botNodeParent.GetComponentsInChildren<BotNode>();
-                allMechanicNodes = botNodeParent.GetComponentsInChildren<MechanicNode>();
-            }
-
-            if (!disableBotTimelines)
-            {
-                if (botTimelineParent == null)
-                {
-                    botTimelineParent = Utilities.FindAnyByName("BotTimelines").transform;
-                }
-
-                if (botTimelineParent != null)
-                {
-                    allBotTimelines = botTimelineParent.GetComponentsInChildren<BotTimeline>();
-                    allSetDynamicBotNodes = botTimelineParent.GetComponentsInChildren<SetDynamicBotNode>();
-                    allBotTimelineBranches = botTimelineParent.GetComponentsInChildren<BotTimelineBranch>();
-                }
-            }
-
-            allBotVisibilities = new BotVisibility[partyList.members.Count];
-            for (int i = 0; i < partyList.members.Count; i++)
-            {
-                allBotVisibilities[i] = partyList.members[i].characterState.transform.GetComponent<BotVisibility>();
-
-                if (allBotVisibilities[i] != null)
-                {
-                    onUpdateBotVisibility.AddListener(allBotVisibilities[i].UpdateVisibility);
-                }
-            }
-
             input = GetComponentInChildren<UserInput>();   
             fightSelector = FindFirstObjectByType<FightSelector>();
 
@@ -309,6 +250,78 @@ namespace dev.susybaka.raidsim.Core
             simulationSpeedLabel = GameObject.Find("SimulationSpeedLabel").GetComponentInChildren<TextMeshProUGUI>(true);
 
             partyList?.LevelSync(timelineLevel, timelinePlayerHealth);
+        }
+
+        private void Start()
+        {
+            if (mechanicParent == null)
+            {
+                mechanicParent = Utilities.FindAnyByName("Mechanics").transform;
+                if (mechanicParent == null)
+                    Debug.LogError("Could not find the parent object for runtime instantiated mechanics!");
+            }
+
+            if (enemiesParent == null)
+            {
+                enemiesParent = Utilities.FindAnyByName("Enemies").transform;
+                if (enemiesParent == null)
+                    Debug.LogError("Could not find the parent object for enemies!");
+            }
+
+            if (charactersParent == null)
+            {
+                charactersParent = Utilities.FindAnyByName("Characters").transform;
+                if (charactersParent == null)
+                    Debug.LogError("Could not find the parent object for players or other characters!");
+            }
+
+            if (charactersParent != null)
+            {
+                allCharacters.Clear();
+                allCharacters.AddRange(charactersParent.GetComponentsInChildren<CharacterState>());
+                allCharacters.AddRange(enemiesParent.GetComponentsInChildren<CharacterState>());
+            }
+
+            if (botNodeParent == null)
+            {
+                botNodeParent = Utilities.FindAnyByName("AINodes").transform;
+                if (botNodeParent == null)
+                    Debug.LogError("Could not find the parent object for bot nodes and mechanic nodes!");
+            }
+
+            if (botNodeParent != null)
+            {
+                allBotNodes = botNodeParent.GetComponentsInChildren<BotNode>();
+                allMechanicNodes = botNodeParent.GetComponentsInChildren<MechanicNode>();
+            }
+
+            if (!disableBotTimelines)
+            {
+                if (botTimelineParent == null)
+                {
+                    botTimelineParent = Utilities.FindAnyByName("BotTimelines").transform;
+                    if (botTimelineParent == null)
+                        Debug.LogError("Could not find the parent object for bot timelines!");
+                }
+
+                if (botTimelineParent != null)
+                {
+                    allBotTimelines = botTimelineParent.GetComponentsInChildren<BotTimeline>();
+                    allSetDynamicBotNodes = botTimelineParent.GetComponentsInChildren<SetDynamicBotNode>();
+                    allBotTimelineBranches = botTimelineParent.GetComponentsInChildren<BotTimelineBranch>();
+                }
+            }
+
+            allBotVisibilities = new BotVisibility[partyList.members.Count];
+            for (int i = 0; i < partyList.members.Count; i++)
+            {
+                allBotVisibilities[i] = partyList.members[i].characterState.transform.GetComponent<BotVisibility>();
+
+                if (allBotVisibilities[i] != null)
+                {
+                    onUpdateBotVisibility.AddListener(allBotVisibilities[i].UpdateVisibility);
+                }
+            }
         }
 
         private void Update()

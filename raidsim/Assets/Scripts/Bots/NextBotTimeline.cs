@@ -54,7 +54,7 @@ namespace dev.susybaka.raidsim.Bots
         private void Awake()
         {
             if (player == null)
-                player = Utilities.FindAnyByName("Player").GetComponent<CharacterState>();
+                player = FightTimeline.Instance.player;
 
             originalOtherBots = new List<CharacterState>();
             for (int i = 0; i < otherBots.Count; i++)

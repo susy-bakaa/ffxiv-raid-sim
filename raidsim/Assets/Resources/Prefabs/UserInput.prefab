@@ -67,6 +67,26 @@ MonoBehaviour:
   - {fileID: 792038783911251440, guid: de67545c4fc69844f9b86c01eccb66fb, type: 3}
   - {fileID: 2185797505735019296, guid: de67545c4fc69844f9b86c01eccb66fb, type: 3}
   keys:
+  - name: Jump
+    bind:
+      keyCode: 32
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+    hasControllerBinding: 1
+    requiresModifier: 0
+    neverDisable: 0
+    ignoreTyping: 0
+    controllerBind: {fileID: -6569753537458414146, guid: de67545c4fc69844f9b86c01eccb66fb, type: 3}
   - name: HotbarSlot1Key
     bind:
       keyCode: 49
@@ -207,66 +227,6 @@ MonoBehaviour:
     neverDisable: 0
     ignoreTyping: 0
     controllerBind: {fileID: -5208676363966466538, guid: de67545c4fc69844f9b86c01eccb66fb, type: 3}
-  - name: TargetKey
-    bind:
-      keyCode: 9
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 1
-    requiresModifier: 0
-    neverDisable: 0
-    ignoreTyping: 0
-    controllerBind: {fileID: -4064010792682795994, guid: de67545c4fc69844f9b86c01eccb66fb, type: 3}
-  - name: CancelKey
-    bind:
-      keyCode: 27
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 1
-    requiresModifier: 0
-    neverDisable: 1
-    ignoreTyping: 1
-    controllerBind: {fileID: -8385147992123082060, guid: de67545c4fc69844f9b86c01eccb66fb, type: 3}
-  - name: TargetSelfKey
-    bind:
-      keyCode: 282
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 0
-    requiresModifier: 0
-    neverDisable: 0
-    ignoreTyping: 0
-    controllerBind: {fileID: 0}
   - name: HotbarSlot8Key
     bind:
       keyCode: 56
@@ -307,6 +267,106 @@ MonoBehaviour:
     neverDisable: 0
     ignoreTyping: 0
     controllerBind: {fileID: 947823676971768349, guid: de67545c4fc69844f9b86c01eccb66fb, type: 3}
+  - name: HotbarSlot10Key
+    bind:
+      keyCode: 48
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+    hasControllerBinding: 1
+    requiresModifier: 1
+    neverDisable: 0
+    ignoreTyping: 0
+    controllerBind: {fileID: 8329114786927998500, guid: de67545c4fc69844f9b86c01eccb66fb, type: 3}
+  - name: HotbarSlot11Key
+    bind:
+      keyCode: 45
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+    hasControllerBinding: 1
+    requiresModifier: 1
+    neverDisable: 0
+    ignoreTyping: 0
+    controllerBind: {fileID: -3027422182540612680, guid: de67545c4fc69844f9b86c01eccb66fb, type: 3}
+  - name: HotbarSlot12Key
+    bind:
+      keyCode: 43
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+    hasControllerBinding: 1
+    requiresModifier: 1
+    neverDisable: 0
+    ignoreTyping: 0
+    controllerBind: {fileID: -438967949079579309, guid: de67545c4fc69844f9b86c01eccb66fb, type: 3}
+  - name: PlayKey
+    bind:
+      keyCode: 287
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+    hasControllerBinding: 1
+    requiresModifier: 0
+    neverDisable: 1
+    ignoreTyping: 0
+    controllerBind: {fileID: 356413269179189913, guid: de67545c4fc69844f9b86c01eccb66fb, type: 3}
+  - name: PauseKey
+    bind:
+      keyCode: 288
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+    hasControllerBinding: 1
+    requiresModifier: 0
+    neverDisable: 1
+    ignoreTyping: 0
+    controllerBind: {fileID: 6134288867006151102, guid: de67545c4fc69844f9b86c01eccb66fb, type: 3}
   - name: ResetKey
     bind:
       keyCode: 284
@@ -359,9 +419,49 @@ MonoBehaviour:
     neverDisable: 1
     ignoreTyping: 0
     controllerBind: {fileID: -7340199292577795164, guid: de67545c4fc69844f9b86c01eccb66fb, type: 3}
-  - name: ToggleUserInterfaceEditMode
+  - name: CancelKey
     bind:
-      keyCode: 283
+      keyCode: 27
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+    hasControllerBinding: 1
+    requiresModifier: 0
+    neverDisable: 1
+    ignoreTyping: 1
+    controllerBind: {fileID: -8385147992123082060, guid: de67545c4fc69844f9b86c01eccb66fb, type: 3}
+  - name: TargetKey
+    bind:
+      keyCode: 9
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+    hasControllerBinding: 1
+    requiresModifier: 0
+    neverDisable: 0
+    ignoreTyping: 0
+    controllerBind: {fileID: -4064010792682795994, guid: de67545c4fc69844f9b86c01eccb66fb, type: 3}
+  - name: TargetSelfKey
+    bind:
+      keyCode: 282
       mouseButton: -1
       alt: 0
       control: 0
@@ -376,29 +476,9 @@ MonoBehaviour:
         m_Calls: []
     hasControllerBinding: 0
     requiresModifier: 0
-    neverDisable: 1
-    ignoreTyping: 0
-    controllerBind: {fileID: 0}
-  - name: HotbarSlot10Key
-    bind:
-      keyCode: 48
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 1
-    requiresModifier: 1
     neverDisable: 0
     ignoreTyping: 0
-    controllerBind: {fileID: 8329114786927998500, guid: de67545c4fc69844f9b86c01eccb66fb, type: 3}
+    controllerBind: {fileID: 0}
   - name: OffsetIncreaseKey
     bind:
       keyCode: 273
@@ -459,46 +539,6 @@ MonoBehaviour:
     neverDisable: 0
     ignoreTyping: 0
     controllerBind: {fileID: 0}
-  - name: HotbarSlot11Key
-    bind:
-      keyCode: 45
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 1
-    requiresModifier: 1
-    neverDisable: 0
-    ignoreTyping: 0
-    controllerBind: {fileID: -3027422182540612680, guid: de67545c4fc69844f9b86c01eccb66fb, type: 3}
-  - name: HotbarSlot12Key
-    bind:
-      keyCode: 43
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 1
-    requiresModifier: 1
-    neverDisable: 0
-    ignoreTyping: 0
-    controllerBind: {fileID: -438967949079579309, guid: de67545c4fc69844f9b86c01eccb66fb, type: 3}
   - name: ResetSpeed
     bind:
       keyCode: 304
@@ -539,9 +579,9 @@ MonoBehaviour:
     neverDisable: 1
     ignoreTyping: 0
     controllerBind: {fileID: 0}
-  - name: Jump
+  - name: ToggleUserInterfaceEditMode
     bind:
-      keyCode: 32
+      keyCode: 283
       mouseButton: -1
       alt: 0
       control: 0
@@ -554,11 +594,11 @@ MonoBehaviour:
     onHeld:
       m_PersistentCalls:
         m_Calls: []
-    hasControllerBinding: 1
+    hasControllerBinding: 0
     requiresModifier: 0
-    neverDisable: 0
+    neverDisable: 1
     ignoreTyping: 0
-    controllerBind: {fileID: -6569753537458414146, guid: de67545c4fc69844f9b86c01eccb66fb, type: 3}
+    controllerBind: {fileID: 0}
   - name: ToggleMacroEditorKey
     bind:
       keyCode: 107
@@ -579,366 +619,6 @@ MonoBehaviour:
     neverDisable: 0
     ignoreTyping: 0
     controllerBind: {fileID: 0}
-  - name: 
-    bind:
-      keyCode: 0
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 0
-    requiresModifier: 0
-    neverDisable: 0
-    ignoreTyping: 0
-    controllerBind: {fileID: 0}
-  - name: 
-    bind:
-      keyCode: 0
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 0
-    requiresModifier: 0
-    neverDisable: 0
-    ignoreTyping: 0
-    controllerBind: {fileID: 0}
-  - name: 
-    bind:
-      keyCode: 0
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 0
-    requiresModifier: 0
-    neverDisable: 0
-    ignoreTyping: 0
-    controllerBind: {fileID: 0}
-  - name: 
-    bind:
-      keyCode: 0
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 0
-    requiresModifier: 0
-    neverDisable: 0
-    ignoreTyping: 0
-    controllerBind: {fileID: 0}
-  - name: 
-    bind:
-      keyCode: 0
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 0
-    requiresModifier: 0
-    neverDisable: 0
-    ignoreTyping: 0
-    controllerBind: {fileID: 0}
-  - name: 
-    bind:
-      keyCode: 0
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 0
-    requiresModifier: 0
-    neverDisable: 0
-    ignoreTyping: 0
-    controllerBind: {fileID: 0}
-  - name: 
-    bind:
-      keyCode: 0
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 0
-    requiresModifier: 0
-    neverDisable: 0
-    ignoreTyping: 0
-    controllerBind: {fileID: 0}
-  - name: 
-    bind:
-      keyCode: 0
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 0
-    requiresModifier: 0
-    neverDisable: 0
-    ignoreTyping: 0
-    controllerBind: {fileID: 0}
-  - name: 
-    bind:
-      keyCode: 0
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 0
-    requiresModifier: 0
-    neverDisable: 0
-    ignoreTyping: 0
-    controllerBind: {fileID: 0}
-  - name: 
-    bind:
-      keyCode: 0
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 0
-    requiresModifier: 0
-    neverDisable: 0
-    ignoreTyping: 0
-    controllerBind: {fileID: 0}
-  - name: 
-    bind:
-      keyCode: 0
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 0
-    requiresModifier: 0
-    neverDisable: 0
-    ignoreTyping: 0
-    controllerBind: {fileID: 0}
-  - name: 
-    bind:
-      keyCode: 0
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 0
-    requiresModifier: 0
-    neverDisable: 0
-    ignoreTyping: 0
-    controllerBind: {fileID: 0}
-  - name: 
-    bind:
-      keyCode: 0
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 0
-    requiresModifier: 0
-    neverDisable: 0
-    ignoreTyping: 0
-    controllerBind: {fileID: 0}
-  - name: 
-    bind:
-      keyCode: 0
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 0
-    requiresModifier: 0
-    neverDisable: 0
-    ignoreTyping: 0
-    controllerBind: {fileID: 0}
-  - name: 
-    bind:
-      keyCode: 0
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 0
-    requiresModifier: 0
-    neverDisable: 0
-    ignoreTyping: 0
-    controllerBind: {fileID: 0}
-  - name: 
-    bind:
-      keyCode: 0
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 0
-    requiresModifier: 0
-    neverDisable: 0
-    ignoreTyping: 0
-    controllerBind: {fileID: 0}
-  - name: PlayKey
-    bind:
-      keyCode: 287
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 1
-    requiresModifier: 0
-    neverDisable: 1
-    ignoreTyping: 0
-    controllerBind: {fileID: 356413269179189913, guid: de67545c4fc69844f9b86c01eccb66fb, type: 3}
-  - name: PauseKey
-    bind:
-      keyCode: 288
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 1
-    requiresModifier: 0
-    neverDisable: 1
-    ignoreTyping: 0
-    controllerBind: {fileID: 6134288867006151102, guid: de67545c4fc69844f9b86c01eccb66fb, type: 3}
   - name: OpenSettingsKey
     bind:
       keyCode: 289
@@ -999,9 +679,29 @@ MonoBehaviour:
     neverDisable: 0
     ignoreTyping: 0
     controllerBind: {fileID: 0}
-  - name: 
+  - name: ToggleActionsMenu
     bind:
-      keyCode: 0
+      keyCode: 112
+      mouseButton: -1
+      alt: 0
+      control: 0
+      shift: 0
+    action: {fileID: 0}
+    statusEffect: {fileID: 0}
+    onInput:
+      m_PersistentCalls:
+        m_Calls: []
+    onHeld:
+      m_PersistentCalls:
+        m_Calls: []
+    hasControllerBinding: 0
+    requiresModifier: 0
+    neverDisable: 0
+    ignoreTyping: 0
+    controllerBind: {fileID: 0}
+  - name: ToggleChatKey
+    bind:
+      keyCode: 106
       mouseButton: -1
       alt: 0
       control: 0
@@ -1037,26 +737,6 @@ MonoBehaviour:
     hasControllerBinding: 0
     requiresModifier: 0
     neverDisable: 1
-    ignoreTyping: 0
-    controllerBind: {fileID: 0}
-  - name: ToggleChatKey
-    bind:
-      keyCode: 106
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 0
-    requiresModifier: 0
-    neverDisable: 0
     ignoreTyping: 0
     controllerBind: {fileID: 0}
   - name: PreviousMessageKey
@@ -1098,46 +778,6 @@ MonoBehaviour:
     requiresModifier: 0
     neverDisable: 0
     ignoreTyping: 1
-    controllerBind: {fileID: 0}
-  - name: 
-    bind:
-      keyCode: 0
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 0
-    requiresModifier: 0
-    neverDisable: 0
-    ignoreTyping: 0
-    controllerBind: {fileID: 0}
-  - name: ToggleActionsMenu
-    bind:
-      keyCode: 112
-      mouseButton: -1
-      alt: 0
-      control: 0
-      shift: 0
-    action: {fileID: 0}
-    statusEffect: {fileID: 0}
-    onInput:
-      m_PersistentCalls:
-        m_Calls: []
-    onHeld:
-      m_PersistentCalls:
-        m_Calls: []
-    hasControllerBinding: 0
-    requiresModifier: 0
-    neverDisable: 0
-    ignoreTyping: 0
     controllerBind: {fileID: 0}
   axes:
   - name: Horizontal

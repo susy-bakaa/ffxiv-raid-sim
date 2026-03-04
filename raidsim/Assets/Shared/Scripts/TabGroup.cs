@@ -2,6 +2,7 @@
 // This file is part of ffxiv-raid-sim. Linking with the Unity runtime
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
 #pragma warning disable 436
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,11 +15,29 @@ namespace dev.susybaka.Shared.UserInterface
         public List<TabButton> tabButtons;
         private TabButton selectedTab;
         public List<GameObject> objectsToSwap;
+        public int defaultTab= -1;
 
         [Header("Visuals")]
         public Color tabIdle;
         public Color tabHover;
         public Color tabActive;
+
+        private readonly WaitForSecondsRealtime _startWait = new WaitForSecondsRealtime(1f);
+
+        private IEnumerator Start()
+        {
+            if (defaultTab < 0)
+                yield break;
+
+            yield return _startWait;
+
+            foreach (var gObj in objectsToSwap)
+            {
+                gObj.SetActive(false);
+            }
+            ResetTabs();
+            OnTabSelected(tabButtons[defaultTab]);
+        }
 
         public void Subscribe(TabButton button)
         {
@@ -27,7 +46,8 @@ namespace dev.susybaka.Shared.UserInterface
                 tabButtons = new List<TabButton>();
             }
 
-            tabButtons.Add(button);
+            if (!tabButtons.Contains(button))
+                tabButtons.Add(button);
         }
 
         public void OnTabEnter(TabButton button)
@@ -78,8 +98,12 @@ namespace dev.susybaka.Shared.UserInterface
             foreach (TabButton button in tabButtons)
             {
                 if (selectedTab != null && button == selectedTab)
-                { continue; }
+                    continue;
+                if (button == null)
+                    continue;
+
                 button.background.color = tabIdle;
+                button.Deselect();
             }
         }
     }

@@ -124,7 +124,7 @@ namespace dev.susybaka.raidsim.UI
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-                hotbar.Controller.ExecuteSlot(groupId, slotIndex);
+                hotbar.Controller.ExecuteSlot(groupId, slotIndex, false);
             }
             else if (eventData.button == PointerEventData.InputButton.Right)
             {

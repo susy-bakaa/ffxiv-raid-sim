@@ -21,7 +21,7 @@ namespace dev.susybaka.raidsim.Visuals
 
         private bool done = false;
 
-        private void Awake()
+        private void Start()
         {
             done = false;
 

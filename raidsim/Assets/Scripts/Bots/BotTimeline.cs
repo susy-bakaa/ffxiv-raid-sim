@@ -217,12 +217,14 @@ namespace dev.susybaka.raidsim.Bots
                     {
                         yield return new WaitForSeconds(events[i].waitForAction);
                     }
+                    string id = controller.OverrideResolver.ResolveActionId(events[i].actionId, ActionResolveMode.Execution);
+                    CharacterAction action = string.IsNullOrEmpty(id) ? controller.ActionRegistry.GetById(events[i].actionId) : controller.ActionRegistry.GetById(id);
                     if (!events[i].unrestrictedAction)
-                        controller.PerformAction(controller.ActionRegistry.GetById(events[i].actionId));
+                        controller.PerformAction(action);
                     else
-                        controller.PerformActionHidden(controller.ActionRegistry.GetById(events[i].actionId));
+                        controller.PerformActionHidden(action);
                     if (FightTimeline.Instance.log)
-                        Debug.Log($"[BotTimeline] {controller.gameObject.name} perform action {events[i].actionId}");
+                        Debug.Log($"[BotTimeline] {controller.gameObject.name} perform action '{action.Data.actionName} ({action.ActionId})'");
                 }
                 else if (events[i].action != null) // for backwards compatibility, actionId is now the recommended way to specify actions to perform in a BotTimeline, but the old method of directly specifying an action in the inspector still works
                 {
@@ -230,12 +232,14 @@ namespace dev.susybaka.raidsim.Bots
                     {
                         yield return new WaitForSeconds(events[i].waitForAction);
                     }
+                    string id = controller.OverrideResolver.ResolveActionId(controller.ActionRegistry.GetFirstByName(events[i].action.actionName).ActionId, ActionResolveMode.Execution);
+                    CharacterAction action = string.IsNullOrEmpty(id) ? controller.ActionRegistry.GetFirstByName(events[i].action.actionName) : controller.ActionRegistry.GetById(id);
                     if (!events[i].unrestrictedAction)
-                        controller.PerformAction(events[i].action.actionName);
+                        controller.PerformAction(action);
                     else
-                        controller.PerformActionHidden(events[i].action.actionName);
+                        controller.PerformActionHidden(action);
                     if (FightTimeline.Instance.log)
-                        Debug.Log($"[BotTimeline] {controller.gameObject.name} perform action {events[i].action.actionName}");
+                        Debug.Log($"[BotTimeline] {controller.gameObject.name} perform action '{action.Data.actionName} ({action.ActionId})'");
                 }
                 if (events[i].faceTowards != null)
                 {

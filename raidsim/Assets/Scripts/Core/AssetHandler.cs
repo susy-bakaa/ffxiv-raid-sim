@@ -7,10 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
-using Object = UnityEngine.Object;
 #if UNITY_EDITOR
 using NaughtyAttributes;
 #endif
+using dev.susybaka.Shared.Attributes;
+using Object = UnityEngine.Object;
 
 namespace dev.susybaka.raidsim.Core
 {
@@ -18,7 +19,7 @@ namespace dev.susybaka.raidsim.Core
     {
         public static AssetHandler Instance;
 
-        public string[] sharedBundles = new string[] { "common" };
+        public SharedBundle[] sharedBundles = new SharedBundle[] { new SharedBundle { bundle = "common", isLocalOnly = true } };
         public bool useExternalBundles = true;
         public bool disable = false;
         public bool log = true;
@@ -109,21 +110,35 @@ namespace dev.susybaka.raidsim.Core
                 return;
             }
 
-            LoadCommonAssetBundleInternal(new string[] { bundleName });
+            LoadCommonAssetBundleInternal(new SharedBundle[] { sharedBundles.First(sb => sb.bundle.Equals(bundleName)) });
         }
 
         public void LoadCommonAssetBundle(string[] bundleNames)
         {
-            LoadCommonAssetBundleInternal(bundleNames);
+            List<SharedBundle> bundlesToLoad = new List<SharedBundle>();
+
+            foreach (string bundleName in bundleNames)
+            {
+                if (sharedBundles.Any(sb => sb.bundle.Equals(bundleName)))
+                {
+                    bundlesToLoad.Add(sharedBundles.First(sb => sb.bundle.Equals(bundleName)));
+                }
+                else
+                {
+                    Debug.LogWarning($"Requested common AssetBundle '{bundleName}' is not defined in the sharedBundles array and will be skipped.");
+                }
+            }
+
+            LoadCommonAssetBundleInternal(bundlesToLoad.ToArray());
         }
 
-        private void LoadCommonAssetBundleInternal(string[] names)
+        private void LoadCommonAssetBundleInternal(SharedBundle[] bundles)
         {
-            if (names != null && names.Length > 0)
+            if (bundles != null && bundles.Length > 0)
             {
-                foreach (string name in names)
+                foreach (SharedBundle bundle in bundles)
                 {
-                    string bundleName = name;
+                    string bundleName = bundle.bundle;
 
                     if (!bundleName.EndsWith(bundleExtension))
                         bundleName += bundleExtension;
@@ -145,7 +160,7 @@ namespace dev.susybaka.raidsim.Core
                         }
 
                         if (ieLoadSharedAssetBundle == null)
-                            ieLoadSharedAssetBundle = StartCoroutine(IE_LoadCommonAssetBundle(bundleName));
+                            ieLoadSharedAssetBundle = StartCoroutine(IE_LoadCommonAssetBundle(bundleName, bundle.isLocalOnly));
                     }
                 }
             }
@@ -157,7 +172,7 @@ namespace dev.susybaka.raidsim.Core
             }
         }
 
-        private IEnumerator IE_LoadCommonAssetBundle(string bundleName)
+        private IEnumerator IE_LoadCommonAssetBundle(string bundleName, bool isLocal)
         {
             if (currentSharedBundles.ContainsKey(bundleName))
             {
@@ -176,13 +191,18 @@ namespace dev.susybaka.raidsim.Core
 
             string bundlePath = string.Empty;
 
-            if (useExternalBundles)
+            if (useExternalBundles && !isLocal)
             {
                 bundlePath = string.Format(externalBundlesUrl, bundleName, gameVersion);
             }
             else
             {
+#if UNITY_WEBGL && !UNITY_EDITOR
+                // In WebGL, StreamingAssets is accessed via URL, so we use forward slash
+                bundlePath = Application.streamingAssetsPath + "/" + bundleName;
+#else
                 bundlePath = Path.Combine(Application.streamingAssetsPath, bundleName);
+#endif
             }
 #if (UNITY_WEBGL || ENABLE_EXTERNAL_BUNDLES) && !UNITY_EDITOR
             if (log)
@@ -511,6 +531,13 @@ namespace dev.susybaka.raidsim.Core
                 return true;
 
             return false;
+        }
+
+        [System.Serializable]
+        public struct SharedBundle
+        {
+            [AssetBundleName] public string bundle;
+            public bool isLocalOnly;
         }
     }
 }

@@ -31,12 +31,6 @@ namespace dev.susybaka.raidsim.Mechanics
 
         private void Start()
         {
-            if (!FightTimeline.Instance.useAutomarker)
-            {
-                mechanicEnabled = false;
-                return;
-            }
-
             if (autoObtainParty && targetParty == null)
             {
                 targetParty = FightTimeline.Instance.partyList;
@@ -50,7 +44,6 @@ namespace dev.susybaka.raidsim.Mechanics
 
             if (!FightTimeline.Instance.useAutomarker)
             {
-                mechanicEnabled = false;
                 return;
             }
 

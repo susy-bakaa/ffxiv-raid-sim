@@ -16,6 +16,7 @@ namespace dev.susybaka.raidsim.UI
         [SerializeField] private TimelineConfigMenu timelineConfigMenu;
         [SerializeField] private PauseMenu pauseMenu;
         [SerializeField] private HudEditor hudEditor;
+        [SerializeField] private MenuBar menuBar;
 
         private void Awake()
         {
@@ -47,7 +48,7 @@ namespace dev.susybaka.raidsim.UI
 
         public void OpenConfigMenu()
         {
-            configMenu.OpenWindow();
+            menuBar.OpenSettings();
             CloseContentMenus();
         }
 
@@ -59,7 +60,7 @@ namespace dev.susybaka.raidsim.UI
 
         public void OpenKeybinds()
         {
-            configMenu.OpenWindow();
+            menuBar.OpenSettings();
             configMenu.OpenKeybinds();
             CloseContentMenus();
         }

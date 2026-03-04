@@ -16,7 +16,7 @@ namespace dev.susybaka.raidsim.UI.Development
 
         private TextMeshProUGUI textLabel;
 
-        private void Awake()
+        private void Start()
         {
             textLabel = Utilities.FindAnyByName(textLabelToSet).GetComponentInChildren<TextMeshProUGUI>(true);
             textLabel.text = string.Empty;

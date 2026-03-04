@@ -1,15 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // This file is part of ffxiv-raid-sim. Linking with the Unity runtime
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
-using System;
 using System.Collections.Generic;
 using dev.susybaka.raidsim.Actions;
-using dev.susybaka.raidsim.Characters;
 using dev.susybaka.Shared;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.InputSystem.XR;
 using UnityEngine.UI;
 using static dev.susybaka.raidsim.Core.GlobalData;
 
@@ -99,7 +96,6 @@ namespace dev.susybaka.raidsim.UI
                         payload.sourceKind = DragSourceKind.PaletteAction;
                     break;
                 case SlotKind.Action:
-                    // Resolve the action for presentation (icon/name) purposes.
                     action = controller.GetResolvedAction(binding.id, ActionResolveMode.Presentation);
                     macro = new MacroEntry { isValid = false }; // empty
                     tooltip = action.GetFullActionName();
@@ -133,15 +129,13 @@ namespace dev.susybaka.raidsim.UI
                 payload.fromSlotIndex = -1;
             }
 
-            // Set visuals once (icon/name)
             ApplyStaticVisuals();
         }
 
         private void ApplyStaticVisuals()
         {
-            // Macro: show macro icon/name
-            // Action: pull icon/name from CharacterActionData
-            // Keep this lightweight and cached if you want.
+            if (image == null)
+                Awake();
 
             if (macro.isValid && macroEditor != null)
             {
@@ -591,7 +585,7 @@ namespace dev.susybaka.raidsim.UI
                     OnClick.Invoke(binding);
             }
 
-            if (clickHighlight == null) //(eventData == null && pointer) || 
+            if (clickHighlight == null)
             {
                 return;
             }
@@ -604,7 +598,7 @@ namespace dev.susybaka.raidsim.UI
             string id = (action != null && !macro.isValid) ? action.ActionId : macro.isValid ? macro.name : gameObject.name;
 
             clickHighlight.transform.localScale = new Vector3(0f, 0f, 1f);
-            clickHighlight.transform.LeanScale(new Vector3(1.5f, 1.5f, 1f), 0.5f);//.setOnComplete(() => { clickHighlight.LeanAlpha(0f, 0.15f); });
+            clickHighlight.transform.LeanScale(new Vector3(1.5f, 1.5f, 1f), 0.5f);
             Utilities.FunctionTimer.Create(this, () => clickHighlight.LeanAlpha(0f, 0.15f), 0.3f, $"{id}_ui_click_animation_fade_delay", true, false);
             clickHighlight.LeanAlpha(1f, 0.15f);
             if (!pointer)

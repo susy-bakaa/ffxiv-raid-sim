@@ -13,6 +13,7 @@ using NaughtyAttributes;
 using dev.susybaka.raidsim.Actions;
 using dev.susybaka.raidsim.Characters;
 using dev.susybaka.raidsim.Core;
+using dev.susybaka.raidsim.Inputs;
 using dev.susybaka.raidsim.UI;
 using dev.susybaka.Shared;
 using dev.susybaka.Shared.Attributes;
@@ -25,6 +26,7 @@ namespace dev.susybaka.raidsim.Targeting
     {
         public enum TargetType { nearest, sideToSide, enmity, random }
 
+        UserInput m_input;
         Camera m_camera;
         PauseMenu m_pauseMenu;
         ConfigMenu m_configMenu;
@@ -66,27 +68,28 @@ namespace dev.susybaka.raidsim.Targeting
         public UnityEvent<TargetNode> onTarget;
 
         [Header("User Interface")]
-        public float fadeDuration = 0.25f;
-        public bool showTargetLevel = false;
-        public bool showTargetLetter = true;
-        public CanvasGroup targetInfo;
-        public TextMeshProUGUI targetName;
-        public Slider targetHealth;
-        public TextMeshProUGUI targetHealthPercentage;
-        public CanvasGroup targetCastbarGroup;
-        public Slider targetCastbar;
-        public TextMeshProUGUI targetCastbarProgress;
-        public TextMeshProUGUI targetCastbarName;
-        public HudElement targetCastbarHudElement;
-        public CanvasGroup targetCastbarInterruptGroup;
-        public CanvasGroup targetStatusEffectsGroup;
-        public CanvasGroup targetsTargetGroup;
-        public TextMeshProUGUI targetsTargetName;
-        public Slider targetsTargetHealth;
-        public List<TargetColor> targetColors;
-        public List<HudElementColor> targetColoredHudElements;
-        public List<HudElementColor> targetsTargetColoredHudElements;
-        public Transform targetDamagePopupParent;
+        public bool useTargetUserInterface = false;
+        [ShowIf(nameof(useTargetUserInterface))] public float fadeDuration = 0.25f;
+        [ShowIf(nameof(useTargetUserInterface))] public bool showTargetLevel = false;
+        [ShowIf(nameof(useTargetUserInterface))] public bool showTargetLetter = true;
+        [ShowIf(nameof(useTargetUserInterface))] public CanvasGroup targetInfo;
+        [ShowIf(nameof(useTargetUserInterface))] public TextMeshProUGUI targetName;
+        [ShowIf(nameof(useTargetUserInterface))] public Slider targetHealth;
+        [ShowIf(nameof(useTargetUserInterface))] public TextMeshProUGUI targetHealthPercentage;
+        [ShowIf(nameof(useTargetUserInterface))] public CanvasGroup targetCastbarGroup;
+        [ShowIf(nameof(useTargetUserInterface))] public Slider targetCastbar;
+        [ShowIf(nameof(useTargetUserInterface))] public TextMeshProUGUI targetCastbarProgress;
+        [ShowIf(nameof(useTargetUserInterface))] public TextMeshProUGUI targetCastbarName;
+        [ShowIf(nameof(useTargetUserInterface))] public HudElement targetCastbarHudElement;
+        [ShowIf(nameof(useTargetUserInterface))] public CanvasGroup targetCastbarInterruptGroup;
+        [ShowIf(nameof(useTargetUserInterface))] public CanvasGroup targetStatusEffectsGroup;
+        [ShowIf(nameof(useTargetUserInterface))] public CanvasGroup targetsTargetGroup;
+        [ShowIf(nameof(useTargetUserInterface))] public TextMeshProUGUI targetsTargetName;
+        [ShowIf(nameof(useTargetUserInterface))] public Slider targetsTargetHealth;
+        [ShowIf(nameof(useTargetUserInterface))] public List<TargetColor> targetColors;
+        [ShowIf(nameof(useTargetUserInterface))] public List<HudElementColor> targetColoredHudElements;
+        [ShowIf(nameof(useTargetUserInterface))] public List<HudElementColor> targetsTargetColoredHudElements;
+        [ShowIf(nameof(useTargetUserInterface))] public Transform targetDamagePopupParent;
         public bool changeCursor = false;
         [CursorName] public string combatCursor = "combat";
 
@@ -129,7 +132,62 @@ namespace dev.susybaka.raidsim.Targeting
 
         private void Awake()
         {
+            m_input = FightTimeline.Instance.input;
             m_camera = Camera.main;
+
+            // This section handles setting up specific refences by utilizing our custom TaggedObject component to identify them,
+            // which allows for more flexibility in the hierarchy setup and let's us avoid cluttering the Unity tag system.
+            // This is a bit janky, but it works and saves us from having to set up a lot of references manually in the inspector.
+            TaggedObject[] allTagged = FindObjectsOfType<TaggedObject>(true);
+
+            foreach (TaggedObject tagged in allTagged)
+            {
+                if (useTargetUserInterface)
+                {
+                    if (tagged.m_tag == "TargetStatus")
+                    {
+                        targetInfo = tagged.transform.GetComponent<CanvasGroup>();
+
+                        // Health and name references since they are together under the same parent
+                        targetHealth = tagged.transform.Find("HealthBar").GetComponentInChildren<Slider>();
+                        targetHealthPercentage = targetHealth.transform.Find("Amount").GetComponentInChildren<TextMeshProUGUI>();
+                        targetName = targetHealth.transform.Find("Name").GetComponentInChildren<TextMeshProUGUI>();
+
+                        // Castbar references
+                        targetCastbarHudElement = tagged.transform.Find("CastBar").GetComponent<HudElement>();
+                        targetCastbar = targetCastbarHudElement.GetComponentInChildren<Slider>();
+                        targetCastbarGroup = targetCastbar.transform.GetComponent<CanvasGroup>();
+                        targetCastbarProgress = targetCastbar.transform.Find("Amount").GetComponentInChildren<TextMeshProUGUI>();
+                        targetCastbarName = targetCastbar.transform.Find("Name").GetComponentInChildren<TextMeshProUGUI>();
+                        targetCastbarInterruptGroup = targetCastbar.transform.Find("Interrupted").GetComponent<CanvasGroup>();
+
+                        // Target's target references
+                        targetsTargetGroup = targetHealth.transform.parent.Find("Target").GetComponent<CanvasGroup>();
+                        targetsTargetHealth = targetsTargetGroup.transform.GetComponentInChildren<Slider>();
+                        targetsTargetName = targetsTargetGroup.transform.GetComponentInChildren<TextMeshProUGUI>();
+
+                        // Colored hud element references
+                        targetColoredHudElements = targetHealth.transform.GetComponentsInChildren<HudElementColor>().ToList();
+                        targetsTargetColoredHudElements = targetsTargetGroup.transform.GetComponentsInChildren<HudElementColor>().ToList();
+
+                        for (int i = targetColoredHudElements.Count - 1; i >= 0; i--)
+                        {
+                            if (targetsTargetColoredHudElements.Contains(targetColoredHudElements[i]))
+                            {
+                                targetColoredHudElements.RemoveAt(i);
+                            }
+                        }
+                    }
+                    if (tagged.m_tag == "TargetDamageFeed")
+                    {
+                        targetDamagePopupParent = tagged.transform;
+                    }
+                }
+                if (isPlayer && tagged.m_tag == "PlayerTargetTargetsTarget")
+                {
+                    tagged.GetComponent<Button>().onClick.AddListener(SetTargetToTargetsTarget);
+                }
+            }
 
             if (targetCastbarGroup != null)
             {
@@ -172,7 +230,21 @@ namespace dev.susybaka.raidsim.Targeting
             if (isPlayer && canMouseRaycast)
                 HandleMouseClick();
             if (isPlayer)
+            {
+                if (m_input.GetButtonDown("TargetKey"))
+                {
+                    CycleTarget();
+                }
+                if (m_input.GetButtonDown("TargetSelfKey"))
+                {
+                    SetTarget(self);
+                }
+                if (m_input.GetButtonDown("CancelKey"))
+                {
+                    SetTarget();
+                }
                 UpdateUserInterface();
+            }
 #if !UNITY_WEBPLAYER
             if (autoTarget)
                 Target();
@@ -860,7 +932,9 @@ namespace dev.susybaka.raidsim.Targeting
                 }
 
                 // Sort targets randomly
-                targetableNodes.Shuffle();
+                targetableNodes.OrderBy(_ => UnityEngine.Random.value)
+                    .Select(t => t)
+                    .ToList();
             }
 
             return targetableNodes;

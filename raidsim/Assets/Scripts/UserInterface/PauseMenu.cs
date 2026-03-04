@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using dev.susybaka.raidsim.Actions;
 using dev.susybaka.raidsim.Core;
+using dev.susybaka.raidsim.Inputs;
 using dev.susybaka.raidsim.Targeting;
 
 namespace dev.susybaka.raidsim.UI
@@ -14,6 +15,7 @@ namespace dev.susybaka.raidsim.UI
     public class PauseMenu : HudWindow
     {
         [Header("Pause Menu Settings")]
+        [SerializeField] private UserInput input;
         public HudEditor hudEditor;
         public TargetController playerTargeting;
         public ActionController playerActions;
@@ -25,7 +27,8 @@ namespace dev.susybaka.raidsim.UI
         protected override void Awake()
         {
             base.Awake();
-            
+
+            input = FightTimeline.Instance.input;
             if (playerTargeting == null)
                 playerTargeting = GameObject.Find("Player")?.GetComponent<TargetController>();
             if (playerActions == null)
@@ -36,6 +39,17 @@ namespace dev.susybaka.raidsim.UI
                 playerTargeting.SetPauseMenu(this);
             if (chatWindow == null)
                 chatWindow = ChatWindow.Instance;
+        }
+
+        private void Update()
+        {
+            if (input == null)
+                return;
+
+            if (input.GetButtonDown("CancelKey"))
+            {
+                TogglePauseMenu();
+            }
         }
 
         public void ExitToMainMenu()

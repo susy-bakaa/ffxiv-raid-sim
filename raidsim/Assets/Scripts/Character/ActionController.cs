@@ -29,11 +29,13 @@ namespace dev.susybaka.raidsim.Actions
         CharacterState characterState;
         TargetController targetController;
         ComboOverrideDriver comboDriver;
+        ActionOverrideResolver overrideResolver;
+        public ComboOverrideDriver ComboDriver => comboDriver;
+        public ActionOverrideResolver OverrideResolver => overrideResolver;
 
         //public Transform actionParent;
         [SerializeField] private CharacterActionRegistry actionRegistry;
         public CharacterActionRegistry ActionRegistry => actionRegistry;
-        [UnityEngine.Serialization.FormerlySerializedAs("actions")] public List<CharacterAction> _actions = new List<CharacterAction>();
         public List<CharacterAction> autoActions = new List<CharacterAction>();
 #if UNITY_EDITOR
         public List<CharacterAction> _actionQueue = new List<CharacterAction>();
@@ -53,13 +55,15 @@ namespace dev.susybaka.raidsim.Actions
         public float distanceToTarget = 0f;
         public float castingRotationSpeed = 5f;
 
-        [Header("Personal")]
+        [Header("Personal - Cast Bar")]
         public bool useCastBar;
-        public Slider castBar;
-        public TextMeshProUGUI castNameText;
-        public TextMeshProUGUI castLengthText;
-        public CanvasGroup interruptText;
-        public HudElement castBarElement;
+        [ShowIf(nameof(useCastBar))] public Slider castBar;
+        [ShowIf(nameof(useCastBar))] public TextMeshProUGUI castNameText;
+        [ShowIf(nameof(useCastBar))] public TextMeshProUGUI castLengthText;
+        [ShowIf(nameof(useCastBar))] public CanvasGroup interruptText;
+        [ShowIf(nameof(useCastBar))] public HudElement castBarElement;
+        
+        [Header("Personal - Speech")]
         public CanvasGroup speechBubbleGroup;
         public float speechBubbleDuration = 2f;
         public TextMeshProUGUI speechBubbleText;
@@ -67,10 +71,10 @@ namespace dev.susybaka.raidsim.Actions
 
         [Header("Party")]
         public bool usePartyCastBar;
-        public Slider castBarParty;
-        public TextMeshProUGUI castNameTextParty;
-        public bool hideNameWhenCasting = false;
-        public bool showCastTargetLetter = true;
+        [ShowIf(nameof(usePartyCastBar))] public Slider castBarParty;
+        [ShowIf(nameof(usePartyCastBar))] public TextMeshProUGUI castNameTextParty;
+        [ShowIf(nameof(usePartyCastBar))] public bool hideNameWhenCasting = false;
+        [ShowIf(nameof(usePartyCastBar))] public bool showCastTargetLetter = true;
 
         private CanvasGroup castBarGroupParty;
         private CanvasGroup castBarGroup;
@@ -130,6 +134,30 @@ namespace dev.susybaka.raidsim.Actions
             characterState = GetComponent<CharacterState>();
             targetController = GetComponent<TargetController>();
             comboDriver = GetComponentInChildren<ComboOverrideDriver>();
+            overrideResolver = GetComponentInChildren<ActionOverrideResolver>();
+
+            // This section handles setting up specific refences by utilizing our custom TaggedObject component to identify them,
+            // which allows for more flexibility in the hierarchy setup and let's us avoid cluttering the Unity tag system.
+            // This is a bit janky, but it works and saves us from having to set up a lot of references manually in the inspector.
+            TaggedObject[] allTagged = FindObjectsOfType<TaggedObject>(true);
+
+            foreach (TaggedObject tagged in allTagged)
+            {
+                if (castBarElement == null || castBar == null || castNameText == null || castLengthText == null || interruptText == null)
+                {
+                    if (useCastBar)
+                    {
+                        if (tagged.m_tag == "PersonalCastBar")
+                        {
+                            castBarElement = tagged.transform.GetComponent<HudElement>();
+                            castBar = tagged.transform.GetComponentInChildren<Slider>();
+                            castNameText = castBar.transform.Find("Name").GetComponentInChildren<TextMeshProUGUI>();
+                            castLengthText = castBar.transform.Find("Amount").GetComponentInChildren<TextMeshProUGUI>();
+                            interruptText = castBar.transform.Find("Interrupted").GetComponent<CanvasGroup>();
+                        }
+                    }
+                }
+            }
 
             if (characterState != null)
                 characterState.onInstantCastsChanged.AddListener(UpdateInstantCasts);
@@ -1193,8 +1221,6 @@ namespace dev.susybaka.raidsim.Actions
 
             if (characterState.dead)
                 return;
-
-            Debug.Log("augh");
 
             globalRecastTimer = 0f;
         }

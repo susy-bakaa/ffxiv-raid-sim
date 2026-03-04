@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using dev.susybaka.raidsim.Characters;
+using dev.susybaka.raidsim.Core;
 using dev.susybaka.Shared;
 using static dev.susybaka.raidsim.UI.PartyList;
 
@@ -33,7 +34,7 @@ namespace dev.susybaka.raidsim.UI
             rateLimit2 = rateLimit + 5;
             image = GetComponentInChildren<Image>();
             if (player == null)
-                player = Utilities.FindAnyByName("Player").GetComponent<CharacterState>();
+                player = FightTimeline.Instance.player;
             if (player != null)
                 party = player.partyList;
         }

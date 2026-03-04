@@ -15,28 +15,45 @@ namespace dev.susybaka.raidsim.SaveLoad
     public class SaveHotbar : MonoBehaviour
     {
         [SerializeField] private Hotbar target;
-        [SerializeField] private CharacterState character;
         [SerializeField] private float randomDelay = 0.5f;
         [SerializeField] private bool onlySaveOnChange = true;
         [SerializeField] private string presetName = "hotbars";
 
         public UnityEvent onStart;
 
+        CharacterState character;
         IniStorage ini;
         IniStorage presetIni;
         HotbarGroupSnapshot lastSnapshot;
         string group = string.Empty;
 
 #if UNITY_EDITOR
+        [Header("Editor")]
+        [SerializeField] private bool saveAsGlobalPreset = false;
         [NaughtyAttributes.Button("Export Current Hotbar to Preset")]
         public void ExportCurrentToPreset()
         {
+            if (character == null)
+                character = target?.Owner;
+
+            if (character == null)
+            {
+                Debug.LogWarning("No character found for hotbar, cannot export preset!", this);
+                return;
+            }
+
             var path = System.IO.Path.Combine(Application.streamingAssetsPath, $"{presetName}.ini");
 
             var presetIni = new IniStorage();
             presetIni.Load(path);
 
-            string section = SectionFor(target.Controller.GetGroupDefinition(target.GroupId).saveScope, group, GlobalVariables.roleNames[(int)character.role]);
+            string g = group;
+
+            if (saveAsGlobalPreset)
+                g = "Global";
+
+            string section = SectionFor(target.Controller.GetGroupDefinition(target.GroupId).saveScope, g, GlobalVariables.roleNames[(int)character.role]);
+            
             var snap = target.Controller.CreateSnapshot(target.GroupId);
             var json = JsonUtility.ToJson(snap);
             presetIni.Set(section, $"s{target.GroupId}", json);
@@ -48,6 +65,8 @@ namespace dev.susybaka.raidsim.SaveLoad
         {
             if (target == null)
                 Debug.LogError("Target hotbar null!", gameObject);
+
+            character = target.Owner;
 
             if (character == null)
                 Debug.LogError("Character state null!", gameObject);
@@ -81,6 +100,12 @@ namespace dev.susybaka.raidsim.SaveLoad
 
         public void SaveValue()
         {
+            // If we haven't ran Awake() or Start() yet on this component and are missing the character,
+            // but something is calling this to save anyways, we just ignore it since that is likely some
+            // update event firing when the game loads and we can ignore that as it is not intentional logic
+            if (character == null)
+                return;
+
             string section = SectionFor(target.Controller.GetGroupDefinition(target.GroupId).saveScope, group, GlobalVariables.roleNames[(int)character.role]);
 
             Utilities.FunctionTimer.Create(this, () => {
@@ -118,6 +143,7 @@ namespace dev.susybaka.raidsim.SaveLoad
 
         public void LoadDefaults()
         {
+            string sectionG = SectionFor(target.Controller.GetGroupDefinition(target.GroupId).saveScope, "Global", GlobalVariables.roleNames[(int)character.role]);
             string section = SectionFor(target.Controller.GetGroupDefinition(target.GroupId).saveScope, group, GlobalVariables.roleNames[(int)character.role]);
 
             // First remove any existing saved data for this hotbar,
@@ -130,16 +156,23 @@ namespace dev.susybaka.raidsim.SaveLoad
                 ini.RemoveGroup(section);
                 ini.Save();
             }
-            
+
+            string json = string.Empty;
+
             if (presetIni.Contains(section, $"s{target.GroupId}"))
             {
-                var json = presetIni.GetString(section, $"s{target.GroupId}");
-                if (!string.IsNullOrEmpty(json))
-                {
-                    var snap = JsonUtility.FromJson<HotbarGroupSnapshot>(json);
-                    lastSnapshot = snap;
-                    target.Controller.ApplySnapshot(snap, true);
-                }
+                json = presetIni.GetString(section, $"s{target.GroupId}");
+            }
+            else if (presetIni.Contains(sectionG, $"s{target.GroupId}"))
+            {
+                json = presetIni.GetString(sectionG, $"s{target.GroupId}");
+            }
+
+            if (!string.IsNullOrEmpty(json))
+            {
+                var snap = JsonUtility.FromJson<HotbarGroupSnapshot>(json);
+                lastSnapshot = snap;
+                target.Controller.ApplySnapshot(snap, true);
             }
         }
 

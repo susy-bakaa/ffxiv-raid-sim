@@ -20,6 +20,8 @@ namespace dev.susybaka.Shared.UserInterface
         public UnityEvent onTabSelected;
         public UnityEvent onTabDeselected;
 
+        private bool selected = false;
+
         public void OnPointerClick(PointerEventData eventData)
         {
             tabGroup.OnTabSelected(this);
@@ -35,7 +37,7 @@ namespace dev.susybaka.Shared.UserInterface
             tabGroup.OnTabExit(this);
         }
 
-        void Start()
+        void Awake()
         {
             if (tabGroup == null)
                 tabGroup = GetComponentInParent<TabGroup>();
@@ -43,20 +45,29 @@ namespace dev.susybaka.Shared.UserInterface
             background = GetComponent<Image>();
             tabGroup.Subscribe(this);
             background.color = tabGroup.tabIdle;
+            selected = false;
         }
 
         public void Select()
         {
+            if (selected)
+                return;
+
             if (onTabSelected != null)
             {
+                selected = true;
                 onTabSelected.Invoke();
             }
         }
 
         public void Deselect()
         {
+            if (!selected)
+                return;
+
             if (onTabDeselected != null)
             {
+                selected = false;
                 onTabDeselected.Invoke();
             }
         }

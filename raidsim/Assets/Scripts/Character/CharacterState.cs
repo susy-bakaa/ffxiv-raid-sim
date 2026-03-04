@@ -481,6 +481,20 @@ namespace dev.susybaka.raidsim.Characters
             }
         }
 
+        public void LinkPartyMember()
+        {
+            if (partyList != null)
+            {
+                partyMember = partyList.GetMember(this);
+
+                if (partyMember != null && partyMember?.helper != null)
+                {
+                    HudElement hudElement = partyMember?.helper.HudElement;
+                    hudElement.hidden = hidePartyListEntry;
+                }
+            }
+        }
+
         public int GetCharacterEventResult(int id)
         {
             if (characterEventResults.TryGetValue(id, out int value))
@@ -620,6 +634,91 @@ namespace dev.susybaka.raidsim.Characters
                 modelShaderFade = model.GetComponent<SimpleShaderFade>();
                 if (modelHandler == null)
                     modelHandler = model.GetComponent<ModelHandler>();
+            }
+
+            // This section handles setting up specific refences by utilizing our custom TaggedObject component to identify them,
+            // which allows for more flexibility in the hierarchy setup and let's us avoid cluttering the Unity tag system.
+            // This is a bit janky, but it works and saves us from having to set up a lot of references manually in the inspector.
+            TaggedObject[] allTagged = FindObjectsOfType<TaggedObject>(true);
+
+            foreach (TaggedObject tagged in allTagged)
+            {
+                if (statusEffectPositiveIconParent == null)
+                {
+                    if (showStatusEffects)
+                    {
+                        if (tagged.m_tag == "Buffs")
+                        {
+                            statusEffectPositiveIconParent = tagged.transform;
+                        }
+                    }
+                    else
+                    {
+                        if (tagged.m_tag == "TempRect")
+                        {
+                            statusEffectPositiveIconParent = tagged.transform;
+                        }
+                    }
+                }
+                if (statusEffectNegativeIconParent == null)
+                {
+                    if (showStatusEffects)
+                    {
+                        if (tagged.m_tag == "Debuffs")
+                        {
+                            statusEffectNegativeIconParent = tagged.transform;
+                        }
+                    }
+                    else
+                    {
+                        if (tagged.m_tag == "TempRect")
+                        {
+                            statusEffectNegativeIconParent = tagged.transform;
+                        }
+                    }
+                }
+                if (damagePopupParent == null)
+                {
+                    if (showDamagePopups)
+                    {
+                        if (tagged.m_tag == "DamageFeed")
+                        {
+                            damagePopupParent = tagged.transform;
+                        }
+                    }
+                    else
+                    {
+                        if (tagged.m_tag == "TempRect")
+                        {
+                            damagePopupParent = tagged.transform;
+                        }
+                    }
+                }
+                if (statusPopupParent == null)
+                {
+                    if (tagged.m_tag == "StatusFeed")
+                    {
+                        statusPopupParent = tagged.transform;
+                    }
+                }
+                if (targetStatusEffectHolderParent == null)
+                {
+                    if (tagged.m_tag == "TargetEffects")
+                    {
+                        targetStatusEffectHolderParent = tagged.transform;
+                    }
+                }
+                if (healthBar == null || healthBarText == null)
+                {
+                    if (showHealthBar)
+                    {
+                        if (tagged.m_tag == "PersonalHealthBar")
+                        {
+                            healthBar = tagged.GetComponentInChildren<Slider>();
+                            healthBarText = healthBar.transform.Find("Amount").GetComponentInChildren<TextMeshProUGUI>();
+                        }
+                    }
+                }
             }
 
             if (nameplateGroup == null)
@@ -848,16 +947,6 @@ namespace dev.susybaka.raidsim.Characters
                     {
                         nameplateHealthBarFill.color = nameplateColor;
                     }
-                }
-            }
-            if (partyList != null)
-            {
-                partyMember = partyList.GetMember(this);
-
-                if (partyMember != null && partyMember?.helper != null)
-                {
-                    HudElement hudElement = partyMember?.helper.HudElement;
-                    hudElement.hidden = hidePartyListEntry;
                 }
             }
             if (nameplateGroup != null)

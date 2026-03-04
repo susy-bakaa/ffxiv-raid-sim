@@ -60,6 +60,11 @@ namespace dev.susybaka.raidsim.Editor
             "bundles",
             "temp"
         };
+        public static readonly string[] PreserveLocalBundlesOnWebGL = new[]
+        {
+            "common",
+            "hotbars"
+        };
 
         public static bool ShouldRebuildProgram = true;
         public static bool ShouldRebuildAssetBundles = true;
@@ -137,7 +142,7 @@ namespace dev.susybaka.raidsim.Editor
                     break;
                 case BuildTarget.WebGL:
                     PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.WebGL, $"dev.susybaka.{ExecutableName}.webgl");
-                    locationPathName = outputDir;
+                    locationPathName = Path.Combine(outputDir, "_temp"); // WebGL builds require a whole folder for output, so we build to a temp folder and then move the contents up to the final output directory after the build completes
                     break;
                 default:
                     PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Standalone, $"dev.susybaka.{ExecutableName}");
@@ -156,10 +161,17 @@ namespace dev.susybaka.raidsim.Editor
 
             if (ShouldRebuildProgram)
             {
+                if (target == BuildTarget.WebGL)
+                {
+                    if (Directory.Exists(locationPathName))
+                        Directory.Delete(locationPathName, true);
+                    Directory.CreateDirectory(locationPathName);
+                }
+
                 BuildPipeline.BuildPlayer(buildOptions);
 
                 // On Linux, rename the executable to remove the .x86_64 suffix for consistency with usual Linux conventions
-                if (target  == BuildTarget.StandaloneLinux64)
+                if (target == BuildTarget.StandaloneLinux64)
                 {
                     string linuxExecutable = Path.Combine(outputDir, $"{ExecutableName}.x86_64");
                     if (File.Exists(linuxExecutable))
@@ -173,6 +185,14 @@ namespace dev.susybaka.raidsim.Editor
                             Debug.LogError($"Failed to rename Linux executable: {ex.Message}");
                         }
                     }
+                }
+
+                // On WebGL, we need to move the contents of the temp folder up to the final output directory and then delete the temp folder, as WebGL builds require a whole folder for it's output
+                if (target == BuildTarget.WebGL)
+                {
+                    MoveWebGLBuildIntoPlace(locationPathName, outputDir);
+                    if (Directory.Exists(locationPathName))
+                        Directory.Delete(locationPathName, true);
                 }
             }
 
@@ -189,6 +209,9 @@ namespace dev.susybaka.raidsim.Editor
                     Directory.Delete(destBundleFolder, true);
 
                 Directory.CreateDirectory(destBundleFolder);
+
+                // Restore ALL extra StreamingAssets from the project
+                CopyProjectStreamingAssetsInto(destBundleFolder);
 
                 Debug.Log($"Copying {Directory.GetFiles(bundleTargetFolder).Length} AssetBundles from '{bundleTargetFolder}' to '{destBundleFolder}'");
 
@@ -219,6 +242,33 @@ namespace dev.susybaka.raidsim.Editor
 
                 if (Directory.Exists(destBundleFolder))
                     Directory.Delete(destBundleFolder, true);
+
+                if (PreserveLocalBundlesOnWebGL != null && PreserveLocalBundlesOnWebGL.Length > 0)
+                {
+                    Directory.CreateDirectory(destBundleFolder);
+
+                    // Restore ALL extra StreamingAssets from the project
+                    CopyProjectStreamingAssetsInto(destBundleFolder);
+
+                    foreach (string file in Directory.GetFiles(bundleTargetFolder))
+                    {
+                        bool preserve = false;
+                        for (int i = 0; i < PreserveLocalBundlesOnWebGL.Length; i++)
+                        {
+                            if (file.Contains(PreserveLocalBundlesOnWebGL[i]))
+                            {
+                                preserve = true;
+                                break;
+                            }
+                        }
+                        if (preserve)
+                        {
+                            string destFile = Path.Combine(destBundleFolder, Path.GetFileName(file));
+                            File.Copy(file, destFile, true);
+                            Debug.Log($"Preserving local AssetBundle '{file}' for WebGL build.");
+                        }
+                    }
+                }
             }
         }
 
@@ -231,8 +281,9 @@ namespace dev.susybaka.raidsim.Editor
             foreach (string file in Directory.GetFiles(outputDir))
             {
                 string fileName = Path.GetFileName(file);
-                if (!PreserveFiles.Contains(fileName, StringComparer.OrdinalIgnoreCase))
+                if (!PreserveFiles.Any(preserved => string.Equals(preserved, fileName, StringComparison.OrdinalIgnoreCase)))
                 {
+                    Debug.Log($"Deleting file '{file}' from build directory as it is not in the PreserveFiles list.");
                     File.Delete(file);
                 }
             }
@@ -241,7 +292,7 @@ namespace dev.susybaka.raidsim.Editor
             foreach (string dir in Directory.GetDirectories(outputDir))
             {
                 string dirName = Path.GetFileName(dir);
-                if (!PreserveFolders.Contains(dirName, StringComparer.OrdinalIgnoreCase))
+                if (!PreserveFolders.Any(preserved => string.Equals(preserved, dirName, StringComparison.OrdinalIgnoreCase)))
                 {
                     Directory.Delete(dir, true);
                 }
@@ -360,6 +411,64 @@ namespace dev.susybaka.raidsim.Editor
                     continue;
 
                 AddDirectoryToZipFiltered(rootDir, subDir, archive);
+            }
+        }
+
+        private static void MoveWebGLBuildIntoPlace(string tempDir, string finalDir)
+        {
+            foreach (var src in Directory.GetFileSystemEntries(tempDir))
+            {
+                var name = Path.GetFileName(src);
+                var dest = Path.Combine(finalDir, name);
+
+                if (PreserveFiles.Contains(name, StringComparer.OrdinalIgnoreCase) ||
+                    PreserveFolders.Contains(name, StringComparer.OrdinalIgnoreCase))
+                {
+                    Debug.LogWarning($"WebGL temp produced '{name}' which conflicts with Preserve lists. Skipping move.");
+                    continue;
+                }
+
+                // Remove old Unity output in finalDir so move works
+                if (File.Exists(dest))
+                    File.Delete(dest);
+                else if (Directory.Exists(dest))
+                    Directory.Delete(dest, true);
+
+                // Move into place
+                if (Directory.Exists(src))
+                    Directory.Move(src, dest);
+                else
+                    File.Move(src, dest);
+            }
+        }
+
+        private static void CopyProjectStreamingAssetsInto(string destStreamingAssetsDir)
+        {
+            string src = Path.Combine(Application.dataPath, "StreamingAssets");
+            if (!Directory.Exists(src))
+                return;
+
+            CopyDirectoryRecursive(src, destStreamingAssetsDir);
+
+            static void CopyDirectoryRecursive(string srcDir, string dstDir)
+            {
+                Directory.CreateDirectory(dstDir);
+
+                foreach (var file in Directory.GetFiles(srcDir))
+                {
+                    // Don't ship Unity meta files
+                    if (file.EndsWith(".meta", StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    var dst = Path.Combine(dstDir, Path.GetFileName(file));
+                    File.Copy(file, dst, true);
+                }
+
+                foreach (var dir in Directory.GetDirectories(srcDir))
+                {
+                    var dstSub = Path.Combine(dstDir, Path.GetFileName(dir));
+                    CopyDirectoryRecursive(dir, dstSub);
+                }
             }
         }
     }

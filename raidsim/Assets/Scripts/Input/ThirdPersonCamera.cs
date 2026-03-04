@@ -4,6 +4,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using dev.susybaka.raidsim.Core;
 using dev.susybaka.Shared.UserInterface;
 using static dev.susybaka.raidsim.Core.GlobalData;
 using static dev.susybaka.raidsim.SaveLoad.KeepCameraRotation;
@@ -12,6 +13,7 @@ namespace dev.susybaka.raidsim.Inputs
 {
     public class ThirdPersonCamera : MonoBehaviour
     {
+        private UserInput input;
         public SimpleFreecam freecam;
 
         public float mouseSensitivity = 1.5f;
@@ -57,6 +59,7 @@ namespace dev.susybaka.raidsim.Inputs
 
         private void Awake()
         {
+            input = FightTimeline.Instance.input;
             if (freecam == null)
                 freecam = GetComponent<SimpleFreecam>();
 
@@ -77,6 +80,22 @@ namespace dev.susybaka.raidsim.Inputs
 
         private void Update()
         {
+            if (input != null)
+            {
+                if (input.GetButton("OffsetResetKey"))
+                {
+                    UpdateCameraOffset(9999);
+                }
+                else if (input.GetButton("OffsetIncreaseKey"))
+                {
+                    UpdateCameraOffset(1f);
+                }
+                else if (input.GetButton("OffsetDecreaseKey"))
+                {
+                    UpdateCameraOffset(-1f);
+                }
+            }
+
             if (target == null)
                 return;
 

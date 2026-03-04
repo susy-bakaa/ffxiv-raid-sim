@@ -73,9 +73,21 @@ namespace dev.susybaka.raidsim.UI
             hudPriority = GetComponent<HudElementPriority>();
 
             if (playerState == null)
-                playerState = Utilities.FindAnyByName("Player").GetComponent<CharacterState>();
+                playerState = FightTimeline.Instance.player;
             if (playerState != null)
                 playerTargeting = playerState.GetComponent<TargetController>();
+
+            // Update/Set each members party to the right one
+            for (int i = 0; i < members.Count; i++)
+            {
+                if (members[i].characterState != null)
+                {
+                    PartyMember member = members[i];
+                    member.characterState.partyList = this;
+                    member.characterState.LinkPartyMember();
+                    members[i] = member;
+                }
+            }
 
             if (partyMemberHudPrefab != null)
             {

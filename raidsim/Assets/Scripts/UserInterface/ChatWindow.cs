@@ -49,8 +49,6 @@ namespace dev.susybaka.raidsim.UI
             allies = FightTimeline.Instance.partyList;
             player = FightTimeline.Instance.player;
             input = FightTimeline.Instance.input;
-            if (temp == null)
-                temp = Utilities.FindAnyByName("Temp_RectTransform").GetComponent<Button>();
             if (chatBoxWindow == null)
                 chatBoxWindow = GetComponent<HudWindow>();
             sentMessages = new List<string>();
@@ -60,8 +58,6 @@ namespace dev.susybaka.raidsim.UI
         {
             player = FightTimeline.Instance.player;
             input = FightTimeline.Instance.input;
-            if (temp == null)
-                temp = Utilities.FindAnyByName("Temp_RectTransform").GetComponent<Button>();
             if (chatBoxWindow == null)
                 chatBoxWindow = GetComponent<HudWindow>();
 
@@ -98,6 +94,9 @@ namespace dev.susybaka.raidsim.UI
 
         private void Start()
         {
+            if (temp == null)
+                temp = Utilities.FindAnyByName("Temp_RectTransform").GetComponent<Button>();
+
             if (inputField != null)
                 inputField.onSubmit.AddListener(OnSubmit);
         }
@@ -186,6 +185,8 @@ namespace dev.susybaka.raidsim.UI
                 if (inputField.isFocused)
                 {
                     inputField.DeactivateInputField();
+                    if (temp == null)
+                        temp = Utilities.FindAnyByName("Temp_RectTransform").GetComponent<Button>();
                     // Move selection to a dummy button to actually trigger deselection on the input field.
                     // Maybe there would be a better way to do this but I couldn't figure it out.
                     temp.Select();
@@ -197,6 +198,8 @@ namespace dev.susybaka.raidsim.UI
                 Utilities.FunctionTimer.Create(this, () => {
                     currentMessageDraft = string.Empty;
                     inputField.DeactivateInputField();
+                    if (temp == null)
+                        temp = Utilities.FindAnyByName("Temp_RectTransform").GetComponent<Button>();
                     // Move selection to a dummy button to actually trigger deselection on the input field.
                     // Maybe there would be a better way to do this but I couldn't figure it out.
                     temp.Select();
@@ -221,6 +224,8 @@ namespace dev.susybaka.raidsim.UI
             chatLockTimer = chatLock;
             inputField.SetTextWithoutNotify(string.Empty);
             inputField.DeactivateInputField(true);
+            if (temp == null)
+                temp = Utilities.FindAnyByName("Temp_RectTransform").GetComponent<Button>();
             // Move selection to a dummy button to actually trigger deselection on the input field.
             // Maybe there would be a better way to do this but I couldn't figure it out.
             temp.Select();

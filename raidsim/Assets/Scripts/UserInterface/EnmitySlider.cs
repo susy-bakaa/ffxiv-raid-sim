@@ -50,6 +50,14 @@ namespace dev.susybaka.raidsim.UI
             if (character == null)
                 return;
 
+            // If we don't have a target, hide the slider
+            // Kind of a band-aid fix for the issue where the slider flickers on and off when the player targets another target after gaining enmity on the other one
+            if (character.targetController != null && character.targetController.currentTarget == null)
+            {
+                group.alpha = 0f;
+                return;
+            }
+
             if (Utilities.RateLimiter(rateLimit))
             {
                 // Get the updated enmity list

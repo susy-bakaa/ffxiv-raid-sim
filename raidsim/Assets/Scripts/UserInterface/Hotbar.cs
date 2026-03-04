@@ -4,14 +4,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using dev.susybaka.raidsim.Core;
+using dev.susybaka.raidsim.Characters;
 
 namespace dev.susybaka.raidsim.UI 
 {
     public class Hotbar : MonoBehaviour
     {
-        [SerializeField] private HotbarController controller;
+        [SerializeField] private bool usePlayer = true;
+        [SerializeField] private CharacterState owner;
         [SerializeField] private string groupId;
-        public HotbarController Controller => controller;
+        public HotbarController Controller => owner?.hotbarController;
+        public CharacterState Owner => owner;
         public string GroupId => groupId;
 
         public UnityEvent onSlotsUpdated;
@@ -20,7 +24,10 @@ namespace dev.susybaka.raidsim.UI
 
         private void Awake()
         {
-            if (controller == null)
+            if (usePlayer)
+                owner = FightTimeline.Instance.player;
+
+            if (owner == null || owner.hotbarController == null)
                 Debug.LogError("Hotbar missing reference to HotbarController!", gameObject);
 
             slots.Clear();
@@ -28,18 +35,18 @@ namespace dev.susybaka.raidsim.UI
 
         private void OnEnable()
         {
-            if (controller == null)
+            if (owner == null || owner.hotbarController == null)
                 Debug.LogError("Hotbar missing reference to HotbarController!", gameObject);
 
-            controller.OnGroupChanged += HandleGroupChanged;
-            controller.OnRefreshHotbars += RefreshSlotsStatic;
+            owner.hotbarController.OnGroupChanged += HandleGroupChanged;
+            owner.hotbarController.OnRefreshHotbars += RefreshSlotsStatic;
             RefreshSlots();
         }
 
         private void OnDisable()
         {
-            controller.OnGroupChanged -= HandleGroupChanged;
-            controller.OnRefreshHotbars -= RefreshSlotsStatic;
+            owner.hotbarController.OnGroupChanged -= HandleGroupChanged;
+            owner.hotbarController.OnRefreshHotbars -= RefreshSlotsStatic;
         }
 
         public void RegisterSlot(HotbarSlot slot)

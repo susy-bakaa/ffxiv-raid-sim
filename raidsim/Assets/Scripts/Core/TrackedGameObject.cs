@@ -13,7 +13,7 @@ namespace dev.susybaka.raidsim.Events
         public GameObject master;
         public GameObject[] relatives;
 
-        private void Awake()
+        private void Start()
         {
             if (tracker == null && !string.IsNullOrEmpty(trackerName))
             {

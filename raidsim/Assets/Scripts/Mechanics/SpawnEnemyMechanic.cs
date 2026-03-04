@@ -21,7 +21,7 @@ namespace dev.susybaka.raidsim.Mechanics
         public bool toggleTargetable = false;
         public Transform spawnLocation;
 
-        public void Awake()
+        public void Start()
         {
             if (activateInstead && enemyObject == null && !string.IsNullOrEmpty(enemyObjectName))
             {

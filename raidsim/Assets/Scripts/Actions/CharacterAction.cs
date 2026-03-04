@@ -105,6 +105,14 @@ namespace dev.susybaka.raidsim.Actions
             actionId = System.Guid.NewGuid().ToString("N");
             UnityEditor.EditorUtility.SetDirty(this);
         }
+        [ContextMenu("Generate Action ID From Name")]
+        private void GenerateActionId2()
+        {
+            if (!string.IsNullOrWhiteSpace(actionId))
+                return;
+            actionId = gameObject.name.Replace("Action_", string.Empty).Replace("Spell_", string.Empty).Replace("Ability_", string.Empty);
+            UnityEditor.EditorUtility.SetDirty(this);
+        }
 #endif
 
         private void Awake()

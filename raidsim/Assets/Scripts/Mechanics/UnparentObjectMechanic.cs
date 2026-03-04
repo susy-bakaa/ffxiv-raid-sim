@@ -16,7 +16,7 @@ namespace dev.susybaka.raidsim.Mechanics
         public string newParentName;
         public UnityEvent<GameObject> onExecute;
 
-        private void Awake()
+        private void Start()
         {
             if (newParent == null && !string.IsNullOrEmpty(newParentName))
             {

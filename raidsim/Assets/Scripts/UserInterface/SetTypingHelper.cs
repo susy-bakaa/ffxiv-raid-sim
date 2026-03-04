@@ -19,6 +19,9 @@ namespace dev.susybaka.raidsim.UI
 
         public void SetTyping(bool value)
         {
+            if (input == null)
+                Awake();
+
             if (string.IsNullOrEmpty(identifier))
             {
                 Debug.LogWarning("Identifier is null or empty. Cannot set typing state.");

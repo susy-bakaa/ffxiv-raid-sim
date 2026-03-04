@@ -7,11 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using dev.susybaka.raidsim;
 using dev.susybaka.raidsim.Characters;
 using dev.susybaka.raidsim.Core.Rng;
 using dev.susybaka.raidsim.UI;
-using UnityEngine;
-using UnityEngine.SceneManagement;
+
 using static dev.susybaka.raidsim.Characters.CharacterState;
 using static dev.susybaka.raidsim.StatusEffects.StatusEffectData;
 using static dev.susybaka.raidsim.UI.PartyList;
@@ -684,25 +686,77 @@ namespace dev.susybaka.Shared
         }
 
         /// <summary>
-        /// Finds and returns the first GameObject in the scene with the specified name.
-        /// This method searches through all loaded objects, including inactive ones by type of Transform and checks their names for a match.
-        /// Only objects with HideFlags set to None are considered.
+        /// Finds and returns the first GameObject with the specified name (case-insensitive) that exists in a currently loaded scene,
+        /// including DontDestroyOnLoad. Includes inactive objects.
+        /// Only objects with HideFlags.None are considered.
         /// </summary>
-        /// <param name="name">The name of the GameObject to find.</param>
-        /// <returns>The first GameObject with the specified name, or null if no such GameObject is found.</returns>
         public static GameObject FindAnyByName(string name)
         {
-            Transform[] transforms = (Transform[])Resources.FindObjectsOfTypeAll<Transform>();
+            if (string.IsNullOrEmpty(name))
+                return null;
+
+            var transforms = Resources.FindObjectsOfTypeAll<Transform>();
+
             for (int i = 0; i < transforms.Length; i++)
             {
-                if (transforms[i].hideFlags.Equals(HideFlags.None))
-                {
-                    if (transforms[i].name.Equals(name))
-                    {
-                        return transforms[i].gameObject;
-                    }
-                }
+                var t = transforms[i];
+                if (t == null)
+                    continue;
+
+                if (t.hideFlags != HideFlags.None)
+                    continue;
+
+                if (!t.name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                var go = t.gameObject;
+                if (go == null)
+                    continue;
+
+                // The key: prefab assets (and lots of editor-only objects) won't be in a valid, loaded scene.
+                Scene scene = go.scene;
+                if (!scene.IsValid() || !scene.isLoaded)
+                    continue;
+
+#if UNITY_EDITOR
+                // Extra safety in editor: exclude asset objects (prefab assets, etc.)
+                if (UnityEditor.EditorUtility.IsPersistent(go))
+                    continue;
+
+                // Exclude prefab stage objects as well (they *are* in a scene, but not your runtime scenes).
+                if (UnityEditor.SceneManagement.PrefabStageUtility.GetPrefabStage(go) != null)
+                    continue;
+#endif
+
+                return go;
             }
+
+            return null;
+        }
+
+        public static GameObject FindByTaggedObject(string tag) 
+        {
+            if (string.IsNullOrEmpty(tag))
+                return null;
+
+            var all = UnityEngine.Object.FindObjectsByType<TaggedObject>(
+                FindObjectsInactive.Include,
+                FindObjectsSortMode.None
+            );
+
+            for (int i = 0; i < all.Length; i++)
+            {
+                var t = all[i];
+                if (t == null)
+                    continue;
+
+                if (t.hideFlags != HideFlags.None)
+                    continue;
+
+                if (string.Equals(t.m_tag, tag, StringComparison.Ordinal))
+                    return t.gameObject;
+            }
+
             return null;
         }
 

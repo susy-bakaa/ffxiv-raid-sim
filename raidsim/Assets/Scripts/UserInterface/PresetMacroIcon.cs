@@ -50,6 +50,9 @@ namespace dev.susybaka.raidsim.UI
 
         private void ApplyVisuals()
         {
+            if (image == null)
+                Awake();
+
             image.sprite = iconData.sprite;
 
             if (borderStandard != null)

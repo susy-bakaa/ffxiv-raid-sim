@@ -255,9 +255,10 @@ namespace dev.susybaka.raidsim.StatusEffects
             if (stacks > data.maxStacks)
                 stacks = data.maxStacks;
 
-            if (data.icons.Count > 0)
+            if (data.icons.Count > 0 && hudIcon != null)
             {
-                hudIcon.sprite = data.icons[stacks - 1];
+                int iconIndex = stacks - 1;
+                hudIcon.sprite = data.icons[iconIndex < 0 ? 0 : iconIndex > (data.icons.Count - 1) ? data.icons.Count : iconIndex];
             }
         }
 

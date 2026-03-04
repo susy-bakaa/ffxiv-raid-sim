@@ -2,13 +2,13 @@
 // This file is part of ffxiv-raid-sim. Linking with the Unity runtime
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
 using System.Collections.Generic;
+using UnityEngine;
 using dev.susybaka.raidsim.Actions;
 using dev.susybaka.raidsim.Attributes;
 using dev.susybaka.raidsim.Characters;
 using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.Inputs;
-using UnityEngine;
-using UnityEngine.UIElements;
+using dev.susybaka.Shared.Attributes;
 using static dev.susybaka.raidsim.Core.GlobalData;
 
 namespace dev.susybaka.raidsim.UI
@@ -41,6 +41,10 @@ namespace dev.susybaka.raidsim.UI
         public event System.Action OnRefreshHotbars;
         private readonly Dictionary<string, GroupState> groups = new();
         private IActionOverrideResolver overrideResolver;
+
+        [Header("Audio")]
+        [SerializeField, SoundName] private string onExecuteSound = "ui_execute_action";
+        [SerializeField, Range(0f, 1f)] private float volume = 1f;
 
         private void Awake()
         {
@@ -90,7 +94,7 @@ namespace dev.susybaka.raidsim.UI
                     if (input.GetButtonDown(bind))
                     {
                         groupBind.onPress?.Invoke(i);
-                        ExecuteSlot(groupBind.groupId, i);
+                        ExecuteSlot(groupBind.groupId, i, true);
                         return; // Only one action per frame
                     }
                 }
@@ -295,11 +299,14 @@ namespace dev.susybaka.raidsim.UI
             NotifyGroupChanged(g.groupId);
         }
 
-        public void ExecuteSlot(string groupId, int slotIndex)
+        public void ExecuteSlot(string groupId, int slotIndex, bool playSound)
         {
-            //Debug.Log($"Executing slot {slotIndex} in group {groupId} with binding {GetBinding(groupId, slotIndex).kind} ({GetBinding(groupId, slotIndex).id})");
+            //Debug.Log($"Executing slot {slotIndex} in group {groupId} with binding {GetBinding(groupId, slotIndex).kind} ({GetBinding(groupId, slotIndex).id}) playSound {playSound} sound {onExecuteSound}");
             var binding = GetBinding(groupId, slotIndex);
             ExecuteBinding(binding);
+
+            if (playSound && !string.IsNullOrEmpty(onExecuteSound) && Shared.Audio.AudioManager.Instance != null)
+                Shared.Audio.AudioManager.Instance.Play(onExecuteSound, volume);
         }
 
         public void ExecuteBinding(SlotBinding binding)
