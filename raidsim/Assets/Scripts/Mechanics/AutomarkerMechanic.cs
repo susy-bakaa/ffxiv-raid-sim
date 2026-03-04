@@ -148,7 +148,8 @@ namespace dev.susybaka.raidsim.Mechanics
             {
                 if (markByCharacterEventResult && characterEventResultId > -1)
                 {
-                    Debug.Log($"[AutomarkerMechanic ({gameObject.name})] Processing character '{amTargets[i].name}' for automarker assignment based on character event result with ID {characterEventResultId}.");
+                    if (log)
+                        Debug.Log($"[AutomarkerMechanic ({gameObject.name})] Processing character '{amTargets[i].name}' for automarker assignment based on character event result with ID {characterEventResultId}.", gameObject);
 
                     if (amTargets[i].characterState == null)
                     {

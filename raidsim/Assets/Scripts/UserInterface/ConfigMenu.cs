@@ -199,6 +199,19 @@ namespace dev.susybaka.raidsim.UI
             ToggleApplyPopup(applyPopupVisible);
         }
 
+        public void RefreshLate()
+        {
+            if (timeline != null)
+            {
+                timeline.botNameType = newBotNameType;
+                timeline.colorBotNamesByRole = newBotNameRoleColors;
+            }
+            if (spotSelector != null)
+                spotSelector.Select();
+            else if (roleSelector != null)
+                roleSelector.Select();
+        }
+
         public void ChangeHUDScale(string scale)
         {
             if (float.TryParse(scale, out float result))

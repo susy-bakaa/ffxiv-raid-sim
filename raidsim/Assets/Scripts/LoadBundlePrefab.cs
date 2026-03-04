@@ -23,6 +23,9 @@ namespace dev.susybaka.raidsim
             if (done)
                 return;
 
+            if (AssetHandler.Instance == null)
+                return;
+
             if (fade == null)
                 fade = GetComponent<SimpleShaderFade>();
 

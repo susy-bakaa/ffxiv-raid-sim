@@ -5374,6 +5374,7 @@ Transform:
   m_Children:
   - {fileID: 6407721229154161106}
   - {fileID: 1552164966809137603}
+  - {fileID: 2603086435108449477}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &9046234956963142059
@@ -25196,6 +25197,182 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!1 &7078173451160619594
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2603086435108449477}
+  - component: {fileID: 4920469848560060420}
+  - component: {fileID: 2948616457020616484}
+  - component: {fileID: 335748964799835171}
+  m_Layer: 0
+  m_Name: MakeBotCheck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2603086435108449477
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7078173451160619594}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1335303313419634941}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4920469848560060420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7078173451160619594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c11d13ba36149154fb548fc96274895b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: WaitForBit
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  startAutomatically: 0
+  delay: 0.5
+  onDelayedTrigger:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2948616457020616484}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Mechanics.ExtractActionInfoMechanic,
+          Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &2948616457020616484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7078173451160619594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c06d0bffb7c457e44a7c8259823f0a33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: ExtractTetherSource
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  onActionExtracted:
+    m_PersistentCalls:
+      m_Calls: []
+  onSourceExtracted:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 335748964799835171}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Mechanics.CharacterStateMechanic,
+          Assembly-CSharp
+        m_MethodName: AddCharacter
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 335748964799835171}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Mechanics.FightMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onTargetExtracted:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &335748964799835171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7078173451160619594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9d9b4c40d20dbf4ba9f2e114fb86f1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: MakeTetherSourceCheck
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  behaviorType: 4
+  characters: []
+  setNameplateVisibility: 0
+  invertNameplate: 0
+  setPartyListVisibility: 0
+  invertPartyList: 0
+  setTargetability: 0
+  invertTargetable: 0
+  setModelVisibility: 0
+  invertModelVisibility: 0
+  fadeModelVisibility: 0
+  modelVisibilityFadeTime: 0.5
+  setGameObjectState: 0
+  gameObjectStateDelay: 0
+  setCharacterState: 0
+  allowDynamicCharacters: 1
+  toggleInstead: 0
+  filterByStatusEffects: 0
+  requireAllStatusEffects: 0
+  ignoreUnfiltered: 0
+  requiredStatusEffects: []
+  changeModel: 0
+  modelIndex: 0
+  spawnLocation: {fileID: 0}
+  executionType: 2
+  useQueuedActions: 0
+  action: {fileID: 0}
+  actionData: {fileID: 11400000, guid: 407d4b68b24b6d043802ebb97d89cd33, type: 2}
+  targetingType: 0
+  filterTargetsInstead: 0
+  setRotationTarget: 0
+  targetList: []
+  mechanic: {fileID: 0}
+  overrideMechanicSource: {fileID: 0}
+  characterEventResultId: -1
+  characterEventResultValue: 0
+  onProcessCharacter:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7985638557785773027
 GameObject:
   m_ObjectHideFlags: 0

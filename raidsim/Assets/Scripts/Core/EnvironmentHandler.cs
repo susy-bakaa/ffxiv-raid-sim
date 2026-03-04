@@ -157,7 +157,8 @@ namespace dev.susybaka.raidsim.Core
                         if (originalArenaIndex >= 0 && originalArenaIndex < arenaModelData.Length)
                         {
                             arenaModelData[originalArenaIndex].model?.SetActive(true);
-                            arenaModelData[originalArenaIndex].collision?.SetActive(true);
+                            if (arenaModelData[originalArenaIndex].collision != null)
+                                arenaModelData[originalArenaIndex].collision?.SetActive(true);
                             for (int j = 0; j < environmentalLights.Length; j++)
                             {
                                 environmentalLights[j].color = arenaModelData[originalArenaIndex].ambientLightColor;

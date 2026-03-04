@@ -64644,7 +64644,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 864227202019974020, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.023460247
+      value: 0.000015665759
       objectReference: {fileID: 0}
     - target: {fileID: 2397317220443939482, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Name
@@ -64756,7 +64756,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6464313048467052032, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Size
-      value: 0.8190414
+      value: 0.99997276
       objectReference: {fileID: 0}
     - target: {fileID: 7171332731230435304, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_AnchorMax.x
@@ -64872,6 +64872,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2397317220443939482, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2759539990972006170}
+    - targetCorrespondingSourceObject: {fileID: 2397317220443939482, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3221225186216555709}
   m_SourcePrefab: {fileID: 100100000, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
 --- !u!114 &1948229511486589427 stripped
 MonoBehaviour:
@@ -64923,7 +64926,53 @@ MonoBehaviour:
   alwaysLoadValue: 0
   onStart:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3221225186216555709}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Mechanics.FightMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &3221225186216555709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8834590767942676421}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c11d13ba36149154fb548fc96274895b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: 
+  onlyTriggerOnce: 1
+  global: 0
+  log: 0
+  startAutomatically: 0
+  delay: 4.5
+  onDelayedTrigger:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4869328139964810962}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.UI.ConfigMenu, Assembly-CSharp
+        m_MethodName: RefreshLate
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1001 &8051144903822283076
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -64938,7 +64987,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 864227202019974020, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.023456432
+      value: 0.000019480456
       objectReference: {fileID: 0}
     - target: {fileID: 2397317220443939482, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Name
@@ -65050,7 +65099,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6464313048467052032, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_Size
-      value: 0.8190414
+      value: 0.99997276
       objectReference: {fileID: 0}
     - target: {fileID: 7171332731230435304, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_AnchorMax.x

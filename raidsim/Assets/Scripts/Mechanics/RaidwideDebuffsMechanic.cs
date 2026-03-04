@@ -27,7 +27,7 @@ namespace dev.susybaka.raidsim.Mechanics
         [ShowIf("showPickBasedOnPreviousRandomEventResultField")] public bool pickBasedOnPreviousRandomEventResult = false;
         [ShowIf("pickBasedOnPreviousRandomEventResult")] public bool useIndexMapping = false;
         [ShowIf("useIndexMapping")] public List<IndexMapping> indexMapping = new List<IndexMapping>();
-        [ShowIf("randomizeRoleGroups")] public bool setRandomEventResult = false;
+        public bool setRandomEventResult = false;
         [ShowIf("showRandomEventIdField")] public int randomEventResultId = -1;
         public bool cleansEffects = false;
         public bool fallbackToRandom = false;
@@ -39,6 +39,7 @@ namespace dev.susybaka.raidsim.Mechanics
         private readonly List<CharacterState> _candidatesCopy = new List<CharacterState>();
         private readonly List<StatusEffectData> _incompatibleEffects = new List<StatusEffectData>();
         private readonly List<Role> _assignedRoles = new List<Role>();
+        private int _selectedRoleId = -1;
 
         CharacterState player;
 
@@ -47,7 +48,7 @@ namespace dev.susybaka.raidsim.Mechanics
         {
             if (!randomizeRoleGroups)
             {
-                setRandomEventResult = false;
+                //setRandomEventResult = false;
             }
             else if (randomizeRoleGroups)
             {
@@ -71,11 +72,18 @@ namespace dev.susybaka.raidsim.Mechanics
             if (randomizeRoleGroups)
                 pickBasedOnPreviousRandomEventResult = false;
 
-            for (int i = 0; i < party.members.Count; i++)
+            if (timeline != null)
             {
-                if (party.members[i].characterState.characterName.ToLower().Contains("player") && party.members[i].characterState.gameObject.CompareTag("Player"))
+                player = timeline.player;
+            }
+            else
+            {
+                for (int i = 0; i < party.members.Count; i++)
                 {
-                    player = party.members[i].characterState;
+                    if (party.members[i].characterState.characterName.ToLower().Contains("player") && party.members[i].characterState.gameObject.CompareTag("Player"))
+                    {
+                        player = party.members[i].characterState;
+                    }
                 }
             }
         }
@@ -141,8 +149,10 @@ namespace dev.susybaka.raidsim.Mechanics
                     if (log)
                         Debug.Log($"Role group {specifiedRoles[selected].name} selected out of possible {specifiedRoles.Count}!");
 
+                    _selectedRoleId = selected;
+
                     if (setRandomEventResult && randomEventResultId >= 0 && FightTimeline.Instance != null)
-                        FightTimeline.Instance.SetRandomEventResult(randomEventResultId, selected);
+                        FightTimeline.Instance.SetRandomEventResult(randomEventResultId, _selectedRoleId);
 
                     if (specifiedRoles.Count > 0)
                     {
@@ -179,8 +189,10 @@ namespace dev.susybaka.raidsim.Mechanics
                         if (log)
                             Debug.Log($"Player's role group {playerRoleGroup.name} selected!");
 
+                        _selectedRoleId = specifiedRoles.IndexOf(playerRoleGroup);
+
                         if (setRandomEventResult && randomEventResultId >= 0 && FightTimeline.Instance != null)
-                            FightTimeline.Instance.SetRandomEventResult(randomEventResultId, specifiedRoles.IndexOf(playerRoleGroup));
+                            FightTimeline.Instance.SetRandomEventResult(randomEventResultId, _selectedRoleId);
 
                         for (int i = 0; i < partyMembers.Count; i++)
                         {
@@ -220,8 +232,10 @@ namespace dev.susybaka.raidsim.Mechanics
                             if (log)
                                 Debug.Log($"Role group {otherGroups[selected].name} selected out of possible {otherGroups.Count}!");
 
+                            _selectedRoleId = specifiedRoles.IndexOf(otherGroups[selected]);
+
                             if (setRandomEventResult && randomEventResultId >= 0 && FightTimeline.Instance != null)
-                                FightTimeline.Instance.SetRandomEventResult(randomEventResultId, specifiedRoles.IndexOf(otherGroups[selected]));
+                                FightTimeline.Instance.SetRandomEventResult(randomEventResultId, _selectedRoleId);
 
                             for (int i = 0; i < partyMembers.Count; i++)
                             {
@@ -274,7 +288,7 @@ namespace dev.susybaka.raidsim.Mechanics
                 if (!cleansEffects)
                 {
                     // Find a suitable party member for the effect
-                    CharacterState target = FindSuitableTarget(statusEffects[i], partyMembers);
+                    CharacterState target = FindSuitableTarget(statusEffects[i], _selectedRoleId, partyMembers);
 
                     if (log)
                         Debug.Log($"FindSuitableTarget: '{target?.characterName}'");
@@ -324,7 +338,7 @@ namespace dev.susybaka.raidsim.Mechanics
             return true;
         }
 
-        private CharacterState FindSuitableTarget(StatusEffectInfo effect, List<CharacterState> candidates)
+        private CharacterState FindSuitableTarget(StatusEffectInfo effect, int roleGroupIndex, List<CharacterState> candidates)
         {
             if (effect.data.assignedRoles != null && effect.data.assignedRoles.Count > 0 && !ignoreRoles)
             {
@@ -337,6 +351,9 @@ namespace dev.susybaka.raidsim.Mechanics
                 // Shuffle the roles so it wont always end up picking the member with the same role that is defined first in effect.data.assignedRoles
                 _assignedRoles.ShufflePCG(timeline.random.Stream($"{GetUniqueName()}_Shuffle_AssignedRoles_Effect_{effect.data.statusName}_{effect.tag}"));
 
+                if (log)
+                    Debug.Log($"Effect {effect.data.statusName} has assigned roles, looking for candidates with roles {string.Join(", ", _assignedRoles)}");
+
                 foreach (Role role in _assignedRoles)
                 {
                     // Create a copy of the candidates list
@@ -348,15 +365,52 @@ namespace dev.susybaka.raidsim.Mechanics
                     // Shuffle candidates for more random behaviour as well
                     _candidatesCopy.ShufflePCG(timeline.random.Stream($"{GetUniqueName()}_Shuffle_CandidatesCopy_Effect_{effect.data.statusName}_{effect.tag}"));
 
+                    if (log)
+                        Debug.Log($"Looking for candidates with role {role} for effect {effect.data.statusName} from list of {candidates.Count} candidates!");
+
                     // Iterate through the copy of candidates
                     for (int i = 0; i < _candidatesCopy.Count; i++)
                     {
                         var candidate = _candidatesCopy[i];
                         if (candidate.role == role)
                         {
+                            if (log)
+                                Debug.Log($"Candidate {candidate.characterName} with role {candidate.role} matches assigned role {role} for effect {effect.data.statusName}!");
                             candidates.Remove(candidate); // Remove the candidate from the original list
                             return candidate; // Return the suitable candidate
                         }
+                        else if (log)
+                            Debug.Log($"Candidate {candidate.characterName} with role {candidate.role} does not match assigned role {role} for effect {effect.data.statusName}.");
+                    }
+                }
+            }
+            else if (onlySpecifiedRoles && specifiedRoles != null && specifiedRoles.Count > 0 && !ignoreRoles)
+            {
+                // Create a copy of the candidates list
+                _candidatesCopy.Clear();
+                if (_candidatesCopy.Capacity < candidates.Count)
+                    _candidatesCopy.Capacity = candidates.Count;
+                _candidatesCopy.AddRange(candidates);
+
+                // Shuffle candidates for more random behaviour as well
+                _candidatesCopy.ShufflePCG(timeline.random.Stream($"{GetUniqueName()}_Shuffle_CandidatesCopy_Effect_{effect.data.statusName}_{effect.tag}_OnlySpecifiedRoles"));
+                
+                // Iterate through the copy of candidates
+                for (int i = 0; i < _candidatesCopy.Count; i++)
+                {
+                    var candidate = _candidatesCopy[i];
+                    
+                    if (roleGroupIndex > -1)
+                    {
+                        if (specifiedRoles[roleGroupIndex].roles.Contains(candidate.role))
+                        {
+                            if (log)
+                                Debug.Log($"Candidate {candidate.characterName} with role {candidate.role} matches role group {specifiedRoles[roleGroupIndex].name}!");
+                            candidates.Remove(candidate); // Remove the candidate from the original list
+                            return candidate;
+                        }
+                        else if (log)
+                            Debug.Log($"Candidate {candidate.characterName} with role {candidate.role} does not match role group {specifiedRoles[roleGroupIndex].name}.");
                     }
                 }
             }
