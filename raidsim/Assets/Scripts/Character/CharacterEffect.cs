@@ -101,6 +101,7 @@ namespace dev.susybaka.raidsim.Characters
             visible = wasVisible;
             enableOnStart = wasEnabledOnStart;
             reset = true;
+            hasStarted = false;
 
             StopAllCoroutines();
             ieDisableEffect = null;

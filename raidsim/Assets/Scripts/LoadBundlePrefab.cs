@@ -10,17 +10,19 @@ namespace dev.susybaka.raidsim
 {
     public class LoadBundlePrefab : MonoBehaviour
     {
-        private AssetHandler handler;
-
         [SerializeField, AssetBundleName] private string bundleName;
         [SerializeField] private string assetName;
         [SerializeField] private Transform _parent;
         [SerializeField] private GameObject placeHolder;
 
         private SimpleShaderFade fade;
+        private bool done = false;
 
         void OnEnable()
         {
+            if (done)
+                return;
+
             if (fade == null)
                 fade = GetComponent<SimpleShaderFade>();
 
@@ -30,11 +32,9 @@ namespace dev.susybaka.raidsim
 
                 if (prefab != null)
                 {
+                    done = true;
+                    prefab.transform.SetParent(_parent, true);
                     Destroy(placeHolder);
-                    GameObject spawned = Instantiate(prefab, _parent);
-                    spawned.transform.localPosition = prefab.transform.localPosition;
-                    spawned.transform.localRotation = prefab.transform.localRotation;
-                    spawned.transform.localScale = prefab.transform.localScale;
                     if (fade != null)
                     {
                         fade.ReInitialize();

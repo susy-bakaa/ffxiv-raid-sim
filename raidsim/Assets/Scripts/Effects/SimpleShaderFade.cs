@@ -229,6 +229,8 @@ namespace dev.susybaka.raidsim.Visuals
         public void ReInitialize()
         {
             Awake();
+            if (outOnStart)
+                FadeOut(0);
         }
 
         public void FadeOut()

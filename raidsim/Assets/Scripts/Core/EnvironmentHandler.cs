@@ -136,7 +136,8 @@ namespace dev.susybaka.raidsim.Core
 
                             GameObject arena = AssetHandler.Instance.GetAsset(arenaModelData[i].bundle, arenaModelData[i].name);
                             arena.transform.SetParent(transform);
-                            arena.SetActive(false);
+                            if (!fadeBetweenArenaModels) // If not fading, disable the arena by default until it's selected, if fading, we will handle the active state in the ChangeArenaModel function
+                                arena.SetActive(false);
                             arena.transform.localPosition = arenaModelData[i].position;
                             arena.transform.localEulerAngles = arenaModelData[i].rotation;
                             arena.transform.localScale = arenaModelData[i].scale;
