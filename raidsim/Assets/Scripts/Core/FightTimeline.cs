@@ -223,9 +223,6 @@ namespace dev.susybaka.raidsim.Core
             }
             Instance = this;
 
-            // Give lean tween more slots because in some scenes we are hitting the default limit of 400 on start when all effects fade out at the same time.
-            LeanTween.init(600);
-
             // Always setup when starting fresh
             SetupRng();
 

@@ -29,6 +29,7 @@ namespace dev.susybaka.raidsim.Characters
         private GameObject targetObject;
         private Coroutine ieOnReset;
         private bool reset = false;
+        private bool hasStarted = false;
 
 #if UNITY_EDITOR
         [Button("Toggle Effect")]
@@ -54,6 +55,7 @@ namespace dev.susybaka.raidsim.Characters
 
             wasVisible = visible;
             wasEnabledOnStart = enableOnStart;
+            hasStarted = false;
         }
 
         private void Start()
@@ -164,7 +166,10 @@ namespace dev.susybaka.raidsim.Characters
                 {
                     if (toggleObject)
                         shaderFade[i].gameObject.SetActive(true);
-                    shaderFade[i].FadeIn(fadeTime);
+                    if (hasStarted)
+                        shaderFade[i].FadeIn(fadeTime);
+                    else
+                        shaderFade[i].FadeIn(0); // If it's the first time starting, we want to skip the fade in time to avoid all effects fading at the same time running out of tweens.
                     hasAnything = true;
                 }
             }
@@ -174,6 +179,7 @@ namespace dev.susybaka.raidsim.Characters
                     targetObject.SetActive(true);
             }
             visible = true;
+            hasStarted = true;
         }
 
         public void DisableEffect()
@@ -190,7 +196,10 @@ namespace dev.susybaka.raidsim.Characters
             {
                 for (int i = 0; i < shaderFade.Length; i++)
                 {
-                    shaderFade[i].FadeOut(fadeTime);
+                    if (hasStarted)
+                        shaderFade[i].FadeOut(fadeTime);
+                    else
+                        shaderFade[i].FadeOut(0); // If it's the first time starting, we want to skip the fade in time to avoid all effects fading at the same time running out of tweens.
                 }
                 if (toggleObject && ieDisableEffect == null)
                 {
@@ -218,6 +227,7 @@ namespace dev.susybaka.raidsim.Characters
                     targetObject.SetActive(false);
             }
             visible = false;
+            hasStarted = true;
         }
 
         private IEnumerator IE_DisableEffect(WaitForSeconds wait)
