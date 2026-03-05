@@ -24,6 +24,10 @@ Fights listed here are finished and available in the simulator.
 		- Phase 2 (Lindwurm II)
 			- Idyllic Dream ([EU pastebin/Hector](https://youtu.be/Osd---W8ZTY))
 			- Idyllic Dream ([NA pastebin/Hector](https://youtu.be/Ey--4oQS6KI))
+			- Idyllic Dream ([JP Game8/Nukemaru](https://xivjpraids.com/7.0_dawntrail/savage_raids/m12s_2/))
+			- Idyllic Dream ([Brain Deluxe Uptime Flavour](https://raidplan.io/plan/FBZLq8AaMOU0NjN9))
+			- Idyllic Dream ([Zenith Uptime Idyllic](https://raidplan.io/plan/jwJzsjj4-KmsZ9xd))
+			- Idyllic Dream ([Emergency Meeting](https://raidplan.io/plan/buBeeLVDS9lTlLt2))
 			- Idyllic Dream ([Banana Codex](https://raidplan.io/plan/qga7chh6ky23j3ey))
 - AAC Cruiserweight Tier
 	- AAC Cruiserweight M4 (Savage) (M8S)
@@ -121,14 +125,26 @@ Fights listed here are not being worked on yet and are not in anyway guranteed t
 
 Latest Builds: 
 
-[![Static Badge](https://img.shields.io/badge/windows_x64-download-green)](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.6.5/raidsim_v.0.6.5_win64.zip)
-[![Static Badge](https://img.shields.io/badge/linux_x64-download-blue?logo=linux&logoColor=white)](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.6.5/raidsim_v.0.6.5_linux64.zip)
+[![Static Badge](https://img.shields.io/badge/windows_x64-download-green)](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.7.0/raidsim_v.0.7.0_win64.zip)
+[![Static Badge](https://img.shields.io/badge/linux_x64-download-blue?logo=linux&logoColor=white)](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.7.0/raidsim_v.0.7.0_linux64.zip)
 [![Static Badge](https://img.shields.io/badge/browser-open-yellow?logo=webgl&logoColor=white)](https://susybaka.dev/unityweb/raidsim/index.html)
 [![Static Badge](https://img.shields.io/badge/itch.io-open-red?logo=itchdotio&logoColor=white)](https://susybakaaa.itch.io/raidsim)
 
-This program has a web version that runs inside your browser if you do not want to download anything. The web version is available in Itch.io or on my personal website. Your other option is to download the program archive and run it on your local machine. The program archive can be downloaded directly from this repo's [releases section](https://github.com/susy-bakaa/ffxiv-raid-sim/releases) or through the itch.io page. All versions of the program are nearly identical except the web version has issues with controller support on some browsers. If you run into issues try a Chromium-based browser. 
+This program has a web version that runs inside your browser if you do not want to download anything. The web version is available in Itch.io or on my personal website. Your other option is to download the program archive and run it on your local machine. The program archive can be downloaded directly from this repo's [releases section](https://github.com/susy-bakaa/ffxiv-raid-sim/releases) or through the itch.io page. All versions of the program are nearly identical except some minor details.
 
-The web version fetches it's visual assets (Like character and enemy models) from a remote server, which can sometimes be down. If you do not see any character models be sure to check back later, as I usually manage to fix any issues with the server in a day or two.
+## Web Version
+
+The web version has issues with controller support on some browsers. If you run into issues try a Chromium-based browser, as they usually have better luck with WebGL controller support. 
+
+The web version also fetches it's visual assets (Like character and enemy models) from a remote server, which can sometimes be down. If you do not see any character models be sure to check back later, as I usually manage to fix any issues with the server in a day or two.
+
+If you use Firefox the Web version may also have problems with locking the cursor and behaving in a weird way. This can be fixed by doing the following:
+
+- In a new tab, type or paste `about:config` in the address bar and press Enter/Return. Click the button accepting the risk.
+- In the search box in the page, type or paste `pointer` and pause while the list is filtered
+- Double-click the `dom.pointer-lock.enabled` preference to switch the value from `true` to `false`
+
+## Standalone Build
 
 For the standalone downloadable version, you need to first download the right archive for your respective operating system. This program currently only supports 64-bit Windows and Linux. 
 
@@ -145,7 +161,7 @@ If you instead want to download the source code or expand upon this program in s
 This repository uses [gdrive](https://github.com/prasmussen/gdrive) for storage of larger files. This means that if you're an external contributor you need to manually download the latest asset archive from here: [ffxiv-raid-sim.tar.gz](https://drive.google.com/file/d/1ybYaJ8LGnHwY5jeCv1Zr6B5fT7FHL51i/view?usp=drive_link). I hope to improve this workflow eventually, sorry for the inconvenience.
 
 If you are interested in creating new timelines or want to provide other things to the application that require pull requests, here's few key details to keep in mind when submitting your changes.
-- Main development happens on the `dev` branch, so pull requests directly to there will be approved faster and are more likely to be included in the current update in development.
+- Main development of the next update happens on the `dev` branch, so pull requests directly to there will be approved faster and are more likely to be included in the current update in development, otherwise you can do a new branch for a new feature or timeline.
 - When creating new timelines, please try to keep the number of scenes at only one scene per mechanic. I know that sometimes it is tricky to implement a completely different strat into an existing scene, but in these cases do not hesitate on asking for some help from me directly or on the discord server. You will most certainly be helped with your work.
 - Try to keep your changes focused and do not submit big pull requests with lots of unrelated changes. One request per timeline added, one request per all strats added or one per code change is a heavy preference. Do not be afraid to bundle them together however if they are related in anyway, like if they are different strats to the same fight.
 

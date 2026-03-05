@@ -22,6 +22,7 @@ This file contains a list of all of the external resources used and their creato
 - Thank you to all of the developers of each of the programs and tools used to make this simulator possible! Blender, TexTools, Garland Tools Database, FFlogs, FFXIV Data Explorer, MultiAssist, Godbert, ZoneFbx, ffxiv.consolegameswiki.com, xivapi.com and lastly Dalamud with it's various helpful plugins such as Penumbra, Distance, Cammy, Meddle, ResLogger2 and Hyperborea.
 - Thank you to also all of the other simulators created by various talented people! [XIVSim](https://xivsim.com/), [WCGH](https://github.com/WCGH) for their various offline sims, [xiv-stats](https://github.com/xiv-stats) for their sim and of course all of the other various smaller simulator projects created by everyone over the years.
 - M4S AutoCad/uptime strat raidplan. [Source](https://raidplan.io/plan/OnQXobwatopL1G8u)
+- M12S Arena images by F1reman2 and sourpuh. [Source](https://github.com/F1reman2/Arena-Images/tree/main/7.4%20Savage), [Source](https://github.com/sourpuh/sourpuh.github.io/tree/main/assets/custom_maps)
 - Special thank you to my friends, static members and discord server for testing and helping with the timeline data and for providing me with replays, logs and raidplans.
 - My dear friend Jon for providing this project with his amazing (Debatable) vocal talent and epic voicelines.
 
