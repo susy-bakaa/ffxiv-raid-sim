@@ -26,6 +26,7 @@ namespace dev.susybaka.raidsim.SaveLoad
         IniStorage presetIni;
         HotbarGroupSnapshot lastSnapshot;
         string group = string.Empty;
+        string presetPath = string.Empty;
 
 #if UNITY_EDITOR
         [Header("Editor")]
@@ -72,14 +73,14 @@ namespace dev.susybaka.raidsim.SaveLoad
                 Debug.LogError("Character state null!", gameObject);
 
 #if !UNITY_WEBPLAYER
-            string path = System.IO.Path.Combine(Application.streamingAssetsPath, $"{presetName}.ini");
+            presetPath = System.IO.Path.Combine(Application.streamingAssetsPath, $"{presetName}.ini");
 #else
             // In WebGL, StreamingAssets is accessed via URL, so we use forward slash
-            string path = Application.streamingAssetsPath + "/" + $"{presetName}.ini";
+            presetPath = Application.streamingAssetsPath + "/" + $"{presetName}.ini";
 #endif
 
             ini = new IniStorage(GlobalVariables.configPath);
-            presetIni = new IniStorage(path);
+            presetIni = new IniStorage(presetPath);
             group = FightTimeline.Instance.timelineAbbreviation;
             lastSnapshot = null;
         }
@@ -164,6 +165,7 @@ namespace dev.susybaka.raidsim.SaveLoad
 
             string json = string.Empty;
 
+            presetIni.Load(presetPath);
             if (presetIni.Contains(section, $"s{target.GroupId}"))
             {
                 json = presetIni.GetString(section, $"s{target.GroupId}");
