@@ -413,6 +413,26 @@ namespace dev.illa4257
 #endif
         }
 
+        public void LoadFromUrl(UnityEngine.MonoBehaviour caller, string url)
+        {
+            caller.StartCoroutine(IE_LoadFromUrl(url));
+        }
+
+        private System.Collections.IEnumerator IE_LoadFromUrl(string url)
+        {
+            UnityEngine.Networking.UnityWebRequest request = UnityEngine.Networking.UnityWebRequest.Get(url);
+            yield return request.SendWebRequest();
+            
+            if (request.result == UnityEngine.Networking.UnityWebRequest.Result.Success)
+            {
+                string text = request.downloadHandler.text;
+                string[] lines = text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                Load(lines);
+            }
+
+            request.Dispose();
+        }
+
         public bool Load()
         {
             if (File.Exists(Path) && Path != null)

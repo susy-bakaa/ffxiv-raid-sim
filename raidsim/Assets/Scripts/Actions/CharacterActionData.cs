@@ -67,17 +67,16 @@ namespace dev.susybaka.raidsim.Actions
             damage = new Damage(damage, null, damage.name);
         }
 
+#if UNITY_EDITOR
         private void Reset()
         {
+            charges = 1;
             enmity = damage.value;
             damage = new Damage(0, true);
-#if UNITY_EDITOR
             icon = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/FFXIV/Universal/Icons/000405_hr1.png");
             UnityEditor.EditorUtility.SetDirty(this);
-#endif
         }
 
-#if UNITY_EDITOR
         private void OnValidate()
         {
             damage = new Damage(damage, null, damage.name);

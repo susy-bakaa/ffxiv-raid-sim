@@ -6,14 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.EventSystems;
-using TMPro;
 using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.Characters;
 using dev.susybaka.raidsim.Inputs;
 using dev.susybaka.raidsim.StatusEffects;
-using dev.susybaka.raidsim.UI;
-using dev.susybaka.Shared;
 using static dev.susybaka.raidsim.Core.GlobalData;
 
 namespace dev.susybaka.raidsim.Actions
@@ -117,17 +113,17 @@ namespace dev.susybaka.raidsim.Actions
 
         private void Awake()
         {
-            chargesLeft = data.charges;
+            chargesLeft = data.charges > 0 ? data.charges : 1;
             permanentlyUnavailable = unavailable;
             normalRecastType = recastType;
             flag1 = unavailable;
         }
 
-        private void Start()
+        /*private void Start()
         {
             if (unavailable)
                 Utilities.FunctionTimer.Create(this, () => gameObject.SetActive(false), 0.2f, $"{actionId}_start_disable_delay");
-        }
+        }*/
 
         private void Update()
         {
@@ -334,9 +330,12 @@ namespace dev.susybaka.raidsim.Actions
                 }
             }
 
+            Awake(); // Ensure Awake logic runs to initialize charges and other variables
+
             if (controller != null)
             {
                 character = controller.GetComponent<CharacterState>();
+                flag1 = !unavailable; // Set flag1 to the opposite of unavailable so that the first update will properly set the state and timers
             }
         }
 

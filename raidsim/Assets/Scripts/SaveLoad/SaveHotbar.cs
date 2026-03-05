@@ -80,7 +80,7 @@ namespace dev.susybaka.raidsim.SaveLoad
 #endif
 
             ini = new IniStorage(GlobalVariables.configPath);
-            presetIni = new IniStorage(presetPath);
+            presetIni = new IniStorage();
             group = FightTimeline.Instance.timelineAbbreviation;
             lastSnapshot = null;
         }
@@ -165,7 +165,11 @@ namespace dev.susybaka.raidsim.SaveLoad
 
             string json = string.Empty;
 
+#if !UNITY_WEBPLAYER
             presetIni.Load(presetPath);
+#else
+            presetIni.LoadFromUrl(this, presetPath);
+#endif
             if (presetIni.Contains(section, $"s{target.GroupId}"))
             {
                 json = presetIni.GetString(section, $"s{target.GroupId}");
