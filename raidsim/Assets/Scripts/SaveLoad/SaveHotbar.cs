@@ -71,7 +71,12 @@ namespace dev.susybaka.raidsim.SaveLoad
             if (character == null)
                 Debug.LogError("Character state null!", gameObject);
 
-            var path = System.IO.Path.Combine(Application.streamingAssetsPath, $"{presetName}.ini");
+#if !UNITY_WEBPLAYER
+            string path = System.IO.Path.Combine(Application.streamingAssetsPath, $"{presetName}.ini");
+#else
+            // In WebGL, StreamingAssets is accessed via URL, so we use forward slash
+            string path = Application.streamingAssetsPath + "/" + $"{presetName}.ini";
+#endif
 
             ini = new IniStorage(GlobalVariables.configPath);
             presetIni = new IniStorage(path);
