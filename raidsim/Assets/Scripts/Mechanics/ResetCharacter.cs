@@ -4,15 +4,54 @@
 using System.Collections;
 using UnityEngine;
 using dev.susybaka.raidsim.Characters;
+using dev.susybaka.raidsim.Core;
 using dev.susybaka.Shared;
 
 namespace dev.susybaka.raidsim.Mechanics
 {
     public class ResetCharacter : MonoBehaviour
     {
+        FightTimeline timeline;
+
         public CanvasGroup screenFade;
         public Vector3 location = new Vector3(0f, 1f, 0f);
         Coroutine iePerformPlayerReset;
+        LTDescr tween;
+        bool initialized = false;
+
+        private void Start()
+        {
+            tween = null;
+            timeline = FightTimeline.Instance;
+
+            if (timeline != null)
+            {
+                timeline.onReset.AddListener(ResetComponent);
+                initialized = true;
+            }
+        }
+
+        private void OnEnable()
+        {
+            if (!initialized)
+                return;
+
+            if (timeline != null)
+            {
+                timeline.onReset.AddListener(ResetComponent);
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (!initialized)
+                return;
+
+            if (timeline != null)
+            {
+                timeline.onReset.RemoveListener(ResetComponent);
+            }
+        }
 
         public void StartReset(CharacterState state)
         {
@@ -21,6 +60,15 @@ namespace dev.susybaka.raidsim.Mechanics
                 iePerformPlayerReset = StartCoroutine(IE_PerformPlayerReset(state.transform));
             else if (!state.characterName.ToLower().Contains("player"))
                 StartCoroutine(IE_PerformReset(state.transform));
+        }
+
+        private void ResetComponent()
+        {
+            StopAllCoroutines();
+            iePerformPlayerReset = null;
+            if (tween != null)
+                LeanTween.cancel(tween.id);
+            screenFade.alpha = 0f;
         }
 
         private IEnumerator IE_PerformReset(Transform target)
@@ -36,7 +84,7 @@ namespace dev.susybaka.raidsim.Mechanics
         private IEnumerator IE_PerformPlayerReset(Transform target)
         {
             yield return new WaitForSeconds(0.5f);
-            screenFade.LeanAlpha(1f, 1f);
+            tween = screenFade.LeanAlpha(1f, 1f);
             yield return new WaitForSeconds(1f);
             if (target.TryGetComponentInChildren(true, out Rigidbody rb))
             {
@@ -44,7 +92,7 @@ namespace dev.susybaka.raidsim.Mechanics
             }
             target.transform.position = location;
             yield return new WaitForSeconds(0.5f);
-            screenFade.LeanAlpha(0f, 2f);
+            tween = screenFade.LeanAlpha(0f, 2f).setOnComplete(() => tween = null);
             iePerformPlayerReset = null;
         }
     }
