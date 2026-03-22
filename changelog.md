@@ -1,17 +1,15 @@
-This update focuses on cleaning up a few issues that slipped into **v.0.7.0**, mainly around **M12S P2: Idyllic Dream** and **WebGL**. Nothing huge, but these fixes should offer some nice polish.
+This patch focuses on a handful of usability and reset-related issues, plus a few important fixes for **M12S P2: Idyllic Dream** (especially around reenactment clones and hitbox visuals). The tutorial popups also got a refresh.
 
 ## v.0.7.2 Changelog
 
 ### Fixes & Improvements
 
--   Updated the **Doom Laser AOE** prefab in **M12S P2: Idyllic Dream** to prevent incorrect aiming.  
-    
-	**Note:** Since the Dark-element tower is always on the south side of the arena (true north), the prefab can safely be authored facing south, preventing erratic directions if runtime rotation happens to fail.
--   Fixed the **Emergency Meeting** strat in **M12S P2: Idyllic Dream** having **Pyretic** and **Earth** positions reversed for the post-tower debuffs.
--   Fixed the telegraph looking incorrect in **M12S P2: Idyllic Dream** for **Lindwurm's Meteor** in the **WebGL** version.
--   Fixed **default hotbars** not loading correctly on **WebGL**.  
-    
-	**Note:** This is currently a bit of a temporary quick fix, so be sure to give hotbar's a few seconds to load in if you haven't customized them yet.
+-   Updated and refreshed the **tutorial popups**.
+-   Fixed an issue where **resetting too quickly** after dying to an **out-of-bounds trigger** could cause the screen to get stuck fully black.
+-   Fixed an issue where changing **keybinds for hotbar slots** would not visually update the slot until other UI actions occurred.
+-   Fixed **Lindwurm hitbox visuals** in **M12S P2: Idyllic Dream** not resetting correctly if you reset the timeline while its size was temporarily altered.
+-   Fixed an issue where **boss clones** did not execute their animations or disappear correctly in both **Reenactment mechanics** in **M12S P2: Idyllic Dream**.
+-   Fixed a rare issue where the **target bar** could remain stuck on-screen after resetting a timeline.
 
 ## Known Issues
 
