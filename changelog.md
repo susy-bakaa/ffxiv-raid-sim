@@ -1,6 +1,6 @@
 This update focuses on cleaning up a few issues that slipped into **v.0.7.0**, mainly around **M12S P2: Idyllic Dream** and **WebGL**. Nothing huge, but these fixes should offer some nice polish.
 
-## v0.7.1 Changelog
+## v.0.7.2 Changelog
 
 ### Fixes & Improvements
 
