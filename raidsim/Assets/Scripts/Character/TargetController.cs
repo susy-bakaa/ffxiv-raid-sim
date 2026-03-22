@@ -104,6 +104,7 @@ namespace dev.susybaka.raidsim.Targeting
         private bool targetsTargetColorsUpdated;
         private bool wasMouseClick = false;
         private bool cursorWasSet = false;
+        private LTDescr targetInfoTween;
 #if UNITY_WEBPLAYER
         private float _targetInterval = 0.1f;
         private float _nextTargetTime;
@@ -134,6 +135,7 @@ namespace dev.susybaka.raidsim.Targeting
         {
             m_input = FightTimeline.Instance.input;
             m_camera = Camera.main;
+            targetInfoTween = null;
 
             // This section handles setting up specific refences by utilizing our custom TaggedObject component to identify them,
             // which allows for more flexibility in the hierarchy setup and let's us avoid cluttering the Unity tag system.
@@ -301,6 +303,15 @@ namespace dev.susybaka.raidsim.Targeting
                 targetsTargetGroup.alpha = 0f;
                 targetsTargetGroup.blocksRaycasts = false;
                 targetsTargetGroup.interactable = false;
+            }
+
+            if (targetInfo != null)
+            {
+                targetInfo.blocksRaycasts = false;
+                targetInfo.interactable = false;
+                if (targetInfoTween != null)
+                    LeanTween.cancel(targetInfoTween.id);
+                targetInfo.alpha = 0f;
             }
         }
 
@@ -1261,7 +1272,7 @@ namespace dev.susybaka.raidsim.Targeting
                             targetsTargetGroup.interactable = false;
                             targetsTargetGroup.alpha = 0.99f;
                             if (!FightTimeline.Instance.paused)
-                                targetsTargetGroup.LeanAlpha(0f, fadeDuration);
+                                targetInfoTween = targetsTargetGroup.LeanAlpha(0f, fadeDuration).setOnComplete(() => targetInfoTween = null);
                             else
                                 targetsTargetGroup.alpha = 0f;
 
@@ -1283,7 +1294,7 @@ namespace dev.susybaka.raidsim.Targeting
                         targetsTargetGroup.interactable = false;
                         targetsTargetGroup.alpha = 0.99f;
                         if (!FightTimeline.Instance.paused)
-                            targetsTargetGroup.LeanAlpha(0f, fadeDuration);
+                            targetInfoTween = targetsTargetGroup.LeanAlpha(0f, fadeDuration).setOnComplete(() => targetInfoTween = null);
                         else
                             targetsTargetGroup.alpha = 0f;
 
@@ -1311,7 +1322,7 @@ namespace dev.susybaka.raidsim.Targeting
                         targetsTargetGroup.interactable = false;
                         targetsTargetGroup.alpha = 0.99f;
                         if (!FightTimeline.Instance.paused)
-                            targetsTargetGroup.LeanAlpha(0f, fadeDuration);
+                            targetInfoTween = targetsTargetGroup.LeanAlpha(0f, fadeDuration).setOnComplete(() => targetInfoTween = null);
                         else
                             targetsTargetGroup.alpha = 0f;
 
@@ -1334,7 +1345,7 @@ namespace dev.susybaka.raidsim.Targeting
                 targetInfo.interactable = false;
                 targetInfo.alpha = 0.99f;
                 if (!FightTimeline.Instance.paused)
-                    targetInfo.LeanAlpha(0f, fadeDuration);
+                    targetInfoTween = targetInfo.LeanAlpha(0f, fadeDuration).setOnComplete(() => targetInfoTween = null);
                 else
                     targetInfo.alpha = 0f;
             }
