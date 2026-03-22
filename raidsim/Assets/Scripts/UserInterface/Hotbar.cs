@@ -14,6 +14,7 @@ namespace dev.susybaka.raidsim.UI
         [SerializeField] private bool usePlayer = true;
         [SerializeField] private CharacterState owner;
         [SerializeField] private string groupId;
+        [SerializeField] private ConfigMenu configMenu;
         public HotbarController Controller => owner?.hotbarController;
         public CharacterState Owner => owner;
         public string GroupId => groupId;
@@ -21,6 +22,7 @@ namespace dev.susybaka.raidsim.UI
         public UnityEvent onSlotsUpdated;
 
         private readonly HashSet<HotbarSlot> slots = new HashSet<HotbarSlot>();
+        private bool awoken = false;
 
         private void Awake()
         {
@@ -29,6 +31,14 @@ namespace dev.susybaka.raidsim.UI
 
             if (owner == null || owner.hotbarController == null)
                 Debug.LogError("Hotbar missing reference to HotbarController!", gameObject);
+
+            if (configMenu == null)
+            {
+                configMenu = FindObjectOfType<ConfigMenu>();
+                if (configMenu != null)
+                    configMenu.onChangeKeybinds.AddListener(RefreshSlots);
+                awoken = true;
+            }
 
             slots.Clear();
         }
@@ -41,12 +51,24 @@ namespace dev.susybaka.raidsim.UI
             owner.hotbarController.OnGroupChanged += HandleGroupChanged;
             owner.hotbarController.OnRefreshHotbars += RefreshSlotsStatic;
             RefreshSlots();
+
+            if (!awoken)
+                return;
+
+            if (configMenu != null)
+                configMenu.onChangeKeybinds.AddListener(RefreshSlots);
         }
 
         private void OnDisable()
         {
             owner.hotbarController.OnGroupChanged -= HandleGroupChanged;
             owner.hotbarController.OnRefreshHotbars -= RefreshSlotsStatic;
+            
+            if (!awoken)
+                 return;
+
+            if (configMenu != null)
+                configMenu.onChangeKeybinds.RemoveListener(RefreshSlots);
         }
 
         public void RegisterSlot(HotbarSlot slot)

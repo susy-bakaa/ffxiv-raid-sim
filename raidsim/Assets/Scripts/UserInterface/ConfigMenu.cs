@@ -4,6 +4,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.Events;
 using UnityEngine.UI;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -49,6 +50,7 @@ namespace dev.susybaka.raidsim.UI
         [SerializeField] private TMP_Dropdown rngTypeDropdown;
         [Header("Sub Menus")]
         [SerializeField] private Button keybindsButton;
+        [NaughtyAttributes.Foldout("Events")] public UnityEvent onChangeKeybinds;
         float scale = 50;
         float newScale = 50;
         bool legacy = true;

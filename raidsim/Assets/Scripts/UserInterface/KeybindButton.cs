@@ -11,6 +11,7 @@ using UnityEngine.UI;
 using TMPro;
 using NaughtyAttributes;
 using dev.susybaka.raidsim.Inputs;
+using dev.susybaka.Shared;
 using static dev.susybaka.raidsim.Inputs.UserInput;
 
 namespace dev.susybaka.raidsim.UI
@@ -18,6 +19,7 @@ namespace dev.susybaka.raidsim.UI
     [RequireComponent(typeof(Button))]
     public class KeybindButton : MonoBehaviour
     {
+        ConfigMenu menu;
         Button button;
         TextMeshProUGUI label;
         TextMeshProUGUI labelNegative;
@@ -33,6 +35,7 @@ namespace dev.susybaka.raidsim.UI
 
         private void Awake()
         {
+            menu = transform.GetComponentInParents<ConfigMenu>();
             button = GetComponent<Button>();
             label = GetComponentInChildren<TextMeshProUGUI>();
 
@@ -233,6 +236,10 @@ namespace dev.susybaka.raidsim.UI
                         labelNegative.text = keyBindNegative.ToString();
                         onBindAxis.Invoke(new KeyBindPair(keyBind, keyBindNegative));
                     }
+                }
+                if (menu != null)
+                {
+                    menu.onChangeKeybinds.Invoke();
                 }
                 binding = false;
                 bindingNegative = false;
