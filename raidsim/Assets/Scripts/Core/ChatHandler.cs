@@ -105,7 +105,6 @@ namespace dev.susybaka.raidsim.Core
             int firstSpace = raw.IndexOf(' ');
             string cmd = (firstSpace < 0 ? raw[1..] : raw[1..firstSpace]).Trim();
             string args = (firstSpace < 0 ? "" : raw[(firstSpace + 1)..]).Trim();
-            string[] parts;
 
             if (cmd.Length == 0)
                 return true;
@@ -113,6 +112,10 @@ namespace dev.susybaka.raidsim.Core
             switch (cmd.ToLowerInvariant())
             {
                 case "clear":
+                    Clear();
+                    return true;
+
+                case "cl":
                     Clear();
                     return true;
 
@@ -133,147 +136,17 @@ namespace dev.susybaka.raidsim.Core
                     channel = ChatChannel.Party;
                     return false;
 
+                case "enemysign":
+                    return MarkCommand(sender, targets, args);
+
+                case "marking":
+                    return MarkCommand(sender, targets, args);
+
                 case "mark":
-                    if (string.IsNullOrWhiteSpace(args))
-                    {
-                        PostSystem("Usage: /mark <markName> <target> OR /mk <markName> <target>");
-                        return true;
-                    }
-                    
-                    // Extract markName (first word) and targetSpec (rest)
-                    int spaceIdx = args.IndexOf(' ');
-                    string markName;
-                    string targetSpec = null;
-                    
-                    if (spaceIdx < 0)
-                    {
-                        markName = args.Trim();
-                    }
-                    else
-                    {
-                        markName = args.Substring(0, spaceIdx).Trim();
-                        targetSpec = args.Substring(spaceIdx + 1).Trim();
-                    }
-                    
-                    CharacterState targetChar = sender; // Default to sender
-                    
-                    if (!string.IsNullOrWhiteSpace(targetSpec))
-                    {
-                        // Remove wrapping <> or ""
-                        if (targetSpec.StartsWith("<") && targetSpec.EndsWith(">"))
-                            targetSpec = targetSpec.Substring(1, targetSpec.Length - 2);
-                        else if (targetSpec.StartsWith("\"") && targetSpec.EndsWith("\""))
-                            targetSpec = targetSpec.Substring(1, targetSpec.Length - 2);
-                        
-                        // Check if it's a number (index into targets list)
-                        if (int.TryParse(targetSpec, out int index))
-                        {
-                            if (targets != null && index >= 0 && index < targets.Count)
-                                targetChar = targets[index];
-                        }
-                        // Check if it's "me"
-                        else if (targetSpec.Equals("me", StringComparison.OrdinalIgnoreCase))
-                        {
-                            targetChar = sender;
-                        }
-                        // Try to find by character name
-                        else if (targets != null)
-                        {
-                            CharacterState found = targets.Find(c => c.characterName.Equals(targetSpec, StringComparison.OrdinalIgnoreCase));
-                            if (found != null)
-                                targetChar = found;
-                        }
-                    }
-                    
-                    if (targetChar != null)
-                    {
-                        if (!markName.Equals("clear", StringComparison.OrdinalIgnoreCase) && !markName.Equals("off", StringComparison.OrdinalIgnoreCase))
-                        {
-                            PostSystem($"{sender.characterName} marked {targetChar.characterName} as {markName}");
-                            targetChar.Mark(markName);
-                        }
-                        else
-                        {
-                            PostSystem($"{sender.characterName} cleared marks from {targetChar.characterName}");
-                            targetChar.Mark(string.Empty);
-                        }
-                    }
-                    else
-                    {
-                        PostSystem("No valid target found.", ChatKind.Error);
-                    }
-                    return true;
-                
+                    return MarkCommand(sender, targets, args);
+
                 case "mk":
-                    if (string.IsNullOrWhiteSpace(args))
-                    {
-                        PostSystem("Usage: /mark <markName> <target> OR /mk <markName> <target>");
-                        return true;
-                    }
-                    
-                    // Extract markName (first word) and targetSpec (rest)
-                    int spaceIdxMk = args.IndexOf(' ');
-                    string markNameMk;
-                    string targetSpecMk = null;
-                    
-                    if (spaceIdxMk < 0)
-                    {
-                        markNameMk = args.Trim();
-                    }
-                    else
-                    {
-                        markNameMk = args.Substring(0, spaceIdxMk).Trim();
-                        targetSpecMk = args.Substring(spaceIdxMk + 1).Trim();
-                    }
-                    
-                    CharacterState targetCharMk = sender; // Default to sender
-                    
-                    if (!string.IsNullOrWhiteSpace(targetSpecMk))
-                    {
-                        // Remove wrapping <> or ""
-                        if (targetSpecMk.StartsWith("<") && targetSpecMk.EndsWith(">"))
-                            targetSpecMk = targetSpecMk.Substring(1, targetSpecMk.Length - 2);
-                        else if (targetSpecMk.StartsWith("\"") && targetSpecMk.EndsWith("\""))
-                            targetSpecMk = targetSpecMk.Substring(1, targetSpecMk.Length - 2);
-                        
-                        // Check if it's a number (index into targets list)
-                        if (int.TryParse(targetSpecMk, out int indexMk))
-                        {
-                            if (targets != null && indexMk >= 0 && indexMk < targets.Count)
-                                targetCharMk = targets[indexMk];
-                        }
-                        // Check if it's "me"
-                        else if (targetSpecMk.Equals("me", StringComparison.OrdinalIgnoreCase))
-                        {
-                            targetCharMk = sender;
-                        }
-                        // Try to find by character name
-                        else if (targets != null)
-                        {
-                            CharacterState foundMk = targets.Find(c => c.characterName.Equals(targetSpecMk, StringComparison.OrdinalIgnoreCase));
-                            if (foundMk != null)
-                                targetCharMk = foundMk;
-                        }
-                    }
-                    
-                    if (targetCharMk != null)
-                    {
-                        if (!markNameMk.Equals("clear", StringComparison.OrdinalIgnoreCase) && !markNameMk.Equals("off", StringComparison.OrdinalIgnoreCase))
-                        {
-                            PostSystem($"{sender.characterName} marked {targetCharMk.characterName} as {markNameMk}");
-                            targetCharMk.Mark(markNameMk);
-                        }
-                        else
-                        {
-                            PostSystem($"{sender.characterName} cleared marks from {targetCharMk.characterName}");
-                            targetCharMk.Mark(string.Empty);
-                        }
-                    }
-                    else
-                    {
-                        PostSystem("No valid target found.", ChatKind.Error);
-                    }
-                    return true;
+                    return MarkCommand(sender, targets, args);
 
                 // /time, /t, /lt -> convenient local timestamp insert and then /servertime, /stime, /st -> UTC timestamp
                 case "time":
@@ -302,77 +175,38 @@ namespace dev.susybaka.raidsim.Core
 
                 // /action some text -> execute character actions
                 case "action":
-                    if (string.IsNullOrWhiteSpace(args))
-                    {
-                        PostSystem("Usage: /action <name> OR /ac <name>");
-                        return true;
-                    }
+                    return ActionCommand(sender, targets, args);
 
-                    parts = args.Split(' ', 3, StringSplitOptions.RemoveEmptyEntries);
-                    if (parts.Length >= 1)
-                    {
-                        string actionName = parts[0].ToLower();
-
-                        if (sender != null && sender.actionController != null)
-                        {
-                            if (sender.actionController.TryGetAction(actionName, out CharacterAction result, StringComparison.OrdinalIgnoreCase))
-                            {
-                                sender.actionController.PerformAction(result);
-                                return true;
-                            }
-                            else
-                            {
-                                PostSystem($"Action '{actionName}' not found.", ChatKind.Error);
-                                return true;
-                            }
-                        }
-                        else
-                        {
-                            PostSystem("Cannot currently execute actions.", ChatKind.Error);
-                            return true;
-                        }
-                    }
-                    else
-                    {
-                        PostSystem("Usage: /action <name> OR /ac <name>");
-                        return true;
-                    }
                 case "ac":
-                    if (string.IsNullOrWhiteSpace(args))
-                    {
-                        PostSystem("Usage: /action <name> OR /ac <name>");
-                        return true;
-                    }
+                    return ActionCommand(sender, targets, args);
 
-                    parts = args.Split(' ', 3, StringSplitOptions.RemoveEmptyEntries);
-                    if (parts.Length >= 1)
-                    {
-                        string actionName = parts[0].ToLower();
+                case "blueaction":
+                    return ActionCommand(sender, targets, args);
 
-                        if (sender != null && sender.actionController != null)
-                        {
-                            if (sender.actionController.TryGetAction(actionName, out CharacterAction result, StringComparison.OrdinalIgnoreCase))
-                            {
-                                sender.actionController.PerformAction(result);
-                                return true;
-                            }
-                            else
-                            {
-                                PostSystem($"Action '{actionName}' not found.", ChatKind.Error);
-                                return true;
-                            }
-                        }
-                        else
-                        {
-                            PostSystem("Cannot currently execute actions.", ChatKind.Error);
-                            return true;
-                        }
-                    }
-                    else
-                    {
-                        PostSystem("Usage: /action <name> OR /ac <name>");
-                        return true;
-                    }
+                // targeting
+                case "targetenemy":
+                    sender?.targetController?.CycleTarget();
+                    return true;
+
+                case "tenemy":
+                    sender?.targetController?.CycleTarget();
+                    return true;
+
+                case "nexttarget":
+                    sender?.targetController?.CycleTarget();
+                    return true;
+
+                case "nt":
+                    sender?.targetController?.CycleTarget();
+                    return true;
+
+                case "facetarget":
+                    sender?.targetController?.FaceTarget();
+                    return true;
+
+                case "ft":
+                    sender?.targetController?.FaceTarget();
+                    return true;
 
                 // /pause -> toggle timeline pause/resume
                 case "pause":
@@ -424,7 +258,7 @@ namespace dev.susybaka.raidsim.Core
 
                 // /help -> list available commands
                 case "help":
-                    PostSystem("Available commands:\n/clear, /echo (or /e), /party (or /p), /time (or /t, /lt), /servertime (or /stime, /st), /start, /pause, /reset, /reload, /action (or /ac), /mark (or /mk), /exit (or /quit, /close)");
+                    PostSystem("Available commands:\n/clear (or /cl), /echo (or /e), /party (or /p), /time (or /t, /lt), /servertime (or /stime, /st), /start, /pause, /reset, /reload, /action (or /ac, /blueaction), /targetenemy (or /tenemy), /nexttarget (or /nt), /facetarget (or /ft), /enemysign (or /marking, /mark, /mk), /exit (or /quit, /close, /qqq)");
                     return true;
 
                 // /exit, /quit, /close -> shutdown application
@@ -443,10 +277,215 @@ namespace dev.susybaka.raidsim.Core
                     Utilities.FunctionTimer.Create(FightTimeline.Instance, () => UnityEngine.Application.Quit(), 1f, "chat_command_shutdown", true, false);
                     return true;
 
+                case "qqq":
+                    PostSystem("Exiting application...");
+                    Utilities.FunctionTimer.Create(FightTimeline.Instance, () => UnityEngine.Application.Quit(), 1f, "chat_command_shutdown", true, false);
+                    return true;
+
                 default:
                     PostSystem($"Unknown command: /{cmd}", ChatKind.Error);
                     return true;
             }
+        }
+
+        private bool ActionCommand(CharacterState sender, List<CharacterState> targets, string args)
+        {
+            if (string.IsNullOrWhiteSpace(args))
+            {
+                PostSystem("Usage: /action <name> <target> OR /ac <name> <target>");
+                return true;
+            }
+
+            // Extract actionName and targetSpec, supporting quoted action names like:
+            // /ac "Action Name" <target>
+            // /ac "Action Name" me
+            string actionName;
+            string targetSpec = null;
+
+            if (args.StartsWith("\"", StringComparison.Ordinal))
+            {
+                int endQuote = args.IndexOf('"', 1);
+
+                if (endQuote < 0)
+                {
+                    PostSystem("Invalid action name. Missing closing quote.", ChatKind.Error);
+                    return true;
+                }
+
+                actionName = args.Substring(1, endQuote - 1).Trim();
+
+                if (endQuote + 1 < args.Length)
+                    targetSpec = args.Substring(endQuote + 1).Trim();
+            }
+            else
+            {
+                int spaceIdx = args.IndexOf(' ');
+
+                if (spaceIdx < 0)
+                {
+                    actionName = args.Trim();
+                }
+                else
+                {
+                    actionName = args.Substring(0, spaceIdx).Trim();
+                    targetSpec = args.Substring(spaceIdx + 1).Trim();
+                }
+            }
+
+            if (sender == null || sender.actionController == null)
+            {
+                PostSystem("Cannot currently execute actions.", ChatKind.Error);
+                return true;
+            }
+
+            if (!sender.actionController.TryGetAction(actionName, out CharacterAction result, StringComparison.OrdinalIgnoreCase, compareToDisplayName: true))
+            {
+                PostSystem($"Action '{actionName}' not found.", ChatKind.Error);
+                return true;
+            }
+
+            CharacterState targetCharacter = null;
+            bool useCurrentTarget = false;
+
+            if (!string.IsNullOrWhiteSpace(targetSpec))
+            {
+                bool hadAngleBrackets = targetSpec.StartsWith("<") && targetSpec.EndsWith(">");
+
+                // Remove wrapping <> or ""
+                if (hadAngleBrackets)
+                    targetSpec = targetSpec.Substring(1, targetSpec.Length - 2);
+                else if (targetSpec.StartsWith("\"") && targetSpec.EndsWith("\""))
+                    targetSpec = targetSpec.Substring(1, targetSpec.Length - 2);
+
+                // Keep current target
+                if ((targetSpec.Equals("t", StringComparison.OrdinalIgnoreCase) ||
+                     targetSpec.Equals("target", StringComparison.OrdinalIgnoreCase)))
+                {
+                    useCurrentTarget = true;
+                }
+                // Check if it's a number (index into targets list)
+                else if (int.TryParse(targetSpec, out int indexAc))
+                {
+                    indexAc -= 1; // Convert to 0-based index for user-friendly input
+                    indexAc = UnityEngine.Mathf.Clamp(indexAc, 0, targets.Count - 1); // Ensure non-negative index
+                    if (targets != null && indexAc >= 0 && indexAc < targets.Count)
+                        targetCharacter = targets[indexAc];
+                }
+                // Check if it's "me"
+                else if (targetSpec.Equals("me", StringComparison.OrdinalIgnoreCase))
+                {
+                    targetCharacter = sender;
+                }
+                // Try to find by character name
+                else if (targets != null)
+                {
+                    CharacterState found = targets.Find(c => c.characterName.Equals(targetSpec, StringComparison.OrdinalIgnoreCase));
+                    if (found != null)
+                        targetCharacter = found;
+                }
+
+                if (!useCurrentTarget && targetCharacter == null)
+                {
+                    PostSystem("No valid target found.", ChatKind.Error);
+                    return true;
+                }
+            }
+
+            // No explicit target provided: keep existing behavior
+            if (string.IsNullOrWhiteSpace(targetSpec) || useCurrentTarget)
+            {
+                if (result.Data.isTargeted && result.Data.requiresTarget && sender.targetController.currentTarget == null)
+                {
+                    PostSystem("Action requires a target.", ChatKind.Error);
+                    return true;
+                }
+
+                sender.actionController.PerformAction(result);
+                return true;
+            }
+
+            if (sender.targetController == null || targetCharacter?.targetController?.self == null)
+            {
+                PostSystem("Cannot currently set target for actions.", ChatKind.Error);
+                return true;
+            }
+
+            sender.actionController.PerformAction(result, targetCharacter.targetController.self);
+
+            return true;
+        }
+
+        private bool MarkCommand(CharacterState sender, List<CharacterState> targets, string args)
+        {
+            if (string.IsNullOrWhiteSpace(args))
+            {
+                PostSystem("Usage: /mark <markName> <target> OR /mk <markName> <target>");
+                return true;
+            }
+
+            // Extract markName (first word) and targetSpec (rest)
+            int spaceIdx = args.IndexOf(' ');
+            string markName;
+            string targetSpec = null;
+
+            if (spaceIdx < 0)
+            {
+                markName = args.Trim();
+            }
+            else
+            {
+                markName = args.Substring(0, spaceIdx).Trim();
+                targetSpec = args.Substring(spaceIdx + 1).Trim();
+            }
+
+            CharacterState targetCharacter = sender; // Default to sender
+
+            if (!string.IsNullOrWhiteSpace(targetSpec))
+            {
+                // Remove wrapping <> or ""
+                if (targetSpec.StartsWith("<") && targetSpec.EndsWith(">"))
+                    targetSpec = targetSpec.Substring(1, targetSpec.Length - 2);
+                else if (targetSpec.StartsWith("\"") && targetSpec.EndsWith("\""))
+                    targetSpec = targetSpec.Substring(1, targetSpec.Length - 2);
+
+                // Check if it's a number (index into targets list)
+                if (int.TryParse(targetSpec, out int indexMk))
+                {
+                    if (targets != null && indexMk >= 0 && indexMk < targets.Count)
+                        targetCharacter = targets[indexMk];
+                }
+                // Check if it's "me"
+                else if (targetSpec.Equals("me", StringComparison.OrdinalIgnoreCase))
+                {
+                    targetCharacter = sender;
+                }
+                // Try to find by character name
+                else if (targets != null)
+                {
+                    CharacterState found = targets.Find(c => c.characterName.Equals(targetSpec, StringComparison.OrdinalIgnoreCase));
+                    if (found != null)
+                        targetCharacter = found;
+                }
+            }
+
+            if (targetCharacter != null)
+            {
+                if (!markName.Equals("clear", StringComparison.OrdinalIgnoreCase) && !markName.Equals("off", StringComparison.OrdinalIgnoreCase))
+                {
+                    PostSystem($"{sender.characterName} marked {targetCharacter.characterName} as {markName}");
+                    targetCharacter.Mark(markName);
+                }
+                else
+                {
+                    PostSystem($"{sender.characterName} cleared marks from {targetCharacter.characterName}");
+                    targetCharacter.Mark(string.Empty);
+                }
+            }
+            else
+            {
+                PostSystem("No valid target found.", ChatKind.Error);
+            }
+            return true;
         }
     }
 }
