@@ -113,6 +113,21 @@ namespace dev.susybaka.raidsim.Actions
             return null;
         }
 
+        public CharacterAction GetFirstByDisplayName(string displayName, StringComparison comparison)
+        {
+            if (displayName == null || allActions == null || allActions.Count < 1)
+                return null;
+
+            foreach (CharacterAction action in allActions)
+            {
+                if (action.GetActionName().Equals(displayName, comparison))
+                {
+                    return action;
+                }
+            }
+            return null;
+        }
+
         public CharacterAction GetFirstByData(CharacterActionData data)
         {
             if (data == null || !byData.TryGetValue(data, out var list) || list.Count == 0)

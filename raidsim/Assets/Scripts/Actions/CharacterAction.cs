@@ -86,6 +86,16 @@ namespace dev.susybaka.raidsim.Actions
             return string.Format(fullName, name);
         }
 
+        public string GetActionName()
+        {
+            string name = data.GetActionName();
+
+            if (!string.IsNullOrEmpty(name))
+                return name;
+            else
+                return actionId;
+        }
+
         public void SetPermanentlyUnavailable()
         {
             permanentlyUnavailable = true;

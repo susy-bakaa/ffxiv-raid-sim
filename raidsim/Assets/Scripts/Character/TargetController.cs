@@ -5,11 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
-using TMPro;
-using NaughtyAttributes;
 using dev.susybaka.raidsim.Actions;
 using dev.susybaka.raidsim.Characters;
 using dev.susybaka.raidsim.Core;
@@ -19,6 +14,11 @@ using dev.susybaka.Shared;
 using dev.susybaka.Shared.Attributes;
 using dev.susybaka.Shared.Audio;
 using dev.susybaka.Shared.UserInterface;
+using NaughtyAttributes;
+using TMPro;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace dev.susybaka.raidsim.Targeting
 {
@@ -513,7 +513,7 @@ namespace dev.susybaka.raidsim.Targeting
                     currentTarget.UpdateUserInterface(0f, 0f);
             }
 
-            if (currentTarget == target && enableAutoAttacksOnDoubleMouseRaycast && wasMouseClick && self != null)
+            if (currentTarget == target && enableAutoAttacksOnDoubleMouseRaycast && wasMouseClick && self != null && target != self)
             {
                 self.GetActionController().autoAttackEnabled = true;
             }
@@ -556,6 +556,27 @@ namespace dev.susybaka.raidsim.Targeting
                 else
                 {
                     AudioManager.Instance.Play(onUntargetAudio, audioVolume);
+                }
+            }
+        }
+
+        public void FaceTarget(TargetNode overrideTarget = null)
+        {
+            Transform t = overrideTarget == null ? currentTarget?.transform : overrideTarget.transform;
+
+            //Debug.Log($"FaceTarget called. currentTarget: {(currentTarget == null ? "null" : currentTarget.GetCharacterState().gameObject.name)}, overrideTarget: {(overrideTarget == null ? "null" : overrideTarget.GetCharacterState().gameObject.name)}, using transform: {(t == null ? "null" : t.gameObject.name)}");
+
+            if (t != null)
+            {
+                // Get the direction to the target but ignore the vertical component (Y-axis)
+                Vector3 directionToTarget = t.position - transform.position;
+                directionToTarget.y = 0; // Ensure we only rotate on the Y-axis
+
+                // If there's some direction (the target is not directly above or below)
+                if (directionToTarget != Vector3.zero)
+                {
+                    Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+                    transform.rotation = targetRotation;//Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * castingRotationSpeed); // Smooth rotation, optional
                 }
             }
         }

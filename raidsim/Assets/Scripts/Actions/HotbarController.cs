@@ -324,6 +324,8 @@ namespace dev.susybaka.raidsim.UI
                         return;
                     if (action.isDisabled || action.unavailable)
                         return;
+                    //if (action.Data.isTargeted && action.Data.range > 0f && action.distanceToTarget > action.Data.range)
+                    //    return;
                     
                     ExecuteAction(action);
                     return;

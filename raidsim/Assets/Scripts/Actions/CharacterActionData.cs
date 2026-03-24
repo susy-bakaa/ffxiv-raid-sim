@@ -41,6 +41,7 @@ namespace dev.susybaka.raidsim.Actions
         public bool canBeSlideCast = true;
         [UnityEngine.Serialization.FormerlySerializedAs("rollsGcd")] public bool hasCooldown = true;
         [ShowIf(nameof(hasCooldown))] public bool isGlobalCooldown = false;
+        public bool requiresTarget = false;
         public StatusEffectData buff;
         public bool dispelBuffInstead = false;
         public StatusEffectData debuff;

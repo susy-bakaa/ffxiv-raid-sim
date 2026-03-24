@@ -530,7 +530,7 @@ namespace dev.susybaka.raidsim.Actions
             return TryGetAction(actionData.actionName, out action, comparison);
         }
 
-        public bool TryGetAction(string name, out CharacterAction action, StringComparison comparison = StringComparison.Ordinal)
+        public bool TryGetAction(string name, out CharacterAction action, StringComparison comparison = StringComparison.Ordinal, bool compareToDisplayName = false)
         {
             if (actionRegistry == null || string.IsNullOrEmpty(name))
             {
@@ -541,19 +541,8 @@ namespace dev.susybaka.raidsim.Actions
             // Here we use the action name instead of the more up to date and unique ActionId,
             // because the ActionId is not always the same as the name of the action,
             // which is used by players typing into the chat to perform actions, and we want to support that use case with this method.
-            action = actionRegistry.GetFirstByName(name, comparison);
+            action = compareToDisplayName == false ? actionRegistry.GetFirstByName(name, comparison) : actionRegistry.GetFirstByDisplayName(name, comparison);
             return action != null;
-
-            /*for (int i = 0; i < actions.Count; i++)
-            {
-                if (name.Equals(actions[i].Data.actionName, comparison))
-                {
-                    action = actions[i];
-                    return true;
-                }
-            }
-            action = null;
-            return false;*/
         }
 
         public bool HasAction(CharacterActionData actionData, StringComparison comparison = StringComparison.Ordinal)
@@ -886,6 +875,11 @@ namespace dev.susybaka.raidsim.Actions
 
         public void PerformAction(CharacterAction action)
         {
+            PerformAction(action, null);
+        }
+
+        public void PerformAction(CharacterAction action, TargetNode target)
+        {
             if (!gameObject.activeSelf)
                 return;
 
@@ -895,7 +889,7 @@ namespace dev.susybaka.raidsim.Actions
             if (Time.timeScale <= 0f)
                 return;
 
-            PerformActionInternal(action, false);
+            PerformActionInternal(action, false, target);
         }
 
         public void PerformActionUnrestricted(string name)
@@ -928,9 +922,21 @@ namespace dev.susybaka.raidsim.Actions
             PerformActionInternal(action, true);
         }
 
-        private void PerformActionInternal(CharacterAction action, bool hidden)
+        private void PerformActionInternal(CharacterAction action, bool hidden, TargetNode target = null)
         {
             //Debug.Log($"[ActionController ({gameObject.name})] Performing action {(action != null ? action.Data.actionName : "null")} ({(action != null ? action : "null")}), hidden {hidden}");
+
+            TargetNode currentTarget = target;
+
+            if (currentTarget == null)
+            {
+                if (targetController != null)
+                {
+                    currentTarget = targetController.currentTarget;
+                }
+            }
+
+            //Debug.Log($"[ActionController ({gameObject.name})] Current target for action is {(currentTarget != null ? currentTarget.GetCharacterState().gameObject.name : "null")} ({(currentTarget != null ? currentTarget : "null")})");
 
             if (action == null)
                 return;
@@ -943,15 +949,15 @@ namespace dev.susybaka.raidsim.Actions
             if (lockActionsWhenCasting && isCasting && !hidden)
                 return;
 
-            if ((targetController.currentTarget != null && action.Data.targetGroups.Contains(targetController.self.Group)) && action.Data.range > 0f && action.Data.isTargeted && (distanceToTarget > action.Data.range) && !hidden)
+            if ((currentTarget != null && action.Data.targetGroups.Contains(currentTarget.Group)) && action.Data.range > 0f && action.Data.isTargeted && (distanceToTarget > action.Data.range) && !hidden)
                 return;
 
             //Debug.Log($"[ActionController ({gameObject.name})] Action {action.Data.actionName} passed 2. checks");
 
-            if ((targetController.currentTarget != null && action.Data.targetGroups.Contains(targetController.self.Group)) && action.Data.isTargeted && !hasTarget && !hidden)
+            if ((currentTarget != null && action.Data.targetGroups.Contains(currentTarget.Group)) && action.Data.isTargeted && (!hasTarget && target == null) && !hidden)
                 return;
 
-            if (action.Data.isTargeted && targetController.currentTarget != null && !action.Data.targetGroups.Contains(targetController.currentTarget.Group) && !hidden)
+            if (action.Data.isTargeted && currentTarget != null && !action.Data.targetGroups.Contains(currentTarget.Group) && !hidden)
                 return;
 
             //Debug.Log($"[ActionController ({gameObject.name})] Action {action.Data.actionName} passed 3. checks");
@@ -982,20 +988,20 @@ namespace dev.susybaka.raidsim.Actions
             if (actionCondition)
             {
                 // Handle target of the cast
-                CharacterState currentTarget = null;
+                CharacterState targetCharacter = null;
 
-                if (targetController != null && targetController.currentTarget != null)
+                if (targetController != null && currentTarget != null)
                 {
-                    currentTarget = targetController.currentTarget.GetCharacterState();
+                    targetCharacter = currentTarget.GetCharacterState();
                 }
                 if (currentTarget == null)
                 {
-                    currentTarget = characterState;
+                    targetCharacter = characterState;
                 }
 
-                if (currentTarget.targetController != null && currentTarget.targetController.self != null && action.Data.targetGroups.Length > 0 && action.Data.isTargeted)
+                if (targetCharacter.targetController != null && targetCharacter.targetController.self != null && action.Data.targetGroups.Length > 0 && action.Data.isTargeted)
                 {
-                    if (!action.Data.targetGroups.Contains(currentTarget.targetController.self.Group))
+                    if (!action.Data.targetGroups.Contains(targetCharacter.targetController.self.Group))
                     {
                         return;
                     }
@@ -1008,25 +1014,16 @@ namespace dev.susybaka.raidsim.Actions
                     //Utilities.FunctionTimer.StopTimer($"{this}_castBarParty_fade_out_if_interrupted");
                     Utilities.FunctionTimer.StopTimer($"{characterState.characterName}_{this}_interrupted_status");
 
-                    /*CharacterState currentTarget = null;
-
-                    if (targetController != null && targetController.currentTarget != null)
-                    {
-                        currentTarget = targetController.currentTarget.GetCharacterState();
-                    }
-                    if (currentTarget == null)
-                    {
-                        currentTarget = characterState;
-                    } */
-
                     action.Data.damage = new Damage(action.Data.damage, characterState);
                     if (!action.Data.isGroundTargeted && action.Data.recast > 0f && !hidden)
                         action.chargesLeft--;
                     lastAction = action;
 
-                    ActionInfo newActionInfo = new ActionInfo(action, characterState, currentTarget);
+                    ActionInfo newActionInfo = new ActionInfo(action, characterState, targetCharacter);
                     action.onCast.Invoke(newActionInfo);
                     action.ExecuteAction(newActionInfo);
+
+                    //Debug.Log($"[ActionController ({gameObject.name})] Action {action.Data.actionName} executed with target {(targetCharacter != null ? targetCharacter.gameObject.name : "null")} ({(targetCharacter != null ? targetCharacter : "null")})");
 
                     if (action.Data.animationLock > 0f && !action.Data.isGroundTargeted)
                         action.ActivateAnimationLock();
@@ -1057,18 +1054,9 @@ namespace dev.susybaka.raidsim.Actions
                     }
 
                     // Handle rotation when casting
-                    if (faceTargetWhenCasting && action.Data.isTargeted && targetController.currentTarget != null && !action.Data.isGroundTargeted)
+                    if (faceTargetWhenCasting && action.Data.isTargeted && targetController != null && !action.Data.isGroundTargeted)
                     {
-                        // Get the direction to the target but ignore the vertical component (Y-axis)
-                        Vector3 directionToTarget = targetController.currentTarget.transform.position - transform.position;
-                        directionToTarget.y = 0; // Ensure we only rotate on the Y-axis
-
-                        // If there's some direction (the target is not directly above or below)
-                        if (directionToTarget != Vector3.zero)
-                        {
-                            Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
-                            transform.rotation = targetRotation;//Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * castingRotationSpeed); // Smooth rotation, optional
-                        }
+                        targetController.FaceTarget(target);
                     }
 
                     if (action.Data.isGroundTargeted)
@@ -1100,20 +1088,9 @@ namespace dev.susybaka.raidsim.Actions
                     if (action.Data.hasCooldown && action.Data.recast > 0f && !action.Data.isGroundTargeted)
                         action.ActivateCooldown();
 
-                    /*CharacterState currentTarget = null;
-
-                    if (targetController != null && targetController.currentTarget != null)
-                    {
-                        currentTarget = targetController.currentTarget.GetCharacterState();
-                    }
-                    if (currentTarget == null || !action.Data.isTargeted)
-                    {
-                        currentTarget = characterState;
-                    }*/
-
                     action.Data.damage = new Damage(action.Data.damage, characterState);
 
-                    ActionInfo newActionInfo = new ActionInfo(action, characterState, currentTarget);
+                    ActionInfo newActionInfo = new ActionInfo(action, characterState, targetCharacter);
                     action.onCast.Invoke(newActionInfo);
                     StartCoroutine(IE_Cast(castTime, () => { if (!action.Data.isGroundTargeted && action.Data.recast > 0f && !hidden) { action.chargesLeft--; } action.ExecuteAction(newActionInfo); if (action.Data.playAnimationOnFinish) { HandleAnimation(action); } HandleActionAudio(action, true); if (comboDriver != null) { comboDriver.OnActionExecuted(action.ActionId); } }));
                     onCast.Invoke(new CastInfo(newActionInfo, instantCast, characterState.GetEffects()));
