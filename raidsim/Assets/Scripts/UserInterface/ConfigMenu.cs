@@ -59,8 +59,8 @@ namespace dev.susybaka.raidsim.UI
         bool newFullscreen = true;
         int resolution = 0;
         int newResolution = 0;
-        float volume = 100;
-        float newVolume = 100;
+        float volume = 50;
+        float newVolume = 50;
         bool invertCameraVertical = false;
         bool newInvertCameraVertical = false;
         bool invertCameraHorizontal = false;
@@ -456,7 +456,7 @@ namespace dev.susybaka.raidsim.UI
             newFullscreen = true;
             newResolution = 0;
 #endif
-            newVolume = 100f;
+            newVolume = 50f;
             volumeSliderSync.Slider.value = newVolume;
             volumeSliderSync.Sync(0);
             newInvertCameraVertical = false;
