@@ -23,12 +23,14 @@ namespace dev.susybaka.raidsim.UI
         [SerializeField] private string key;
         [SerializeField] private bool useTimelineAsKey = true;
 
+        private ChatHandler chat;
         private WaitForSecondsRealtime waitForEachOption = new WaitForSecondsRealtime(0.6666f);
 
         protected override void Awake()
         {
             base.Awake();
 
+            chat = ChatHandler.Instance;
             userInput = FindObjectOfType<UserInput>();
 
             if (allowExport)
@@ -133,6 +135,10 @@ namespace dev.susybaka.raidsim.UI
             WebGLCopyAndPaste.WebGLCopyAndPasteAPI.CopyToClipboard(code);
 #endif
 
+            if (chat != null)
+            {
+                chat.PostSystem("Timeline config share code copied to clipboard.");
+            }
             Debug.Log($"Copied timeline config share code ({code.Length} chars) to clipboard.");
         }
 
@@ -141,31 +147,58 @@ namespace dev.susybaka.raidsim.UI
             if (options.Count < 1 || !allowExport)
                 return;
 
-#if !UNITY_WEBGL
-            string code = GUIUtility.systemCopyBuffer;
-#else
-            string code = GUIUtility.systemCopyBuffer;
-#endif
+            string code1 = GUIUtility.systemCopyBuffer;
+            string code2 = WebGLGlobalPaste.LastPastedText;
 
+            if (code1.StartsWith("TC"))
+            {
+                ImportTimelineConfig(code1);
+
+            }
+            else
+            {
+                ImportTimelineConfig(code2);
+            }
+        }
+
+        private bool ImportTimelineConfig(string code)
+        {
             if (TimelineConfigShareCode.TryDecode(code, out string importString))
             {
                 if (string.IsNullOrEmpty(importString))
-                    return;
+                    return false;
 
                 string[] configValues = importString.Split(':');
 
                 if (configValues.Length < 2 || configValues[0] != key)
                 {
+                    if (chat != null)
+                    {
+                        chat.PostSystem("Imported timeline config is invalid or it is for a different timeline!", ChatKind.Error);
+                    }
                     Debug.LogWarning("Imported timeline config is invalid or it is for a different timeline!");
-                    return;
+                    return false;
                 }
 
                 StopAllCoroutines();
                 StartCoroutine(IE_ImportTimelineConfig(configValues));
+                return true;
             }
             else
             {
+#if !UNITY_WEBGL
+                if (chat != null)
+                {
+                    chat.PostSystem("Clipboard does not contain a valid timeline config share code!", ChatKind.Error);
+                }
+#else
+                if (chat != null)
+                {
+                    chat.PostSystem("Clipboard does not contain a valid timeline config share code! Try pressing Ctrl+V to paste in the game window, in order to first copy your system clipboard over to the game.", ChatKind.Error);
+                }
+#endif
                 Debug.LogWarning("Clipboard does not contain a valid timeline config share code.");
+                return false;
             }
         }
 
