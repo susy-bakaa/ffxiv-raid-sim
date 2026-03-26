@@ -994,12 +994,15 @@ namespace dev.susybaka.raidsim.Actions
                 {
                     targetCharacter = currentTarget.GetCharacterState();
                 }
-                if (currentTarget == null)
+                else
                 {
                     targetCharacter = characterState;
                 }
 
-                if (targetCharacter.targetController != null && targetCharacter.targetController.self != null && action.Data.targetGroups.Length > 0 && action.Data.isTargeted)
+                if (targetCharacter == null)
+                    targetCharacter = characterState;
+
+                if (targetCharacter != null && targetCharacter.targetController != null && targetCharacter.targetController.self != null && action.Data.targetGroups.Length > 0 && action.Data.isTargeted)
                 {
                     if (!action.Data.targetGroups.Contains(targetCharacter.targetController.self.Group))
                     {
