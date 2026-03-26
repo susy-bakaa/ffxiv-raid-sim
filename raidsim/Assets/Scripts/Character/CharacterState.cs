@@ -180,6 +180,8 @@ namespace dev.susybaka.raidsim.Characters
         private List<StatusEffect> instantCasts = new List<StatusEffect>();
         [HideInInspector]
         public UnityEvent<List<StatusEffect>> onInstantCastsChanged;
+        [HideInInspector]
+        public List<Mechanics.TetherTrigger> attachedTethers = new List<Mechanics.TetherTrigger>();
 
         [Header("Events")]
         public UnityEvent onDeath;

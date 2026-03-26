@@ -42,6 +42,7 @@ namespace dev.susybaka.raidsim.Mechanics
         public bool ignoreGhosts = false;
         public bool grabbable = false;
         public bool makeSourceTargetTarget = false; // If true, when forming or solving a tether, source character will change their target controller target to the target character.
+        public bool resolveOnePerPlayer = false;
         public float tickRate = 10f; // Mechanic tick (Hz). 10Hz = 0.1s.
         [ShowIf(nameof(grabbable))] public float grabRadius = 0.6f; // How far from the tether line (in meters) counts as a grab (XZ plane).
         [ShowIf(nameof(grabbable))] public float swapLockSeconds = 0.75f; // After a swap, ignore further swaps for this many seconds.
@@ -391,11 +392,21 @@ namespace dev.susybaka.raidsim.Mechanics
             tetherTarget = target;
             SetLineRenderersActive(true); // This has to come after setting the tetherTarget so that it can check ghost status for visibility
 
+            if (resolveOnePerPlayer)
+            {
+                tetherTarget.attachedTethers.Add(this);
+            }
+
             onForm.Invoke(new ActionInfo(null, tetherSource, tetherTarget));
         }
 
         public void BreakTether()
         {
+            if (resolveOnePerPlayer)
+            {
+                tetherTarget.attachedTethers.Remove(this);
+            }
+
             ActionInfo actionInfo = new ActionInfo(null, tetherSource, tetherTarget);
             
             if (log)
@@ -408,6 +419,44 @@ namespace dev.susybaka.raidsim.Mechanics
 
         public void SolveTether()
         {
+            if (resolveOnePerPlayer)
+            {
+                if (tetherTarget.attachedTethers != null && tetherTarget.attachedTethers.Count > 0)
+                {
+                    if (tetherTarget.attachedTethers.Contains(this) && tetherTarget.attachedTethers.Count > 1)
+                    {
+                        List<CharacterState> players = new List<CharacterState>(partyList.GetActiveMembers());
+
+                        // Shuffle the list with Unity rng because we don't need it to be deterministic
+                        for (int i = players.Count - 1; i > 0; i--)
+                        {
+                            int j = Mathf.FloorToInt(UnityEngine.Random.value * (i + 1));
+                            CharacterState tmp = players[i];
+                            players[i] = players[j];
+                            players[j] = tmp;
+                        }
+
+                        foreach (CharacterState player in players)
+                        {
+                            if (player == null)
+                                continue;
+
+                            if (player.attachedTethers != null && player.attachedTethers.Count < 1)
+                            {
+                                CharacterState old = tetherTarget;
+                                tetherTarget = player;
+                                old.attachedTethers.Remove(this);
+                                player.attachedTethers.Add(this);
+                                // Invoke a swap event here because we are effectively swapping the tether target
+                                onSwap?.Invoke(new ActionInfo(null, old, player));
+                                SetLineRenderersActive(true); // In case the tether was not visible due to the old carrier being a ghost update the visuals
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
             ActionInfo actionInfo = new ActionInfo(null, tetherSource, tetherTarget);
 
             if (log)
@@ -425,6 +474,11 @@ namespace dev.susybaka.raidsim.Mechanics
                     tetherSource.targetController.SetTarget(tetherTarget.targetController.self);
                 }
             }
+
+            if (resolveOnePerPlayer)
+            {
+                tetherTarget.attachedTethers.Remove(this);
+            }   
         }
 
         private void TryGrabTether()
@@ -498,6 +552,12 @@ namespace dev.susybaka.raidsim.Mechanics
             tetherTarget = bestCandidate;
 
             swapLockRemaining = swapLockSeconds;
+
+            if (resolveOnePerPlayer)
+            {
+                oldCarrier.attachedTethers.Remove(this);
+                bestCandidate.attachedTethers.Add(this);
+            }
 
             onSwap?.Invoke(new ActionInfo(null, oldCarrier, bestCandidate));
             SetLineRenderersActive(true); // In case the tether was not visible due to the old carrier being a ghost update the visuals
