@@ -102,6 +102,8 @@ namespace dev.susybaka.raidsim.SaveLoad
 
                 bool result = savedValue.ToBool();
 
+                lastValue = savedValue.ToBool();
+
                 if (result && button != null)
                 {
                     button.onClick.Invoke();
@@ -119,7 +121,8 @@ namespace dev.susybaka.raidsim.SaveLoad
             string n = gameObject.name;
             if (button != null)
                 n = button.gameObject.name;
-            Utilities.FunctionTimer.Create(this, () => {
+            Utilities.FunctionTimer.Create(this, () =>
+            {
                 ini.Load(GlobalVariables.configPath);
 
                 if (lastValue != value || !onlySaveOnChange) // Only save if the value changed, or if we're not checking for changes
@@ -129,6 +132,22 @@ namespace dev.susybaka.raidsim.SaveLoad
                     ini.Save();
                 }
             }, wait, $"SaveButton_{id}_{n}_savevalue_delay", false, true);
+        }
+
+        public bool GetValue()
+        {
+            return lastValue;
+        }
+
+        public bool SetValue(bool value)
+        {
+            SaveValue(value);
+            if (value && button != null)
+            {
+                button.onClick.Invoke();
+            }
+            onStart.Invoke(value);
+            return value;
         }
     }
 }
