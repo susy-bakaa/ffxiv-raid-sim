@@ -3,6 +3,7 @@
 This file contains a list of all of the external resources used and their creators. Please go support each of them and take a look at their work if you can!
 
 - FINAL FANTASY XIV: Online assets extracted from the original game. All game assets used are owned and copyrighted by SQUARE ENIX CO., LTD. and Creative Studio III. Big thank you to the original developers and artists for creating this amazing game!
+- FFXIV Axis font for some icons from Lodestone. This font is owned and copyrighted by SQUARE ENIX CO., LTD. and Creative Studio III.
 - Main simulator program and timelines made by [susy_baka](https://susybaka.dev/) with major help of [Worst Aqua Player](https://github.com/WorstAquaPlayer).
 - Some timelines were created by [Worst Aqua Player](https://github.com/WorstAquaPlayer) and [Khanh Le](https://github.com/khanh-alice).
 - Some of the code was partially referenced and used as inspiration from the Korean TEA (The Epic of Alexander) simulator created by 백마도사@초코보. All rights to their code is reserved to the original author of that program and none of it is directly included in this one.
