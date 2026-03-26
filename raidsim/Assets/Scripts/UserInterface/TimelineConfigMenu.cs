@@ -127,7 +127,11 @@ namespace dev.susybaka.raidsim.UI
 
             string code = TimelineConfigShareCode.Encode(exportString);
 
+#if !UNITY_WEBGL
             GUIUtility.systemCopyBuffer = code;
+#else
+            WebGLCopyAndPaste.WebGLCopyAndPasteAPI.CopyToClipboard(code);
+#endif
 
             Debug.Log($"Copied timeline config share code ({code.Length} chars) to clipboard.");
         }
@@ -137,7 +141,11 @@ namespace dev.susybaka.raidsim.UI
             if (options.Count < 1 || !allowExport)
                 return;
 
+#if !UNITY_WEBGL
             string code = GUIUtility.systemCopyBuffer;
+#else
+            string code = GUIUtility.systemCopyBuffer;
+#endif
 
             if (TimelineConfigShareCode.TryDecode(code, out string importString))
             {
