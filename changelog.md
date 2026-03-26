@@ -1,31 +1,41 @@
-This patch focuses on a handful of usability and reset-related issues, plus a few important fixes for **M12S P2: Idyllic Dream** (especially around reenactment clones and hitbox visuals). The tutorial popups also got a refresh.
+This update expands macro support, improves action handling to feel closer to the real game, and brings a bunch of accuracy tweaks and quality-of-life improvements to **M12S P2: Idyllic Dream**. It also fixes several major issues introduced in earlier builds.
 
-## v.0.7.2 Changelog
+## v.0.7.3 Changelog
 
-### Fixes & Improvements
+### New Features
 
--   Updated and refreshed the **tutorial popups**.
--   Fixed an issue where **resetting too quickly** after dying to an **out-of-bounds trigger** could cause the screen to get stuck fully black.
--   Fixed an issue where changing **keybinds for hotbar slots** would not visually update the slot until other UI actions occurred.
--   Fixed **Lindwurm hitbox visuals** in **M12S P2: Idyllic Dream** not resetting correctly if you reset the timeline while its size was temporarily altered.
--   Fixed an issue where **boss clones** did not execute their animations or disappear correctly in both **Reenactment mechanics** in **M12S P2: Idyllic Dream**.
--   Fixed a rare issue where the **target bar** could remain stuck on-screen after resetting a timeline.
+-   Added macro wait support:
+    -   **`/wait X`**
+    -   **`<wait.X>`**
+-   Added **4+2+2 melee uptime stack** option to **M12S P2: Idyllic Dream**.
+-   Added a simple **action queue/buffer system**, allowing you to buffer actions more like in-game.
+-   Added **export/import** support for **M12S P2: Idyllic Dream** timeline configuration.  
+    
+	**NOTE:** This only exports/imports shared configuration values. Strategy-specific "personal preference" options are intentionally left untouched. This feature will be added to future timelines where it makes sense.
+
+### Changes
+
+-   Tweaked existing commands and added a few new ones.
+-   Tweaked **Lindwurm's** default boss hitbox size in **M12S P2 Idyllic Dream** to better match the game.
+-   Tweaked **Mana Burst AOE** size in **M12S P2 Idyllic Dream** to better match the game.
+-   Tweaked intercardinal **player clone positions** in **M12S P2 Idyllic Dream** to better match the game.
+-   Changed the default audio volume to **50%**.
+-   Changed the font used by **Chat** and the **Macro Editor**.  
+    
+	**NOTE:** This font has much better compatibility with FFXIV glyphs. Some may still be missing, but most should now render correctly.
+
+### Bug Fixes
+
+-   Fixed an issue where actions ignored **range checks**, allowing them to execute from any distance.
+-   Fixed an issue where **dashes and gap closers** could cause the player to fall through the arena under certain conditions.
+-   Fixed an issue in **M12S P2: Idyllic Dream** where boss clone tether visuals post arena split could become incorrect.  
+    
+	**NOTE:** This was a side effect of making tether logic more accurate. Players can now only pick up **one tether**, and if multiple are picked up they will be randomized across the party so everyone ends up with one.
 
 ## Known Issues
 
 -   **Linux windowed mode** can behave erratically and sometimes changes shape during scene loads.  
     **Workaround:** Don’t maximize the window, or play in fullscreen instead of windowed.
--   Chat and macro window may not display some characters supported by FFXIV (placeholder boxes).  
-    **Workaround:** Remove those characters or live with the boxes for now.  
-    
-	**NOTE:** Planned fix is changing to a font with full FFXIV glyph coverage.
--   Gap closers/dashes on certain arenas may cause the player to sink/fall through the ground.  
-    **Workaround:** Avoid those broken actions.  
-    
-	**NOTE:** Should currently only happen in the Demo timeline.
--   In **M12S P2: Idyllic Dream** the boss clone tether visuals post arena split may not disappear if the tethered player previously picked up more than one tether/mechanic.  
-    
-	**NOTE:** Visual-only issue and should not occur under normal play.
 -   Bots may **fail** certain mechanics/timelines if you use one of the new naming schemes.  
     **Workaround:** Revert to the original naming style (Option 1).
 	
@@ -33,4 +43,4 @@ This patch focuses on a handful of usability and reset-related issues, plus a fe
 
 ---
 
-Quick small hotfix-esque patch for few issues. As always, let us know if you spot any problems through [GitHub](https://github.com/susy-bakaa/ffxiv-raid-sim/issues) or send a message on the [official Discord server](https://discord.gg/wepQtPfC6D)!
+A bit bigger patch for few issues and new changes. As always, let us know if you spot any problems through [GitHub](https://github.com/susy-bakaa/ffxiv-raid-sim/issues) or send a message on the [official Discord server](https://discord.gg/wepQtPfC6D)!
