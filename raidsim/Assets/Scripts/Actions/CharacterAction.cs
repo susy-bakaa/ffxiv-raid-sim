@@ -41,6 +41,7 @@ namespace dev.susybaka.raidsim.Actions
         public bool isAnimationLocked { private set; get; }
         public bool isAutoAction = false;
         private bool wasIsAutoAction = false;
+        public bool isExecutable;
         public bool isDisabled;
         private bool wasIsDisabled;
         public bool unavailable = false;
@@ -49,6 +50,7 @@ namespace dev.susybaka.raidsim.Actions
         private bool wasInvisible = false;
         public bool hasTarget = false;
         public bool showOutline = false;
+        public float timeUntilExecutable;
         public float damageMultiplier = 1f;
         public float distanceToTarget;
         public int chargesLeft = 0;
@@ -320,6 +322,30 @@ namespace dev.susybaka.raidsim.Actions
                             break;
                         }
                     }
+                }
+            }
+
+            // Update boolean and float timer for whether the action can be executed (used for action queue)
+            isExecutable = isAvailable && !isAnimationLocked && recastTimer <= 0f;
+
+            if (isExecutable)
+            {
+                timeUntilExecutable = 0f;
+
+            }
+            else
+            {
+                if (recastTimer > 0f)
+                {
+                    timeUntilExecutable = recastTimer;
+                }
+                else if (isAnimationLocked)
+                {
+                    timeUntilExecutable = animationLockTimer;
+                }
+                else
+                {
+                    timeUntilExecutable = 0f;
                 }
             }
         }
@@ -642,6 +668,7 @@ namespace dev.susybaka.raidsim.Actions
             ResetCooldown();
             ResetAnimationLock();
             chargesLeft = data.charges;
+            isExecutable = false;
             isAutoAction = wasIsAutoAction;
             isDisabled = wasIsDisabled;
             unavailable = wasUnavailable;

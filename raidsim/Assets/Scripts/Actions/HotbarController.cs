@@ -15,7 +15,7 @@ namespace dev.susybaka.raidsim.UI
 {
     public class HotbarController : MonoBehaviour
     {
-        [Header("Runtime refs")]
+        [Header("References")]
         [SerializeField] private UserInput input;
         [SerializeField] private CharacterState character;
         [SerializeField] private CharacterActionRegistry registry;
@@ -41,6 +41,16 @@ namespace dev.susybaka.raidsim.UI
         public event System.Action OnRefreshHotbars;
         private readonly Dictionary<string, GroupState> groups = new();
         private IActionOverrideResolver overrideResolver;
+
+        [Header("Behavior")]
+        [SerializeField] private bool enableActionQueue = true;
+        [SerializeField] private float actionQueueWindow = 0.5f;
+        [SerializeField] private float actionQueueHoldMax = 2.0f;
+        [SerializeField] private bool queueUseUnscaledTime = false;
+
+        // two-slot queue
+        private QueuedAction primaryQueued;
+        private QueuedAction secondaryQueued;
 
         [Header("Audio")]
         [SerializeField, SoundName] private string onExecuteSound = "ui_execute_action";
@@ -71,6 +81,9 @@ namespace dev.susybaka.raidsim.UI
         {
             if (input == null)
                 return;
+
+            if (TryProcessQueuedActions())
+                return; // Only one action per frame
 
             foreach (var groupBind in groupBinds)
             {
@@ -322,12 +335,19 @@ namespace dev.susybaka.raidsim.UI
 
                     if (!action)
                         return;
+
                     if (action.isDisabled || action.unavailable)
                         return;
-                    //if (action.Data.isTargeted && action.Data.range > 0f && action.distanceToTarget > action.Data.range)
-                    //    return;
-                    
-                    ExecuteAction(action);
+
+                    if (action.isExecutable)
+                    {
+                        ExecuteAction(action);
+                        ClearQueue(); // clear queued inputs on successful manual execution
+                        return;
+                    }
+
+                    // Not executable now -> try to queue
+                    TryQueueAction(binding.id, false);
                     return;
                 }
 
@@ -337,6 +357,7 @@ namespace dev.susybaka.raidsim.UI
                     {
                         var entry = macroEditor.Library.Get(idx);
                         macroExecutor.Execute(entry);
+                        ClearQueue(); // clear any queued actions on macro execution since macros don't queue themselves but may execute actions, and we want to prevent queued actions from firing after a macro runs
                     }
                     return;
                 }
@@ -425,6 +446,123 @@ namespace dev.susybaka.raidsim.UI
 
         private bool TryGetGroupState(string groupId, out GroupState state) => groups.TryGetValue(groupId, out state);
 
+        private bool TryProcessQueuedActions()
+        {
+            if (!enableActionQueue)
+                return false;
+
+            // Expire old entries
+            float now = QueueNow;
+            if (primaryQueued.isValid && now > primaryQueued.expiresAt)
+                ClearPrimary();
+            if (secondaryQueued.isValid && now > secondaryQueued.expiresAt)
+                ClearSecondary();
+
+            // If primary exists and is ready, execute it immediately
+            if (primaryQueued.isValid)
+            {
+                var action = GetResolvedAction(primaryQueued.baseActionId);
+                if (action && !action.isDisabled && !action.unavailable && action.isExecutable)
+                {
+                    ExecuteAction(action);
+
+                    if (primaryQueued.playSound && !string.IsNullOrEmpty(onExecuteSound) && Shared.Audio.AudioManager.Instance != null)
+                        Shared.Audio.AudioManager.Instance.Play(onExecuteSound, volume);
+
+                    // Promote secondary -> primary after primary fires
+                    primaryQueued = secondaryQueued;
+                    secondaryQueued = default;
+
+                    return true;
+                }
+
+                // Primary not ready yet, keep it
+                return false;
+            }
+
+            // No primary, but secondary exists:
+            // Only promote to primary when it is within the queue window
+            if (secondaryQueued.isValid)
+            {
+                var action = GetResolvedAction(secondaryQueued.baseActionId);
+                if (action && !action.isDisabled && !action.unavailable && !action.isExecutable)
+                {
+                    float remaining = GetTimeUntilExecutable(action);
+                    if (remaining <= actionQueueWindow)
+                    {
+                        primaryQueued = secondaryQueued;
+                        secondaryQueued = default;
+                    }
+                }
+                else if (action && action.isExecutable)
+                {
+                    // If it's already executable, you can just fire it now OR promote then fire next frame.
+                    // To keep strict "one per frame", promote and let next Update fire it.
+                    primaryQueued = secondaryQueued;
+                    secondaryQueued = default;
+                }
+            }
+
+            return false;
+        }
+
+        private bool TryQueueAction(string baseActionId, bool playSound)
+        {
+            if (!enableActionQueue || string.IsNullOrWhiteSpace(baseActionId))
+                return false;
+
+            var action = GetResolvedAction(baseActionId);
+            if (!action)
+                return false;
+
+            // Don't queue disabled/unavailable actions
+            if (action.isDisabled || action.unavailable)
+                return false;
+
+            // If it can execute now, do not queue
+            if (action.isExecutable)
+                return false;
+
+            // Only queue if it's close enough to ready
+            float remaining = GetTimeUntilExecutable(action);
+            if (remaining > actionQueueWindow)
+                return false;
+
+            var entry = new QueuedAction
+            {
+                baseActionId = baseActionId,
+                expiresAt = QueueNow + actionQueueHoldMax,
+                playSound = playSound
+            };
+
+            // Primary is locked; never override it
+            if (!primaryQueued.isValid)
+                primaryQueued = entry;
+            else
+                secondaryQueued = entry; // secondary can be overwritten by new presses
+
+            return true;
+        }
+
+        private float GetTimeUntilExecutable(CharacterAction action)
+        {
+            if (action == null)
+                return float.PositiveInfinity;
+
+            return Mathf.Max(0f, action.timeUntilExecutable);
+        }
+
+        private void ClearQueue()
+        {
+            ClearPrimary();
+            ClearSecondary();
+        }
+
+        private float QueueNow => queueUseUnscaledTime ? Time.unscaledTime : Time.time;
+
+        private void ClearPrimary() => primaryQueued = default;
+        private void ClearSecondary() => secondaryQueued = default;
+
         private sealed class GroupState
         {
             public string groupId;
@@ -441,6 +579,21 @@ namespace dev.susybaka.raidsim.UI
             public string groupId;
             [KeybindName] public string[] binds;
             [System.NonSerialized] public System.Action<int> onPress;
+        }
+
+        private struct QueuedAction
+        {
+            public string baseActionId;
+            public float expiresAt;
+            public bool playSound;
+            public bool isValid => !string.IsNullOrEmpty(baseActionId);
+
+            public QueuedAction(string baseActionId, float expiresAt, bool playSound)
+            {
+                this.baseActionId = baseActionId;
+                this.expiresAt = expiresAt;
+                this.playSound = playSound;
+            }
         }
     }
 }
