@@ -133,8 +133,9 @@ namespace dev.susybaka.raidsim.Mechanics
             }
             if (!moveAxis.y)
             {
-                finalTargetPosition.y = 0f;
-                targetPosition.y = 0f;
+                // We don't want to change the y value to 0 here since that could cause the character to clip into the ground
+                // if the current arena is not at y=0
+                finalTargetPosition.y = targetPosition.y;
             }
             if (!moveAxis.z)
             {
