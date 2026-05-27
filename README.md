@@ -13,11 +13,11 @@ If you want to keep up with development, have any questions or want to contribut
 [![Static Badge](https://img.shields.io/badge/bluesky-follow-blue?logo=bluesky&logoColor=white)](https://bsky.app/profile/susybaka.dev)
 [![Static Badge](https://img.shields.io/badge/youtube-subscribe-red?logo=youtube&logoColor=white)](https://www.youtube.com/@no00ob)
 
+<b>NOTE:</b> This simulator is usually mainly being built with raiding strats from the European data center. Reason being that I am from EU and only actively raid in that region. I do not have the personal time to maintain and add every single region's strategy to all fights most of the time, however going forward with all new timelines in 2026, I will try to make all of them modular and easily extendable if anyone else wants to contribute other strats. Everyone is welcome to try and I encourage you to give it a go! For help with this, I recommend you join our discord and contact us there for additional information regarding that.
+
 # Supported fights
 
 Fights listed here are finished and available in the simulator.
-
-<b>NOTE:</b> This simulator is mainly being built with raiding strats from the European data center, which are usually either from LPDU or just whatever ends up popular in EU PF. Reason being that I personally mostly only play in that region. I do not have the time to maintain and add 10 different versions of one strategy, however if anyone else wants to contribute other strats, you're free to do so and I encourage you to give it a go! For help with this, I recommend you join our discord and contact us there for additional information regarding that.
 
 - AAC Heavyweight Tier
 	- AAC Heavyweight M4 (Savage) (M12S)
@@ -42,7 +42,7 @@ Fights listed here are finished and available in the simulator.
 		- Sunrise Sabbath ([AutoCad/Uptime](https://raidplan.io/plan/OnQXobwatopL1G8u))
 - Futures Rewritten (Ultimate) (FRU)
 	- Phase 2 (Usurper of Frost)
-		- Diamond Dust ([Early LPDU](https://raidplan.io/plan/NzZWtqr5SbDehlgb))
+		- Diamond Dust ([LPDU [raidplan]](https://raidplan.io/plan/NzZWtqr5SbDehlgb), [LPDU [Video Guide]](https://youtu.be/Sgz3nNpirCE&t=615))
 - Dragonsong's Reprise (Ultimate) (DSR)
 	- Phase 2
 		- Meteors (Second half of Sanctity of the Ward) ([LPDU](https://ff14.toolboxgaming.space/?id=454690614288171&preview=1#20))
@@ -54,14 +54,14 @@ Fights listed here are finished and available in the simulator.
 - Cloud of Darkness (Chaotic) (CODC)
 	- Phase 1 (The Cloud of Darkness)
 		- Grim Embrace ([Debuff](https://raidplan.io/plan/NyvLFhk2tDTGzE43))
-- Omega: Alphascape
+- Omega: Alphascape (Blue Mage)
 	- Alphascape 4.0 (Savage) (O12S)
 		- Phase 2 (The Final Omega)
-			- Hello World 1 ([BLU](https://www.icy-veins.com/ffxiv/blue-mage-omega-raid-guide))
-			- Hello World 2 ([BLU](https://www.icy-veins.com/ffxiv/blue-mage-omega-raid-guide))
-- Alexander: Midas
+			- Hello World 1 ([Blue Academy](https://mage.blue/savage-guides/omega/o12s/))
+			- Hello World 2 ([Blue Academy](https://mage.blue/savage-guides/omega/o12s/))
+- Alexander: Midas (Blue Mage)
 	- Alexander - The Burden of the Son (Savage) (A8S)
-		- Gavel ([BLU](https://www.icy-veins.com/ffxiv/blue-mage-brute-justice-raid-guide))
+		- Gavel ([Blue Academy](https://mage.blue/savage-guides/alexander/a8s/))
 
 # In development fights
 
@@ -75,18 +75,18 @@ Fights listed here have unfinished timelines that don't work yet, the bots are n
 
 Fights listed here are not being worked on yet and are not in anyway guranteed to be added, but we have a special interest in working on them eventually, meaning they are actively being considered and on the backlog.
 
-- Eden's Promise
+- Eden's Promise (Blue Mage)
 	- Eden's Promise: Eternity (Savage)
-		- Phase 2 (Oracle of Darkness)
-			- Basic Relativity ([BLU](https://raidplan.io/plan/pAyRt1XQ3_9CyWLQ))
-			- Advanced Relativity ([BLU](https://raidplan.io/plan/M1vkew11UuLlSvcn))
-- Omega: Alphascape
+		- Phase 2 (Oracle of Darkness) ([Blue Academy](https://mage.blue/savage-guides/eden/e12s-p2/))
+			- Basic Relativity ([Blue Academy](https://raidplan.io/plan/pAyRt1XQ3_9CyWLQ))
+			- Advanced Relativity ([Blue Academy](https://raidplan.io/plan/M1vkew11UuLlSvcn))
+- Omega: Alphascape (Blue Mage)
 	- Alphascape 4.0 (Savage) (O12S)
 		- Phase 2 (The Final Omega)
-			- Patch ([BLU](https://www.icy-veins.com/ffxiv/blue-mage-omega-raid-guide))
-- Alexander: The Creator
+			- Patch ([Blue Academy](https://mage.blue/savage-guides/omega/o12s/))
+- Alexander: The Creator (Blue Mage)
 	- Alexander - The Soul of the Creator (Savage) (A12S)
-		- Temporal Stasis ([BLU](https://www.icy-veins.com/ffxiv/blue-mage-alexander-prime-raid-guide))
+		- Temporal Stasis ([Blue Academy](https://mage.blue/savage-guides/alexander/a12s/))
 - The Epic of Alexander (Ultimate) (TEA)
 	- Phase 4 (Perfect Alexander)
 		- The Final Word
@@ -106,16 +106,13 @@ Fights listed here are not being worked on yet and are not in anyway guranteed t
 
 (These ones are not guranteed and more of a MAYBE, because [another sim with bots](https://github.com/WCGH/FRU-Sim) already exists and [XIVSim](https://www.xivsim.com/game/) has support for them. Or they might not be that useful in my opinion.)
 
-- AAC Cruiserweight Tier
-	- AAC Cruiserweight M4 (Savage) (M8S)
-		- Millenial Decay ([Toxic](https://raidplan.io/plan/0YycPJM_3KLD6L1H))
 - Futures Rewritten (Ultimate) (FRU)
 	- Phase 1 (Fatebreaker)
-		- Fall of Faith ([Early LPDU](https://raidplan.io/plan/V0swEBYmpTP22HnK))
+		- Fall of Faith ([LPDU](https://raidplan.io/plan/VDACL8AfJQ485AxD))
 	- Phase 2 (Usurper of Frost)
-		- Light Rampant ([Early LPDU](https://raidplan.io/plan/FG4cE9SQY4h5ryOT))
+		- Light Rampant ([LPDU](https://raidplan.io/plan/VI5eMECB1_yN4u8G))
 	- Phase 3 (Oracle of Darkness)
-		- Ultimate Relativity ([Early LPDU](https://docs.google.com/presentation/d/1gvAR5l6ZaKIR1DAgs9N-5mgNY28ii_jLZJDQvTk1iMU))
+		- Ultimate Relativity ([LPDU](https://docs.google.com/presentation/d/1gvAR5l6ZaKIR1DAgs9N-5mgNY28ii_jLZJDQvTk1iMU))
 - Dragonsong's Reprise (Ultimate) (DSR)
 	- Anything that does not have a proper [solo simulator by WCGH](https://github.com/WCGH/Dragonsong-Sim) yet. Suggestions and requests are welcome.
 - The Omega Protocol (Ultimate) (TOP)
