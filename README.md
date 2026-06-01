@@ -6,12 +6,13 @@ This program is completely separate from the game and does not directly interact
 
 This simulator mainly focuses on battles, mechanics and fights, which are missing from other simulators, do not have bot support available anywhere else, are old/badly made or sometimes simply do not exist at all yet, such as older ultimates, older savages, "easier" fights not worth a sim by others, side battle content, bozja duels or blue mage raids.
 
-If you want to keep up with development, have any questions or want to contribute yourself, best place to do all of that is the discord server. You can also follow my personal socials for occasional updates or other misc content possibly related to this program or FFXIV in general.
+If you want to keep up with development, have any questions or want to contribute yourself, best place to do all of that is the discord server. You can also follow my personal socials for occasional updates or other misc content possibly related to this program or FFXIV in general. If you also want to donate to the project you can do so through Itch or Kofi.
 
 [![Discord](https://img.shields.io/discord/1387796604232269965?color=5865F2&label=discord&logo=discord&logoColor=white)](https://discord.gg/wepQtPfC6D)
 [![Static Badge](https://img.shields.io/badge/twitter-follow-black?logo=x&logoColor=white)](https://twitter.com/susyy_bakaa)
 [![Static Badge](https://img.shields.io/badge/bluesky-follow-blue?logo=bluesky&logoColor=white)](https://bsky.app/profile/susybaka.dev)
 [![Static Badge](https://img.shields.io/badge/youtube-subscribe-red?logo=youtube&logoColor=white)](https://www.youtube.com/@no00ob)
+[![Static Badge](https://shields.io/badge/ko--fi-donate-ff5f5f?logo=ko-fi&style=for-the-badgeKo-fi&logoColor=white)](https://ko-fi.com/susybakaa)
 
 <b>NOTE:</b> This simulator is usually mainly being built with raiding strats from the European data center. Reason being that I am from EU and only actively raid in that region. I do not have the personal time to maintain and add every single region's strategy to all fights most of the time, however going forward with all new timelines in 2026, I will try to make all of them modular and easily extendable if anyone else wants to contribute other strats. Everyone is welcome to try and I encourage you to give it a go! For help with this, I recommend you join our discord and contact us there for additional information regarding that.
 
