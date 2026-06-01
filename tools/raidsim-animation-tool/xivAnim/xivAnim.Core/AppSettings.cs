@@ -5,5 +5,8 @@
         public string ffxivGamePath { get; set; } = "";
         public string multiAssistPath { get; set; } = "";
         public string blenderPath { get; set; } = "";
+
+        public List<string> RecentJobs { get; set; } = new();
+        public bool debugMode { get; set; } = false;
     }
 }

@@ -257,12 +257,21 @@ namespace dev.susy_baka.xivAnim.Core
             // normalize *once*
             string normalizedOriginalPath = originalFilePath.Replace('\\', '/');
 
-            for (int i = 0; i < appendNamesForPaths.Count; i++)
+            foreach (var pattern in appendNamesForPaths)
             {
-                if (Regex.IsMatch(normalizedOriginalPath, appendNamesForPaths[i], RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+                if (string.IsNullOrWhiteSpace(pattern))
+                    continue;
+
+                Log.Debug($"[BuildOutputFileName] '{normalizedOriginalPath}' trying to match pattern '{pattern}'...");
+
+                if (Regex.IsMatch(normalizedOriginalPath, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+                {
+                    Log.Debug($"[BuildOutputFileName] '{normalizedOriginalPath}' matched pattern '{pattern}', using '{originalFileName}_{fileName}{extension}'");
                     return $"{originalFileName}_{fileName}{extension}";
+                }
             }
 
+            Log.Debug($"[BuildOutputFileName] '{normalizedOriginalPath}' matched no pattern, using '{fileName}{extension}'");
             return $"{fileName}{extension}";
         }
     }

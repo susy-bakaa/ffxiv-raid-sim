@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Media;
 using System.Text;
 using Eto.Forms;
 using Eto.Drawing;
@@ -34,6 +35,9 @@ namespace dev.susy_baka.xivAnim.EtoGui
         private Button? _btnCancel;
         private Button? _btnDeleteOutput;
         private Button? _btnExit;
+
+        private ButtonMenuItem? _openRecentMenu;
+        public Action<Form>? RequestAttention { get; set; }
 
         public MainForm(AppSettings settings, ModelJob job, string jobPath)
         {
@@ -105,6 +109,9 @@ namespace dev.susy_baka.xivAnim.EtoGui
             var fileOpen = new ButtonMenuItem { Text = Strings.MenuOpen, ToolTip = Strings.TooltipMenuOpen };
             fileOpen.Click += (_, _) => OnOpenJob();
 
+            _openRecentMenu = new ButtonMenuItem { Text = Strings.OpenRecent };
+            RebuildRecentMenu();
+
             var fileSave = new ButtonMenuItem { Text = Strings.MenuSave, ToolTip = Strings.TooltipMenuSave };
             fileSave.Click += (_, _) => SaveJob();
 
@@ -124,7 +131,7 @@ namespace dev.susy_baka.xivAnim.EtoGui
             {
                 Items =
                 {
-                    new ButtonMenuItem { Text = Strings.MenuFile, Items = { fileOpen, fileSave, fileSaveAs, fileExit } },
+                    new ButtonMenuItem { Text = Strings.MenuFile, Items = { fileOpen, _openRecentMenu, fileSave, fileSaveAs, fileExit } },
                     new ButtonMenuItem { Text = Strings.MenuEdit, Items = { editClear, editSettings } }
                 }
             };
@@ -359,6 +366,7 @@ namespace dev.susy_baka.xivAnim.EtoGui
                 SettingsService.Save(_settings);
                 _isDirty = false;
                 Log.Info($"Saved job to {_currentJobPath}");
+                AddRecentJob(_currentJobPath);
             }
         }
 
@@ -375,20 +383,8 @@ namespace dev.susy_baka.xivAnim.EtoGui
                 dlg.Filenames?.Count() > 0 &&
                 !string.IsNullOrEmpty(dlg.FileName))
             {
-                _currentJobPath = dlg.FileName;
-                var job = JobService.LoadJob(_currentJobPath);
-
-                _job.name = job.name;
-                _job.workingDirectory = job.workingDirectory;
-                _job.exportDirectory = job.exportDirectory;
-                _job.modelPaths = job.modelPaths;
-                _job.skeletonGamePath = job.skeletonGamePath;
-                _job.papGamePaths = job.papGamePaths;
-                _job.appendFileNamesForPaths = job.appendFileNamesForPaths;
-
-                SyncJobToUi();
-                _isDirty = false;
-                Log.Info($"Loaded job from {_currentJobPath}");
+                OpenJobFromPath(dlg.FileName);
+                AddRecentJob(dlg.FileName);
             }
         }
 
@@ -445,6 +441,9 @@ namespace dev.susy_baka.xivAnim.EtoGui
 
             Task.Run(() =>
             {
+                bool canceled = false;
+                bool error = false;
+
                 try
                 {
                     var pipeline = new PipelineService(_settings);
@@ -455,16 +454,20 @@ namespace dev.susy_baka.xivAnim.EtoGui
                 }
                 catch (OperationCanceledException)
                 {
+                    canceled = true;
                     Log.Info("Job canceled.");
                     Application.Instance.AsyncInvoke(() => SetStatus(Strings.StatusCancelled));
                 }
                 catch (Exception ex)
                 {
+                    error = true;
                     Log.Error(ex.ToString());
                     Application.Instance.AsyncInvoke(() => SetStatus(Strings.StatusError));
                 }
                 finally
                 {
+                    NotifyJobCompleted(canceled, error);
+
                     Application.Instance.AsyncInvoke(() =>
                     {
                         _isRunning = false;
@@ -587,6 +590,81 @@ namespace dev.susy_baka.xivAnim.EtoGui
             }
         }
 
+        private void OpenJobFromPath(string path)
+        {
+            if (!File.Exists(path))
+            {
+                MessageBox.Show(this, $"File not found:\n{path}", MessageBoxType.Warning);
+                return;
+            }
+
+            _currentJobPath = path;
+            var job = JobService.LoadJob(_currentJobPath);
+
+            _job.name = job.name;
+            _job.workingDirectory = job.workingDirectory;
+            _job.exportDirectory = job.exportDirectory;
+            _job.modelPaths = job.modelPaths;
+            _job.skeletonGamePath = job.skeletonGamePath;
+            _job.papGamePaths = job.papGamePaths;
+            _job.appendFileNamesForPaths = job.appendFileNamesForPaths;
+
+            SyncJobToUi();
+            _isDirty = false;
+
+            Log.Info($"Loaded job from {_currentJobPath}");
+        }
+
+        private void AddRecentJob(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                return;
+
+            var full = Path.GetFullPath(path);
+
+            _settings.RecentJobs ??= new List<string>();
+
+            _settings.RecentJobs.RemoveAll(p =>
+                string.Equals(Path.GetFullPath(p), full, StringComparison.OrdinalIgnoreCase));
+
+            _settings.RecentJobs.Insert(0, full);
+
+            // Keep only last 5
+            if (_settings.RecentJobs.Count > 5)
+                _settings.RecentJobs.RemoveRange(5, _settings.RecentJobs.Count - 5);
+
+            SettingsService.Save(_settings);
+            RebuildRecentMenu();
+        }
+
+        private void RebuildRecentMenu()
+        {
+            if (_openRecentMenu == null)
+                return;
+
+            _openRecentMenu.Items.Clear();
+
+            var recents = _settings.RecentJobs ?? new List<string>();
+            if (recents.Count == 0)
+            {
+                var emptyItem = new ButtonMenuItem { Text = Strings.MenuEmptyRecent, Enabled = false };
+                _openRecentMenu.Items.Add(emptyItem);
+                return;
+            }
+
+            foreach (var path in recents)
+            {
+                var display = Path.GetFileName(path);
+                var item = new ButtonMenuItem
+                {
+                    Text = string.IsNullOrEmpty(display) ? path : display,
+                    ToolTip = path
+                };
+                item.Click += (_, _) => OpenJobFromPath(path);
+                _openRecentMenu.Items.Add(item);
+            }
+        }
+
         // ----------------- Log handling -----------------
 
         private readonly StringBuilder _logBuilder = new();
@@ -653,6 +731,36 @@ namespace dev.susy_baka.xivAnim.EtoGui
         {
             if (_lblStatus != null)
                 _lblStatus.Text = Strings.StatusPrefix + text;
+        }
+
+        private void NotifyJobCompleted(bool canceled, bool error)
+        {
+            // Sound
+            try
+            {
+                if (OperatingSystem.IsWindows())
+                {
+                    if (error)
+                        SystemSounds.Hand.Play();
+                    else if (canceled)
+                        SystemSounds.Exclamation.Play();
+                    else
+                        SystemSounds.Asterisk.Play();
+                }
+                else
+                {
+                    // As a fallback for Linux, this might be a no-op or just a beep.
+                    // You can leave it empty if you don't want anything.
+                    Console.Beep();
+                }
+            }
+            catch { /* ignore sound errors */ }
+
+            // Do not focus the window. Let platform-specific code request attention.
+            Application.Instance.AsyncInvoke(() =>
+            {
+                RequestAttention?.Invoke(this);
+            });
         }
     }
 }

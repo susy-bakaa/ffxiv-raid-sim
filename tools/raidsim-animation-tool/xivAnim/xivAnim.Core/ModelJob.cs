@@ -7,7 +7,9 @@
         public string exportDirectory { get; set; } = "";
         public List<string> modelPaths { get; set; } = new();
         public string skeletonGamePath { get; set; } = "";
+        public string skeletonLocalPath { get; set; } = "";
         public List<string> papGamePaths { get; set; } = new();
+        public List<string> papLocalPaths { get; set; } = new();
         public List<string> appendFileNamesForPaths { get; set; } = new();
     }
 }

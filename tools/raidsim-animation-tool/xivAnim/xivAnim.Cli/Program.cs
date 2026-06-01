@@ -5,10 +5,28 @@ namespace dev.susy_baka.xivAnim.Cli
 {
     public static class Program
     {
+        private static bool debugRun = false;
+
         public static int Main(string[] args)
         {
-            Log.Initialize();
+            if (args != null && args.Length > 0)
+            {
+                for (int i = 0; i < args.Length; i++)
+                {
+                    if (args[i] == "--debug" || args[i] == "-d")
+                    {
+                        debugRun = true;
+                        args = args.Where(arg => arg != "--debug" && arg != "-d").ToArray();
+                        break;
+                    }
+                }
+            }
+
+            Log.Initialize(debugRun);
             Log.MessageLogged += line => Console.WriteLine(line);
+
+            if (args == null)
+                args = Array.Empty<string>();
 
             try
             {
@@ -88,6 +106,7 @@ namespace dev.susy_baka.xivAnim.Cli
         {
             Log.Info("Usage:");
             Log.Info("  xivAnim.exe | Launches the GUI.");
+            Log.Info("  xivAnim.exe -d | --debug | Runs the program in debug mode with verbose logging.");
             Log.Info("  xivAnim.exe -h | --help | Shows this help message.");
             Log.Info("  xivAnim.exe <job.json> | Runs the provided job.");
             Log.Info("  xivAnim.exe -j job.json | Runs the provided job.");
@@ -126,6 +145,7 @@ namespace dev.susy_baka.xivAnim.Cli
                 settings.ffxivGamePath = ffxiv;
                 settings.blenderPath = blender;
                 settings.multiAssistPath = multi;
+                settings.debugMode = debugRun;
                 SettingsService.Save(settings);
                 Log.Info("Configuration saved.");
             }

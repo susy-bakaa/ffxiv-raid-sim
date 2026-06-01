@@ -10,11 +10,13 @@
         public const string MenuFile = "&File";
         public const string MenuEdit = "&Edit";
         public const string MenuOpen = "&Open...";
+        public const string OpenRecent = "Open &Recent";
         public const string MenuSave = "&Save";
         public const string MenuSaveAs = "Save &As...";
         public const string MenuExit = "E&xit";
         public const string MenuClearJob = "&Clear Job";
         public const string MenuSettings = "&Settings...";
+        public const string MenuEmptyRecent = "(No recent jobs)";
 
         // Dialog Titles
         public const string DialogTitleSettings = "Settings";
@@ -46,6 +48,7 @@
         public const string LabelGamePath = "FFXIV Game Path:";
         public const string LabelMultiAssistPath = "MultiAssist Path:";
         public const string LabelBlenderPath = "Blender Path:";
+        public const string LabelDebugMode = "Enable Debug Mode:";
 
         // Tooltips
         public const string TooltipOpenFileBrowser = "Select through file browser";
@@ -69,6 +72,7 @@
         public const string TooltipSettingGamePath = "Full local path to a \"sqpack\" folder of a FFXIV installation. Supports partial game installations. Used for extracting raw game files. \nImportant: Make sure this is the \"FINAL FANTASY XIV Online\\game\\sqpack\" folder that has dat and index files inside it in subfolders.";
         public const string TooltipSettingMultiAssistPath = "Full local path to a MultiAssist executable. Used for automatically extracting raw game .pap animation files into FBX files.";
         public const string TooltipSettingBlenderPath = "Optional: Full local path to a Blender executable. Used for automatically processing and exporting models to .blend and FBX files. \nImportant: Your Blender version must be 4.3 or above and you must have the \"Raidsim Tools\" add-on installed and enabled.";
+        public const string TooltipSettingDebugMode = "Sets the log level to debug.";
 
         // MessageBoxes
         public const string MsgBoxUnsavedRun = "You have unsaved changes. Save before running?";

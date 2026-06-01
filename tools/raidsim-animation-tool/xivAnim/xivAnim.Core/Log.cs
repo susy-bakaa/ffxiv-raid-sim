@@ -5,6 +5,7 @@
         private static readonly object _sync = new();
         private static readonly string _logPath = Path.Combine(AppContext.BaseDirectory, "output.log");
         private static bool _initialized = false;
+        private static bool _debugMode = false;
 
         public static event Action<string>? MessageLogged;
 
@@ -20,13 +21,33 @@
             MessageLogged?.Invoke(line);
         }
 
-        public static void Initialize()
+        public static void Initialize(bool debug)
         {
             if (_initialized)
                 return;
 
-            _initialized = true;
+            _debugMode = debug;
 
+            Initialize();
+        }
+
+        public static void Initialize(AppSettings appSettings)
+        {
+            if (_initialized)
+                return;
+
+            _debugMode = appSettings.debugMode;
+
+            Initialize();
+        }
+
+        private static void Initialize()
+        {
+            if (_initialized)
+                return;
+
+            _initialized = true; 
+            
             if (File.Exists(_logPath))
             {
                 File.Delete(_logPath);
@@ -35,7 +56,13 @@
 
         public static void Info(string message) => Write("INFO", message);
         public static void Error(string message) => Write("ERROR", message);
-        public static void Debug(string message) => Write("DEBUG", message);
+        public static void Debug(string message)
+        {
+            if (_debugMode)
+            {
+                Write("DEBUG", message);
+            }
+        }
         public static void Warning(string message) => Write("WARNING", message);
     }
 }

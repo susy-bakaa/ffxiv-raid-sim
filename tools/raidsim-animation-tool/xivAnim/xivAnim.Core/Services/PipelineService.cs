@@ -19,7 +19,7 @@ namespace dev.susy_baka.xivAnim.Core
             }
 
             gameData = new GameData(settings.ffxivGamePath);
-            Log.Initialize();
+            Log.Initialize(settings);
         }
 
         public void RunJob(string jobPath) => RunJob(jobPath, CancellationToken.None);
@@ -121,7 +121,10 @@ namespace dev.susy_baka.xivAnim.Core
 
             Log.Info($"  Processing {Path.GetFileNameWithoutExtension(skeletonFile)}...");
             
-            job.skeletonGamePath = skeletonFile;
+            job.skeletonLocalPath = skeletonFile;
+
+            job.papLocalPaths = new(job.papGamePaths.Count);
+            job.papLocalPaths.Clear();
 
             for (int i = 0; i < job.papGamePaths.Count; i++)
             {
@@ -129,7 +132,7 @@ namespace dev.susy_baka.xivAnim.Core
 
                 Log.Info($"  Processing {Path.GetFileNameWithoutExtension(papFile)}...");
 
-                job.papGamePaths[i] = papFile;
+                job.papLocalPaths.Add(papFile);
             }
         }
 
@@ -183,13 +186,16 @@ namespace dev.susy_baka.xivAnim.Core
             // Track all exported animations for loop map generation
             exportedAnimations = new List<string>();
 
-            foreach (string papPath in job.papGamePaths)
+            for (int i = 0; i < job.papLocalPaths.Count; i++)
             {
-                var papBase = Path.GetFileNameWithoutExtension(papPath);
+                string papLocalPath = job.papLocalPaths[i];
+                string papGamePath = job.papGamePaths[i];
+
+                var papBase = Path.GetFileNameWithoutExtension(papLocalPath);
 
                 Log.Info($"  Analyzing {papBase} for animation list...");
 
-                var info = Utility.GetPapAnimInfo(settings.multiAssistPath, job.skeletonGamePath, papPath, token);
+                var info = Utility.GetPapAnimInfo(settings.multiAssistPath, job.skeletonLocalPath, papLocalPath, token);
 
                 if (info.AnimCount <= 0)
                 {
@@ -205,7 +211,7 @@ namespace dev.susy_baka.xivAnim.Core
                         ? info.Names[index]
                         : $"idx{index:D3}";
 
-                    string fileName = Utility.BuildOutputFileName(papPath, $"{animName}.fbx", job.appendFileNamesForPaths);
+                    string fileName = Utility.BuildOutputFileName(papGamePath, $"{animName}.fbx", job.appendFileNamesForPaths);
                     string fbxPath = Path.Combine(fbxDir, fileName);
 
                     fbxPath = Path.GetFullPath(fbxPath);
@@ -217,8 +223,8 @@ namespace dev.susy_baka.xivAnim.Core
                     var args = new List<string>
                     {
                         "extract",
-                        "-s", job.skeletonGamePath,
-                        "-p", papPath,
+                        "-s", job.skeletonLocalPath,
+                        "-p", papLocalPath,
                         "-i", index.ToString(),
                         "-t", "fbx",
                         "-o", fbxPath
@@ -286,7 +292,7 @@ namespace dev.susy_baka.xivAnim.Core
             }
             else
             {
-                Log.Info($"  Blender automation completed successfully!");
+                Log.Info($"  Blender automation completed! Check Blender logs for more information.");
             }
         }
 

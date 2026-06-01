@@ -6,23 +6,35 @@ namespace dev.susy_baka.xivAnim.Gui.Windows
 {
     public static class Program
     {
-        [STAThread]
-        public static void Main(string[] args)
+    [STAThread]
+    public static void Main(string[] args)
+    {
+        Application app;
+
+        try
         {
-            Application app;
-
-            try
-            {
-                app = new Application(new Eto.Wpf.Platform()); // Use Eto.Wpf.Platform for WPF backend on Windows
-            }
-            catch (Exception ex)
-            {
-                Log.Error("Failed to initialize Eto.Forms application:");
-                Log.Error(ex.ToString());
-                return;
-            }
-
-            dev.susy_baka.xivAnim.EtoGui.Main.StartEto(app);
+            app = new Application(new Eto.Wpf.Platform());
         }
+        catch (Exception ex)
+        {
+            Log.Error("Failed to initialize Eto.Forms application:");
+            Log.Error(ex.ToString());
+            return;
+        }
+
+        var form = dev.susy_baka.xivAnim.EtoGui.Main.CreateMainForm();
+
+        form.RequestAttention = f =>
+        {
+            WindowsAttention.FlashUntilFocused(f);
+        };
+
+        form.GotFocus += (_, _) =>
+        {
+            WindowsAttention.StopFlashing(form);
+        };
+
+        app.Run(form);
+    }
     }
 }

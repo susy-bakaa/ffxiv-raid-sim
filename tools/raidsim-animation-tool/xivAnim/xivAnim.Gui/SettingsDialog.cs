@@ -14,6 +14,7 @@ namespace dev.susy_baka.xivAnim.EtoGui
         private readonly TextBox _txtFfxivPath;
         private readonly TextBox _txtBlenderPath;
         private readonly TextBox _txtMultiAssistPath;
+        private readonly CheckBox _toggleDebugMode;
 
         public SettingsDialog(AppSettings settings)
         {
@@ -26,6 +27,7 @@ namespace dev.susy_baka.xivAnim.EtoGui
             _txtFfxivPath = new TextBox { Text = _settings.ffxivGamePath };
             _txtBlenderPath = new TextBox { Text = _settings.blenderPath };
             _txtMultiAssistPath = new TextBox { Text = _settings.multiAssistPath };
+            _toggleDebugMode = new CheckBox { Text = string.Empty, Checked = _settings.debugMode };
 
             // subscribe to change events
             _txtFfxivPath.TextChanged += MarkDirty;
@@ -75,6 +77,22 @@ namespace dev.susy_baka.xivAnim.EtoGui
                         new TableCell(CreatePathWithBrowse(_txtBlenderPath, OnBrowseBlender), true)
                     ),
                     new TableRow(
+                        new Label
+                        {
+                            Text = Strings.LabelDebugMode,
+                            VerticalAlignment = VerticalAlignment.Center,
+                            Width = 140,
+                            ToolTip = Strings.TooltipSettingDebugMode
+                        },
+                        new StackLayout
+                        {
+                            Orientation = Orientation.Horizontal,
+                            HorizontalContentAlignment = HorizontalAlignment.Right,
+                            Spacing = 5,
+                            Items = { _toggleDebugMode }
+                        }
+                    ),
+                    new TableRow(
                         null,
                         new StackLayout
                         {
@@ -93,6 +111,7 @@ namespace dev.susy_baka.xivAnim.EtoGui
             _settings.ffxivGamePath = _txtFfxivPath.Text ?? "";
             _settings.blenderPath = _txtBlenderPath.Text ?? "";
             _settings.multiAssistPath = _txtMultiAssistPath.Text ?? "";
+            _settings.debugMode = _toggleDebugMode.Checked == true;
             SettingsService.Save(_settings);
             _isDirty = false;
         }
