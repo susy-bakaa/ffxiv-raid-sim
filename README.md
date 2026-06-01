@@ -106,6 +106,8 @@ Fights listed here are not being worked on yet and are not in anyway guranteed t
 
 (These ones are not guranteed and more of a MAYBE, because [another sim with bots](https://github.com/WCGH/FRU-Sim) already exists and [XIVSim](https://www.xivsim.com/game/) has support for them. Or they might not be that useful in my opinion.)
 
+- Dancing Mad (Ultimate) (UMAD)
+	- Anything that does not get a proper [solo simulator by Waju](https://discord.gg/P9adFHADrX). Suggestions and requests are welcome.
 - Futures Rewritten (Ultimate) (FRU)
 	- Phase 1 (Fatebreaker)
 		- Fall of Faith ([LPDU](https://raidplan.io/plan/VDACL8AfJQ485AxD))
@@ -114,7 +116,7 @@ Fights listed here are not being worked on yet and are not in anyway guranteed t
 	- Phase 3 (Oracle of Darkness)
 		- Ultimate Relativity ([LPDU](https://docs.google.com/presentation/d/1gvAR5l6ZaKIR1DAgs9N-5mgNY28ii_jLZJDQvTk1iMU))
 - Dragonsong's Reprise (Ultimate) (DSR)
-	- Anything that does not have a proper [solo simulator by WCGH](https://github.com/WCGH/Dragonsong-Sim) yet. Suggestions and requests are welcome.
+	- Anything that does not have a proper [solo simulator by Waju](https://github.com/WCGH/Dragonsong-Sim) yet. Suggestions and requests are welcome.
 - The Omega Protocol (Ultimate) (TOP)
 	- Anything that does not have a proper solo simulator by [XIVSim](https://www.xivsim.com/game/) or other sources. Suggestions and requests are welcome.
 

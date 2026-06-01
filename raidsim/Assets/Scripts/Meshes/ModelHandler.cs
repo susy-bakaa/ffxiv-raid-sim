@@ -23,6 +23,15 @@ namespace dev.susybaka.raidsim.Animations
         private AnimatorController activeAnimatorController;
         private Dictionary<string, int> hashedParameters = new Dictionary<string, int>();
 
+#if UNITY_EDITOR
+        [SerializeField, Min(0)] private int modelIndex = 0;
+        [NaughtyAttributes.Button]
+        private void EditorLoadModel()
+        {
+            SwitchActiveCharacterModel(modelIndex);
+        }
+#endif
+
         private void Awake()
         {
             transform.TryGetComponentInParents(out characterState);
