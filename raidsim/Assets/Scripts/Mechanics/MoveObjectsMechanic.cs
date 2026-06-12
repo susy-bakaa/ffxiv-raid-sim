@@ -32,7 +32,7 @@ namespace dev.susybaka.raidsim.Mechanics
         public bool allowDynamicTargets = false;
         public bool randomizeDestinations = false;
         public bool assignStatusEffectsToRandomizedTargets = false;
-        [ShowIf(nameof(assignStatusEffectsToRandomizedTargets))] public List<StatusEffectInfo> effectsToAssign;
+        [ShowIf(nameof(assignStatusEffectsToRandomizedTargets))] public List<StatusEffectContext> effectsToAssign;
         public Vector3 destinationPosition;
         public bool rotate = false;
         [ShowIf(nameof(rotate))] public Vector3 destinationRotation;
@@ -197,10 +197,10 @@ namespace dev.susybaka.raidsim.Mechanics
         {
             List<Transform> destinations = new List<Transform>(destinationsList);
 
-            List<StatusEffectInfo> shuffledEffects = null;
+            List<StatusEffectContext> shuffledEffects = null;
             if (assignStatusEffectsToRandomizedTargets && effectsToAssign != null && effectsToAssign.Count == destinations.Count)
             {
-                shuffledEffects = new List<StatusEffectInfo>(effectsToAssign);
+                shuffledEffects = new List<StatusEffectContext>(effectsToAssign);
             }
 
             if (randomizeDestinations && multipleDestinations)
@@ -253,7 +253,7 @@ namespace dev.susybaka.raidsim.Mechanics
                 {
                     if (multipleDestinations && assignStatusEffectsToRandomizedTargets && shuffledEffects != null)
                     {
-                        StatusEffectInfo effectToAssign = shuffledEffects[i];
+                        StatusEffectContext effectToAssign = shuffledEffects[i];
                         if (effectToAssign.data != null && target.TryGetComponentInChildren(true, out CharacterState c))
                         {
                             c.AddEffect(effectToAssign.data, c, false, effectToAssign.tag, effectToAssign.stacks);

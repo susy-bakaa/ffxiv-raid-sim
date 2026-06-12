@@ -25,9 +25,10 @@ namespace dev.susybaka.raidsim.Mechanics
         public CharacterActionData data;
 
         public string damageName = string.Empty;
+        public bool active = true;
         public bool inverted = false;
         public bool isDonut = false;
-        [ShowIf("isDonut")] public float innerRadius = 0f;
+        [ShowIf(nameof(isDonut))] public float innerRadius = 0f;
         public bool log = false;
         public CharacterState owner;
         public bool autoAssignOwner = false;
@@ -40,7 +41,7 @@ namespace dev.susybaka.raidsim.Mechanics
             new Keyframe(0f, 1f),
             new Keyframe(1f, 1f)
         );
-        public long enmity = 0;
+        [Min(0)] public long enmity = 0;
         public bool increaseEnmity = false;
         public bool topEnmity = false;
         public bool initializeOnStart = true;
@@ -58,16 +59,18 @@ namespace dev.susybaka.raidsim.Mechanics
         public bool updateLive = false;
         public bool shared = false;
         public bool enumeration = false;
+        [Tooltip("Limits the damage trigger to only hit a maximum number of players equal to players required.")] 
+        public bool limitedToPlayersRequired = false;
         public bool requireOwner = false;
         public bool resetOnReload = false;
         public bool resetOwner = false;
-        public float visualDelay = 0f;
-        public float triggerDelay = 0f;
-        public float triggerDelayVariance = 0f;
-        public float damageApplicationDelay = 0.25f;
-        public float cooldown = 10f;
-        public int playersRequired = 0;
-        public float damageMultiplierPerMissingPlayer = 1f;
+        [Min(0f)] public float visualDelay = 0f;
+        [Min(0f)] public float triggerDelay = 0f;
+        [Min(0f)] public float triggerDelayVariance = 0f;
+        [Min(0f)] public float damageApplicationDelay = 0.25f;
+        [Min(0f)] public float cooldown = 10f;
+        [Min(0)] public int playersRequired = 0;
+        [Min(1f)] public float damageMultiplierPerMissingPlayer = 1f;
         public List<CharacterState> currentPlayers = new List<CharacterState>();
         public List<StatusEffectData> appliedEffects = new List<StatusEffectData>();
         public List<StatusEffectData> appliedEffectsOnFail = new List<StatusEffectData>();
@@ -89,7 +92,6 @@ namespace dev.susybaka.raidsim.Mechanics
         private readonly List<CharacterState> _currentNonGhostCharacters = new List<CharacterState>();
 
 #if UNITY_EDITOR
-        public int dummy = 0;
         [Button("Initialize")]
         public void InitializeButton()
         {
@@ -132,7 +134,7 @@ namespace dev.susybaka.raidsim.Mechanics
                 {
                     if (innerRadius > boxCollider.size.x / 2f || innerRadius > boxCollider.size.z / 2f)
                     {
-                        Debug.LogWarning($"[DamageTrigger ({gameObject.name})] Inner radius ({innerRadius}) is larger than the BoxCollider size. Adjusting to fit within the collider.");
+                        Debug.LogWarning($"[DamageTrigger ({gameObject.name})] Inner radius ({innerRadius}) is larger than the BoxCollider size. Adjusting to fit within the collider.", gameObject);
                         innerRadius = Mathf.Min(boxCollider.size.x / 2f, boxCollider.size.z / 2f) - 0.01f;
                     }
                 }
@@ -140,7 +142,7 @@ namespace dev.susybaka.raidsim.Mechanics
                 {
                     if (innerRadius > sphereCollider.radius)
                     {
-                        Debug.LogWarning($"[DamageTrigger ({gameObject.name})] Inner radius ({innerRadius}) is larger than the SphereCollider radius. Adjusting to fit within the collider.");
+                        Debug.LogWarning($"[DamageTrigger ({gameObject.name})] Inner radius ({innerRadius}) is larger than the SphereCollider radius. Adjusting to fit within the collider.", gameObject);
                         innerRadius = sphereCollider.radius - 0.01f;
                     }
                 }
@@ -267,6 +269,11 @@ namespace dev.susybaka.raidsim.Mechanics
             this.playerActivated = playerActivated;
             if (!playerActivated && !inProgress)
                 StartDamageTrigger();
+        }
+
+        public void SetState(bool active)
+        {
+            this.active = active;
         }
 
         public void OnTriggerEnter(Collider other)
@@ -598,15 +605,21 @@ namespace dev.susybaka.raidsim.Mechanics
 
         private void StartDamageTrigger()
         {
+            if (!active)
+                return;
+
             if (log)
-                Debug.Log($"[DamageTrigger ({gameObject.name})] StartDamageTrigger (inProgress {inProgress})");
+                Debug.Log($"[DamageTrigger ({gameObject.name})] StartDamageTrigger (inProgress {inProgress})", gameObject);
+
+            CharacterState[] targets = (limitedToPlayersRequired && playersRequired > 0) ? currentPlayers.Take(playersRequired).ToArray() : currentPlayers.ToArray();
+
             if (damageApplicationDelay > 0)
             {
-                StartCoroutine(IE_StartDamageTrigger(currentPlayers.ToArray()));
+                StartCoroutine(IE_StartDamageTrigger(targets));
             }
             else
             {
-                TriggerDamage(currentPlayers.ToArray());
+                TriggerDamage(targets); // currentPlayers.ToArray()
                 if (cooldown > 0f)
                 {
                     inProgress = true;
@@ -620,8 +633,12 @@ namespace dev.susybaka.raidsim.Mechanics
         {
             inProgress = true;
             yield return new WaitForSeconds(damageApplicationDelay);
+
+            if (!active)
+                StopCoroutine(IE_StartDamageTrigger(players));
+
             if (log)
-                Debug.Log($"[DamageTrigger ({gameObject.name})] IE_StartDamageTrigger (inProgress {inProgress})");
+                Debug.Log($"[DamageTrigger ({gameObject.name})] IE_StartDamageTrigger (inProgress {inProgress})", gameObject);
             if (ignoreSnapshot)
             {
                 List<CharacterState> candidates = new List<CharacterState>();
@@ -651,16 +668,16 @@ namespace dev.susybaka.raidsim.Mechanics
 
         public void TriggerDamage(CharacterState[] players)
         {
-            if (!initialized)
+            if (!initialized || !active)
                 return;
 
             if (log)
-                Debug.Log($"[DamageTrigger ({gameObject.name})] TriggerDamage (inProgress {inProgress}, players {players.Length})");
+                Debug.Log($"[DamageTrigger ({gameObject.name})] TriggerDamage (inProgress {inProgress}, players {players.Length})", gameObject);
 
             foreach (CharacterState player in players)
             {
                 if (log)
-                    Debug.Log($"[DamageTrigger ({gameObject.name})] --> player {player.gameObject.name}");
+                    Debug.Log($"[DamageTrigger ({gameObject.name})] --> player {player.gameObject.name}", gameObject);
             }
 
             string newName = damage.name;

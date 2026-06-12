@@ -12,12 +12,12 @@ using dev.susybaka.raidsim.Targeting;
 using dev.susybaka.raidsim.UI;
 using dev.susybaka.Shared;
 using dev.susybaka.Shared.Audio;
-using NaughtyAttributes;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using static System.Collections.Specialized.BitVector32;
 using static dev.susybaka.raidsim.Actions.CharacterAction;
 using static dev.susybaka.raidsim.Core.GlobalData;
 
@@ -57,12 +57,12 @@ namespace dev.susybaka.raidsim.Actions
 
         [Header("Personal - Cast Bar")]
         public bool useCastBar;
-        [ShowIf(nameof(useCastBar))] public Slider castBar;
-        [ShowIf(nameof(useCastBar))] public TextMeshProUGUI castNameText;
-        [ShowIf(nameof(useCastBar))] public TextMeshProUGUI castLengthText;
-        [ShowIf(nameof(useCastBar))] public CanvasGroup interruptText;
-        [ShowIf(nameof(useCastBar))] public HudElement castBarElement;
-        
+        public Slider castBar; // [ShowIf(nameof(useCastBar))]
+        public TextMeshProUGUI castNameText; // [ShowIf(nameof(useCastBar))]
+        public TextMeshProUGUI castLengthText; // [ShowIf(nameof(useCastBar))]
+        public CanvasGroup interruptText; // [ShowIf(nameof(useCastBar))]
+        public HudElement castBarElement; // [ShowIf(nameof(useCastBar))]
+
         [Header("Personal - Speech")]
         public CanvasGroup speechBubbleGroup;
         public float speechBubbleDuration = 2f;
@@ -71,10 +71,10 @@ namespace dev.susybaka.raidsim.Actions
 
         [Header("Party")]
         public bool usePartyCastBar;
-        [ShowIf(nameof(usePartyCastBar))] public Slider castBarParty;
-        [ShowIf(nameof(usePartyCastBar))] public TextMeshProUGUI castNameTextParty;
-        [ShowIf(nameof(usePartyCastBar))] public bool hideNameWhenCasting = false;
-        [ShowIf(nameof(usePartyCastBar))] public bool showCastTargetLetter = true;
+        public Slider castBarParty; // [ShowIf(nameof(usePartyCastBar))] 
+        public TextMeshProUGUI castNameTextParty; // [ShowIf(nameof(usePartyCastBar))] 
+        public bool hideNameWhenCasting = false; // [ShowIf(nameof(usePartyCastBar))] 
+        public bool showCastTargetLetter = true; // [ShowIf(nameof(usePartyCastBar))] 
 
         private CanvasGroup castBarGroupParty;
         private CanvasGroup castBarGroup;
@@ -91,12 +91,12 @@ namespace dev.susybaka.raidsim.Actions
 #if UNITY_EDITOR
         [Header("Editor")]
         public CharacterAction actionToPerform;
-        [Button("Perform Action")]
+        [NaughtyAttributes.Button("Perform Action"), ContextMenu("Perform Action")]
         public void PerformDebugCharacterAction()
         {
             PerformAction(actionToPerform);
         }
-        [Button("Reset All Actions")]
+        [NaughtyAttributes.Button("Reset All Actions"), ContextMenu("Reset All Actions")]
         public void ResetAllActions()
         {
             ResetController();
@@ -608,10 +608,38 @@ namespace dev.susybaka.raidsim.Actions
             if (Time.timeScale <= 0f)
                 return false;
 
+            // For auto actions we want to ALWAYS use the override resolver if it's available, because stuff like auto attacks are not directly executed by the player
+            // and we need to be able to execute the RIGHT auto attack depending on the current role or other parameters.
+            if (actionRegistry != null && overrideResolver != null)
+            {
+                CharacterAction resolvedAction = actionRegistry.GetById(overrideResolver.ResolveActionId(autoAction.ActionId, ActionResolveMode.Execution));
+                //Debug.Log($"Resolving auto action with ID {autoAction.ActionId} using override resolver in execution mode.");
+                // Only set the autoAction to the resolved action if the resolver actually returns a valid action, otherwise we might end up with no auto attack at all
+                if (resolvedAction != null)
+                    autoAction = resolvedAction;
+                //Debug.Log($"Auto action resolved to {(autoAction != null ? autoAction.Data.actionName : "Null")} with ID {(autoAction != null ? autoAction.ActionId : "Unknown")}.");
+            }
+
             if (autoAction == null)
                 return false;
 
             if (autoAction.unavailable)
+                return false;
+
+            // For now don't filter auto action type as it's required for few debuffs and mechanics and since I think in the game,
+            // it is also often allowed even if other actions are not and being restricted by debuffs.
+            // ---
+            if (autoAction.Data.actionType == CharacterActionData.ActionType.Weaponskill && characterState.pacificied.value)
+                return false;
+
+            if (autoAction.Data.actionType == CharacterActionData.ActionType.Spell && characterState.silenced.value)
+                return false;
+
+            if (autoAction.Data.actionType == CharacterActionData.ActionType.Ability && characterState.amnesia.value)
+                return false;
+            // ---
+
+            if (characterState.stunned.value)
                 return false;
 
             if (lockActionsWhenCasting && isCasting)
@@ -942,6 +970,18 @@ namespace dev.susybaka.raidsim.Actions
                 return;
 
             if (action.unavailable)
+                return;
+
+            if (action.Data.actionType == CharacterActionData.ActionType.Weaponskill && characterState.pacificied.value)
+                return;
+
+            if (action.Data.actionType == CharacterActionData.ActionType.Spell && characterState.silenced.value)
+                return;
+
+            if (action.Data.actionType == CharacterActionData.ActionType.Ability && characterState.amnesia.value)
+                return;
+
+            if (characterState.stunned.value)
                 return;
 
             //Debug.Log($"[ActionController ({gameObject.name})] Action {action.Data.actionName} passed 1. checks");

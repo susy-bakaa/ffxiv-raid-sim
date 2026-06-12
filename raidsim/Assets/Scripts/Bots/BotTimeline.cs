@@ -337,11 +337,11 @@ namespace dev.susybaka.raidsim.Bots
             public Transform faceAway;
             public float waitForRotation;
             public TargetNode target;
-            public StatusEffectInfo targetStatusEffectHolder;
+            public StatusEffectContext targetStatusEffectHolder;
             public BotEventUnityEvent onEvent;
             public int index; // used for debugging purposes, not saved in the inspector
 
-            public BotEvent(string name, int index, Transform node, bool dynamic, float waitAtNode, float randomWaitVariance, bool teleportAfterCloseEnough, CharacterActionData action, string actionId, bool unrestrictedAction, float waitForAction, Vector3 rotation, Transform faceTowards, Transform faceAway, float waitForRotation, TargetNode cycleTarget, StatusEffectInfo targetStatusEffectHolder, BotEventUnityEvent onEvent)
+            public BotEvent(string name, int index, Transform node, bool dynamic, float waitAtNode, float randomWaitVariance, bool teleportAfterCloseEnough, CharacterActionData action, string actionId, bool unrestrictedAction, float waitForAction, Vector3 rotation, Transform faceTowards, Transform faceAway, float waitForRotation, TargetNode cycleTarget, StatusEffectContext targetStatusEffectHolder, BotEventUnityEvent onEvent)
             {
                 this.name = name;
                 this.node = node;

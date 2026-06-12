@@ -26,7 +26,7 @@ namespace dev.susybaka.raidsim.Mechanics
         public bool skipSelf = false;
         public TargetingType m_type = TargetingType.None;
         [HideIf(nameof(_hideAmountOfTargets))] public int amountOfTargets = 1;
-        [ShowIf(nameof(m_type), TargetingType.StatusEffect)] public StatusEffectInfo effect;
+        [ShowIf(nameof(m_type), TargetingType.StatusEffect)] public StatusEffectContext effect;
         [ShowIf(nameof(m_type), TargetingType.Role)] public List<RoleSelection> availableRoles = new List<RoleSelection>();
         [ShowIf(nameof(m_type), TargetingType.Role)] public bool pickRandomSubList = false;
         [ShowIf(nameof(m_type), TargetingType.Role)] public bool pickEquallyFromAllSubLists = false;

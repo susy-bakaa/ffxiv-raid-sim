@@ -523,7 +523,7 @@ namespace dev.susybaka.Shared
             return false;
         }
 
-        public static bool ContainsInfoPair(this IEnumerable<StatusEffectInfoArray> effectPairs, StatusEffectInfoArray effectPair)
+        public static bool ContainsInfoPair(this IEnumerable<StatusEffectContextArray> effectPairs, StatusEffectContextArray effectPair)
         {
             foreach (var ep in effectPairs)
             {
@@ -541,7 +541,23 @@ namespace dev.susybaka.Shared
             return false;
         }
 
-        public static void RemoveInfoPair(this List<StatusEffectInfoArray> effectPairs, StatusEffectInfoArray effectPair)
+        public static bool ContainsInfoPair(this IEnumerable<StatusEffectContextArrayRandom> randomEffectPairs, StatusEffectContextArrayRandom randomEffectPair)
+        {
+            foreach (var rep in randomEffectPairs)
+            {
+                for (int i = 0; i < randomEffectPair.effectArrays.Length; i++)
+                {
+                    if (rep.effectArrays.ContainsInfoPair(randomEffectPair.effectArrays[i]) && rep.name == randomEffectPair.name && rep.random == randomEffectPair.random)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public static void RemoveInfoPair(this List<StatusEffectContextArray> effectPairs, StatusEffectContextArray effectPair)
         {
             foreach (var ep in effectPairs)
             {
@@ -554,6 +570,21 @@ namespace dev.susybaka.Shared
                             effectPairs.Remove(ep);
                             return;
                         }
+                    }
+                }
+            }
+        }
+
+        public static void RemoveInfoPair(this List<StatusEffectContextArrayRandom> randomEffectPairs, StatusEffectContextArrayRandom randomEffectPair)
+        {
+            foreach (var rep in randomEffectPairs)
+            {
+                for (int i = 0; i < randomEffectPair.effectArrays.Length; i++)
+                {
+                    if (rep.effectArrays.ContainsInfoPair(randomEffectPair.effectArrays[i]) && rep.name == randomEffectPair.name && rep.random == randomEffectPair.random)
+                    {
+                        randomEffectPairs.Remove(rep);
+                        return;
                     }
                 }
             }

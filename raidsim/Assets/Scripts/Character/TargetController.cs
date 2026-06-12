@@ -14,7 +14,6 @@ using dev.susybaka.Shared;
 using dev.susybaka.Shared.Attributes;
 using dev.susybaka.Shared.Audio;
 using dev.susybaka.Shared.UserInterface;
-using NaughtyAttributes;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -26,14 +25,15 @@ namespace dev.susybaka.raidsim.Targeting
     {
         public enum TargetType { nearest, sideToSide, enmity, random }
 
-        UserInput m_input;
+        UserInput input;
         Camera m_camera;
-        PauseMenu m_pauseMenu;
-        ConfigMenu m_configMenu;
+        PauseMenu pauseMenu;
+        ConfigMenu configMenu;
+        CharacterState state;
 
-        CharacterState m_characterState;
-        ActionController m_actionController;
-        TargetController m_targetController;
+        CharacterState target_characterState;
+        ActionController target_actionController;
+        TargetController target_targetController;
 
         public bool log = false;
         public TargetNode self;
@@ -69,27 +69,27 @@ namespace dev.susybaka.raidsim.Targeting
 
         [Header("User Interface")]
         public bool useTargetUserInterface = false;
-        [ShowIf(nameof(useTargetUserInterface))] public float fadeDuration = 0.25f;
-        [ShowIf(nameof(useTargetUserInterface))] public bool showTargetLevel = false;
-        [ShowIf(nameof(useTargetUserInterface))] public bool showTargetLetter = true;
-        [ShowIf(nameof(useTargetUserInterface))] public CanvasGroup targetInfo;
-        [ShowIf(nameof(useTargetUserInterface))] public TextMeshProUGUI targetName;
-        [ShowIf(nameof(useTargetUserInterface))] public Slider targetHealth;
-        [ShowIf(nameof(useTargetUserInterface))] public TextMeshProUGUI targetHealthPercentage;
-        [ShowIf(nameof(useTargetUserInterface))] public CanvasGroup targetCastbarGroup;
-        [ShowIf(nameof(useTargetUserInterface))] public Slider targetCastbar;
-        [ShowIf(nameof(useTargetUserInterface))] public TextMeshProUGUI targetCastbarProgress;
-        [ShowIf(nameof(useTargetUserInterface))] public TextMeshProUGUI targetCastbarName;
-        [ShowIf(nameof(useTargetUserInterface))] public HudElement targetCastbarHudElement;
-        [ShowIf(nameof(useTargetUserInterface))] public CanvasGroup targetCastbarInterruptGroup;
-        [ShowIf(nameof(useTargetUserInterface))] public CanvasGroup targetStatusEffectsGroup;
-        [ShowIf(nameof(useTargetUserInterface))] public CanvasGroup targetsTargetGroup;
-        [ShowIf(nameof(useTargetUserInterface))] public TextMeshProUGUI targetsTargetName;
-        [ShowIf(nameof(useTargetUserInterface))] public Slider targetsTargetHealth;
-        [ShowIf(nameof(useTargetUserInterface))] public List<TargetColor> targetColors;
-        [ShowIf(nameof(useTargetUserInterface))] public List<HudElementColor> targetColoredHudElements;
-        [ShowIf(nameof(useTargetUserInterface))] public List<HudElementColor> targetsTargetColoredHudElements;
-        [ShowIf(nameof(useTargetUserInterface))] public Transform targetDamagePopupParent;
+        public float fadeDuration = 0.25f; // [ShowIf(nameof(useTargetUserInterface))]
+        public bool showTargetLevel = false; // [ShowIf(nameof(useTargetUserInterface))]
+        public bool showTargetLetter = true; // [ShowIf(nameof(useTargetUserInterface))]
+        public CanvasGroup targetInfo; // [ShowIf(nameof(useTargetUserInterface))]
+        public TextMeshProUGUI targetName; // [ShowIf(nameof(useTargetUserInterface))]
+        public Slider targetHealth; // [ShowIf(nameof(useTargetUserInterface))]
+        public TextMeshProUGUI targetHealthPercentage; // [ShowIf(nameof(useTargetUserInterface))]
+        public CanvasGroup targetCastbarGroup; // [ShowIf(nameof(useTargetUserInterface))]
+        public Slider targetCastbar; // [ShowIf(nameof(useTargetUserInterface))]
+        public TextMeshProUGUI targetCastbarProgress; // [ShowIf(nameof(useTargetUserInterface))]
+        public TextMeshProUGUI targetCastbarName; // [ShowIf(nameof(useTargetUserInterface))]
+        public HudElement targetCastbarHudElement; // [ShowIf(nameof(useTargetUserInterface))]
+        public CanvasGroup targetCastbarInterruptGroup; // [ShowIf(nameof(useTargetUserInterface))]
+        public CanvasGroup targetStatusEffectsGroup; // [ShowIf(nameof(useTargetUserInterface))]
+        public CanvasGroup targetsTargetGroup; // [ShowIf(nameof(useTargetUserInterface))]
+        public TextMeshProUGUI targetsTargetName; // [ShowIf(nameof(useTargetUserInterface))]
+        public Slider targetsTargetHealth; // [ShowIf(nameof(useTargetUserInterface))]
+        public List<TargetColor> targetColors; // [ShowIf(nameof(useTargetUserInterface))]
+        public List<HudElementColor> targetColoredHudElements; // [ShowIf(nameof(useTargetUserInterface))]
+        public List<HudElementColor> targetsTargetColoredHudElements; // [ShowIf(nameof(useTargetUserInterface))]
+        public Transform targetDamagePopupParent; // [ShowIf(nameof(useTargetUserInterface))]
         public bool changeCursor = false;
         [CursorName] public string combatCursor = "combat";
 
@@ -115,7 +115,7 @@ namespace dev.susybaka.raidsim.Targeting
 #pragma warning disable CS0414 // The field 'TargetController.dummy' is assigned but its value is never used
         [SerializeField] private int _dummy = 0;
 #pragma warning restore CS0414 // The field 'TargetController.dummy' is assigned but its value is never used
-        [Button("Tab Target")]
+        [NaughtyAttributes.Button("Tab Target"), ContextMenu("Tab Target")]
         public void DebugTabTarget()
         {
             CycleTarget();
@@ -124,17 +124,18 @@ namespace dev.susybaka.raidsim.Targeting
 
         public void SetPauseMenu(PauseMenu pauseMenu)
         {
-            m_pauseMenu = pauseMenu;
+            this.pauseMenu = pauseMenu;
         }
         public void SetConfigMenu(ConfigMenu configMenu)
         {
-            m_configMenu = configMenu;
+            this.configMenu = configMenu;
         }
 
         private void Awake()
         {
-            m_input = FightTimeline.Instance.input;
+            input = FightTimeline.Instance.input;
             m_camera = Camera.main;
+            state = GetComponent<CharacterState>();
             targetInfoTween = null;
 
             // This section handles setting up specific refences by utilizing our custom TaggedObject component to identify them,
@@ -233,20 +234,28 @@ namespace dev.susybaka.raidsim.Targeting
                 HandleMouseClick();
             if (isPlayer)
             {
-                if (m_input.GetButtonDown("TargetKey"))
+                if (state != null && state.canTarget.value)
                 {
-                    CycleTarget();
-                }
-                if (m_input.GetButtonDown("TargetSelfKey"))
-                {
-                    SetTarget(self);
-                }
-                if (m_input.GetButtonDown("CancelKey"))
-                {
-                    SetTarget();
+                    if (input.GetButtonDown("TargetKey"))
+                    {
+                        CycleTarget();
+                    }
+                    if (input.GetButtonDown("TargetSelfKey"))
+                    {
+                        SetTarget(self);
+                    }
+                    if (input.GetButtonDown("CancelKey"))
+                    {
+                        SetTarget();
+                    }
                 }
                 UpdateUserInterface();
             }
+
+            // Prevent AI auto targeting if the character cannot target anything
+            if (state != null && !state.canTarget.value)
+                return;
+
 #if !UNITY_WEBPLAYER
             if (autoTarget)
                 Target();
@@ -317,11 +326,14 @@ namespace dev.susybaka.raidsim.Targeting
 
         private void HandleMouseClick()
         {
-            if (m_pauseMenu != null && m_pauseMenu.isOpen)
+            if (state != null && !state.canTarget.value)
                 return;
-            if (m_configMenu != null && m_configMenu.isOpen)
+
+            if (pauseMenu != null && pauseMenu.isOpen)
                 return;
-            if (m_configMenu != null && m_configMenu.ApplyPopup.isOpen)
+            if (configMenu != null && configMenu.isOpen)
+                return;
+            if (configMenu != null && configMenu.ApplyPopup.isOpen)
                 return;
 
             Ray ray;
@@ -458,6 +470,9 @@ namespace dev.susybaka.raidsim.Targeting
 
         public void SetTargetToTargetsTarget()
         {
+            if (state != null && !state.canTarget.value)
+                return;
+
             if (currentTarget != null)
             {
                 if (currentTarget.TryGetTargetController(out TargetController result))
@@ -489,23 +504,23 @@ namespace dev.susybaka.raidsim.Targeting
 
             if (currentTarget != null)
             {
-                if (m_characterState != null)
+                if (target_characterState != null)
                 {
-                    if (m_characterState.targetStatusEffectIconGroup != null)
+                    if (target_characterState.targetStatusEffectIconGroup != null)
                     {
-                        if (m_characterState.targetStatusEffectIconGroup.alpha >= 1f)
+                        if (target_characterState.targetStatusEffectIconGroup.alpha >= 1f)
                         {
-                            m_characterState.targetStatusEffectIconGroup.blocksRaycasts = false;
-                            m_characterState.targetStatusEffectIconGroup.interactable = false;
-                            m_characterState.targetStatusEffectIconGroup.alpha = 0.99f;
+                            target_characterState.targetStatusEffectIconGroup.blocksRaycasts = false;
+                            target_characterState.targetStatusEffectIconGroup.interactable = false;
+                            target_characterState.targetStatusEffectIconGroup.alpha = 0.99f;
                             if (!FightTimeline.Instance.paused)
-                                m_characterState.targetStatusEffectIconGroup.LeanAlpha(0f, fadeDuration);
+                                target_characterState.targetStatusEffectIconGroup.LeanAlpha(0f, fadeDuration);
                             else
-                                m_characterState.targetStatusEffectIconGroup.alpha = 0f;
+                                target_characterState.targetStatusEffectIconGroup.alpha = 0f;
                         }
                     }
-                    if (m_characterState.showTargetDamagePopups && targetDamagePopupParent != null)
-                        m_characterState.targetDamagePopupParent = null;
+                    if (target_characterState.showTargetDamagePopups && targetDamagePopupParent != null)
+                        target_characterState.targetDamagePopupParent = null;
                 }
                 if (!FightTimeline.Instance.paused)
                     currentTarget.UpdateUserInterface(0f, fadeDuration);
@@ -538,9 +553,9 @@ namespace dev.susybaka.raidsim.Targeting
 
             targetColorsUpdated = false;
             targetsTargetColorsUpdated = false;
-            m_characterState = null;
-            m_actionController = null;
-            m_targetController = null;
+            target_characterState = null;
+            target_actionController = null;
+            target_targetController = null;
             wasMouseClick = false;
 
             // Additional logic for targeting (e.g., UI updates) can go here.
@@ -584,6 +599,9 @@ namespace dev.susybaka.raidsim.Targeting
 #if !UNITY_WEBPLAYER
         public void CycleTarget()
         {
+            if (state != null && !state.canTarget.value)
+                return;
+
             if (targetType == TargetType.enmity && isAi && targetList != null)
             {
                 _ = CycleTargetAsync(true, true);
@@ -600,6 +618,9 @@ namespace dev.susybaka.raidsim.Targeting
 #else
         public void CycleTarget()
         {
+            if (state != null && !state.canTarget.value)
+                return;
+
             if (targetType == TargetType.enmity && isAi && targetList != null)
             {
                 availableTargets = FindAllTargetableNodes(true, true);
@@ -676,6 +697,9 @@ namespace dev.susybaka.raidsim.Targeting
 #if !UNITY_WEBPLAYER
         public void Target()
         {
+            if (state != null && !state.canTarget.value)
+                return;
+
             if (targetType == TargetType.enmity && isAi && targetList != null)
             {
                 if (self == null)
@@ -706,6 +730,9 @@ namespace dev.susybaka.raidsim.Targeting
 #else
         public void Target()
         {
+            if (state != null && !state.canTarget.value)
+                return;
+
             if (targetType == TargetType.enmity && isAi && targetList != null)
             {
                 if (self == null)
@@ -1030,33 +1057,33 @@ namespace dev.susybaka.raidsim.Targeting
                 }
 
                 // CHARACTER STATE
-                if (m_characterState != null)
+                if (target_characterState != null)
                 {
                     if (targetName != null)
                     {
                         string letter = "";
 
-                        if (showTargetLetter && m_characterState.characterLetter >= 0 && m_characterState.characterLetter <= 25)
+                        if (showTargetLetter && target_characterState.characterLetter >= 0 && target_characterState.characterLetter <= 25)
                         {
-                            letter = $"<sprite=\"{m_characterState.letterSpriteAsset}\" name=\"{m_characterState.characterLetter}\" tint=\"FF7E95\">";
+                            letter = $"<sprite=\"{target_characterState.letterSpriteAsset}\" name=\"{target_characterState.characterLetter}\" tint=\"FF7E95\">";
                         }
 
                         if (showTargetLevel)
                         {
-                            targetName.text = $"Lv{m_characterState.characterLevel} {letter}{m_characterState.GetCharacterName()}";
+                            targetName.text = $"Lv{target_characterState.characterLevel} {letter}{target_characterState.GetCharacterName()}";
                         }
                         else
                         {
-                            targetName.text = $"{letter}{m_characterState.GetCharacterName()}";
+                            targetName.text = $"{letter}{target_characterState.GetCharacterName()}";
                         }
                     }
-                    targetHealth.maxValue = m_characterState.currentMaxHealth;
+                    targetHealth.maxValue = target_characterState.currentMaxHealth;
                     targetHealth.minValue = 0;
-                    targetHealth.value = m_characterState.health;
+                    targetHealth.value = target_characterState.health;
 
                     /*if (m_characterState.healthBarTextInPercentage)
                     {*/
-                    float healthPercentage = ((float)m_characterState.health / (float)m_characterState.currentMaxHealth) * 100f;
+                    float healthPercentage = ((float)target_characterState.health / (float)target_characterState.currentMaxHealth) * 100f;
                     // Set the health bar text with proper formatting
                     if (Mathf.Approximately(healthPercentage, 100f))  // Use Mathf.Approximately for floating point comparison
                     {
@@ -1066,7 +1093,7 @@ namespace dev.susybaka.raidsim.Targeting
                     {
                         string result = healthPercentage.ToString("F1") + "%";
 
-                        if (m_characterState.health > 0)
+                        if (target_characterState.health > 0)
                         {
                             if (result == "0%" || result == "0.0%" || result == "0.00%" || result == "00.0%" || result == "00.00%" || result == "0,0%" || result == "0,00%" || result == "00,0%" || result == "00,00%")
                             {
@@ -1083,31 +1110,31 @@ namespace dev.susybaka.raidsim.Targeting
                         targetHealthPercentage.text = result;
                     }
 
-                    if (m_characterState.targetStatusEffectIconGroup != null)
+                    if (target_characterState.targetStatusEffectIconGroup != null)
                     {
-                        if (m_characterState.targetStatusEffectIconGroup.alpha <= 0f)
+                        if (target_characterState.targetStatusEffectIconGroup.alpha <= 0f)
                         {
-                            m_characterState.targetStatusEffectIconGroup.blocksRaycasts = true;
-                            m_characterState.targetStatusEffectIconGroup.interactable = true;
-                            m_characterState.targetStatusEffectIconGroup.alpha = 0.01f;
+                            target_characterState.targetStatusEffectIconGroup.blocksRaycasts = true;
+                            target_characterState.targetStatusEffectIconGroup.interactable = true;
+                            target_characterState.targetStatusEffectIconGroup.alpha = 0.01f;
                             if (!FightTimeline.Instance.paused)
-                                m_characterState.targetStatusEffectIconGroup.LeanAlpha(1f, fadeDuration);
+                                target_characterState.targetStatusEffectIconGroup.LeanAlpha(1f, fadeDuration);
                             else
-                                m_characterState.targetStatusEffectIconGroup.alpha = 1f;
+                                target_characterState.targetStatusEffectIconGroup.alpha = 1f;
 
                         }
                     }
 
-                    if (m_characterState.showTargetDamagePopups && targetDamagePopupParent != null)
+                    if (target_characterState.showTargetDamagePopups && targetDamagePopupParent != null)
                     {
-                        m_characterState.targetDamagePopupParent = targetDamagePopupParent;
+                        target_characterState.targetDamagePopupParent = targetDamagePopupParent;
                     }
                 }
                 else
                 {
                     if (currentTarget.TryGetCharacterState(out CharacterState state))
                     {
-                        m_characterState = state;
+                        target_characterState = state;
                     }
                     else
                     {
@@ -1119,18 +1146,18 @@ namespace dev.susybaka.raidsim.Targeting
                     }
                 }
                 // ACTION CONTROLLER
-                if (m_actionController != null)
+                if (target_actionController != null)
                 {
-                    if (m_actionController.CastTime > 0f && !m_actionController.Interrupted)
+                    if (target_actionController.CastTime > 0f && !target_actionController.Interrupted)
                     {
                         if (targetCastbar != null)
                         {
                             targetCastbar.minValue = 0f;
-                            if (m_actionController.LastAction != null)
-                                targetCastbar.maxValue = m_actionController.LastAction.Data.cast;
+                            if (target_actionController.LastAction != null)
+                                targetCastbar.maxValue = target_actionController.LastAction.Data.cast;
                             else
                                 targetCastbar.maxValue = 4.7f;
-                            targetCastbar.value = m_actionController.LastCastTime - m_actionController.CastTime;
+                            targetCastbar.value = target_actionController.LastCastTime - target_actionController.CastTime;
 
                             if (targetCastbarGroup.alpha == 0f)
                             {
@@ -1153,16 +1180,16 @@ namespace dev.susybaka.raidsim.Targeting
                         }
                         if (targetCastbarProgress != null)
                         {
-                            targetCastbarProgress.text = m_actionController.CastTime.ToString("00.00").Replace(',', '.').Replace(':', '.').Replace(';', '.');
+                            targetCastbarProgress.text = target_actionController.CastTime.ToString("00.00").Replace(',', '.').Replace(':', '.').Replace(';', '.');
                         }
                         if (targetCastbarName != null)
                         {
-                            targetCastbarName.text = m_actionController.LastAction.Data.GetActionName();
+                            targetCastbarName.text = target_actionController.LastAction.Data.GetActionName();
                         }
                     }
                     else
                     {
-                        if (m_actionController.Interrupted)
+                        if (target_actionController.Interrupted)
                         {
                             if (targetCastbarHudElement != null)
                             {
@@ -1171,7 +1198,7 @@ namespace dev.susybaka.raidsim.Targeting
                             if (targetCastbar != null && targetCastbarGroup.alpha == 1f)
                             {
                                 targetCastbarGroup.alpha = 0.99f;
-                                Utilities.FunctionTimer.Create(this, () => { targetCastbarGroup.blocksRaycasts = false; targetCastbarGroup.interactable = false; if (!FightTimeline.Instance.paused) { targetCastbarGroup.LeanAlpha(0f, fadeDuration); } else { targetCastbarGroup.alpha = 0f; } }, 2f, $"{m_actionController}_castBar_fade_out_if_interrupted", true);
+                                Utilities.FunctionTimer.Create(this, () => { targetCastbarGroup.blocksRaycasts = false; targetCastbarGroup.interactable = false; if (!FightTimeline.Instance.paused) { targetCastbarGroup.LeanAlpha(0f, fadeDuration); } else { targetCastbarGroup.alpha = 0f; } }, 2f, $"{target_actionController}_castBar_fade_out_if_interrupted", true);
                             }
                             Utilities.FunctionTimer.Create(this, () =>
                             {
@@ -1191,7 +1218,7 @@ namespace dev.susybaka.raidsim.Targeting
                                 {
                                     targetCastbarName.text = "Unknown Cast";
                                 }
-                            }, 2.5f, $"{m_actionController}_interrupted_status", true);
+                            }, 2.5f, $"{target_actionController}_interrupted_status", true);
                         }
                         else
                         {
@@ -1212,7 +1239,7 @@ namespace dev.susybaka.raidsim.Targeting
                 {
                     if (currentTarget.TryGetActionController(out ActionController aController))
                     {
-                        m_actionController = aController;
+                        target_actionController = aController;
                     }
                     else if (targetCastbarGroup.alpha >= 1f)
                     {
@@ -1225,9 +1252,9 @@ namespace dev.susybaka.raidsim.Targeting
                     }
                 }
                 // TARGET CONTROLLER
-                if (m_targetController != null)
+                if (target_targetController != null)
                 {
-                    if (m_targetController.currentTarget != null)
+                    if (target_targetController.currentTarget != null)
                     {
                         if (!targetsTargetColorsUpdated)
                         {
@@ -1235,7 +1262,7 @@ namespace dev.susybaka.raidsim.Targeting
 
                             for (int i = 0; i < targetColors.Count; i++)
                             {
-                                if (m_targetController.currentTarget.IsNodeInGroups(targetColors[i].groups.ToArray()))
+                                if (target_targetController.currentTarget.IsNodeInGroups(targetColors[i].groups.ToArray()))
                                 {
                                     targetsTargetColor = targetColors[i];
                                     break;
@@ -1250,7 +1277,7 @@ namespace dev.susybaka.raidsim.Targeting
                             targetsTargetColorsUpdated = true;
                         }
 
-                        if (m_targetController.currentTarget.TryGetCharacterState(out CharacterState ttState))
+                        if (target_targetController.currentTarget.TryGetCharacterState(out CharacterState ttState))
                         {
                             if (targetsTargetGroup.alpha <= 0f)
                             {
@@ -1335,7 +1362,7 @@ namespace dev.susybaka.raidsim.Targeting
                 {
                     if (currentTarget.TryGetTargetController(out TargetController tController))
                     {
-                        m_targetController = tController;
+                        target_targetController = tController;
                     }
                     else if (targetsTargetGroup.alpha >= 1f)
                     {

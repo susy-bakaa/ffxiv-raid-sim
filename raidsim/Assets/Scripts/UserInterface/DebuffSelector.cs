@@ -13,7 +13,7 @@ namespace dev.susybaka.raidsim.UI
     {
         TMP_Dropdown dropdown;
 
-        public StatusEffectInfo[] effects;
+        public StatusEffectContext[] effects;
         public RaidwideDebuffsMechanic target;
 
         private void Start()

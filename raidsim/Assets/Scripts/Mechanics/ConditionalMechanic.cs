@@ -24,7 +24,7 @@ namespace dev.susybaka.raidsim.Mechanics
         [ShowIf(nameof(comparisonType), ComparisonType.floatingPoint)] public float floatValue;
         [HideIf(nameof(_hideComparisonOperator))] public ComparisonOperator comparisonOperator = ComparisonOperator.equalTo;
         [ShowIf(nameof(comparisonType), ComparisonType.statusEffect)] public StatusEffectCondition statusEffectCondition = StatusEffectCondition.hasAnyEffect;
-        [ShowIf(nameof(comparisonType), ComparisonType.statusEffect)] public List<StatusEffectInfo> effects;
+        [ShowIf(nameof(comparisonType), ComparisonType.statusEffect)] public List<StatusEffectContext> effects;
         public UnityEvent onPass;
         public UnityEvent onFail;
 

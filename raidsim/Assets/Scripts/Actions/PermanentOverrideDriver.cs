@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace dev.susybaka.raidsim.Actions
 {
+    [RequireComponent(typeof(ActionOverrideResolver))]
     public sealed class PermanentOverrideDriver : MonoBehaviour
     {
         [Serializable]

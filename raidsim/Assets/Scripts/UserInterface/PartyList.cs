@@ -248,6 +248,16 @@ namespace dev.susybaka.raidsim.UI
             return false;
         }
 
+        public CharacterState GetLowestHealthMemberToMember(CharacterState characterState)
+        {
+            if (members == null || members.Count == 0)
+            {
+                return null; // or handle the case where there are no members
+            }
+
+            return GetLowestHealthMemberInternal(members.Where(pm => pm.characterState != characterState).ToList());
+        }
+
         public CharacterState GetLowestHealthMember()
         {
             if (members == null || members.Count == 0)
@@ -255,14 +265,19 @@ namespace dev.susybaka.raidsim.UI
                 return null; // or handle the case where there are no members
             }
 
+            return GetLowestHealthMemberInternal(members);
+        }
+
+        private CharacterState GetLowestHealthMemberInternal(List<PartyMember> filteredMembers)
+        {
             // Create a copy of the members list that consists of CharacterState objects
             _shuffledMembers.Clear();
-            if (_shuffledMembers.Capacity < members.Count)
-                _shuffledMembers.Capacity = members.Count;
+            if (_shuffledMembers.Capacity < filteredMembers.Count)
+                _shuffledMembers.Capacity = filteredMembers.Count;
 
-            for (int i = 0; i < members.Count; i++)
+            for (int i = 0; i < filteredMembers.Count; i++)
             {
-                _shuffledMembers.Add(members[i].characterState);
+                _shuffledMembers.Add(filteredMembers[i].characterState);
             }
 
             // Randomize the copy
@@ -282,6 +297,16 @@ namespace dev.susybaka.raidsim.UI
             return lowestHealthMember;
         }
 
+        public CharacterState GetHighestHealthMemberToMember(CharacterState characterState)
+        {
+            if (members == null || members.Count == 0)
+            {
+                return null; // or handle the case where there are no members
+            }
+
+            return GetHighestHealthMemberInternal(members.Where(pm => pm.characterState != characterState).ToList());
+        }
+
         public CharacterState GetHighestHealthMember()
         {
             if (members == null || members.Count == 0)
@@ -289,14 +314,19 @@ namespace dev.susybaka.raidsim.UI
                 return null; // or handle the case where there are no members
             }
 
+            return GetHighestHealthMemberInternal(members);
+        }
+
+        private CharacterState GetHighestHealthMemberInternal(List<PartyMember> filteredMembers)
+        {
             // Create a copy of the members list that consists of CharacterState objects
             _shuffledMembers.Clear();
-            if (_shuffledMembers.Capacity < members.Count)
-                _shuffledMembers.Capacity = members.Count;
+            if (_shuffledMembers.Capacity < filteredMembers.Count)
+                _shuffledMembers.Capacity = filteredMembers.Count;
 
-            for (int i = 0; i < members.Count; i++)
+            for (int i = 0; i < filteredMembers.Count; i++)
             {
-                _shuffledMembers.Add(members[i].characterState);
+                _shuffledMembers.Add(filteredMembers[i].characterState);
             }
 
             // Randomize the copy
@@ -316,6 +346,17 @@ namespace dev.susybaka.raidsim.UI
             return highestHealthMember;
         }
 
+        public CharacterState GetNearestMemberToMember(CharacterState characterState)
+        {
+            if (members == null || members.Count == 0 || characterState == null)
+            {
+                return null; // or handle the case where there are no members or characterState is null
+            }
+
+            // Filter out the member whose proximity we want to check
+            return GetNearestMemberInternal(members.Where(pm => pm.characterState != characterState).ToList(), characterState.transform.position);
+        }
+
         public CharacterState GetNearestMember(Vector3 position)
         {
             if (members == null || members.Count == 0)
@@ -323,14 +364,19 @@ namespace dev.susybaka.raidsim.UI
                 return null; // or handle the case where there are no members
             }
 
+            return GetNearestMemberInternal(members, position);
+        }
+
+        private CharacterState GetNearestMemberInternal(List<PartyMember> filteredMembers, Vector3 position)
+        {
             CharacterState nearestMember = null;
             float nearestDistance = float.MaxValue;
-            for (int i = 0; i < members.Count; i++)
+            for (int i = 0; i < filteredMembers.Count; i++)
             {
-                if (members[i].characterState == null || !members[i].characterState.gameObject.activeSelf || members[i].characterState.disabled)
+                if (filteredMembers[i].characterState == null || !filteredMembers[i].characterState.gameObject.activeSelf || filteredMembers[i].characterState.disabled)
                     continue;
 
-                CharacterState memberState = members[i].characterState;
+                CharacterState memberState = filteredMembers[i].characterState;
                 float distance = Vector3.Distance(memberState.transform.position, position);
                 if (distance < nearestDistance)
                 {
@@ -341,20 +387,37 @@ namespace dev.susybaka.raidsim.UI
             return nearestMember;
         }
 
+        public CharacterState GetFurthestMemberFromMember(CharacterState characterState)
+        {
+            if (members == null || members.Count == 0 || characterState == null)
+            {
+                return null; // or handle the case where there are no members or characterState is null
+            }
+
+            // Filter out the member whose proximity we want to check
+            return GetFurthestMemberInternal(members.Where(pm => pm.characterState != characterState).ToList(), characterState.transform.position);
+        }
+
         public CharacterState GetFurthestMember(Vector3 position)
         {
             if (members == null || members.Count == 0)
             {
                 return null; // or handle the case where there are no members
             }
+
+            return GetFurthestMemberInternal(members, position);
+        }
+
+        private CharacterState GetFurthestMemberInternal(List<PartyMember> filteredMembers, Vector3 position)
+        {
             CharacterState furthestMember = null;
             float furthestDistance = float.MinValue;
-            for (int i = 0; i < members.Count; i++)
+            for (int i = 0; i < filteredMembers.Count; i++)
             {
-                if (members[i].characterState == null || !members[i].characterState.gameObject.activeSelf || members[i].characterState.disabled)
+                if (filteredMembers[i].characterState == null || !filteredMembers[i].characterState.gameObject.activeSelf || filteredMembers[i].characterState.disabled)
                     continue;
 
-                CharacterState memberState = members[i].characterState;
+                CharacterState memberState = filteredMembers[i].characterState;
                 float distance = Vector3.Distance(memberState.transform.position, position);
                 if (distance > furthestDistance)
                 {
@@ -363,6 +426,54 @@ namespace dev.susybaka.raidsim.UI
                 }
             }
             return furthestMember;
+        }
+
+        public CharacterState GetRandomMemberExcluding(CharacterState state, string randomizationKey = "")
+        {
+            if (members == null || members.Count == 0 || state == null)
+            {
+                return null; // or handle the case where there are no members or state is null
+            }
+
+            // Filter out the member who is trying to get a random member, so they don't get themselves returned
+            return GetRandomMemberInternal(randomizationKey, state);
+        }
+
+        public CharacterState GetRandomMember(string randomizationKey = "")
+        {
+            if (members == null || members.Count == 0)
+            {
+                return null; // or handle the case where there are no members
+            }
+            
+            return GetRandomMemberInternal(randomizationKey, null);
+        }
+
+        private CharacterState GetRandomMemberInternal(string randomizationKey, CharacterState self)
+        {
+            List<CharacterState> activeMembers = GetActiveMembers();
+            if (activeMembers.Count == 0)
+                return null;
+
+            if (FightTimeline.Instance == null)
+            {
+                Debug.LogError("FightTimeline instance is null. Cannot get random member.");
+                return null;
+            }
+
+            if (self != null)
+            {
+                if (activeMembers.Contains(self))
+                {
+                    activeMembers.Remove(self);
+                }
+
+                if (activeMembers.Count < 1)
+                    return null;
+            }
+
+            int randomIndex = FightTimeline.Instance.random.Pick(string.IsNullOrEmpty(randomizationKey) ? "PartyList_GetRandomMember_RandomIndex_Default" : $"PartyList_GetRandomMember_RandomIndex_{randomizationKey}", activeMembers.Count, FightTimeline.Instance.GlobalRngMode);
+            return activeMembers[randomIndex];
         }
 
         public List<EnmityInfo> GetEnmityValuesList(CharacterState towards)
@@ -618,6 +729,8 @@ namespace dev.susybaka.raidsim.UI
             if (members == null || members.Count < 1 || index >= members.Count || index < 0)
                 return;
             if (members[index].targetController == null)
+                return;
+            if (playerState != null && !playerState.canTarget.value)
                 return;
 
             playerTargeting.SetTarget(members[index].targetController.self);

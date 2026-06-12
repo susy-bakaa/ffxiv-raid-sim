@@ -17,7 +17,7 @@ namespace dev.susybaka.raidsim.Mechanics
         public int id = 0;
         [Tag]
         public string tagToCollideWith = "Player";
-        public List<StatusEffectInfo> requiredEffect;
+        public List<StatusEffectContext> requiredEffect;
         public bool requireOnlyOneMatchingEffect = true;
         public UnityEvent<int> onCollisionEnter;
         public UnityEvent<int> onCollisionExit;
@@ -44,7 +44,7 @@ namespace dev.susybaka.raidsim.Mechanics
                     {
                         if (requireOnlyOneMatchingEffect)
                         {
-                            foreach (StatusEffectInfo effect in requiredEffect)
+                            foreach (StatusEffectContext effect in requiredEffect)
                             {
                                 if (state.HasAnyVersionOfEffect(effect.data.statusName))
                                 {
@@ -58,7 +58,7 @@ namespace dev.susybaka.raidsim.Mechanics
                         else
                         {
                             bool hasAllEffects = true;
-                            foreach (StatusEffectInfo effect in requiredEffect)
+                            foreach (StatusEffectContext effect in requiredEffect)
                             {
                                 if (!state.HasAnyVersionOfEffect(effect.data.statusName))
                                 {
@@ -98,7 +98,7 @@ namespace dev.susybaka.raidsim.Mechanics
                     {
                         if (requireOnlyOneMatchingEffect)
                         {
-                            foreach (StatusEffectInfo effect in requiredEffect)
+                            foreach (StatusEffectContext effect in requiredEffect)
                             {
                                 if (state.HasAnyVersionOfEffect(effect.data.statusName))
                                 {
@@ -112,7 +112,7 @@ namespace dev.susybaka.raidsim.Mechanics
                         else
                         {
                             bool hasAllEffects = true;
-                            foreach (StatusEffectInfo effect in requiredEffect)
+                            foreach (StatusEffectContext effect in requiredEffect)
                             {
                                 if (!state.HasAnyVersionOfEffect(effect.data.statusName))
                                 {

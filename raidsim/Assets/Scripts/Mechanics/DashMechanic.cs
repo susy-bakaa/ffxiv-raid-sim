@@ -17,13 +17,15 @@ namespace dev.susybaka.raidsim.Mechanics
         public bool lockActions = true;
         public bool lockMovement = true;
         public bool dashToTarget = false;
+        public bool overrideDashDirection = false;
         public float delay = 0.25f;
         public float duration = 0.5f;
         public float dashHeight = 0f;
         [ShowIf("dashToTarget")] public Vector3 overrideTargetPosition;
         [ShowIf("dashToTarget")] public Transform overrideTarget;
+        [ShowIf(nameof(overrideDashDirection))] public Transform overrideDirection;
         [ShowIf("dashToTarget"), Tag] public string overrideTargetTag = string.Empty;
-        [ShowIf("dashToTarget")] public StatusEffectInfo overrideTargetEffect;
+        [ShowIf("dashToTarget")] public StatusEffectContext overrideTargetEffect;
         [HideIf("dashToTarget")] public Vector3 dashDirection = new Vector3(0f, 0f, 1f);
         [HideIf("dashToTarget")] public float dashDistance = 10f;
         public LeanTweenType ease = LeanTweenType.easeInOutQuad;
@@ -78,7 +80,9 @@ namespace dev.susybaka.raidsim.Mechanics
                 }
                 else
                 {
-                    targetPosition = actionInfo.source.transform.position + actionInfo.source.transform.forward * dashDirection.magnitude * dashDistance;
+                    Transform direction = (overrideDashDirection && overrideDirection != null) ? overrideDirection : actionInfo.source.transform;
+
+                    targetPosition = actionInfo.source.transform.position + direction.forward * dashDirection.magnitude * dashDistance;
                 }
 
                 execute = true;

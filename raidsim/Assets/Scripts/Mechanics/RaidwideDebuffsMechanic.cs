@@ -18,8 +18,8 @@ namespace dev.susybaka.raidsim.Mechanics
     public class RaidwideDebuffsMechanic : FightMechanic
     {
         public PartyList party;
-        public List<StatusEffectInfo> effects = new List<StatusEffectInfo>();
-        public StatusEffectInfo playerEffect;
+        public List<StatusEffectContext> effects = new List<StatusEffectContext>();
+        public StatusEffectContext playerEffect;
         [HideIf("onlySpecifiedRoles")] public bool ignoreRoles = true;
         [HideIf("ignoreRoles")] public bool onlySpecifiedRoles = false;
         [ShowIf("onlySpecifiedRoles")] public List<RoleSelection> specifiedRoles = new List<RoleSelection>();
@@ -34,7 +34,7 @@ namespace dev.susybaka.raidsim.Mechanics
         private bool showRandomEventIdField => (pickBasedOnPreviousRandomEventResult || setRandomEventResult);
         private bool showPickBasedOnPreviousRandomEventResultField => (!randomizeRoleGroups && onlySpecifiedRoles);
 
-        List<StatusEffectInfo> statusEffects;
+        List<StatusEffectContext> statusEffects;
         List<CharacterState> partyMembers;
         private readonly List<CharacterState> _candidatesCopy = new List<CharacterState>();
         private readonly List<StatusEffectData> _incompatibleEffects = new List<StatusEffectData>();
@@ -100,7 +100,7 @@ namespace dev.susybaka.raidsim.Mechanics
             else if (actionInfo.target != null)
                 from = actionInfo.target;
 
-            statusEffects = new List<StatusEffectInfo>(effects); // Copy the effects list
+            statusEffects = new List<StatusEffectContext>(effects); // Copy the effects list
             partyMembers = new List<CharacterState>(party.GetActiveMembers()); // Copy the party members list
 
             if (onlySpecifiedRoles && ((playerEffect.data == null && !playerEffect.name.Contains('!')) || pickBasedOnPreviousRandomEventResult))
@@ -338,7 +338,7 @@ namespace dev.susybaka.raidsim.Mechanics
             return true;
         }
 
-        private CharacterState FindSuitableTarget(StatusEffectInfo effect, int roleGroupIndex, List<CharacterState> candidates)
+        private CharacterState FindSuitableTarget(StatusEffectContext effect, int roleGroupIndex, List<CharacterState> candidates)
         {
             if (effect.data.assignedRoles != null && effect.data.assignedRoles.Count > 0 && !ignoreRoles)
             {

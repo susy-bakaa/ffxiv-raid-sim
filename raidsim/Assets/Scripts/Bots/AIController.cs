@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // This file is part of ffxiv-raid-sim. Linking with the Unity runtime
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
-using UnityEngine;
+using System.Collections.Generic;
 using dev.susybaka.raidsim.Bots;
 using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.Nodes;
 using dev.susybaka.Shared;
+using UnityEngine;
+using static dev.susybaka.raidsim.Core.GlobalData;
+using static dev.susybaka.raidsim.Core.GlobalData.Flag;
 
 namespace dev.susybaka.raidsim.Characters
 {
@@ -28,6 +31,8 @@ namespace dev.susybaka.raidsim.Characters
         public bool sliding = false;
         public float slideDistance = 0f;
         public float slideDuration = 0.5f;
+        public Flag bossControlled = new Flag("bossControlled", new List<FlagValue> { new FlagValue("base", false) }, AggregateLogic.AnyTrue);
+        private Flag wasBossControlled;
         private bool tweening = false;
 
         private float turnSmoothVelocity;
@@ -62,6 +67,7 @@ namespace dev.susybaka.raidsim.Characters
             state = GetComponent<CharacterState>();
             wasBotTimeline = botTimeline;
             botTimeline.bot = this;
+            wasBossControlled = bossControlled;
             if (allowGravity)
             {
                 preventGravity = false;
@@ -123,8 +129,11 @@ namespace dev.susybaka.raidsim.Characters
 
             if (Time.deltaTime > 0)
             {
-                animator.SetBool(animatorParameterDead, state.dead);
-                animator.SetBool(animatorParameterDiamondback, state.HasEffect("Diamondback"));
+                if (!bossControlled.value)
+                {
+                    animator.SetBool(animatorParameterDead, state.dead);
+                    animator.SetBool(animatorParameterDiamondback, state.HasEffect("Diamondback"));
+                }
                 animator.SetBool(animatorParamterSliding, (sliding && knockedback));
 
                 if (CanMove())
@@ -182,7 +191,8 @@ namespace dev.susybaka.raidsim.Characters
                         release = slideDuration;
                         state.uncontrollable.SetFlag("knockback", true);
                         targetPosition = botTimeline.currentTarget.position;
-                        animator.SetFloat(animatorParameterSpeed, 0f);
+                        if (!bossControlled.value)
+                            animator.SetFloat(animatorParameterSpeed, 0f);
                         knockedback = true;
                         return;
                     }
@@ -199,14 +209,18 @@ namespace dev.susybaka.raidsim.Characters
                     currentSpeed = 0;
                 }
 
-                if (Mathf.Abs(animator.GetFloat(animatorParameterSpeed) - currentSpeed) > 0.01f) // Adjust threshold as needed
+                if (!bossControlled.value)
                 {
-                    animator.SetFloat(animatorParameterSpeed, currentSpeed);
+                    if (Mathf.Abs(animator.GetFloat(animatorParameterSpeed) - currentSpeed) > 0.01f) // Adjust threshold as needed
+                    {
+                        animator.SetFloat(animatorParameterSpeed, currentSpeed);
+                    }
                 }
             }
             else if (!state.dead && !state.bound.value && knockedback)
             {
-                animator.SetFloat(animatorParameterSpeed, 0f);
+                if (!bossControlled.value)
+                    animator.SetFloat(animatorParameterSpeed, 0f);
                 if (!sliding)
                 {
                     transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, release);
@@ -221,7 +235,8 @@ namespace dev.susybaka.raidsim.Characters
             else
             {
                 currentSpeed = 0;
-                animator.SetFloat(animatorParameterSpeed, 0f);
+                if (!bossControlled.value)
+                    animator.SetFloat(animatorParameterSpeed, 0f);
             }
         }
 
@@ -298,8 +313,11 @@ namespace dev.susybaka.raidsim.Characters
             if (freezeMovement)
             {
                 currentSpeed = 0;
-                animator.SetFloat(animatorParameterSpeed, 0f);
-                state.still = true;
+                if (!bossControlled.value)
+                {
+                    animator.SetFloat(animatorParameterSpeed, 0f);
+                    state.still = true;
+                }
                 ClampMovement();
             }
 
@@ -379,6 +397,7 @@ namespace dev.susybaka.raidsim.Characters
         {
             botTimeline = wasBotTimeline;
             botTimeline.bot = this;
+            bossControlled = wasBossControlled;
             if (allowGravity)
             {
                 preventGravity = false;

@@ -86,7 +86,7 @@ namespace dev.susybaka.raidsim.Mechanics
 
                     SetupDamageTrigger(spawned, actionInfo);
                 }
-                else if (actionInfo.source != null && actionInfo.action != null)
+                else if (actionInfo.source != null) // && actionInfo.action != null | not sure why this was a check before, removed now pls add back if it breaks something
                 {
                     GameObject spawned;
 

@@ -21,7 +21,7 @@ namespace dev.susybaka.raidsim.Mechanics
         public PartyList party;
         public bool autoFindParty = false;
         public bool randomizeParty = true;
-        public StatusEffectInfo effect;
+        public StatusEffectContext effect;
         public bool ignoreRoles = true;
         public bool incrementalTag = false;
         public bool cleansEffect = false;

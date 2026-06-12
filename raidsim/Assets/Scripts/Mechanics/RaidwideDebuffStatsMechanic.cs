@@ -123,14 +123,14 @@ namespace dev.susybaka.raidsim.Mechanics
         public struct StatusEffectVitals
         {
             public string name;
-            public StatusEffectInfo effect;
+            public StatusEffectContext effect;
             public int requiredHealth;
             public int requiredMaxHealth;
             public bool hasMostHealth;
             public bool hasLeastHealth;
             public Damage damage;
 
-            public StatusEffectVitals(string name, StatusEffectInfo effect, int requiredHealth, int requiredMaxHealth, bool hasMostHealth, bool hasLeastHealth, Damage damage)
+            public StatusEffectVitals(string name, StatusEffectContext effect, int requiredHealth, int requiredMaxHealth, bool hasMostHealth, bool hasLeastHealth, Damage damage)
             {
                 this.name = name;
                 this.effect = effect;

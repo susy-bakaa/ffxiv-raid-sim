@@ -1,13 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // This file is part of ffxiv-raid-sim. Linking with the Unity runtime
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
-using UnityEngine;
-using UnityEngine.InputSystem;
-using NaughtyAttributes;
+using System.Collections.Generic;
 using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.Inputs;
 using dev.susybaka.raidsim.Nodes;
 using dev.susybaka.Shared;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using static dev.susybaka.raidsim.Core.GlobalData;
+using static dev.susybaka.raidsim.Core.GlobalData.Flag;
 
 namespace dev.susybaka.raidsim.Characters
 {
@@ -39,13 +41,13 @@ namespace dev.susybaka.raidsim.Characters
         public BotNode clockSpot;
         public bool enableInput = true;
         public bool legacyMovement = true;
-        [HideIf("legacyMovement")] public float backpedalSpeed = 0.5f;
-        [HideIf("legacyMovement")] public float turnSpeed = 90f;
-        [HideIf("legacyMovement")] public CameraAdjustMode autoAdjustCamera = CameraAdjustMode.Moving;
-        [HideIf("legacyMovement")] public float cameraAutoAdjustSpeed = 5f;
-        [HideIf("legacyMovement")] public float cameraRotationSpeed = 180f;
-        [ShowIf("legacyMovement")] public bool disableCameraPivot = true;
-        [ShowIf("legacyMovement")] public bool maintainCameraDistance = true;
+        public float backpedalSpeed = 0.5f; // [HideIf("legacyMovement")]
+        public float turnSpeed = 90f; // [HideIf("legacyMovement")]
+        public CameraAdjustMode autoAdjustCamera = CameraAdjustMode.Moving; // [HideIf("legacyMovement")]
+        public float cameraAutoAdjustSpeed = 5f; // [HideIf("legacyMovement")]
+        public float cameraRotationSpeed = 180f; // [HideIf("legacyMovement")]
+        public bool disableCameraPivot = true; // [ShowIf("legacyMovement")]
+        public bool maintainCameraDistance = true; // [ShowIf("legacyMovement")]
         public bool freezeMovement = false;
         public bool sliding = false;
         public float slideDistance = 0f;
@@ -58,6 +60,8 @@ namespace dev.susybaka.raidsim.Characters
         private bool jumping = false;
         private bool jumpInput = false;
         public bool jumpInputAvailable = true;
+        public Flag bossControlled = new Flag("bossControlled", new List<FlagValue> { new FlagValue("base", false) }, AggregateLogic.AnyTrue);
+        private Flag wasBossControlled;
         private InputActionReference jumpControllerBind;
         private InputActionReference[] controllerModifierBinds;
 
@@ -116,6 +120,8 @@ namespace dev.susybaka.raidsim.Characters
 
             rb = GetComponent<Rigidbody>();
             animator = GetComponent<Animator>();
+
+            wasBossControlled = bossControlled;
         }
 
         private void OnEnable()
@@ -208,20 +214,26 @@ namespace dev.susybaka.raidsim.Characters
 
             if (Time.timeScale > 0f)
             {
-                animator.SetBool(animatorParameterDead, state.dead);
-                animator.SetBool(animatorParameterDiamondback, state.HasEffect("Diamondback"));
+                if (!bossControlled.value)
+                {
+                    animator.SetBool(animatorParameterDead, state.dead);
+                    animator.SetBool(animatorParameterDiamondback, state.HasEffect("Diamondback"));
+                }
                 animator.SetBool(animatorParamterSliding, (sliding && knockedBack));
 
                 if (CanMove())
                     return;
 
-                if (currentSpeed > 0)
+                if (!bossControlled.value)
                 {
-                    state.still = false;
-                }
-                else
-                {
-                    state.still = true;
+                    if (currentSpeed > 0)
+                    {
+                        state.still = false;
+                    }
+                    else
+                    {
+                        state.still = true;
+                    }
                 }
 
                 if (jumpInput && !preventJumping)
@@ -379,7 +391,8 @@ namespace dev.susybaka.raidsim.Characters
                             if (input.y > 0)
                                 animationRotation *= 0.5f;
 
-                            animator.SetFloat(animatorParameterTurning, animationRotation);
+                            if (!bossControlled.value)
+                                animator.SetFloat(animatorParameterTurning, animationRotation);
                             turning = true;
                         }
                     }
@@ -398,13 +411,15 @@ namespace dev.susybaka.raidsim.Characters
                         if (!turning)
                         {
                             float animationRotation = inputR.x * 0.5f;
-                            animator.SetFloat(animatorParameterTurning, animationRotation);
+                            if (!bossControlled.value)
+                                animator.SetFloat(animatorParameterTurning, animationRotation);
                             turning = true;
                         }
                     }
                     else if (!turning)
                     {
-                        animator.SetFloat(animatorParameterTurning, 0f);
+                        if (!bossControlled.value)
+                            animator.SetFloat(animatorParameterTurning, 0f);
                     }
 
                     // Auto camera adjustment
@@ -435,18 +450,21 @@ namespace dev.susybaka.raidsim.Characters
                     animationValue = 0f;
                 }
 
-                animator.SetFloat(animatorParameterSpeed, animationValue);
+                if (!bossControlled.value)
+                    animator.SetFloat(animatorParameterSpeed, animationValue);
             }
             else if ((!state.dead || sliding) && !state.bound.value && enableInput && knockedBack)
             {
-                animator.SetFloat(animatorParameterSpeed, 0f);
+                if (!bossControlled.value)
+                    animator.SetFloat(animatorParameterSpeed, 0f);
                 transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, release);
                 ClampMovement();
             }
             else
             {
                 velocity = Vector3.zero;
-                animator.SetFloat(animatorParameterSpeed, 0f);
+                if (!bossControlled.value)
+                    animator.SetFloat(animatorParameterSpeed, 0f);
             }
         }
 
@@ -523,8 +541,11 @@ namespace dev.susybaka.raidsim.Characters
             if (freezeMovement)
             {
                 currentSpeed = 0;
-                animator.SetFloat(animatorParameterSpeed, 0f);
-                state.still = true;
+                if (!bossControlled.value)
+                {
+                    animator.SetFloat(animatorParameterSpeed, 0f);
+                    state.still = true;
+                }
                 ClampMovement();
             }
 
@@ -618,6 +639,7 @@ namespace dev.susybaka.raidsim.Characters
             jumpInputAvailable = true;
             preventGravity = false;
             wasPreventGravity = false;
+            bossControlled = wasBossControlled;
             if (rb != null)
                 rb.useGravity = true;
             tm = 0f;

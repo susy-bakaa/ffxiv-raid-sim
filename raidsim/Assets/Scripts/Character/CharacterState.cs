@@ -9,7 +9,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using TMPro;
-using NaughtyAttributes;
 using dev.susybaka.raidsim.Actions;
 using dev.susybaka.raidsim.Animations;
 using dev.susybaka.raidsim.Core;
@@ -160,6 +159,8 @@ namespace dev.susybaka.raidsim.Characters
         private Flag wasCanDoActions;
         public Flag canDie = new Flag("canDie", new List<FlagValue> { new FlagValue("base", true) }, AggregateLogic.AllTrue);
         private Flag wasCanDie;
+        public Flag canTarget = new Flag("canTarget", new List<FlagValue> { new FlagValue("base", true) }, AggregateLogic.AllTrue);
+        private Flag wasCanTarget;
         public Flag hidden = new Flag("hidden", AggregateLogic.AnyTrue);
         private Flag wasHidden;
         private bool hide = false;
@@ -191,6 +192,7 @@ namespace dev.susybaka.raidsim.Characters
 #if UNITY_EDITOR
         [SerializeField] private List<RandomEventResult> m_characterEventResults = new List<RandomEventResult>();
 #endif
+        public UnityEvent<Role> onRoleChanged;
 
         [Header("Config")]
         public CharacterState mirror;
@@ -204,6 +206,7 @@ namespace dev.susybaka.raidsim.Characters
         public int characterLetter = 0;
         public string letterSpriteAsset = "letters_1";
         public Role role = Role.unassigned;
+        private Role wasRole = Role.unassigned;
         public Sector sector = Sector.N;
         public int group = 0;
         public bool isAggressive = true;
@@ -312,7 +315,7 @@ namespace dev.susybaka.raidsim.Characters
 
         [Header("Visuals")]
         public bool useTransparency = false;
-        [ShowIf(nameof(useTransparency)), Range(0f,1f)] public float modelAlpha = 1f;
+        [Range(0f,1f)] public float modelAlpha = 1f;
         public Transform pivot;
         public Transform model;
         private SimpleShaderFade modelShaderFade;
@@ -320,25 +323,42 @@ namespace dev.susybaka.raidsim.Characters
 
 #if UNITY_EDITOR
         [Header("Editor")]
-        public StatusEffectData.StatusEffectInfo inflictedEffect;
-        public Damage inflictedDamage;
-        [Button("Inflict Status Effect")]
+        [SerializeField] private bool cleanseInstead = false;
+        [SerializeField] private StatusEffectData.StatusEffectContext inflictedEffect;
+        [SerializeField] private Damage inflictedDamage;
+
+        [NaughtyAttributes.Button("Inflict Status Effect")]
+        public void InflictCleanseStatusEffectButton()
+        {
+            if (cleanseInstead)
+            {
+                CleanseStatusEffectButton();
+            }
+            else
+            {
+                InflictStatusEffectButton();
+            }
+        }
+
+        [ContextMenu("Inflict Status Effect")] // NaughtyAttributes.Button("Inflict Status Effect")
         public void InflictStatusEffectButton()
         {
             AddEffect(inflictedEffect.data, this, true, inflictedEffect.tag, inflictedEffect.stacks);
         }
-        [Button("Cleanse Status Effect")]
+        
+        [ContextMenu("Cleanse Status Effect")] // NaughtyAttributes.Button("Cleanse Status Effect")
         public void CleanseStatusEffectButton()
         {
             RemoveEffect(inflictedEffect.data, true, this, inflictedEffect.tag, inflictedEffect.stacks);
         }
-        [Button("Inflict Damage")]
+
+        [NaughtyAttributes.Button("Inflict Damage"), ContextMenu("Inflict Damage")]
         public void InflictDamageButton()
         {
             ModifyHealth(inflictedDamage);
         }
 
-        [Button("Print Flags")]
+        [ContextMenu("Print Flags")] // NaughtyAttributes.Button("Print Flags")
         public void PrintFlags()
         {
             string charName = string.IsNullOrEmpty(characterName) ? "Unknown" : characterName.Replace(" ", "_");
@@ -353,6 +373,8 @@ namespace dev.susybaka.raidsim.Characters
             Debug.Log($"[CharacterState.{charName} ({gameObject.name})] amnesia: {amnesia.value} values.Count: {amnesia.values.Count}");
             Debug.Log($"[CharacterState.{charName} ({gameObject.name})] canDoActions: {canDoActions.value} values.Count: {canDoActions.values.Count}");
             Debug.Log($"[CharacterState.{charName} ({gameObject.name})] canDie: {canDie.value} values.Count: {canDie.values.Count}");
+            Debug.Log($"[CharacterState.{charName} ({gameObject.name})] canTarget: {canTarget.value} values.Count: {canTarget.values.Count}");
+            Debug.Log($"[CharacterState.{charName} ({gameObject.name})] hidden: {hidden.value} values.Count: {hidden.values.Count}");
         }
 #endif
 
@@ -805,6 +827,8 @@ namespace dev.susybaka.raidsim.Characters
             wasCanDoActions = new Flag(canDoActions);
             canDie.ForceUpdate();
             wasCanDie = new Flag(canDie);
+            wasCanTarget = new Flag(canTarget);
+            canTarget.ForceUpdate();
             hidden.ForceUpdate();
             wasHidden = new Flag(hidden);
             hide = hidden.value;
@@ -813,6 +837,11 @@ namespace dev.susybaka.raidsim.Characters
 
             // Randomize every character's status effect update timer
             statusEffectUpdateTimer = UnityEngine.Random.Range(0f, statusEffectUpdateInterval);
+
+            wasRole = role;
+
+            // Do a initial call to ensure at least some role is defined
+            onRoleChanged.Invoke(role);
 
             if (healthBar != null)
             {
@@ -1174,6 +1203,13 @@ namespace dev.susybaka.raidsim.Characters
 
             if (mirror == null)
             {
+                // Update role event
+                if (wasRole != role)
+                {
+                    wasRole = role;
+                    onRoleChanged.Invoke(role);
+                }
+
                 if (effects.Count > 0 && effectsArray != null)
                 {
                     // Simulate FFXIV server ticks by updating status effects every 3 seconds (By default).
@@ -1503,6 +1539,7 @@ namespace dev.susybaka.raidsim.Characters
             amnesia = new Flag(wasAmnesia);
             canDoActions = new Flag(wasCanDoActions);
             canDie = new Flag(wasCanDie);
+            canTarget = new Flag(wasCanTarget);
             hidden = new Flag(wasHidden);
             hide = hidden.value;
             disabled = wasDisabled;

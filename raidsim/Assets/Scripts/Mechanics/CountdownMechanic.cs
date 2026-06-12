@@ -18,7 +18,7 @@ namespace dev.susybaka.raidsim.Mechanics
         public string visualEffectName = "VisualEffects/Countdown_Effect";
         public bool useStatusEffect = false;
         public bool applyEffect = false;
-        [ShowIf("applyEffect")] public StatusEffectInfo effect;
+        [ShowIf("applyEffect")] public StatusEffectContext effect;
         [ShowIf("applyEffect")] public float applyOffset = 0f;
         public UnityEvent<ActionInfo> onFinish;
         public float finishOffset = 0f;

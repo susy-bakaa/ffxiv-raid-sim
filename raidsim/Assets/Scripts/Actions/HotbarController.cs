@@ -366,7 +366,7 @@ namespace dev.susybaka.raidsim.UI
 
         public void RefreshAllHotbars()
         {
-            OnRefreshHotbars.Invoke();
+            OnRefreshHotbars?.Invoke();
         }
 
         public HotbarGroupDefinition GetGroupDefinition(string groupId)

@@ -46,7 +46,7 @@ namespace dev.susybaka.raidsim.Mechanics
         public struct ScanData
         {
             public string name;
-            public StatusEffectInfo effect;
+            public StatusEffectContext effect;
             public UnityEvent<ActionInfo> onFound;
         }
     }

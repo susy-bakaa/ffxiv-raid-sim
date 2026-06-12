@@ -18,7 +18,7 @@ namespace dev.susybaka.raidsim.Bots
     {
         public enum choiceType { statusEffect, fightTimelineEventRandomResult, partyListPriority, none }
 
-        [ShowIf(nameof(TypeEnum), choiceType.statusEffect)] public List<StatusEffectInfo> effects = new List<StatusEffectInfo>();
+        [ShowIf(nameof(TypeEnum), choiceType.statusEffect)] public List<StatusEffectContext> effects = new List<StatusEffectContext>();
         [ShowIf(nameof(TypeEnum), choiceType.statusEffect)] public List<CharacterState> otherBots = new List<CharacterState>();
         private List<CharacterState> originalOtherBots = new List<CharacterState>();
         [ShowIf(nameof(TypeEnum), choiceType.statusEffect)] public List<BotTimeline> otherBotsFromTimelines = new List<BotTimeline>();
@@ -316,7 +316,7 @@ namespace dev.susybaka.raidsim.Bots
             }
         }
 
-        private bool CheckBotForStatusEffect(AIController bot, CharacterState state, StatusEffectInfo effect, int i)
+        private bool CheckBotForStatusEffect(AIController bot, CharacterState state, StatusEffectContext effect, int i)
         {
             if (state.HasEffect(effect.data?.statusName, effect.tag))
             {

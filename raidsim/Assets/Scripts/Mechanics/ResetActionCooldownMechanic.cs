@@ -16,7 +16,7 @@ namespace dev.susybaka.raidsim.Mechanics
         [Header("Reset Action Cooldown Settings")]
         public List<string> actionNames = new List<string>();
         public List<CharacterActionData> actions = new List<CharacterActionData>();
-        [ShowIf(nameof(checkForStatusEffects))] public List<StatusEffectInfo> effects = new List<StatusEffectInfo>();
+        [ShowIf(nameof(checkForStatusEffects))] public List<StatusEffectContext> effects = new List<StatusEffectContext>();
         public bool checkForStatusEffects = false;
         [ShowIf(nameof(checkForStatusEffects))] public bool requireAllEffects = false;
 
@@ -37,7 +37,7 @@ namespace dev.susybaka.raidsim.Mechanics
             if (checkForStatusEffects)
             {
                 bool hasRequiredEffects = false;
-                foreach (StatusEffectInfo effectInfo in effects)
+                foreach (StatusEffectContext effectInfo in effects)
                 {
                     if (state.HasEffect(effectInfo.data.name, effectInfo.tag))
                     {

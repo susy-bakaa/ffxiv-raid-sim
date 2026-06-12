@@ -14,7 +14,7 @@ namespace dev.susybaka.raidsim.Mechanics
     public class GazeMechanic : FightMechanic
     {
         public Damage damage = new Damage(100, true, true, DamageType.unique, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.percentageFromMax, "Unnamed Gaze");
-        public List<StatusEffectInfo> inflictsEffects = new List<StatusEffectInfo>();
+        public List<StatusEffectContext> inflictsEffects = new List<StatusEffectContext>();
         public bool lethalGaze = true;
         public Transform origin;
         public float threshold = 45f;

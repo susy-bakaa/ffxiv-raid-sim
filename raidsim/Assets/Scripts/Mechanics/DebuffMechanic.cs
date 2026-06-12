@@ -9,7 +9,7 @@ namespace dev.susybaka.raidsim.Mechanics
 {
     public class DebuffMechanic : FightMechanic
     {
-        public StatusEffectInfo effect;
+        public StatusEffectContext effect;
         public bool applyToTarget = true;
         public bool cleans = false;
         public bool allowSubStatuses = false;

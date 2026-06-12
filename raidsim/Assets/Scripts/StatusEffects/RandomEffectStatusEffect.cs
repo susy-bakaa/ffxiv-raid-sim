@@ -12,7 +12,7 @@ namespace dev.susybaka.raidsim.StatusEffects
     public class RandomEffectStatusEffect : StatusEffect
     {
         [Header("Function")]
-        public StatusEffectInfo effect;
+        public StatusEffectContext effect;
         public float chancePerTick = 0.5f;
         public float increaseChancePerMissedTick = 0.1f;
         public float minDuration = 1f;

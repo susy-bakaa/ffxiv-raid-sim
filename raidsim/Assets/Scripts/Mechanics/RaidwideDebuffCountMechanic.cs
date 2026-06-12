@@ -68,11 +68,11 @@ namespace dev.susybaka.raidsim.Mechanics
         public struct StatusEffectCountPair
         {
             public string name;
-            public StatusEffectInfo effect;
-            public List<StatusEffectInfo> allowedEffects;
+            public StatusEffectContext effect;
+            public List<StatusEffectContext> allowedEffects;
             public int requiredAmount;
 
-            public StatusEffectCountPair(string name, StatusEffectInfo effect, List<StatusEffectInfo> allowedEffects, int requiredAmount)
+            public StatusEffectCountPair(string name, StatusEffectContext effect, List<StatusEffectContext> allowedEffects, int requiredAmount)
             {
                 this.name = name;
                 this.effect = effect;

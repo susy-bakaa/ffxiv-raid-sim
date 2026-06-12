@@ -17,7 +17,7 @@ namespace dev.susybaka.raidsim.Mechanics
         [Header("Info")]
         public PartyList targetParty;
         public bool autoObtainParty = false;
-        public StatusEffectInfo targetEffect;
+        public StatusEffectContext targetEffect;
         public int usedSignMarkerIndex = 0;
         [Header("Visuals")]
         public float initialDelay = 0f;

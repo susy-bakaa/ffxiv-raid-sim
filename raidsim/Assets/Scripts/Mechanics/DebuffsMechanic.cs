@@ -12,7 +12,7 @@ namespace dev.susybaka.raidsim.Mechanics
 {
     public class DebuffsMechanic : FightMechanic
     {
-        public List<StatusEffectInfo> effects = new List<StatusEffectInfo>();
+        public List<StatusEffectContext> effects = new List<StatusEffectContext>();
         public List<IndexMapping> indexMapping = new List<IndexMapping>();
         public List<RoleMapping> roleMapping = new List<RoleMapping>();
         public int fightTimelineEventRandomResultId = -1;

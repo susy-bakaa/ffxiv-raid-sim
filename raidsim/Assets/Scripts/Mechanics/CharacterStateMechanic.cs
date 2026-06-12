@@ -63,7 +63,7 @@ namespace dev.susybaka.raidsim.Mechanics
         [Tooltip("If filtering by status effects, ignore and keep unfiltered characters as they were, instead of reverting their state.")]
         [ShowIf(nameof(filterByStatusEffects))] public bool ignoreUnfiltered = false;
         [Tooltip("If filtering by status effects, the status effects that are required.")]
-        [ShowIf(nameof(filterByStatusEffects))] public StatusEffectInfo[] requiredStatusEffects;
+        [ShowIf(nameof(filterByStatusEffects))] public StatusEffectContext[] requiredStatusEffects;
         [Tooltip("If enabled, the mechanic will change the characters model to a specific variant.")]
         public bool changeModel = false;
         [Tooltip("If changing the model variant, the index of the model to change to.")]
@@ -959,7 +959,7 @@ namespace dev.susybaka.raidsim.Mechanics
                 bool hasAllStatusEffects = true;
                 bool hasAnyStatusEffect = false;
 
-                foreach (StatusEffectInfo statusEffect in requiredStatusEffects)
+                foreach (StatusEffectContext statusEffect in requiredStatusEffects)
                 {
                     if (character.HasEffect(statusEffect.data.statusName, statusEffect.tag))
                     {

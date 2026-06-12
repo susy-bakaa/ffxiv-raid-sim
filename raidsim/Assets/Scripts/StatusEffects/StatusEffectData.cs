@@ -49,14 +49,14 @@ namespace dev.susybaka.raidsim.StatusEffects
 #endif
 
         [System.Serializable]
-        public struct StatusEffectInfo
+        public struct StatusEffectContext
         {
             public string name;
             public StatusEffectData data;
             public int tag;
             public int stacks;
 
-            public StatusEffectInfo(StatusEffectData effect, int tag, int stacks)
+            public StatusEffectContext(StatusEffectData effect, int tag, int stacks)
             {
                 name = effect.statusName + "_" + tag;
                 this.data = effect;
@@ -66,18 +66,36 @@ namespace dev.susybaka.raidsim.StatusEffects
         }
 
         [System.Serializable]
-        public struct StatusEffectInfoArray
+        public struct StatusEffectContextArray
         {
             public string name;
-            public StatusEffectInfo[] effectInfos;
+            public StatusEffectContext[] effectInfos;
 
-            public StatusEffectInfoArray(StatusEffectInfo[] effectInfos)
+            public StatusEffectContextArray(StatusEffectContext[] effectInfos)
             {
                 if (effectInfos != null && effectInfos.Length > 0)
                     name = effectInfos[0].name;
                 else
                     name = string.Empty;
                 this.effectInfos = effectInfos;
+            }
+        }
+
+        [System.Serializable]
+        public struct StatusEffectContextArrayRandom
+        {
+            public string name;
+            public bool random;
+            public StatusEffectContextArray[] effectArrays;
+
+            public StatusEffectContextArrayRandom(StatusEffectContextArray[] effectArrays, bool random = false)
+            {
+                if (effectArrays != null && effectArrays.Length > 0)
+                    name = effectArrays[0].name;
+                else
+                    name = string.Empty;
+                this.effectArrays = effectArrays;
+                this.random = random;
             }
         }
     }

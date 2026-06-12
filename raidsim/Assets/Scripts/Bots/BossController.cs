@@ -1,10 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // This file is part of ffxiv-raid-sim. Linking with the Unity runtime
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
-using UnityEngine;
+using System.Collections.Generic;
 using dev.susybaka.raidsim.Actions;
 using dev.susybaka.raidsim.Targeting;
 using dev.susybaka.Shared;
+using UnityEngine;
+using static dev.susybaka.raidsim.Core.GlobalData;
+using static dev.susybaka.raidsim.Core.GlobalData.Flag;
 
 namespace dev.susybaka.raidsim.Characters
 {
@@ -12,11 +15,16 @@ namespace dev.susybaka.raidsim.Characters
     {
         Animator animator;
         public CharacterState state { get; private set; }
-        public ActionController controller { get; private set; }
+        public ActionController actions { get; private set; }
+        public PlayerController playerControl { get; private set; }
+        public AIController aiControl { get; private set; }
         private Vector3 originalPosition;
         private Quaternion originalRotation;
         private Vector3 originalScale;
 
+        public Flag hasControl = new Flag("hasControl", new List<FlagValue> { new FlagValue("base", true) }, AggregateLogic.AnyTrue);
+        private Flag wasHasControl;
+        private bool wasControl = true;
         public Transform target;
         private Transform wasTarget;
         public Transform lookTarget;
@@ -62,8 +70,12 @@ namespace dev.susybaka.raidsim.Characters
         {
             animator = GetComponentInChildren<Animator>();
             state = GetComponent<CharacterState>();
-            controller = GetComponent<ActionController>();
+            actions = GetComponent<ActionController>();
+            playerControl = GetComponent<PlayerController>();
+            aiControl = GetComponent<AIController>();
 
+            wasHasControl = hasControl;
+            wasControl = !hasControl.value; // On purpose reverse this so one update will trigger immidiately if the boss starts with control
             wasTarget = target;
             wasLookTarget = lookTarget;
             wasTurnSmoothTime = turnSmoothTime;
@@ -84,6 +96,30 @@ namespace dev.susybaka.raidsim.Characters
             if (state == null)
                 return;
 
+            if (hasControl.value != wasControl)
+            {
+                wasControl = hasControl.value;
+
+                // Set boss controlled flag for both player and AI controllers
+                if (hasControl.value)
+                {
+                    if (playerControl != null)
+                        playerControl.bossControlled.SetFlag($"bossController_{gameObject.name}", true);
+                    if (aiControl != null)
+                        aiControl.bossControlled.SetFlag($"bossController_{gameObject.name}", true);
+                }
+                else
+                {
+                    if (playerControl != null)
+                        playerControl.bossControlled.SetFlag($"bossController_{gameObject.name}", false);
+                    if (aiControl != null)
+                        aiControl.bossControlled.SetFlag($"bossController_{gameObject.name}", false);
+                }
+            }
+
+            if (!hasControl.value)
+                return;
+
             if (animator != null && state != null)
             {
                 animator.SetBool(animatorParameterDead, state.dead);
@@ -97,12 +133,12 @@ namespace dev.susybaka.raidsim.Characters
                         animator = GetComponentInChildren<Animator>();
                     if (state == null)
                         state = GetComponent<CharacterState>();
-                    if (controller == null)
-                        controller = GetComponent<ActionController>();
+                    if (actions == null)
+                        actions = GetComponent<ActionController>();
                 }
             }
 
-            if (target != null && !state.dead && ((!ignoreCasting && !controller.isCasting && !animator.TryGetBool(animatorParameterActionLocked)) || ignoreCasting))
+            if (target != null && !state.dead && !state.stunned.value && ((!ignoreCasting && !actions.isCasting && !animator.TryGetBool(animatorParameterActionLocked)) || ignoreCasting))
             {
                 Vector3 vector = target.position - transform.position;
                 Vector2 vector2 = new Vector2(vector.x, vector.z);
@@ -190,7 +226,7 @@ namespace dev.susybaka.raidsim.Characters
                 currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, deceleration * Time.deltaTime);
 
                 // Even when the boss is not moving, check for rotation and calculate turning speed
-                if (lookTarget != null && !state.dead && ((!ignoreCasting && !controller.isCasting && !animator.TryGetBool(animatorParameterActionLocked)) || ignoreCasting))
+                if (lookTarget != null && !state.dead && ((!ignoreCasting && !actions.isCasting && !animator.TryGetBool(animatorParameterActionLocked)) || ignoreCasting))
                 {
                     Vector3 direction = (new Vector3(lookTarget.position.x, 0f, lookTarget.position.z) - new Vector3(transform.position.x, 0f, transform.position.z)).normalized;
                     Quaternion lookRotation = Quaternion.identity;
