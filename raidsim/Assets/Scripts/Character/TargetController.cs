@@ -774,6 +774,10 @@ namespace dev.susybaka.raidsim.Targeting
         private async Task RefreshTargetsAsync(bool sortByDistance, bool sortByEnmity)
         {
             availableTargets = await FindAllTargetableNodesAsync(sortByDistance, sortByEnmity);
+
+            if (!autoTarget && isAi)
+                return;
+
             if (availableTargets.Count > 0)
                 SetTarget(availableTargets[0]);
         }
@@ -794,6 +798,8 @@ namespace dev.susybaka.raidsim.Targeting
             List<TargetData> collectedData = new();
             foreach (var node in allNodes)
             {
+                if (!autoTarget && isAi)
+                    break;
                 if (!node.gameObject.CompareTag("target"))
                     continue;
                 if ((mask & (1 << node.gameObject.layer)) == 0)
@@ -831,6 +837,9 @@ namespace dev.susybaka.raidsim.Targeting
                     enmityScore = enmity
                 });
             }
+
+            if (!autoTarget && isAi)
+                return new List<TargetNode>();
 
             return await Task.Run(() =>
             {
@@ -1002,6 +1011,8 @@ namespace dev.susybaka.raidsim.Targeting
 
         public void SetAutoTargeting(bool state)
         {
+            if (log)
+                Debug.Log($"[TargetController ({gameObject.name})] setting autoTargeting: {state}", gameObject);
             autoTarget = state;
         }
 

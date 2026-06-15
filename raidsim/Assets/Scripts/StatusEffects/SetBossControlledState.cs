@@ -10,6 +10,7 @@ namespace dev.susybaka.raidsim.StatusEffects
         private PartyList party;
         private StatusEffect statusEffect;
         private TargetNode previousTarget;
+        private bool previousAutoAttack;
 
         private enum TargetType
         {
@@ -22,6 +23,7 @@ namespace dev.susybaka.raidsim.StatusEffects
 
         [SerializeField] private bool log = false;
         [SerializeField] private bool setCharacterTarget = false;
+        [SerializeField] private bool setAutoAttack = false;
         [SerializeField] private bool targetFriendlies = true;
         [SerializeField] private TargetType targetType = TargetType.Random;
 
@@ -50,6 +52,12 @@ namespace dev.susybaka.raidsim.StatusEffects
 
                 if (setCharacterTarget)
                     SetTarget(state);
+
+                if (setAutoAttack && state.actionController != null)
+                {
+                    previousAutoAttack = state.actionController.autoAttackEnabled;
+                    state.actionController.autoAttackEnabled = true;
+                }
             }
         }
 
@@ -66,6 +74,9 @@ namespace dev.susybaka.raidsim.StatusEffects
 
                 if (setCharacterTarget && state.targetController != null)
                     state.targetController.SetTarget(previousTarget);
+
+                if (setAutoAttack && state.actionController != null)
+                    state.actionController.autoAttackEnabled = previousAutoAttack;
             }
         }
 

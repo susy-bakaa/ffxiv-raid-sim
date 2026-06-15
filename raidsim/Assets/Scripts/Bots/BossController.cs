@@ -138,7 +138,7 @@ namespace dev.susybaka.raidsim.Characters
                 }
             }
 
-            if (target != null && !state.dead && !state.stunned.value && ((!ignoreCasting && !actions.isCasting && !animator.TryGetBool(animatorParameterActionLocked)) || ignoreCasting))
+            if (target != null && !state.dead && !state.stunned.value && !state.bound.value && ((!ignoreCasting && !actions.isCasting && !animator.TryGetBool(animatorParameterActionLocked)) || ignoreCasting))
             {
                 Vector3 vector = target.position - transform.position;
                 Vector2 vector2 = new Vector2(vector.x, vector.z);
@@ -271,9 +271,14 @@ namespace dev.susybaka.raidsim.Characters
             deceleration = wasDeceleration;
             speedThreshold = wasSpeedThreshold;
             ignoreCasting = wasIgnoreCasting;
-            transform.position = originalPosition;
-            transform.rotation = originalRotation;
-            transform.localScale = originalScale;
+            // Only reset position here if this controller has control and there are no player or AI controllers,
+            // to avoid conflicts with player/AI control resets
+            if (hasControl.value && aiControl == null && playerControl == null)
+            {
+                transform.position = originalPosition;
+                transform.rotation = originalRotation;
+                transform.localScale = originalScale;
+            }
         }
 
         public void SetAnimator(Animator animator)
