@@ -27,6 +27,7 @@ Shader "Custom/Lit/Background"
         _Blend_Tiling ("Blended Tiling", Vector) = (1, 1, 0, 0)
         _Blend_Offset ("Blended Offset", Vector) = (0, 0, 0, 0)
 
+        _AlphaClip ("Alpha Clip Threshold", Range(0, 1)) = 0.0
         _useVertexColor ("Use Vertex Color", Float) = 0.0
         _Double_Sided ("Double Sided", Float) = 2.0
     }
@@ -64,6 +65,7 @@ Shader "Custom/Lit/Background"
         float4 _Blend_Tiling;
         float4 _Blend_Offset;
 
+        float _AlphaClip;
         float _useVertexColor;
 
         struct Input
@@ -85,7 +87,10 @@ Shader "Custom/Lit/Background"
         {
             // Sample first layer
             float2 uvMain = IN.uv_Main * _Tiling.xy + _Offset.xy;
-            fixed4 mainColor = tex2D(_Main, uvMain) * _Tint;
+            fixed4 mainTex = tex2D(_Main, uvMain);
+            clip(mainTex.a - _AlphaClip);
+            fixed4 mainColor = mainTex * _Tint;
+            //fixed4 mainColor = tex2D(_Main, uvMain) * _Tint;
             fixed4 mainEmission = tex2D(_Emission, uvMain) * _Emission_Tint;
             fixed4 mainNormal = tex2D(_Normal, uvMain);
             fixed3 mainNormalUnpacked = UnpackNormal(mainNormal);
@@ -142,7 +147,15 @@ Shader "Custom/Lit/Background"
             o.Normal = combinedNormal;
             o.Metallic = combinedMetallic;
             o.Smoothness = combinedSmoothness;
-            o.Alpha = 1.0;
+
+            if (_AlphaClip > 0.0)
+            {
+                o.Alpha = mainTex.a;
+            }
+            else
+            {
+                o.Alpha = 1.0;
+            }
         }
         ENDCG
     }

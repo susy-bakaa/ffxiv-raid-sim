@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 7453292790282003445}
   - component: {fileID: 5439426702944404093}
   - component: {fileID: 3428216030808181527}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: AOE_GenericHeal
-  m_TagString: aoe
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -98,10 +98,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data: {fileID: 0}
   damageName: Generic Heal
+  active: 1
   inverted: 0
+  isDonut: 0
+  innerRadius: 0
+  log: 0
   owner: {fileID: 0}
   autoAssignOwner: 0
   ableToHitTag: Player
+  canHitCharacterName: 
   damage:
     name: Generic Heal
     value: 0
@@ -140,6 +145,7 @@ MonoBehaviour:
   increaseEnmity: 1
   topEnmity: 0
   initializeOnStart: 1
+  keepInitialized: 0
   self: 0
   dealsDamage: 1
   passDamage: 0
@@ -153,15 +159,20 @@ MonoBehaviour:
   updateLive: 0
   shared: 0
   enumeration: 0
+  limitedToPlayersRequired: 0
   requireOwner: 0
+  resetOnReload: 0
+  resetOwner: 0
   visualDelay: 0
   triggerDelay: 0.25
   triggerDelayVariance: 0
   damageApplicationDelay: 0
   cooldown: 10
   playersRequired: 0
+  damageMultiplierPerMissingPlayer: 1
   currentPlayers: []
   appliedEffects: []
+  appliedEffectsOnFail: []
   onHit:
     m_PersistentCalls:
       m_Calls: []
@@ -183,6 +194,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onStart:
+    m_PersistentCalls:
+      m_Calls: []
   onSpawn:
     m_PersistentCalls:
       m_Calls: []
@@ -192,7 +206,12 @@ MonoBehaviour:
   onTrigger:
     m_PersistentCalls:
       m_Calls: []
-  dummy: 0
+  onOccupied:
+    m_PersistentCalls:
+      m_Calls: []
+  onVacated:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &3428216030808181527
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -207,7 +226,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: 0
   disableInstead: 0
+  disabledOnStart: 0
   log: 0
+  onTriggerDestruction:
+    m_PersistentCalls:
+      m_Calls: []
   onDestroy:
     m_PersistentCalls:
       m_Calls: []
@@ -297,7 +320,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 85a5fb47b6fa1534481c4496342adca9, type: 3}
       propertyPath: m_TagString
-      value: aoe
+      value: Untagged
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
