@@ -47,25 +47,62 @@ namespace dev.susybaka.raidsim.Bots
 
         private void ResolveBasedOnDebuff(BotTimeline timeline)
         {
+            int noDebuffIndex = -1;
+            bool debuffFound = false;
+
             for (int i = 0; i < effects.Count; i++)
             {
+                if (effects[i].data == null)
+                {
+                    noDebuffIndex = i;
+                    continue;
+                }
+
                 if (timeline.bot.state.HasEffect(effects[i].data != null ? effects[i].data.statusName : effects[i].name, effects[i].tag))
                 {
                     int groupIndex = Mathf.Min(i, nodes.Count - 1);
                     ResolveNodesForGroup(timeline, nodes[groupIndex]);
+                    debuffFound = true;
                     break;
                 }
+            }
+
+            if (!debuffFound && noDebuffIndex > -1)
+            {
+                int groupIndex = Mathf.Min(noDebuffIndex, nodes.Count - 1);
+                ResolveNodesForGroup(timeline, nodes[groupIndex]);
+                debuffFound = true;
             }
         }
 
         private void ResolveBasedOnMultipleDebuffs(BotTimeline timeline)
         {
+            int noDebuffIndex = -1;
+            bool debuffFound = false;
+
             for (int i = 0; i < multipleEffects.Count; i++)
             {
                 bool hasEffect = true;
-                
+                bool empty = true;
+
+                if (multipleEffects[i].effectInfos == null || multipleEffects[i].effectInfos.Length < 1)
+                {
+                    noDebuffIndex = i;
+                    hasEffect = false;
+                    continue;
+                }
+
                 foreach (StatusEffectContext effect in multipleEffects[i].effectInfos)
                 {
+                    if (effect.data != null)
+                    {
+                        empty = false;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+
                     if (!timeline.bot.state.HasEffect(effect.data != null ? effect.data.statusName : effect.name, effect.tag))
                     {
                         hasEffect = false;
@@ -73,12 +110,26 @@ namespace dev.susybaka.raidsim.Bots
                     }
                 }
 
+                if (empty)
+                {
+                    noDebuffIndex = i;
+                    continue;
+                }
+
                 if (hasEffect)
                 {
                     int groupIndex = Mathf.Min(i, nodes.Count - 1);
                     ResolveNodesForGroup(timeline, nodes[groupIndex]);
+                    debuffFound = true;
                     break;
                 }
+            }
+
+            if (!debuffFound && noDebuffIndex > -1)
+            {
+                int groupIndex = Mathf.Min(noDebuffIndex, nodes.Count - 1);
+                ResolveNodesForGroup(timeline, nodes[groupIndex]);
+                debuffFound = true;
             }
         }
 
