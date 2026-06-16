@@ -4312,9 +4312,8 @@ namespace dev.susybaka.raidsim.Characters
             if (mirror != null)
                 return;
 
-            // Hard coded the Short (@s) and Long (@l) that are used to distinguish between few of the same debuffs,
-            // also the '#' character which is used for non capitalised letter sequences. This needs a better implementation.
-            string result = $"{prefix}{Utilities.InsertSpaceBeforeCapitals(data.statusName).Replace("#", " ")}";
+            // Insert spaces before capital letters and replace '#' with spaces, then ensure there are no double spaces and trim any extra spaces from the start
+            string result = $"{prefix}{Utilities.InsertSpaceBeforeCapitals(data.statusName).Replace("#", " ").Replace("  ", " ").TrimStart()}";
 
             // Remove anything after the '@' symbol
             int atIndex = result.IndexOf('@');
