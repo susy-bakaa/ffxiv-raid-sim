@@ -33,6 +33,7 @@ namespace dev.susybaka.raidsim.Core
         public bool toggleCharacterState = false;
         [ShowIf("toggleCharacterState")] public bool togglePartyListEntry = false;
         public bool toggleCharacterEffect = false;
+        [ShowIf(nameof(toggleCharacterEffect)), SerializeField] private string characterEffectKey = "CharacterEffect_Default";
         public bool toggleShaderEffect = false;
         [ShowIf("toggleShaderEffect")] public float fadeTime = 0.33f;
         public bool toggleScale = false;
@@ -233,9 +234,9 @@ namespace dev.susybaka.raidsim.Core
             if (characterEffect != null && toggleCharacterEffect)
             {
                 if (state)
-                    characterEffect.EnableEffect();
+                    characterEffect.EnableEffect(characterEffectKey);
                 else
-                    characterEffect.DisableEffect();
+                    characterEffect.DisableEffect(characterEffectKey);
             }
             if (shaderFade != null && toggleShaderEffect)
             {

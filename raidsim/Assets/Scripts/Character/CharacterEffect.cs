@@ -8,18 +8,24 @@ using NaughtyAttributes;
 #endif
 using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.Visuals;
+using static dev.susybaka.raidsim.Core.GlobalData;
+using static dev.susybaka.raidsim.Core.GlobalData.Flag;
 
 namespace dev.susybaka.raidsim.Characters
 {
     public class CharacterEffect : MonoBehaviour
     {
-        public bool visible = false;
-        private bool wasVisible;
+        [SerializeField] private bool log = false;
+
+        [SerializeField] private Flag isVisible = new Flag("isVisible", AggregateLogic.AnyTrue);
+        private Flag wasIsVisible;
+        private bool visible => isVisible.value;
         public bool enableOnStart = false;
         private bool wasEnabledOnStart;
         public bool toggleObject = true;
-        public float fadeTime = 0.33f;
-        public bool log = false;
+        [Min(0f)] public float fadeTime = 0.33f;
+        [Min(0f)] public float fadeInDelay = 0f;
+        [Min(0f)] public float fadeOutDelay = 0f;
 
         private SimpleShaderFade[] shaderFade;
         private bool hasShaderFade = false;
@@ -30,12 +36,22 @@ namespace dev.susybaka.raidsim.Characters
         private Coroutine ieOnReset;
         private bool reset = false;
         private bool hasStarted = false;
+        private Coroutine ieFadeOutDelay;
+        private Coroutine ieFadeInDelay;
+        private WaitForSeconds waitFadeInDelay = null;
+        private WaitForSeconds waitFadeOutDelay = null;
 
 #if UNITY_EDITOR
         [Button("Toggle Effect")]
         public void ToggleEffectButton()
         {
-            ToggleEffect();
+            ToggleEffect("CharacterEffect_Default");
+        }
+        [Button("Update Delays")]
+        public void UpdateDelaysButton()
+        {
+            waitFadeInDelay = new WaitForSeconds(fadeInDelay);
+            waitFadeOutDelay = new WaitForSeconds(fadeOutDelay);
         }
 #endif
 
@@ -53,7 +69,10 @@ namespace dev.susybaka.raidsim.Characters
             else
                 hasParticleEffects = false;
 
-            wasVisible = visible;
+            waitFadeInDelay = new WaitForSeconds(fadeInDelay);
+            waitFadeOutDelay = new WaitForSeconds(fadeOutDelay);
+            //wasVisible = visible;
+            wasIsVisible = isVisible;
             wasEnabledOnStart = enableOnStart;
             hasStarted = false;
         }
@@ -62,13 +81,11 @@ namespace dev.susybaka.raidsim.Characters
         {
             if (enableOnStart)
             {
-                visible = false;
-                EnableEffect();
+                EnableEffect("CharacterEffect_Default");
             }
             else
             {
-                visible = true;
-                DisableEffect();
+                DisableEffect("CharacterEffect_Default");
             }
         }
 
@@ -98,7 +115,8 @@ namespace dev.susybaka.raidsim.Characters
 
         private void OnReset()
         {
-            visible = wasVisible;
+            //visible = wasVisible;
+            isVisible = wasIsVisible;
             enableOnStart = wasEnabledOnStart;
             reset = true;
             hasStarted = false;
@@ -116,9 +134,9 @@ namespace dev.susybaka.raidsim.Characters
                 else
                 {
                     if (visible)
-                        EnableEffect();
+                        EnableEffect("CharacterEffect_Default");
                     else
-                        DisableEffect();
+                        DisableEffect("CharacterEffect_Default");
                 }
 
                 if (ieOnReset == null)
@@ -135,21 +153,71 @@ namespace dev.susybaka.raidsim.Characters
 
         public void ToggleEffect()
         {
+            ToggleEffect("CharacterEffect_Default");
+        }
+
+        public void ToggleEffect(string key)
+        {
             if (visible)
-                DisableEffect();
+                DisableEffect(key);
             else
-                EnableEffect();
+                EnableEffect(key);
         }
 
         public void EnableEffect()
         {
-            if (visible && !reset)
+            EnableEffect("CharacterEffect_Default");
+        }
+
+        public void EnableEffect(string key)
+        {
+            bool wasStarted = hasStarted;
+            hasStarted = true;
+
+            if (isVisible.GetFlagValue(key))
+                return;
+
+            bool tempVisible = visible;
+
+            isVisible.SetFlag(key, true);
+
+            if (tempVisible && !reset)
                 return;
 
             if (log)
                 Debug.Log($"[CharacterEffect ({gameObject.name})] EnableEffect was called!");
 
+            if (fadeInDelay > 0f)
+            {
+                if (ieFadeInDelay == null)
+                {
+                    if (ieFadeOutDelay != null)
+                    {
+                        StopCoroutine(ieFadeOutDelay);
+                        ieFadeOutDelay = null;
+                    }
+                    ieFadeInDelay = StartCoroutine(IE_FadeInDelay(wasStarted));
+                }
+            }
+            else
+            {
+                EnableEffectInternal(wasStarted);
+            }
+        }
+
+        private IEnumerator IE_FadeInDelay(bool wasStarted)
+        {
+            yield return waitFadeInDelay;
+            EnableEffectInternal(wasStarted);
+            ieFadeInDelay = null;
+        }
+
+        private void EnableEffectInternal(bool wasStarted)
+        {
             bool hasAnything = false;
+
+            if (!visible)
+                return;
 
             if (hasParticleEffects)
             {
@@ -167,7 +235,7 @@ namespace dev.susybaka.raidsim.Characters
                 {
                     if (toggleObject)
                         shaderFade[i].gameObject.SetActive(true);
-                    if (hasStarted)
+                    if (wasStarted)
                         shaderFade[i].FadeIn(fadeTime);
                     else
                         shaderFade[i].FadeIn(0); // If it's the first time starting, we want to skip the fade in time to avoid all effects fading at the same time running out of tweens.
@@ -179,25 +247,66 @@ namespace dev.susybaka.raidsim.Characters
                 if (toggleObject)
                     targetObject.SetActive(true);
             }
-            visible = true;
-            hasStarted = true;
         }
 
         public void DisableEffect()
         {
+            DisableEffect("CharacterEffect_Default");
+        }
+
+        public void DisableEffect(string key)
+        {
+            bool wasStarted = hasStarted;
+            hasStarted = true;
+
             if (!visible && !reset)
                 return;
 
             if (log)
                 Debug.Log($"[CharacterEffect ({gameObject.name})] DisableEffect was called!");
 
+            isVisible.RemoveFlag(key);
+
+            if (visible && !reset)
+                return;
+
+            if (fadeOutDelay > 0f)
+            {
+                if (ieFadeOutDelay == null)
+                {
+                    if (ieFadeInDelay != null)
+                    {
+                        StopCoroutine(ieFadeInDelay);
+                        ieFadeInDelay = null;
+                    }
+                    ieFadeOutDelay = StartCoroutine(IE_FadeOutDelay(wasStarted));
+                }
+            }
+            else
+            {
+                DisableEffectInternal(wasStarted);
+            }
+        }
+
+        private IEnumerator IE_FadeOutDelay(bool wasStarted)
+        {
+            yield return waitFadeOutDelay;
+            DisableEffectInternal(wasStarted);
+            ieFadeOutDelay = null;
+        }
+
+        private void DisableEffectInternal(bool wasStarted)
+        {
             bool hasAnything = false;
+
+            if (visible)
+                return;
 
             if (hasShaderFade)
             {
                 for (int i = 0; i < shaderFade.Length; i++)
                 {
-                    if (hasStarted)
+                    if (wasStarted)
                         shaderFade[i].FadeOut(fadeTime);
                     else
                         shaderFade[i].FadeOut(0); // If it's the first time starting, we want to skip the fade in time to avoid all effects fading at the same time running out of tweens.
@@ -227,8 +336,6 @@ namespace dev.susybaka.raidsim.Characters
                 if (toggleObject)
                     targetObject.SetActive(false);
             }
-            visible = false;
-            hasStarted = true;
         }
 
         private IEnumerator IE_DisableEffect(WaitForSeconds wait)
