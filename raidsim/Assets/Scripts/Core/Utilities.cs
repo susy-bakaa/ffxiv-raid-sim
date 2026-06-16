@@ -831,27 +831,32 @@ namespace dev.susybaka.Shared
         /// <returns>A formatted string representing the duration.</returns>
         public static string FormatDuration(float duration)
         {
-            string result = string.Empty;
+            // Handle negative durations
+            if (duration < 0)
+                return "0";
 
             duration = Mathf.FloorToInt(duration + 0.5f);
 
             if (duration < 60)
             {
-                result = duration.ToString("F0");
+                return ((int)duration).ToString();
             }
-            else if (duration > 59 && duration < 3600)
+            else if (duration < 3600)
             {
-                result = (duration / 60).ToString("F0") + "m";
+                return ((int)(duration / 60 + 0.5f)).ToString() + "m";
             }
-            else if (duration > 3599 && duration < 86400)
+            else if (duration < 86400)
             {
-                result = (duration / 3600).ToString("F0") + "h";
+                return ((int)(duration / 3600 + 0.5f)).ToString() + "h";
             }
-            else if (duration > 86399)
+            else if (duration < 31536000)
             {
-                result = (duration / 86400).ToString("F0") + "d";
+                return ((int)(duration / 86400 + 0.5f)).ToString() + "d";
             }
-            return result;
+            else
+            {
+                return ((int)(duration / 31536000 + 0.5f)).ToString() + "y";
+            }
         }
 
         public static string FirstCharToUpper(this string input)
@@ -901,7 +906,8 @@ namespace dev.susybaka.Shared
                 }
             }
 
-            return result.ToString();
+            // Trim leading spaces that may have been added before the first capital letter and return the result
+            return result.ToString().TrimStart();
         }
 
         /// <summary>
@@ -941,8 +947,8 @@ namespace dev.susybaka.Shared
                 }
             }
 
-            // Remove any double spaces resulting from processing
-            return result.ToString().Replace("  ", " ");
+            // Remove any double spaces resulting from processing and trim leading spaces
+            return result.ToString().Replace("  ", " ").TrimStart();
         }
 
         private static string ProcessSegment(string segment)

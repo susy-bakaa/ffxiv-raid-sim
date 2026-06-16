@@ -296,7 +296,7 @@ namespace dev.susybaka.raidsim.StatusEffects
         {
             if (hasHudElement)
             {
-                if ((!data.infinite && !data.hidden) && duration >= 1)
+                if ((!data.infinite && !data.hidden) && duration >= 0.5f)
                 {
                     hudTimer.text = Utilities.FormatDuration(duration);
                 }
@@ -309,7 +309,7 @@ namespace dev.susybaka.raidsim.StatusEffects
             }
             if (hasPartyHudElement)
             {
-                if ((!data.infinite && !data.hidden) && duration >= 1)
+                if ((!data.infinite && !data.hidden) && duration >= 0.5f)
                 {
                     partyHudTimer.text = Utilities.FormatDuration(duration);
                 }
@@ -322,7 +322,7 @@ namespace dev.susybaka.raidsim.StatusEffects
             }
             if (hasTargetHudElement)
             {
-                if ((!data.infinite && !data.hidden) && duration >= 1)
+                if ((!data.infinite && !data.hidden) && duration >= 0.5f)
                 {
                     targetHudTimer.text = Utilities.FormatDuration(duration);
                 }
