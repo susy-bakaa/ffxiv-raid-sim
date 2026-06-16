@@ -76,8 +76,8 @@ namespace dev.susybaka.Shared.Editor
             }
             else // This folder might have other files as well but at the moment it only contains asset bundles,
             {    // so we can safely delete it and recreate it to ensure a clean build.
-                Directory.Delete(outputFolder, true);
-                Directory.CreateDirectory(outputFolder);
+                // Delete only asset bundle files and their .manifest files, preserve other files
+                DeletePreviousAssetBundles();
             }
 
             try
@@ -117,13 +117,20 @@ namespace dev.susybaka.Shared.Editor
 
                         foreach (string filePath in files)
                         {
-                            if (filePath.EndsWith(extension) || filePath.EndsWith($"{extension}.manifest") || filePath.EndsWith($"{extension}.meta"))
+                            string fileName = Path.GetFileName(filePath);
+
+                            if (fileName.EndsWith(extension) || fileName.EndsWith($"{extension}.manifest") || fileName.EndsWith($"{extension}.meta"))
                             {
                                 File.Delete(filePath);
                                 continue;
                             }
 
-                            if (filePath.EndsWith(".manifest") || filePath.EndsWith(".meta"))
+                            if (fileName.EndsWith(".manifest") || fileName.EndsWith(".meta"))
+                                continue;
+
+                            // Unity's default AssetBundle files are extensionless.
+                            // Leave normal files like .json, .ini, .txt, etc. untouched.
+                            if (Path.HasExtension(fileName))
                                 continue;
 
                             string newPath = filePath + extension;
@@ -156,6 +163,52 @@ namespace dev.susybaka.Shared.Editor
                 options.Add(target.ToString());
             }
             return options.ToArray();
+        }
+
+        private void DeletePreviousAssetBundles()
+        {
+            string[] files = Directory.GetFiles(outputFolder);
+
+            foreach (string filePath in files)
+            {
+                string fileName = Path.GetFileName(filePath);
+
+                // Ensure that under no circumstances we delete .ini or .json files, as they might be used for configuration and should be preserved ALWAYS
+                if (fileName.EndsWith(".ini") || fileName.EndsWith(".json"))
+                    continue;
+
+                // Delete asset bundle files (with or without custom extension)
+                if (fileName.EndsWith(GlobalVariables.assetBundleExtension))
+                {
+                    File.Delete(filePath);
+
+                    // Also delete the corresponding .manifest file
+                    string manifestPath = filePath + ".manifest";
+                    if (File.Exists(manifestPath))
+                    {
+                        File.Delete(manifestPath);
+                    }
+                }
+                // Delete default asset bundle files (no extension)
+                else if (!fileName.Contains(".") || (fileName.EndsWith(".manifest") && !fileName.EndsWith($"{GlobalVariables.assetBundleExtension}.manifest")))
+                {
+                    // Check if this is a default asset bundle (no extension, or .manifest for a default bundle)
+                    string baseNameWithoutManifest = fileName.EndsWith(".manifest") ? fileName.Substring(0, fileName.Length - 9) : fileName;
+
+                    // Only delete if it doesn't have any extension (or if it's a .manifest for a non-extended bundle)
+                    if (!baseNameWithoutManifest.Contains(".") || fileName.EndsWith(".manifest"))
+                    {
+                        if (!fileName.EndsWith(".meta") && !fileName.EndsWith(".manifest.meta"))
+                        {
+                            File.Delete(filePath);
+                        }
+                        else if (fileName.EndsWith(".manifest"))
+                        {
+                            File.Delete(filePath);
+                        }
+                    }
+                }
+            }
         }
     }
 }

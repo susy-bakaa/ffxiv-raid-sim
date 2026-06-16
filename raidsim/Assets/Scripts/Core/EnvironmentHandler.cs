@@ -37,6 +37,7 @@ namespace dev.susybaka.raidsim.Core
         public UnityEvent onLoad;
 
         private bool allArenaModelsLoaded = false;
+        private bool onLoadInvoked = false;
         private Dictionary<ArenaModelData, GameObject> loadedArenaModels = new Dictionary<ArenaModelData, GameObject>();
         private Dictionary<GameObject, SimpleShaderFade> arenaShaderFades = new Dictionary<GameObject, SimpleShaderFade>();
 
@@ -113,70 +114,106 @@ namespace dev.susybaka.raidsim.Core
             if (arenaModelData == null || arenaModelData.Length <= 0 || allArenaModelsLoaded)
                 return;
 
-            if (AssetHandler.Instance != null && !allArenaModelsLoaded)
+            if (AssetHandler.Instance == null)
+                return;
+
+            bool allLoaded = true;
+
+            // Remove any possible temporary arena placeholders
+            for (int i = 0; i < arenaModelData.Length; i++)
             {
-                // Remove any possible temporary arena placeholders
-                if (arenaModelData != null && arenaModelData.Length > 0)
+                bool isLoaded = loadedArenaModels.ContainsKey(arenaModelData[i]);
+
+                if (!isLoaded)
                 {
-                    for (int i = 0; i < arenaModelData.Length; i++)
+                    // Skip loading if no bundle is assigned or if the bundle is set to "<None>" to allow for temporary arenas to coexist with final ones
+                    if (string.IsNullOrEmpty(arenaModelData[i].bundle) || arenaModelData[i].bundle == "<None>")
                     {
-                        if (AssetHandler.Instance.HasBundleLoaded(arenaModelData[i].bundle) && !loadedArenaModels.ContainsKey(arenaModelData[i]))
-                        {
-                            allArenaModelsLoaded = true;
-
-                            if (string.IsNullOrEmpty(arenaModelData[i].name))
-                            {
-                                continue;
-                            }
-
-                            if (arenaModelData[i].model != null)
-                            {
-                                Destroy(arenaModelData[i].model);
-                            }
-
-                            GameObject arena = AssetHandler.Instance.GetAsset(arenaModelData[i].bundle, arenaModelData[i].name);
-                            arena.transform.SetParent(transform);
-                            if (!fadeBetweenArenaModels) // If not fading, disable the arena by default until it's selected, if fading, we will handle the active state in the ChangeArenaModel function
-                                arena.SetActive(false);
-                            arena.transform.localPosition = arenaModelData[i].position;
-                            arena.transform.localEulerAngles = arenaModelData[i].rotation;
-                            arena.transform.localScale = arenaModelData[i].scale;
-                            arenaModelData[i].model = arena;
-                            loadedArenaModels[arenaModelData[i]] = arenaModelData[i].model;
-                            if (arenaModelData[i].collision != null) // Disable collision by default, will be enabled if this arena is selected
-                                arenaModelData[i].collision.SetActive(false);
-                        }
-                        else if (!loadedArenaModels.ContainsKey(arenaModelData[i]))
-                        { 
-                            allArenaModelsLoaded = false;
-                        }
+                        if (log)
+                            Debug.Log($"[EnvironmentHandler] Arena model at index {i} has no asset bundle assigned, skipping...");
+                        continue;
                     }
 
-                    if (allArenaModelsLoaded)
+                    if (!AssetHandler.Instance.HasBundleLoaded(arenaModelData[i].bundle))
                     {
-                        if (originalArenaIndex >= 0 && originalArenaIndex < arenaModelData.Length)
-                        {
-                            arenaModelData[originalArenaIndex].model?.SetActive(true);
-                            if (arenaModelData[originalArenaIndex].collision != null)
-                                arenaModelData[originalArenaIndex].collision?.SetActive(true);
-                            for (int j = 0; j < environmentalLights.Length; j++)
-                            {
-                                environmentalLights[j].color = arenaModelData[originalArenaIndex].ambientLightColor;
-                            }
-                        }
-                        else
-                        {
-                            arenaModelData[0].model?.SetActive(true);
-                            arenaModelData[0].collision?.SetActive(true);
-                            for (int j = 0; j < environmentalLights.Length; j++)
-                            {
-                                environmentalLights[j].color = arenaModelData[0].ambientLightColor;
-                            }
-                        }
+                        allLoaded = false;
+                        continue;
                     }
+
+                    if (string.IsNullOrEmpty(arenaModelData[i].name))
+                    {
+                        allLoaded = false;
+
+                        if (log)
+                            Debug.LogWarning($"[EnvironmentHandler] Arena model at index {i} has no asset name assigned.");
+
+                        continue;
+                    }
+
+                    if (arenaModelData[i].model != null)
+                    {
+                        Destroy(arenaModelData[i].model);
+                    }
+
+                    GameObject arena = AssetHandler.Instance.GetAsset(arenaModelData[i].bundle, arenaModelData[i].name);
+
+                    if (arena == null)
+                    {
+                        allLoaded = false;
+
+                        if (log)
+                            Debug.LogWarning($"[EnvironmentHandler] Failed to load arena model '{arenaModelData[i].name}' from bundle '{arenaModelData[i].bundle}'.");
+
+                        continue;
+                    }
+
+                    arena.transform.SetParent(transform);
+
+                    if (!fadeBetweenArenaModels)
+                        arena.SetActive(false);
+
+                    arena.transform.localPosition = arenaModelData[i].position;
+                    arena.transform.localEulerAngles = arenaModelData[i].rotation;
+                    arena.transform.localScale = arenaModelData[i].scale;
+
+                    arenaModelData[i].model = arena;
+                    loadedArenaModels[arenaModelData[i]] = arena;
+
+                    if (arenaModelData[i].collision != null)
+                        arenaModelData[i].collision.SetActive(false);
+
+                    if (log)
+                        Debug.Log($"[EnvironmentHandler] Loaded arena model '{arenaModelData[i].name}' from bundle '{arenaModelData[i].bundle}'.");
+
+                    ChangeArenaModel(currentArenaIndex);
                 }
 
-                onLoad.Invoke();
+                if (!loadedArenaModels.ContainsKey(arenaModelData[i]))
+                    allLoaded = false;
+            }
+
+            allArenaModelsLoaded = allLoaded;
+
+            if (allArenaModelsLoaded)
+            {
+                if (currentArenaIndex < 0 || currentArenaIndex >= arenaModelData.Length)
+                {
+                    if (log)
+                        Debug.LogWarning($"[EnvironmentHandler] Current arena index {currentArenaIndex} is invalid. Falling back to original arena index {originalArenaIndex}.");
+
+                    currentArenaIndex = originalArenaIndex;
+                }
+
+                if (currentArenaIndex < 0 || currentArenaIndex >= arenaModelData.Length)
+                    currentArenaIndex = 0;
+
+                ChangeArenaModel(currentArenaIndex);
+
+                if (!onLoadInvoked)
+                {
+                    onLoad.Invoke();
+                    onLoadInvoked = true;
+                }
             }
         }
 
@@ -189,6 +226,18 @@ namespace dev.susybaka.raidsim.Core
         {
             if (arenaModelData == null || arenaModelData.Length == 0)
                 return;
+
+            if (index < 0 || index >= arenaModelData.Length)
+            {
+                int originalIndex = index;
+
+                index = Mathf.Min(Mathf.Max(0, index), arenaModelData.Length - 1);
+
+                if (log)
+                    Debug.LogWarning($"[EnvironmentHandler] Invalid arena index {originalIndex}. Falling back to {index}.");
+            }
+
+            currentArenaIndex = index;
 
             for (int i = 0; i < arenaModelData.Length; i++)
             {
@@ -225,7 +274,7 @@ namespace dev.susybaka.raidsim.Core
                             arenaModelData[i].model.SetActive(i == index);
                         }
                     }
-                    else
+                    else if (arenaModelData[i].model != null)
                     {
                         SimpleShaderFade newShaderFade = arenaModelData[i].model.GetComponent<SimpleShaderFade>();
                         arenaShaderFades[arenaModelData[i].model] = newShaderFade;
@@ -257,32 +306,47 @@ namespace dev.susybaka.raidsim.Core
                             arenaModelData[i].model.SetActive(i == index);
                         }
                     }
-                }
+                    else if (arenaModelData[i].model == null && log)
+                    {
+                        Debug.LogWarning($"[EnvironmentHandler] Arena model at index {i} is missing, skipping fade and active state change.");
+                    }
+        }
                 else
                 {
                     if (log)
                         Debug.Log($"[EnvironmentHandler] Setting arena model: {arenaModelData[i].name} active state to {i == index}.");
-                    arenaModelData[i].model.SetActive(i == index);
+                    if (arenaModelData[i].model != null)
+                    {
+                        arenaModelData[i].model.SetActive(i == index);
+                    }
+                    else if (log)
+                    {
+                        Debug.LogWarning($"[EnvironmentHandler] Arena model at index {i} is missing, skipping active state change.");
+                    }
                 }
                 // Check if this arena data has separate collisions defined and enable/disable them accordingly
-                if (i == index)
+                if (log)
                 {
-                    if (log)
-                        Debug.Log($"[EnvironmentHandler] Enabling collision ({arenaModelData[i].collision.name}) for arena model: {arenaModelData[i].name}.");
-                    if (arenaModelData[i].collision != null)
-                        arenaModelData[i].collision.SetActive(true);
+                    string collisionName = arenaModelData[i].collision != null ? arenaModelData[i].collision.name : "None";
+                    string collisionState = i == index ? "Enabling" : "Disabling";
+
+                    Debug.Log($"[EnvironmentHandler] {collisionState} collision ({collisionName}) for arena model: {arenaModelData[i].name}.");
                 }
-                else
-                {
-                    if (log)
-                        Debug.Log($"[EnvironmentHandler] Disabling collision ({arenaModelData[i].collision.name}) for arena model: {arenaModelData[i].name}.");
-                    if (arenaModelData[i].collision != null)
-                        arenaModelData[i].collision.SetActive(false);
-                }
+
+                if (arenaModelData[i].collision != null)
+                    arenaModelData[i].collision.SetActive(i == index);
+
                 if (i == index)
                 {
                     if (log)
                         Debug.Log($"[EnvironmentHandler] Setting environmental light color for arena model: {arenaModelData[i].name}.");
+
+                    if (environmentalLights == null || environmentalLights.Length < 1)
+                    {
+                        if (log)
+                            Debug.LogWarning($"[EnvironmentHandler] No environmental lights assigned, skipping ambient light color change for arena model: {arenaModelData[i].name}.");
+                        continue;
+                    }
 
                     for (int j = 0; j < environmentalLights.Length; j++)
                     {

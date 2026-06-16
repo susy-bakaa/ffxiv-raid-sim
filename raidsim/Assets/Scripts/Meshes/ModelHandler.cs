@@ -125,7 +125,8 @@ namespace dev.susybaka.raidsim.Animations
         public void UpdateModels()
         {
             models.Clear();
-            Debug.Log($"UpdateModels {transform.childCount}");
+            if (FightTimeline.Instance.log)
+                Debug.Log($"UpdateModels {transform.childCount}");
             for (int i = 0; i < transform.childCount; i++)
             {
                 Transform child = transform.GetChild(i);
