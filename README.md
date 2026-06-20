@@ -20,6 +20,12 @@ If you want to keep up with development, have any questions or want to contribut
 
 Fights listed here are finished and available in the simulator.
 
+- Dancing Mad (Ultimate) (UMAD)
+	- Phase 1 (Kefka)
+		- Tele-trouncing ([Freaky MGR](https://raidplan.io/plan/qD9Y_g1caq3l5gD-))
+		- Tele-trouncing ([Merry-Go-Round / Big Box](https://docs.google.com/presentation/d/1-E2rEKa586KKiVNvtt3EAMQY2YAEVBRGcMX0WzORIq8))
+		- Tele-trouncing ([Filipino Box (ud5)](https://raidplan.io/plan/5rf2uhud5ztsbud5))
+		- Tele-trouncing ([Modified Xolo (X13)](https://raidplan.io/plan/p8JvSSs1_QKMVX13))
 - AAC Heavyweight Tier
 	- AAC Heavyweight M4 (Savage) (M12S)
 		- Phase 2 (Lindwurm II)
@@ -125,8 +131,8 @@ Fights listed here are not being worked on yet and are not in anyway guranteed t
 
 Latest Builds: 
 
-[![Static Badge](https://img.shields.io/badge/windows_x64-download-green)](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.7.3/raidsim_v.0.7.3_win64.zip)
-[![Static Badge](https://img.shields.io/badge/linux_x64-download-blue?logo=linux&logoColor=white)](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.7.3/raidsim_v.0.7.3_linux64.zip)
+[![Static Badge](https://img.shields.io/badge/windows_x64-download-green)](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.7.4/raidsim_v.0.7.4_win64.zip)
+[![Static Badge](https://img.shields.io/badge/linux_x64-download-blue?logo=linux&logoColor=white)](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.7.4/raidsim_v.0.7.4_linux64.zip)
 [![Static Badge](https://img.shields.io/badge/browser-open-yellow?logo=webgl&logoColor=white)](https://susybaka.dev/unityweb/raidsim/index.html)
 [![Static Badge](https://img.shields.io/badge/itch.io-open-red?logo=itchdotio&logoColor=white)](https://susybakaaa.itch.io/raidsim)
 
