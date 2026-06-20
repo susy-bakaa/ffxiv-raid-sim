@@ -121,7 +121,7 @@ namespace dev.susybaka.raidsim.Characters
             rb = GetComponent<Rigidbody>();
             animator = GetComponent<Animator>();
 
-            wasBossControlled = bossControlled;
+            wasBossControlled = new Flag(bossControlled);
         }
 
         private void OnEnable()
@@ -627,6 +627,8 @@ namespace dev.susybaka.raidsim.Characters
             this.animator = animator;
         }
 
+        public Animator GetAnimator() { return this.animator; }
+
         public void ResetController()
         {
             enableInput = true;
@@ -639,7 +641,7 @@ namespace dev.susybaka.raidsim.Characters
             jumpInputAvailable = true;
             preventGravity = false;
             wasPreventGravity = false;
-            bossControlled = wasBossControlled;
+            bossControlled = new Flag(wasBossControlled);
             if (rb != null)
                 rb.useGravity = true;
             tm = 0f;

@@ -74,7 +74,7 @@ namespace dev.susybaka.raidsim.Characters
             playerControl = GetComponent<PlayerController>();
             aiControl = GetComponent<AIController>();
 
-            wasHasControl = hasControl;
+            wasHasControl = new Flag(hasControl);
             wasControl = !hasControl.value; // On purpose reverse this so one update will trigger immidiately if the boss starts with control
             wasTarget = target;
             wasLookTarget = lookTarget;
@@ -118,7 +118,12 @@ namespace dev.susybaka.raidsim.Characters
             }
 
             if (!hasControl.value)
+            {
+                // Ensure no turning value remains in the animator when the boss is not under control,
+                // As player or AI controllers do not use the turning value, and it can cause animation issues if left set.
+                animator.SetFloat(animatorParameterTurning, 0f);
                 return;
+            }
 
             if (animator != null && state != null)
             {
@@ -271,6 +276,7 @@ namespace dev.susybaka.raidsim.Characters
             deceleration = wasDeceleration;
             speedThreshold = wasSpeedThreshold;
             ignoreCasting = wasIgnoreCasting;
+            hasControl = new Flag(wasHasControl);
             // Only reset position here if this controller has control and there are no player or AI controllers,
             // to avoid conflicts with player/AI control resets
             if (hasControl.value && aiControl == null && playerControl == null)
@@ -285,6 +291,8 @@ namespace dev.susybaka.raidsim.Characters
         {
             this.animator = animator;
         }
+
+        public Animator GetAnimator() { return this.animator; }
 
         public void SetTarget()
         {

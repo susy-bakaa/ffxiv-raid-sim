@@ -43,6 +43,7 @@ namespace dev.susybaka.raidsim.Nodes
         {
             foreach (BotNode node in nodes)
             {
+                node.gameObject.SetActive(true);
                 node.hasMechanic = false;
                 node.occupied = false;
             }

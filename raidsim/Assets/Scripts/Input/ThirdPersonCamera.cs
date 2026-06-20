@@ -149,7 +149,7 @@ namespace dev.susybaka.raidsim.Inputs
 
             if (Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(0))
             {
-#if PLATFORM_STANDALONE_WIN && !PLATFORM_STANDALONE_LINUX && !UNITY_EDITOR_LINUX
+#if PLATFORM_STANDALONE_WIN && !PLATFORM_STANDALONE_LINUX && !UNITY_EDITOR_LINUX && !PLATFORM_STANDALONE_OSX && !UNITY_EDITOR_OSX
                 if (!cursorPositionSet)
                 {
                     cursorPosition = CursorControl.GetPosition();
@@ -157,8 +157,14 @@ namespace dev.susybaka.raidsim.Inputs
                 }
                 Cursor.lockState = CursorLockMode.Confined;
 #else
+                if (!cursorPositionSet)
+                {
+                    MouseUtility.StoreMousePosition();
+                    cursorPositionSet = true;
+                }
                 Cursor.lockState = CursorLockMode.Confined;
 #endif
+
                 if (CursorHandler.Instance != null)
                 {
                     CursorHandler.Instance.visible = false;
@@ -177,13 +183,20 @@ namespace dev.susybaka.raidsim.Inputs
                     CursorControl.SetPosition(cursorPosition);
                     cursorPositionSet = false;
                 }
-#elif UNITY_EDITOR_WIN && !UNITY_EDITOR_LINUX
+#elif UNITY_EDITOR_WIN && !UNITY_EDITOR_LINUX && !PLATFORM_STANDALONE_LINUX && !PLATFORM_STANDALONE_OSX && !UNITY_EDITOR_OSX
                 if (cursorPositionSet)
                 {
                     CursorControl.SetPosition(cursorPosition);
                     cursorPositionSet = false;
                 }
+#else
+                if (cursorPositionSet)
+                {
+                    MouseUtility.RestoreMousePosition();
+                    cursorPositionSet = false;
+                }
 #endif
+
                 heldTime = 0;
                 lastHeldTime = 0;
 
@@ -270,12 +283,18 @@ namespace dev.susybaka.raidsim.Inputs
                         CursorControl.SetPosition(cursorPosition);
                         cursorPositionSet = false;
                     }
-#elif UNITY_EDITOR_WIN && !UNITY_EDITOR_LINUX
-                if (cursorPositionSet)
-                {
-                    CursorControl.SetPosition(cursorPosition);
-                    cursorPositionSet = false;
-                }
+#elif UNITY_EDITOR_WIN && !UNITY_EDITOR_LINUX && !PLATFORM_STANDALONE_LINUX && !PLATFORM_STANDALONE_OSX && !UNITY_EDITOR_OSX
+                    if (cursorPositionSet)
+                    {
+                        CursorControl.SetPosition(cursorPosition);
+                        cursorPositionSet = false;
+                    }
+#else
+                    if (cursorPositionSet)
+                    {
+                        MouseUtility.RestoreMousePosition();
+                        cursorPositionSet = false;
+                    }
 #endif
                     heldTime = 0;
 

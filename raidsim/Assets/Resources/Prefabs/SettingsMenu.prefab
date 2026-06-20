@@ -65287,10 +65287,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 787081667249389003}
     m_Modifications:
-    - target: {fileID: 5520378789832091872, guid: 355bc87518964e04cafb4ee31987bfcf, type: 3}
-      propertyPath: key
-      value: SelectedStrat
-      objectReference: {fileID: 0}
     - target: {fileID: 864227202019974020, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0.000005811453
@@ -65511,6 +65507,10 @@ PrefabInstance:
       propertyPath: blocksScrInput
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5520378789832091872, guid: 355bc87518964e04cafb4ee31987bfcf, type: 3}
+      propertyPath: key
+      value: SelectedStrat
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -65521,6 +65521,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2397317220443939482, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2759539990972006170}
+    - targetCorrespondingSourceObject: {fileID: 2397317220443939482, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2696939216406807414}
     - targetCorrespondingSourceObject: {fileID: 2397317220443939482, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3221225186216555709}
@@ -65575,11 +65578,36 @@ MonoBehaviour:
   alwaysLoadValue: 0
   onStart:
     m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &2696939216406807414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8834590767942676421}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ea01dbfc248acc40bad07e2acf8bafc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: 
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  onStart: 1
+  onEnable: 0
+  noReset: 0
+  target: {fileID: 0}
+  onTrigger:
+    m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 3221225186216555709}
-        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Mechanics.FightMechanic, Assembly-CSharp
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Mechanics.DelayedMechanic,
+          Assembly-CSharp
         m_MethodName: TriggerMechanic
-        m_Mode: 1
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -65610,6 +65638,18 @@ MonoBehaviour:
   onDelayedTrigger:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 2759539990972006170}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.SaveLoad.SaveDropdown, Assembly-CSharp
+        m_MethodName: LoadSavedValue
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 4869328139964810962}
         m_TargetAssemblyTypeName: dev.susybaka.raidsim.UI.ConfigMenu, Assembly-CSharp
         m_MethodName: RefreshLate
@@ -65630,10 +65670,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 787081667249389003}
     m_Modifications:
-    - target: {fileID: 5520378789832091872, guid: 355bc87518964e04cafb4ee31987bfcf, type: 3}
-      propertyPath: key
-      value: SelectedStrat
-      objectReference: {fileID: 0}
     - target: {fileID: 864227202019974020, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -0.000030428171
@@ -65857,6 +65893,10 @@ PrefabInstance:
     - target: {fileID: 8679644008921814139, guid: 4aba2002ad5d9f24d819a384308bba33, type: 3}
       propertyPath: blocksScrInput
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5520378789832091872, guid: 355bc87518964e04cafb4ee31987bfcf, type: 3}
+      propertyPath: key
+      value: SelectedStrat
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

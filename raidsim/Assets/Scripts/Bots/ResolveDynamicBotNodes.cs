@@ -1,10 +1,12 @@
-using System.Collections;
+// SPDX-License-Identifier: GPL-3.0-only
+// This file is part of ffxiv-raid-sim. Linking with the Unity runtime
+// is permitted under the Unity Runtime Linking Exception (see LICENSE).
 using System.Collections.Generic;
 using UnityEngine;
 using NaughtyAttributes;
+using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.Nodes;
 using static dev.susybaka.raidsim.StatusEffects.StatusEffectData;
-using dev.susybaka.raidsim.Core;
 
 namespace dev.susybaka.raidsim.Bots
 {

@@ -85,6 +85,9 @@ namespace dev.susybaka.raidsim.SaveLoad
 
         public void SaveValue(int value)
         {
+            if (ini == null)
+                ini = new IniStorage(GlobalVariables.configPath);
+
             ini.Load(GlobalVariables.configPath);
 
             savedValue = value;

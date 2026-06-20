@@ -75,7 +75,7 @@ namespace dev.susybaka.raidsim.Inputs
                         cursorPositionSet = true;
                     }
 #endif
-#if UNITY_EDITOR_WIN && !UNITY_EDITOR_LINUX
+#if UNITY_EDITOR_WIN && !UNITY_EDITOR_LINUX && !PLATFORM_STANDALONE_LINUX
                     if (!cursorPositionSet)
                     {
                         cursorPosition = CursorControl.GetPosition();
@@ -102,7 +102,7 @@ namespace dev.susybaka.raidsim.Inputs
                         cursorPositionSet = false;
                     }
 #endif
-#if UNITY_EDITOR_WIN && !UNITY_EDITOR_LINUX
+#if UNITY_EDITOR_WIN && !UNITY_EDITOR_LINUX && !PLATFORM_STANDALONE_LINUX
                     if (cursorPositionSet)
                     {
                         CursorControl.SetPosition(cursorPosition);

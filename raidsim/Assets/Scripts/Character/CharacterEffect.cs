@@ -72,7 +72,7 @@ namespace dev.susybaka.raidsim.Characters
             waitFadeInDelay = new WaitForSeconds(fadeInDelay);
             waitFadeOutDelay = new WaitForSeconds(fadeOutDelay);
             //wasVisible = visible;
-            wasIsVisible = isVisible;
+            wasIsVisible = new Flag(isVisible);
             wasEnabledOnStart = enableOnStart;
             hasStarted = false;
         }
@@ -116,14 +116,23 @@ namespace dev.susybaka.raidsim.Characters
         private void OnReset()
         {
             //visible = wasVisible;
-            isVisible = wasIsVisible;
+            isVisible = new Flag(wasIsVisible);
             enableOnStart = wasEnabledOnStart;
             reset = true;
             hasStarted = false;
 
+            if (ieFadeInDelay != null || ieFadeOutDelay != null)
+                DisableEffectInternal(false);
+
             StopAllCoroutines();
+
             ieDisableEffect = null;
             ieOnReset = null;
+            ieFadeInDelay = null;
+            ieFadeOutDelay = null;
+
+            if (log)
+                Debug.Log($"[CharacterEffect ({gameObject.name})] OnReset was called!");
 
             if (gameObject.activeSelf && gameObject.activeInHierarchy)
             {
@@ -133,10 +142,15 @@ namespace dev.susybaka.raidsim.Characters
                 }
                 else
                 {
-                    if (visible)
+                    if (isVisible.value)
                         EnableEffect("CharacterEffect_Default");
                     else
+                    {
+                        if (log)
+                            Debug.Log($"[CharacterEffect ({gameObject.name})] Effect disabled with reset!");
+
                         DisableEffect("CharacterEffect_Default");
+                    }
                 }
 
                 if (ieOnReset == null)

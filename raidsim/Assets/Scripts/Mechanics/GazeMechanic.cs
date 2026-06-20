@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using NaughtyAttributes;
+using dev.susybaka.raidsim.Actions;
 using dev.susybaka.raidsim.Characters;
 using static dev.susybaka.raidsim.Core.GlobalData.Damage;
 using static dev.susybaka.raidsim.Core.GlobalData;
@@ -16,6 +17,9 @@ namespace dev.susybaka.raidsim.Mechanics
         public Damage damage = new Damage(100, true, true, DamageType.unique, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.percentageFromMax, "Unnamed Gaze");
         public List<StatusEffectContext> inflictsEffects = new List<StatusEffectContext>();
         public bool lethalGaze = true;
+        public bool useActionDamage = false;
+        [Tooltip("If true, the gaze will act as a look-at mechanic, where the target must be looking away from the origin of the gaze to be affected. If false, the target must be looking at the origin of the gaze to be affected as usual.")]
+        public bool inverted = false;
         public Transform origin;
         public float threshold = 45f;
 
@@ -53,18 +57,27 @@ namespace dev.susybaka.raidsim.Mechanics
             if (target == null)
                 return;
 
+            CharacterAction action = actionInfo.action;
+
             angle = Vector3.Angle(target.transform.forward, origin.position - target.transform.position);
 
             if (log)
                 Debug.Log($"target: '{target.gameObject.name}', Angle: '{angle}'");
 
-            if (angle < threshold)
+            if ((inverted && angle > threshold) || (!inverted && angle < threshold))
             {
                 bool damageDealt = false;
                 if (damage.value != 0 || lethalGaze)
                 {
                     damageDealt = true;
-                    target.ModifyHealth(damage, lethalGaze);
+                    if (useActionDamage && action != null)
+                    {
+                        target.ModifyHealth(action.Data.damage, lethalGaze);
+                    }
+                    else
+                    {
+                        target.ModifyHealth(damage, lethalGaze);
+                    }
                 }
                 if (inflictsEffects != null && inflictsEffects.Count > 0)
                 {

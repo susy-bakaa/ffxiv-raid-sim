@@ -15,8 +15,10 @@ namespace dev.susybaka.raidsim.Editor
         public Shape shape = Shape.sphere;
         public bool wireframe = false;
         public bool whenSelected = false;
+        public bool drawInLocalSpace = false;
         public Vector3 size = Vector3.one;
         public Vector3 offset = Vector3.zero;
+        private Vector3 autoOffset = Vector3.zero;
 
         private void OnDrawGizmos()
         {
@@ -36,8 +38,19 @@ namespace dev.susybaka.raidsim.Editor
 
         private void DrawGizmos()
         {
+            Vector3 position = Vector3.zero;
+
             Gizmos.color = color;
-            Vector3 position = transform.position + offset;
+            if (drawInLocalSpace)
+            {
+                Gizmos.matrix = transform.localToWorldMatrix;
+                position = offset;
+            }
+            else
+            {
+                Gizmos.matrix = Matrix4x4.identity;
+                position = transform.position + offset;
+            }
 
             switch (shape)
             {

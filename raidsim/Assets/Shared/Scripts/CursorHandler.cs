@@ -199,7 +199,7 @@ namespace dev.susybaka.Shared.UserInterface
 #if !UNITY_WEBPLAYER
             if (!useSoftwareCursor)
             {
-#if UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX
+#if !PLATFORM_STANDALONE_WIN && !UNITY_EDITOR_WIN && (UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX)
                 // Decide target cursor size: compositor hint or sensible default (32)
                 int target;
                 if (!TryGetLinuxCursorTargetSize(out target))
@@ -230,7 +230,7 @@ namespace dev.susybaka.Shared.UserInterface
             currentCursor = cursor;
         }
 
-#if UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX
+#if !PLATFORM_STANDALONE_WIN && !UNITY_EDITOR_WIN && (UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX)
         private static bool TryGetLinuxCursorTargetSize(out int size)
         {
             size = 0;
@@ -250,10 +250,11 @@ namespace dev.susybaka.Shared.UserInterface
         // Returns a scaled copy and the scale factor used (relative to src).
         private Texture2D GetScaledCursorTexture(Texture2D src, int targetMaxEdge, out float scale)
         {
-            // Preserve aspect; scale so the longest edge == targetMaxEdge
-            int srcW = src.width, srcH = src.height;
+            int srcW = src.width;
+            int srcH = src.height;
+
             int longest = Mathf.Max(srcW, srcH);
-            scale = (longest > 0) ? (targetMaxEdge / (float)longest) : 1f;
+            scale = longest > 0 ? targetMaxEdge / (float)longest : 1f;
 
             int dstW = Mathf.Max(1, Mathf.RoundToInt(srcW * scale));
             int dstH = Mathf.Max(1, Mathf.RoundToInt(srcH * scale));
@@ -262,23 +263,32 @@ namespace dev.susybaka.Shared.UserInterface
             if (linuxScaledCursorCache.TryGetValue(key, out var cached) && cached != null)
                 return cached;
 
-            // GPU downscale (no need for src to be readable)
-            var rt = RenderTexture.GetTemporary(dstW, dstH, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);
-            Graphics.Blit(src, rt);
+            RenderTexture prev = RenderTexture.active;
+            RenderTexture rt = RenderTexture.GetTemporary(dstW, dstH, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);
 
-            var prev = RenderTexture.active;
-            RenderTexture.active = rt;
+            try
+            {
+                Graphics.Blit(src, rt);
 
-            var tex = new Texture2D(dstW, dstH, TextureFormat.RGBA32, false, true);
-            tex.ReadPixels(new Rect(0, 0, dstW, dstH), 0, 0, false);
-            tex.Apply(false, true);
-            tex.filterMode = FilterMode.Point; // crisp cursor
+                RenderTexture.active = rt;
 
-            RenderTexture.active = prev;
-            RenderTexture.ReleaseTemporary(rt);
+                var tex = new Texture2D(dstW, dstH, TextureFormat.RGBA32, false, true);
+                tex.ReadPixels(new Rect(0, 0, dstW, dstH), 0, 0, false);
 
-            linuxScaledCursorCache[key] = tex;
-            return tex;
+                // Keep readable. This is required for Cursor.SetCursor.
+                tex.Apply(updateMipmaps: false, makeNoLongerReadable: false);
+
+                tex.filterMode = FilterMode.Bilinear;
+                tex.wrapMode = TextureWrapMode.Clamp;
+
+                linuxScaledCursorCache[key] = tex;
+                return tex;
+            }
+            finally
+            {
+                RenderTexture.active = prev;
+                RenderTexture.ReleaseTemporary(rt);
+            }
         }
 #endif
 

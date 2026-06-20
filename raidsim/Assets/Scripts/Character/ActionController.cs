@@ -525,6 +525,8 @@ namespace dev.susybaka.raidsim.Actions
             this.animator = animator;
         }
 
+        public Animator GetAnimator() { return this.animator; }
+
         public bool TryGetAction(CharacterActionData actionData, out CharacterAction action, StringComparison comparison = StringComparison.Ordinal)
         {
             return TryGetAction(actionData.actionName, out action, comparison);

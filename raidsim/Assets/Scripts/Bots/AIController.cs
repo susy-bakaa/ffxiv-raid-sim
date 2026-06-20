@@ -67,7 +67,7 @@ namespace dev.susybaka.raidsim.Characters
             state = GetComponent<CharacterState>();
             wasBotTimeline = botTimeline;
             botTimeline.bot = this;
-            wasBossControlled = bossControlled;
+            wasBossControlled = new Flag(bossControlled);
             if (allowGravity)
             {
                 preventGravity = false;
@@ -393,11 +393,13 @@ namespace dev.susybaka.raidsim.Characters
             this.animator = animator;
         }
 
+        public Animator GetAnimator() { return this.animator; }
+
         public void ResetController()
         {
             botTimeline = wasBotTimeline;
             botTimeline.bot = this;
-            bossControlled = wasBossControlled;
+            bossControlled = new Flag(wasBossControlled);
             if (allowGravity)
             {
                 preventGravity = false;

@@ -29,6 +29,7 @@ namespace dev.susybaka.raidsim.Bots
         public bool obtainNodesOnStart = true;
         public bool useIndexMapping = false;
         public bool chooseBasedOnBotGroup = false;
+        public bool setFaceTargetInstead = false;
         public UnityEvent<BotNode> onNodeChosen;
 
         private bool _showSecondIndexMapping => useIndexMapping && fightTimelineEventRandomResultId2 > -1;
@@ -111,7 +112,10 @@ namespace dev.susybaka.raidsim.Bots
                 if (targetEventIndex >= 0 && targetEventIndex <= timeline.events.Count)
                 {
                     BotEvent e = timeline.events[targetEventIndex];
-                    e.node = availableNodes[r]?.transform;
+                    if (!setFaceTargetInstead)
+                        e.node = availableNodes[r]?.transform;
+                    else
+                        e.faceTowards = availableNodes[r]?.transform;
                     timeline.events[targetEventIndex] = e;
                     onNodeChosen?.Invoke(availableNodes[r]);
                 }
@@ -122,7 +126,10 @@ namespace dev.susybaka.raidsim.Bots
                         BotEvent e = timeline.events[i];
                         if (e.dynamic)
                         {
-                            e.node = availableNodes[r]?.transform;
+                            if (!setFaceTargetInstead)
+                                e.node = availableNodes[r]?.transform;
+                            else
+                                e.faceTowards = availableNodes[r]?.transform;
                             timeline.events[i] = e;
                             onNodeChosen?.Invoke(availableNodes[r]);
                             break;
@@ -139,7 +146,10 @@ namespace dev.susybaka.raidsim.Bots
                         if (index >= 0 && index < timeline.events.Count)
                         {
                             BotEvent e = timeline.events[index];
-                            e.node = availableNodes[r]?.transform;
+                            if (!setFaceTargetInstead)
+                                e.node = availableNodes[r]?.transform;
+                            else
+                                e.faceTowards = availableNodes[r]?.transform;
                             timeline.events[index] = e;
                             onNodeChosen?.Invoke(availableNodes[r]);
                         }
@@ -152,7 +162,10 @@ namespace dev.susybaka.raidsim.Bots
                         BotEvent e = timeline.events[i];
                         if (e.dynamic && e.node == null)
                         {
-                            e.node = availableNodes[r]?.transform;
+                            if(!setFaceTargetInstead)
+                                e.node = availableNodes[r]?.transform;
+                            else
+                                e.faceTowards = availableNodes[r]?.transform;
                             timeline.events[i] = e;
                             onNodeChosen?.Invoke(availableNodes[r]);
                         }

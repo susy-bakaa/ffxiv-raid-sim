@@ -73,6 +73,7 @@ namespace dev.susybaka.raidsim.Mechanics
 
         public override void InterruptMechanic(ActionInfo actionInfo)
         {
+            base.InterruptMechanic(actionInfo);
             StopAllCoroutines();
             ieTriggerMechanicDelayed = null;
             delay = originalDelay;

@@ -11,11 +11,13 @@ namespace dev.susybaka.raidsim.Visuals
         public Vector3 scale;
         public bool setScale = false;
         public bool onUpdate = true;
+        [NaughtyAttributes.ShowIf(nameof(onUpdate))] public bool pingPong = false;
         public bool overrideOriginalScale = false;
-        [NaughtyAttributes.ShowIf("overrideOriginalScale")] public Vector3 originalScale = Vector3.zero;
+        [NaughtyAttributes.ShowIf(nameof(overrideOriginalScale))] public Vector3 originalScale = Vector3.zero;
         public float duration = 0.5f;
 
-        private bool scaled;
+        private bool scaled = false;
+        private bool tweenDone = true;
 
 #if UNITY_EDITOR
         [Header("Editor")]
@@ -59,6 +61,7 @@ namespace dev.susybaka.raidsim.Visuals
             if (originalScale == Vector3.zero)
                 originalScale = transform.localScale;
             scaled = false;
+            tweenDone = true;
         }
 
         private void Update()
@@ -66,20 +69,31 @@ namespace dev.susybaka.raidsim.Visuals
             if (!onUpdate)
                 return;
 
-            Scale();
+            if (pingPong)
+            {
+                if (scaled && tweenDone)
+                    ScaleBack();
+                else if (!scaled && tweenDone)
+                    Scale();
+            }
+            else
+            {
+                Scale();
+            }
         }
 
         public void Scale()
         {
-            if (scaled)
+            if (scaled || (!setScale && !tweenDone))
                 return;
 
             if (!setScale)
             {
                 if (scale != Vector3.zero)
                 {
+                    tweenDone = false;
                     scaled = true;
-                    transform.LeanScale(scale, duration);
+                    transform.LeanScale(scale, duration).setOnComplete(() => tweenDone = true);
                 }
             }
             else
@@ -91,21 +105,23 @@ namespace dev.susybaka.raidsim.Visuals
 
         public void ScaleBack()
         {
-            if (!scaled)
+            if (!scaled || (!setScale && !tweenDone))
                 return;
 
             if (!setScale)
             {
                 if (originalScale != Vector3.zero)
                 {
+                    tweenDone = false;
                     scaled = false;
-                    transform.LeanScale(originalScale, duration);
+                    transform.LeanScale(originalScale, duration).setOnComplete(() => tweenDone = true);
                 }
                 else
                 {
+                    tweenDone = false;
                     scaled = false;
                     originalScale = new Vector3(0.01f, 0.01f, 0.01f);
-                    transform.LeanScale(originalScale, duration);
+                    transform.LeanScale(originalScale, duration).setOnComplete(() => tweenDone = true);
                 }
             }
             else
@@ -117,21 +133,23 @@ namespace dev.susybaka.raidsim.Visuals
 
         public void ResetScale()
         {
-            if (!scaled)
+            if (!scaled || (!setScale && !tweenDone))
                 return;
 
             if (!setScale)
             {
                 if (originalScale != Vector3.zero)
                 {
+                    tweenDone = false;
                     scaled = false;
-                    transform.LeanScale(originalScale, duration);
+                    transform.LeanScale(originalScale, duration).setOnComplete(() => tweenDone = true);
                 }
                 else
                 {
+                    tweenDone= false;
                     scaled = false;
                     originalScale = new Vector3(0.01f, 0.01f, 0.01f);
-                    transform.LeanScale(originalScale, duration);
+                    transform.LeanScale(originalScale, duration).setOnComplete(() => tweenDone = true);
                 }
             }
             else

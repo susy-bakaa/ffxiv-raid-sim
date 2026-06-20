@@ -20,15 +20,12 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Floor01
+  m_Name: t1_Cry04a
   m_Shader: {fileID: 4800000, guid: 1f0826357cca9fe429f0fe66d82191cb, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
-  m_InvalidKeywords:
-  - _ALPHATEST_ON
-  - _NORMALMAP
-  - _SPECGLOSSMAP
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -51,65 +48,31 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _BumpMap:
-        m_Texture: {fileID: 2800000, guid: f0a36fb883a9e1449a24ff50389e8dfe, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _DetailAlbedoMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _DetailMask:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _DetailNormalMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _Emission:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 0.25, y: 0.25}
-        m_Offset: {x: 0, y: 0}
-    - _EmissionMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 0.5, y: 0.5}
+        m_Texture: {fileID: 2800000, guid: 52948446614772b46b1d8594a8b9ffe8, type: 3}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Emission_Blend:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Main:
-        m_Texture: {fileID: 2800000, guid: 52f30b3bfcc3afc43b272166ea13ce57, type: 3}
-        m_Scale: {x: 0.25, y: 0.25}
-        m_Offset: {x: 0, y: 0}
-    - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 52f30b3bfcc3afc43b272166ea13ce57, type: 3}
-        m_Scale: {x: 0.5, y: 0.5}
+        m_Texture: {fileID: 2800000, guid: 52948446614772b46b1d8594a8b9ffe8, type: 3}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Normal:
-        m_Texture: {fileID: 2800000, guid: f0a36fb883a9e1449a24ff50389e8dfe, type: 3}
-        m_Scale: {x: 0.25, y: 0.25}
-        m_Offset: {x: 0, y: 0}
-    - _OcclusionMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _ParallaxMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _SpecGlossMap:
-        m_Texture: {fileID: 2800000, guid: 1bb3fafbd25e00b4090c663491dc4498, type: 3}
+        m_Texture: {fileID: 2800000, guid: 9ecbcb0f847093f42b8c3f169b882d01, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Specular:
-        m_Texture: {fileID: 2800000, guid: 1bb3fafbd25e00b4090c663491dc4498, type: 3}
-        m_Scale: {x: 0.25, y: 0.25}
+        m_Texture: {fileID: 2800000, guid: 7e34fef05f78fb24291cce82b1db9db4, type: 3}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    m_Ints: []
+    m_Ints:
+    - _DitherSize: 1
     m_Floats:
-    - _AlphaClip: 0.5
+    - _Alpha: 1
+    - _AlphaClip: 0
     - _BUILTIN_QueueControl: 0
     - _BUILTIN_QueueOffset: 0
     - _Blend_Metallic: 0
@@ -117,19 +80,24 @@ Material:
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
-    - _Double_Sided: 0
+    - _Double_Sided: 2
     - _DstBlend: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _Metallic: 0
-    - _Mode: 1
+    - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
+    - _VertexColorDebug: 0
+    - _VertexColorMultiplier: 1
+    - _VertexColorPower: 1
+    - _VertexColorSaturation: 1
+    - _VertexColorUseAlpha: 1
     - _ZWrite: 1
     - _useSecondLayer: 0
     - _useVertexColor: 1
@@ -140,9 +108,9 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
     - _Emission_Blend_Tint: {r: 1, g: 1, b: 1, a: 1}
-    - _Emission_Tint: {r: 0.25, g: 0.25, b: 0.25, a: 1}
+    - _Emission_Tint: {r: 1, g: 0.84705883, b: 0, a: 1}
     - _Offset: {r: 0, g: 0, b: 0, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
-    - _Tiling: {r: 1, g: 1, b: 0, a: 0}
-    - _Tint: {r: 1, g: 1, b: 1, a: 1}
+    - _Tiling: {r: 2, g: 2, b: 0, a: 0}
+    - _Tint: {r: 1, g: 0.84800273, b: 0, a: 1}
   m_BuildTextureStacks: []

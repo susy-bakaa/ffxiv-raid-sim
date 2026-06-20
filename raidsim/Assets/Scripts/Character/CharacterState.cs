@@ -437,6 +437,19 @@ namespace dev.susybaka.raidsim.Characters
                 actionController.SetAnimator(animator);
         }
 
+        public Animator GetAnimator()
+        {
+            if (playerController != null)
+                return playerController.GetAnimator();
+            if (aiController != null)
+                return aiController.GetAnimator();
+            if (bossController != null)
+                return bossController.GetAnimator();
+            if (actionController != null)
+                return actionController.GetAnimator();
+            return null;
+        }
+
         public void LevelSync(int level, long health)
         {
             characterLevel = level;

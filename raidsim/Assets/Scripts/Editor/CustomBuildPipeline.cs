@@ -199,7 +199,20 @@ namespace dev.susybaka.raidsim.Editor
             string bundleTargetFolder = Path.Combine(BundleRoot, target.ToString());
             
             if (ShouldRebuildAssetBundles)
+            {
                 BuildAssetBundles(bundleTargetFolder, target);
+            }
+            else
+            {
+                // If we're not rebuilding bundles, we need to make sure they exist before we try to copy them into the build output
+                // If they don't exist, we should build them to ensure the build has the necessary bundles to run properly,
+                // otherwise we might end up with a broken build that doesn't have any bundles in it
+                if (!Directory.Exists(bundleTargetFolder) || Directory.GetFiles(bundleTargetFolder).Length < 1)
+                {
+                    Debug.LogWarning($"Asset bundles do not exist for '{bundleTargetFolder}'. Building asset bundles for {target.ToString()}.");
+                    BuildAssetBundles(bundleTargetFolder, target);
+                }
+            }
 
             if (target != BuildTarget.WebGL)
             {

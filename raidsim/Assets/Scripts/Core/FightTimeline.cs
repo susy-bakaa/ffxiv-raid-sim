@@ -72,6 +72,7 @@ namespace dev.susybaka.raidsim.Core
         public bool clearRandomEventResultsOnStart = true;
         public bool noNewSeedOnStart = false;
         public bool disableKnockbacks = false;
+        [Min(0f)] public float delayOnReset = 0f;
         public UnityEvent<bool> onNoNewSeedOnStartChanged;
         public UnityEvent onReset;
         public UnityEvent onPlay;
@@ -784,7 +785,15 @@ namespace dev.susybaka.raidsim.Core
                 if (disableDuringPlayback[i] == null)
                     continue;
 
-                disableDuringPlayback[i].interactable = true;
+                if (delayOnReset > 0f)
+                {
+                    int index = i;
+                    Utilities.FunctionTimer.Create(this, () => disableDuringPlayback[index].interactable = true, delayOnReset, $"fightTimeline_reset_delay_{index}_{disableDuringPlayback[index].gameObject.name.Replace(" ", "_")}", true, true);
+                }
+                else
+                {
+                    disableDuringPlayback[i].interactable = true;
+                }
             }
             if (partyList != null)
                 partyList.UpdatePartyList();
@@ -1041,7 +1050,7 @@ namespace dev.susybaka.raidsim.Core
         {
             // If frozen => repeatable runs.
             // If not => still uses custom RNG, just changes seed each run.
-            rngSeed = freezeRng ? rngSeed : (ulong)System.DateTime.UtcNow.Ticks;
+            rngSeed = freezeRng ? rngSeed : ((ulong)System.DateTime.UtcNow.Ticks + (ulong)Input.mousePosition.x + (ulong)Input.mousePosition.y);
 
             if (random == null)
                 random = new RngService(rngSeed);

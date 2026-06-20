@@ -30,6 +30,7 @@ namespace dev.susybaka.raidsim.UI
         private TimelineScene originalScene;
 
         private Coroutine ieLoadSceneDelayed;
+        private bool wasPlaying = false;
 
 #if UNITY_EDITOR
         private int previousSceneIndex = -1;
@@ -74,6 +75,8 @@ namespace dev.susybaka.raidsim.UI
                 WindowTitle.ResetWindowCache();
                 WindowTitle.TrySet($"raidsim - {GetFightName()}");
             }
+
+            UpdateInteraction(true);
         }
 
         private void Update()
@@ -81,8 +84,24 @@ namespace dev.susybaka.raidsim.UI
             if (FightTimeline.Instance == null)
                 return;
 
-            dropdown.interactable = !FightTimeline.Instance.playing;
-            loadButton.interactable = !FightTimeline.Instance.playing;
+            if (FightTimeline.Instance.playing != wasPlaying)
+            {
+                wasPlaying = FightTimeline.Instance.playing;
+                UpdateInteraction(!FightTimeline.Instance.playing);
+            }
+        }
+
+        private void UpdateInteraction(bool state)
+        {
+            if (state && FightTimeline.Instance != null && FightTimeline.Instance.delayOnReset > 0f)
+            {
+                Utilities.FunctionTimer.Create(this, () => { dropdown.interactable = true; loadButton.interactable = true; }, FightTimeline.Instance.delayOnReset, "FightSelector_UpdateInteraction_Delay", true, true);
+            }
+            else
+            {
+                dropdown.interactable = state;
+                loadButton.interactable = state;
+            }
         }
 
         public void Select(int value)

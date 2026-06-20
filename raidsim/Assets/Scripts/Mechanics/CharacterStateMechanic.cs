@@ -17,9 +17,10 @@ namespace dev.susybaka.raidsim.Mechanics
 {
     public class CharacterStateMechanic : FightMechanic
     {
-        public enum Type { Enable, Disable, Spawn, Destroy, ExecuteAction, ExecuteMechanic, SetTarget, SetCharacterEventResult }
+        public enum Type { Enable, Disable, Spawn, Destroy, ExecuteAction, ExecuteMechanic, SetTarget, SetCharacterEventResult, SetAnimatorParameter }
         public enum ActionExecutionType { Standard, Hidden, Unrestricted }
         public enum TargetingType { Nearest, Furthest, OnePerEach, RandomPerEach, Random }
+        public enum AnimatorParameterType { Float, Int, Bool, Trigger }
 
         [Header("Character State Mechanic")]
         [Tooltip("The main behavior type of the mechanic.")]
@@ -96,16 +97,34 @@ namespace dev.susybaka.raidsim.Mechanics
         [ShowIf(nameof(behaviorType), Type.SetCharacterEventResult), Min(-1)] public int characterEventResultId = -1;
         [Tooltip("If setting a character event result, the value to set for the result on the character.")]
         [ShowIf(nameof(behaviorType), Type.SetCharacterEventResult)] public int characterEventResultValue = 0;
+        [Tooltip("If setting an animator parameter, the type of the parameter to set.")]
+        [ShowIf(nameof(behaviorType), Type.SetAnimatorParameter)] public AnimatorParameterType animatorParameterType;
+        [Tooltip("If setting an animator parameter, the name of the parameter to set.")]
+        [ShowIf(nameof(behaviorType), Type.SetAnimatorParameter)] public string animatorParameterName = string.Empty;
+        [Tooltip("If setting an animator parameter, whether to also set it on timeline reset. Useful if this CharacterStateMechanic sets it back after it's been modified to also act as a reset.")]
+        [ShowIf(nameof(behaviorType), Type.SetAnimatorParameter)] public bool setAnimatorParameterOnReset = false;
+        [Tooltip("If setting an animator parameter of type float, the value to set it to.")]
+        [ShowIf(nameof(_showAnimatorParameterFloat))] public float animatorParameterFloat = 0;
+        [Tooltip("If setting an animator parameter of type int, the value to set it to.")]
+        [ShowIf(nameof(_showAnimatorParameterInt))] public int animatorParameterInt = 0;
+        [Tooltip("If setting an animator parameter of type bool, the value to set it to.")]
+        [ShowIf(nameof(_showAnimatorParameterBool))] public bool animatorParameterBool = false;
         [Space(10)]
+        [Tooltip("Event that will be called after each character that is processed by this CharacterStateMechanic.")]
         public UnityEvent<CharacterState> onProcessCharacter;
 
         private List<CharacterState> originalCharacters = new List<CharacterState>();
         private readonly List<TargetNode> _remainingTargets = new();
+        private int animatorParameterHash = -1;
 #pragma warning disable CS0414
         // Editor only
         private bool _hideStateFields = false;
         private bool _hideGameObjectStateDelay => (_hideStateFields || !setGameObjectState);
         private Type _lastType;
+        private bool _showAnimatorParameterFloat => behaviorType == Type.SetAnimatorParameter && animatorParameterType == AnimatorParameterType.Float;
+        private bool _showAnimatorParameterInt => behaviorType == Type.SetAnimatorParameter && animatorParameterType == AnimatorParameterType.Int;
+        private bool _showAnimatorParameterBool => behaviorType == Type.SetAnimatorParameter && animatorParameterType == AnimatorParameterType.Bool;
+        //private bool _showAnimatorParameterTrigger => behaviorType == Type.SetAnimatorParameter && animatorParameterType == AnimatorParameterType.Trigger;
 
 #if UNITY_EDITOR
         public void OnValidate()
@@ -132,7 +151,7 @@ namespace dev.susybaka.raidsim.Mechanics
                 _hideStateFields = false;
                 UnityEditor.EditorUtility.SetDirty(this);
             }
-            if (behaviorType == Type.ExecuteAction || behaviorType == Type.SetTarget || behaviorType == Type.ExecuteMechanic || behaviorType == Type.SetCharacterEventResult)
+            if (behaviorType == Type.ExecuteAction || behaviorType == Type.SetTarget || behaviorType == Type.ExecuteMechanic || behaviorType == Type.SetCharacterEventResult || behaviorType == Type.SetAnimatorParameter)
             {
                 _lastType = behaviorType;
                 setCharacterState = false;
@@ -145,6 +164,12 @@ namespace dev.susybaka.raidsim.Mechanics
                 _hideStateFields = true;
                 UnityEditor.EditorUtility.SetDirty(this);
             }
+            if (behaviorType == Type.SetAnimatorParameter && !string.IsNullOrEmpty(animatorParameterName))
+            {
+                _lastType = behaviorType;
+                animatorParameterHash = Animator.StringToHash(animatorParameterName);
+                UnityEditor.EditorUtility.SetDirty(this);
+            }
         }
 #endif
 #pragma warning restore CS0414
@@ -152,6 +177,7 @@ namespace dev.susybaka.raidsim.Mechanics
         private void Awake()
         {
             originalCharacters = new List<CharacterState>(characters);
+            animatorParameterHash = Animator.StringToHash(animatorParameterName);
         }
 
         public override void TriggerMechanic(ActionInfo actionInfo)
@@ -213,6 +239,13 @@ namespace dev.susybaka.raidsim.Mechanics
 
                     SetEventsCharacters();
                     break;
+
+                case Type.SetAnimatorParameter:
+                    if (log)
+                        Debug.Log($"[CharacterStateMechanic ({gameObject.name})] Setting animator parameter for {characters.Count} characters.");
+                    
+                    SetAnimatorParameterCharacters();
+                    break;
             }
         }
 
@@ -224,6 +257,11 @@ namespace dev.susybaka.raidsim.Mechanics
             if (allowDynamicCharacters)
             {
                 ResetCharacters();
+            }
+
+            if (setAnimatorParameterOnReset && behaviorType == Type.SetAnimatorParameter)
+            {
+                SetAnimatorParameterCharacters();
             }
         }
 
@@ -780,6 +818,51 @@ namespace dev.susybaka.raidsim.Mechanics
                     continue;
                 }
                 character.SetCharacterEventResult(characterEventResultId, characterEventResultValue);
+                onProcessCharacter.Invoke(character);
+            }
+        }
+
+        private void SetAnimatorParameterCharacters()
+        {
+            foreach (CharacterState character in characters)
+            {
+                if (character == null)
+                {
+                    if (log)
+                        Debug.Log($"[CharacterStateMechanic ({gameObject.name})] CharacterState is null or invalid, skipping.");
+                    continue;
+                }
+                if (!TryFilter(character))
+                {
+                    if (log)
+                        Debug.Log($"[CharacterStateMechanic ({gameObject.name})] {character.characterName} did not pass filtering, skipping character event result assignment.");
+                    continue;
+                }
+                
+                Animator animator = character.GetAnimator();
+
+                if (animator == null)
+                {
+                    if (log)
+                        Debug.LogWarning($"[CharacterStateMechanic ({gameObject.name})] {character.characterName} has no Animator, skipping animator parameter assignment.");
+                    continue;
+                }
+                
+                switch (animatorParameterType)
+                {
+                    case AnimatorParameterType.Float:
+                        animator.SetFloat(animatorParameterHash, animatorParameterFloat);
+                        break;
+                    case AnimatorParameterType.Int:
+                        animator.SetInteger(animatorParameterHash, animatorParameterInt);
+                        break;
+                    case AnimatorParameterType.Bool:
+                        animator.SetBool(animatorParameterHash, animatorParameterBool);
+                        break;
+                    case AnimatorParameterType.Trigger:
+                        animator.SetTrigger(animatorParameterHash);
+                        break;
+                }
                 onProcessCharacter.Invoke(character);
             }
         }
