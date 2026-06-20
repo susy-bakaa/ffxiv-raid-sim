@@ -1,36 +1,31 @@
-This update expands macro support, improves action handling to feel closer to the real game, and brings a bunch of accuracy tweaks and quality-of-life improvements to **M12S P2: Idyllic Dream**. It also fixes several major issues introduced in earlier builds.
+This update adds a brand-new timeline for the new 7.51 Ultimate, **UMAD P1: Tele-trouncing**, alongside several small updates & improvements, including role-based auto attacks, internal system reworks and various bug fixes.
 
-## v.0.7.3 Changelog
+## v.0.7.4 Changelog
 
 ### New Features
 
--   Added macro wait support:
-    -   **`/wait X`**
-    -   **`<wait.X>`**
--   Added **4+2+2 melee uptime stack** option to **M12S P2: Idyllic Dream**.
--   Added a simple **action queue/buffer system**, allowing you to buffer actions more like in-game.
--   Added **export/import** support for **M12S P2: Idyllic Dream** timeline configuration.  
-    
-	**NOTE:** This only exports/imports shared configuration values. Strategy-specific "personal preference" options are intentionally left untouched. This feature will be added to future timelines where it makes sense.
+- Added a new timeline: **UMAD P1: Tele-trouncing**. Currently supported strategy options include:
+
+  - [Freaky MGR (gD-)](https://raidplan.io/plan/qD9Y_g1caq3l5gD-)
+  - [Merry-Go-Round / Big Box](https://docs.google.com/presentation/d/1-E2rEKa586KKiVNvtt3EAMQY2YAEVBRGcMX0WzORIq8)
+  - [Filipino Box (ud5)](https://raidplan.io/plan/5rf2uhud5ztsbud5)
+  - [Modified Xolo (X13)](https://raidplan.io/plan/p8JvSSs1_QKMVX13)
 
 ### Changes
 
--   Tweaked existing commands and added a few new ones.
--   Tweaked **Lindwurm's** default boss hitbox size in **M12S P2 Idyllic Dream** to better match the game.
--   Tweaked **Mana Burst AOE** size in **M12S P2 Idyllic Dream** to better match the game.
--   Tweaked intercardinal **player clone positions** in **M12S P2 Idyllic Dream** to better match the game.
--   Changed the default audio volume to **50%**.
--   Changed the font used by **Chat** and the **Macro Editor**.  
-    
-	**NOTE:** This font has much better compatibility with FFXIV glyphs. Some may still be missing, but most should now render correctly.
+- Added better **mouse cursor handling on Linux**.
+  
+  **NOTE:** The cursor should now restore to its previous location after rotating the third-person camera, similar to how it works on Windows.
+- Changed **auto attacks** to work based on the selected role.
+- Reworked several internal systems.
 
 ### Bug Fixes
 
--   Fixed an issue where actions ignored **range checks**, allowing them to execute from any distance.
--   Fixed an issue where **dashes and gap closers** could cause the player to fall through the arena under certain conditions.
--   Fixed an issue in **M12S P2: Idyllic Dream** where boss clone tether visuals post arena split could become incorrect.  
-    
-	**NOTE:** This was a side effect of making tether logic more accurate. Players can now only pick up **one tether**, and if multiple are picked up they will be randomized across the party so everyone ends up with one.
+- Fixed an issue where **alternative bot names** were not always applied correctly.
+  
+  **NOTE:** There is still a slight delay when hard-loading a timeline for the first time. This is intended due to how the names are applied.
+- Fixed various other bugs that appeared during development or were already known.
+
 
 ## Known Issues
 
@@ -43,4 +38,4 @@ This update expands macro support, improves action handling to feel closer to th
 
 ---
 
-A bit bigger patch for few issues and new changes. As always, let us know if you spot any problems through [GitHub](https://github.com/susy-bakaa/ffxiv-raid-sim/issues) or send a message on the [official Discord server](https://discord.gg/wepQtPfC6D)!
+A more miscellaneous patch with new timeline and set of changes. As always, let us know if you spot any problems through [GitHub](https://github.com/susy-bakaa/ffxiv-raid-sim/issues) or send a message on the [official Discord server](https://discord.gg/wepQtPfC6D)!
