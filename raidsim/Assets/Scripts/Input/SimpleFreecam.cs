@@ -28,7 +28,6 @@ namespace dev.susybaka.raidsim.Inputs
         public bool enableRotation = true;
         public bool enableMovement = true;
 
-        private Vector2 cursorPosition;
         private bool cursorPositionSet;
 
         private void Awake()
@@ -68,20 +67,12 @@ namespace dev.susybaka.raidsim.Inputs
             {
                 if (Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(0))
                 {
-#if PLATFORM_STANDALONE_WIN && !PLATFORM_STANDALONE_LINUX && !UNITY_EDITOR_LINUX
                     if (!cursorPositionSet)
                     {
-                        cursorPosition = CursorControl.GetPosition();
+                        MouseUtility.StoreMousePosition();
                         cursorPositionSet = true;
                     }
-#endif
-#if UNITY_EDITOR_WIN && !UNITY_EDITOR_LINUX && !PLATFORM_STANDALONE_LINUX
-                    if (!cursorPositionSet)
-                    {
-                        cursorPosition = CursorControl.GetPosition();
-                        cursorPositionSet = true;
-                    }
-#endif
+
                     Cursor.lockState = CursorLockMode.Locked;
                     if (CursorHandler.Instance != null)
                     {
@@ -95,20 +86,13 @@ namespace dev.susybaka.raidsim.Inputs
                 if ((Input.GetMouseButtonUp(1) && !Input.GetMouseButton(0)) || (Input.GetMouseButtonUp(0) && !Input.GetMouseButton(1)))
                 {
                     Cursor.lockState = CursorLockMode.None;
-#if PLATFORM_STANDALONE_WIN && !PLATFORM_STANDALONE_LINUX && !UNITY_EDITOR_LINUX
+
                     if (cursorPositionSet)
                     {
-                        CursorControl.SetPosition(cursorPosition);
+                        MouseUtility.RestoreMousePosition();
                         cursorPositionSet = false;
                     }
-#endif
-#if UNITY_EDITOR_WIN && !UNITY_EDITOR_LINUX && !PLATFORM_STANDALONE_LINUX
-                    if (cursorPositionSet)
-                    {
-                        CursorControl.SetPosition(cursorPosition);
-                        cursorPositionSet = false;
-                    }
-#endif
+
                     if (CursorHandler.Instance != null)
                     {
                         CursorHandler.Instance.visible = true;
