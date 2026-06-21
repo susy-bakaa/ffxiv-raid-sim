@@ -24,8 +24,8 @@ Fights listed here are finished and available in the simulator.
 	- Phase 1 (Kefka)
 		- Tele-trouncing ([Freaky MGR](https://raidplan.io/plan/qD9Y_g1caq3l5gD-))
 		- Tele-trouncing ([Merry-Go-Round / Big Box](https://docs.google.com/presentation/d/1-E2rEKa586KKiVNvtt3EAMQY2YAEVBRGcMX0WzORIq8))
-		- Tele-trouncing ([Filipino Box (ud5)](https://raidplan.io/plan/5rf2uhud5ztsbud5))
-		- Tele-trouncing ([Modified Xolo (X13)](https://raidplan.io/plan/p8JvSSs1_QKMVX13))
+		- Tele-trouncing ([Filipino Box](https://raidplan.io/plan/5rf2uhud5ztsbud5))
+		- Tele-trouncing ([Modified Xolo](https://raidplan.io/plan/p8JvSSs1_QKMVX13))
 - AAC Heavyweight Tier
 	- AAC Heavyweight M4 (Savage) (M12S)
 		- Phase 2 (Lindwurm II)
