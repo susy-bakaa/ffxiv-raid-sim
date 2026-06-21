@@ -1,31 +1,24 @@
-This update adds a brand-new timeline for the new 7.51 Ultimate, **UMAD P1: Tele-trouncing**, alongside several small updates & improvements, including role-based auto attacks, internal system reworks and various bug fixes.
+This hotfix has some changes to **UMAD P1: Tele-trouncing**, improves cursor handling across all platforms and fixes a few issues.
 
-## v.0.7.4 Changelog
-
-### New Features
-
-- Added a new timeline: **UMAD P1: Tele-trouncing**. Currently supported strategy options include:
-
-  - [Freaky MGR (gD-)](https://raidplan.io/plan/qD9Y_g1caq3l5gD-)
-  - [Merry-Go-Round / Big Box](https://docs.google.com/presentation/d/1-E2rEKa586KKiVNvtt3EAMQY2YAEVBRGcMX0WzORIq8)
-  - [Filipino Box (ud5)](https://raidplan.io/plan/5rf2uhud5ztsbud5)
-  - [Modified Xolo (X13)](https://raidplan.io/plan/p8JvSSs1_QKMVX13)
+## v.0.7.5 Changelog
 
 ### Changes
 
-- Added better **mouse cursor handling on Linux**.
+- Updated **arrow (Tele-portent) status effect** assignment in **UMAD P1: Tele-trouncing** to use the same limited variations as the real game.
+- Updated **UMAD status effect** sorting to better match the game.
+- Updated the **Double-trouble Trap** status effect description to be more accurate.
+- Further improved **cursor position logic** from last update.
   
-  **NOTE:** The cursor should now restore to its previous location after rotating the third-person camera, similar to how it works on Windows.
-- Changed **auto attacks** to work based on the selected role.
-- Reworked several internal systems.
+  **NOTE:** Cursor handling now works on all platforms using the same backend code.
+- Further improved **alternative bot name** functionality.
+  
+  **NOTE:** Names should now load almost instantly and remain correctly selected. Hopefully at least...
 
 ### Bug Fixes
 
-- Fixed an issue where **alternative bot names** were not always applied correctly.
+- Fixed an issue where **ranged bots** could sometimes get clipped by the **Thunder AOE** in **UMAD P1: Tele-trouncing**.
   
-  **NOTE:** There is still a slight delay when hard-loading a timeline for the first time. This is intended due to how the names are applied.
-- Fixed various other bugs that appeared during development or were already known.
-
+  **NOTE:** They learned to press Sprint now :)
 
 ## Known Issues
 
@@ -38,4 +31,4 @@ This update adds a brand-new timeline for the new 7.51 Ultimate, **UMAD P1: Tele
 
 ---
 
-A more miscellaneous patch with new timeline and set of changes. As always, let us know if you spot any problems through [GitHub](https://github.com/susy-bakaa/ffxiv-raid-sim/issues) or send a message on the [official Discord server](https://discord.gg/wepQtPfC6D)!
+Hotfix/bugfix patch this time. As always, let us know if you spot any problems through [GitHub](https://github.com/susy-bakaa/ffxiv-raid-sim/issues) or send a message on the [official Discord server](https://discord.gg/wepQtPfC6D)!
