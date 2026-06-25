@@ -234,6 +234,7 @@ Transform:
   - {fileID: 8525683437465075626}
   - {fileID: 6005706101945949101}
   - {fileID: 8427085935497628802}
+  - {fileID: 8121627822520900656}
   - {fileID: 2685644733521131857}
   - {fileID: 6051838270382141482}
   m_Father: {fileID: 0}
@@ -613,13 +614,13 @@ MonoBehaviour:
   log: 0
   lockActions: 0
   lockMovement: 0
-  dashToTarget: 0
-  overrideDashDirection: 1
+  dashToTarget: 1
+  overrideDashDirection: 0
   delay: 0.5
   duration: 0.75
   dashHeight: 0
   overrideTargetPosition: {x: 0, y: 0, z: 0}
-  overrideTarget: {fileID: 0}
+  overrideTarget: {fileID: 8121627822520900656}
   overrideDirection: {fileID: 8427085935497628802}
   overrideTargetTag: 
   overrideTargetEffect:
@@ -634,6 +635,37 @@ MonoBehaviour:
     x: 1
     y: 0
     z: 1
+--- !u!1 &4320862278904649190
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8121627822520900656}
+  m_Layer: 0
+  m_Name: DashTarget
+  m_TagString: Untagged
+  m_Icon: {fileID: 6519382022992737161, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8121627822520900656
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4320862278904649190}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0.0000010877848}
+  m_LocalPosition: {x: 0, y: 0, z: -6}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2054875785572507951}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &5190487636458682136
 GameObject:
   m_ObjectHideFlags: 0
