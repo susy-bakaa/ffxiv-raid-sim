@@ -4,6 +4,7 @@
 using UnityEngine;
 using NaughtyAttributes;
 using dev.susybaka.raidsim.Characters;
+using dev.susybaka.raidsim.Core;
 using dev.susybaka.Shared;
 using static dev.susybaka.raidsim.Core.GlobalData.Damage;
 using static dev.susybaka.raidsim.Core.GlobalData;
@@ -14,6 +15,7 @@ namespace dev.susybaka.raidsim.Mechanics
     {
         [Header("Knockback Settings")]
         public string knockbackName = "Knockback";
+        public bool useServerSnapshot = false;
         public bool showDamagePopup = false;
         public bool canBeResisted;
         public bool originFromSource = false;
@@ -30,6 +32,7 @@ namespace dev.susybaka.raidsim.Mechanics
         public bool Xaxis = true;
         public bool Yaxis = false;
         public bool Zaxis = true;
+        private Vector3 originOffset = Vector3.zero;
 
         public override void TriggerMechanic(ActionInfo actionInfo)
         {
@@ -38,7 +41,26 @@ namespace dev.susybaka.raidsim.Mechanics
 
             if (actionInfo.source != null)
             {
+                CharacterSnapshot snapshot = new CharacterSnapshot();
+                bool snapped = false;
                 bool resisted = (actionInfo.source.knockbackResistant.value && canBeResisted) || actionInfo.source.bound.value;
+
+                if (useServerSnapshot && FightTimeline.Instance.useServerTickSimulation)
+                {
+                    CharacterSnapshot? snap = FightTimeline.Instance.GetSnapshot(actionInfo.source);
+
+                    if (snap.HasValue)
+                    {
+                        snapped = true;
+                        snapshot = snap.Value;
+                    }
+                }
+
+                if (snapped)
+                    resisted = (snapshot.knockbackResistant && canBeResisted) || snapshot.bound;
+
+                if (log)
+                    Debug.Log($"[KnockbackMechanic ({gameObject.name})] use snapshot: {useServerSnapshot}, has snapshot: {snapped}");
 
                 if (!resisted)
                 {
@@ -51,6 +73,13 @@ namespace dev.susybaka.raidsim.Mechanics
                         else
                         {
                             origin = actionInfo.source.transform;
+
+                            // If using server snapshot, calculate the offset from the origin to the source's position at the time of the snapshot
+                            // We can use this later to effectively trigger the knockback from the source's position at the time of the snapshot, instead of the current position
+                            if (snapped)
+                            {
+                                originOffset = snapshot.position - actionInfo.source.transform.position;
+                            }
                         }
                     }
 
@@ -60,11 +89,11 @@ namespace dev.susybaka.raidsim.Mechanics
 
                     if (origin != null)
                     {
-                        knockbackDirection = (actionInfo.source.transform.position - origin.position).normalized;
+                        knockbackDirection = ((!snapped ? actionInfo.source.transform.position : snapshot.position) - (origin.position + originOffset)).normalized;
 
                         if (scaleWithDistance)
                         {
-                            float distance = Vector3.Distance(actionInfo.source.transform.position, origin.position);
+                            float distance = Vector3.Distance(!snapped ? actionInfo.source.transform.position : snapshot.position, origin.position + originOffset);
                             distanceMultiplier = Utilities.Map(Mathf.Clamp(distance, distanceRange.x, distanceRange.y), distanceRange.x, distanceRange.y, distanceMultipliers.x, distanceMultipliers.y); // Clamp to prevent extreme values
                         }
                     }
@@ -123,6 +152,12 @@ namespace dev.susybaka.raidsim.Mechanics
                         Debug.Log($"[KnockbackMechanic ({gameObject.name})] {actionInfo.source.characterName} ({actionInfo.source.gameObject.name}) resisted the knockback!");
                 }
             }
+        }
+
+        public override void InterruptMechanic(ActionInfo actionInfo)
+        {
+            base.InterruptMechanic(actionInfo);
+            originOffset = Vector3.zero; // Reset offset when interrupting the mechanic
         }
     }
 }

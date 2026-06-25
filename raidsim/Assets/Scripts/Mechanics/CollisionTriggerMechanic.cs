@@ -36,8 +36,17 @@ namespace dev.susybaka.raidsim.Mechanics
                 if (log)
                     Debug.Log($"[CollisionTriggerMechanic ({gameObject.name})] collider {other.gameObject.name} has the right tag (enter)");
 
-                if (other.transform.TryGetComponentInParents(true, out CharacterState state))
+                CharacterState state = null;
+                CharacterSnapshotController snapshots = null;
+
+                if (other.transform.TryGetComponentInParents(true, out state) || other.transform.TryGetComponent(out snapshots))
                 {
+                    if (state == null && snapshots != null)
+                        state = snapshots.targetCharacterState;
+
+                    if (state == null)
+                        return;
+
                     if (log)
                         Debug.Log($"[CollisionTriggerMechanic ({gameObject.name})] collider {other.gameObject.name} has the CharacterState component (enter)");
                     if (requiredEffect != null && requiredEffect.Count > 0)
@@ -90,8 +99,18 @@ namespace dev.susybaka.raidsim.Mechanics
             {
                 if (log)
                     Debug.Log($"[CollisionTriggerMechanic ({gameObject.name})] collider {other.gameObject.name} has the right tag (exit)");
-                if (other.transform.TryGetComponentInParents(true, out CharacterState state))
+                
+                CharacterState state = null;
+                CharacterSnapshotController snapshots = null;
+
+                if (other.transform.TryGetComponentInParents(true, out state) || other.transform.TryGetComponent(out snapshots))
                 {
+                    if (state == null && snapshots != null)
+                        state = snapshots.targetCharacterState;
+
+                    if (state == null)
+                        return;
+
                     if (log)
                         Debug.Log($"[CollisionTriggerMechanic ({gameObject.name})] collider {other.gameObject.name} has the CharacterState component (exit)");
                     if (requiredEffect != null && requiredEffect.Count > 0)

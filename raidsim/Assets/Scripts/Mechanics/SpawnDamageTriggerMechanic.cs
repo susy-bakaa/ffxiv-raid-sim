@@ -22,6 +22,7 @@ namespace dev.susybaka.raidsim.Mechanics
         public GameObject damageTriggerPrefab;
         public bool enableInstead = false;
         public Transform spawnLocation;
+        public bool useServerSnapshot = false;
         public bool copyRotation = false;
         public bool setRotation = false;
         [ShowIf(nameof(setRotation))] public Vector3 rotation = Vector3.zero;
@@ -72,14 +73,29 @@ namespace dev.susybaka.raidsim.Mechanics
                 if (actionInfo.target != null)
                 {
                     GameObject spawned;
+                    Vector3 loc = actionInfo.target.transform.position;
+                    Quaternion rot = actionInfo.target.transform.rotation;
+                    Vector3 cRot = actionInfo.target.transform.eulerAngles;
+
+                    if (useServerSnapshot && FightTimeline.Instance.useServerTickSimulation)
+                    {
+                        CharacterSnapshot? snap = FightTimeline.Instance.GetSnapshot(actionInfo.target);
+
+                        if (snap.HasValue)
+                        {
+                            loc = snap.Value.position;
+                            rot = snap.Value.rotation;
+                            cRot = snap.Value.rotation.eulerAngles;
+                        }
+                    }
 
                     if (!enableInstead)
-                        spawned = Instantiate(damageTriggerPrefab, actionInfo.target.transform.position, actionInfo.target.transform.rotation, FightTimeline.Instance.mechanicParent);
+                        spawned = Instantiate(damageTriggerPrefab, loc, rot, FightTimeline.Instance.mechanicParent);
                     else
                         spawned = damageTriggerPrefab;
 
                     if (copyRotation)
-                        spawned.transform.eulerAngles = actionInfo.target.transform.eulerAngles;
+                        spawned.transform.eulerAngles = cRot;
 
                     if (setRotation)
                         spawned.transform.eulerAngles = rotation;
@@ -89,14 +105,29 @@ namespace dev.susybaka.raidsim.Mechanics
                 else if (actionInfo.source != null) // && actionInfo.action != null | not sure why this was a check before, removed now pls add back if it breaks something
                 {
                     GameObject spawned;
+                    Vector3 loc = actionInfo.source.transform.position;
+                    Quaternion rot = actionInfo.source.transform.rotation;
+                    Vector3 cRot = actionInfo.source.transform.eulerAngles;
+
+                    if (useServerSnapshot && FightTimeline.Instance.useServerTickSimulation)
+                    {
+                        CharacterSnapshot? snap = FightTimeline.Instance.GetSnapshot(actionInfo.source);
+
+                        if (snap.HasValue)
+                        {
+                            loc = snap.Value.position;
+                            rot = snap.Value.rotation;
+                            cRot = snap.Value.rotation.eulerAngles;
+                        }
+                    }
 
                     if (!enableInstead)
-                        spawned = Instantiate(damageTriggerPrefab, actionInfo.source.transform.position, actionInfo.source.transform.rotation, FightTimeline.Instance.mechanicParent);
+                        spawned = Instantiate(damageTriggerPrefab, loc, rot, FightTimeline.Instance.mechanicParent);
                     else
                         spawned = damageTriggerPrefab;
 
                     if (copyRotation)
-                        spawned.transform.eulerAngles = actionInfo.source.transform.eulerAngles;
+                        spawned.transform.eulerAngles = cRot;
 
                     if (setRotation)
                         spawned.transform.eulerAngles = rotation;

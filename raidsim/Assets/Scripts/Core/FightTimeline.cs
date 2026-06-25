@@ -40,6 +40,7 @@ namespace dev.susybaka.raidsim.Core
         public Transform mechanicParent;
         public Transform enemiesParent;
         public Transform charactersParent;
+        public Transform characterSnapshotControllerParent;
         public Transform botNodeParent;
 
         public static float timeScale = 1f;
@@ -54,8 +55,8 @@ namespace dev.susybaka.raidsim.Core
         [Header("Current")]
         public string timelineName = "Unnamed fight timeline";
         public string timelineAbbreviation = string.Empty;
-        public int timelineLevel = 50;
-        public long timelinePlayerHealth = 3000;
+        [Min(0)] public int timelineLevel = 50;
+        [Min(1)] public long timelinePlayerHealth = 3000;
         public List<string> timelineForbiddenActionIds = new();
         public bool playing = false;
         public bool paused = false;
@@ -77,6 +78,7 @@ namespace dev.susybaka.raidsim.Core
         public UnityEvent onReset;
         public UnityEvent onPlay;
         public UnityEvent onUpdateBotVisibility;
+        public UnityEvent<float> onServerTick;
 
         [Header("RNG")]
         [SerializeField] private bool freezeRng = false;
@@ -86,11 +88,21 @@ namespace dev.susybaka.raidsim.Core
         public ulong RngSeed { get { return rngSeed; } }
         public RngMode GlobalRngMode { get { return globalRngMode; } }
 
+        [Header("Network Simulation")]
+        public bool useServerTickSimulation = false;
+        public GameObject characterSnapshotControllerPrefab;
+        [Min(0f)] public float serverTickInterval = 0.3f;
+        [Min(0f)] public float baseLookbackSeconds = 0.1f;
+        public bool usePingSimulation;
+        [Min(0f)] public float simulatedPingMs = 20f;
+        [Range(0f, 1f)] public float pingInfluence = 1f;
+        public float effectiveLookback { get { return baseLookbackSeconds + (usePingSimulation ? simulatedPingMs / 1000f * pingInfluence : 0f); } }
+
         [Header("User Interface")]
         public Button[] disableDuringPlayback;
         public bool useAutomarker = false;
         public UnityEvent<bool> onUseAutomarkerChanged;
-        public int botNameType = 0;
+        [Min(0)] public int botNameType = 0;
         public bool colorBotNamesByRole = false;
 
         [Header("Audio")]
@@ -115,6 +127,9 @@ namespace dev.susybaka.raidsim.Core
         private BotNode[] allBotNodes;
         private MechanicNode[] allMechanicNodes;
         private List<CharacterState> allCharacters = new List<CharacterState>();
+        private List<CharacterState> allies = new List<CharacterState>();
+        private List<CharacterState> enemies = new List<CharacterState>();
+        private Dictionary<CharacterState, CharacterSnapshotController> snapshotControllers = new Dictionary<CharacterState, CharacterSnapshotController>();
         private bool wasPaused;
         private Coroutine iePlayTimeline;
         private Coroutine ieResetTimeline;
@@ -122,6 +137,8 @@ namespace dev.susybaka.raidsim.Core
         private bool resetCalled = false;
         private float gameSpeed = 1f;
         private TextMeshProUGUI simulationSpeedLabel;
+        private float snapshotTickTime;
+        private float nextSnapshotTick;
 
         [System.Serializable]
         public struct RandomEventResult
@@ -224,6 +241,8 @@ namespace dev.susybaka.raidsim.Core
             }
             Instance = this;
 
+            nextSnapshotTick += serverTickInterval;
+
             // Always setup when starting fresh
             SetupRng();
 
@@ -273,11 +292,17 @@ namespace dev.susybaka.raidsim.Core
                     Debug.LogError("Could not find the parent object for players or other characters!");
             }
 
-            if (charactersParent != null)
+            if (charactersParent != null && enemiesParent != null)
             {
                 allCharacters.Clear();
-                allCharacters.AddRange(charactersParent.GetComponentsInChildren<CharacterState>());
-                allCharacters.AddRange(enemiesParent.GetComponentsInChildren<CharacterState>());
+                allies.Clear();
+                enemies.Clear();
+                
+                allies.AddRange(charactersParent.GetComponentsInChildren<CharacterState>());
+                enemies.AddRange(enemiesParent.GetComponentsInChildren<CharacterState>());
+
+                allCharacters.AddRange(allies);
+                allCharacters.AddRange(enemies);
             }
 
             if (botNodeParent == null)
@@ -318,6 +343,34 @@ namespace dev.susybaka.raidsim.Core
                 if (allBotVisibilities[i] != null)
                 {
                     onUpdateBotVisibility.AddListener(allBotVisibilities[i].UpdateVisibility);
+                }
+            }
+
+            if (useServerTickSimulation && characterSnapshotControllerPrefab != null)
+            {
+                if (characterSnapshotControllerParent == null)
+                {
+                    characterSnapshotControllerParent = new GameObject("SnapshotControllers").transform;
+                    characterSnapshotControllerParent.SetParent(charactersParent);
+                    characterSnapshotControllerParent.position = Vector3.zero;
+                    characterSnapshotControllerParent.rotation = Quaternion.identity;
+                    characterSnapshotControllerParent.localScale = Vector3.one;
+                    characterSnapshotControllerParent.SetAsLastSibling();
+                }
+
+                for (int i = 0;i < allies.Count; i++)
+                {
+                    if (allies[i] != null && allies[i].transform.TryGetComponentInChildren(true, out Collider coll))
+                    {
+                        // Untag the collider so that it doesn't interfere with the server state prefab's collider,
+                        // which will now be the one that is used for collision detection
+                        coll.gameObject.tag = "Untagged";
+
+                        CharacterSnapshotController snapshots = Instantiate(characterSnapshotControllerPrefab, allies[i].transform.position, allies[i].transform.rotation, characterSnapshotControllerParent).GetComponent<CharacterSnapshotController>();
+                        snapshots.transform.SetAsLastSibling();
+                        snapshots.Initialize(allies[i]);
+                        snapshotControllers.Add(allies[i], snapshots);
+                    }
                 }
             }
         }
@@ -381,6 +434,29 @@ namespace dev.susybaka.raidsim.Core
 
             deltaTime = Time.deltaTime * timeScale;
             time = Time.time * timeScale;
+        }
+
+        // We update the server tick time in LateUpdate to ensure that all other updates have been processed before we invoke the server tick event.
+        private void LateUpdate()
+        {
+            if (!useServerTickSimulation)
+                return;
+
+            snapshotTickTime += Time.deltaTime;
+
+            if (serverTickInterval <= 0f)
+            {
+                // Update every frame when tick interval is 0
+                onServerTick.Invoke(snapshotTickTime);
+            }
+            else
+            {
+                while (snapshotTickTime >= nextSnapshotTick)
+                {
+                    onServerTick.Invoke(nextSnapshotTick);
+                    nextSnapshotTick += serverTickInterval;
+                }
+            }
         }
 
         private void OnDestroy()
@@ -1079,6 +1155,43 @@ namespace dev.susybaka.raidsim.Core
         public void UpdateBotVisibilities()
         {
             onUpdateBotVisibility.Invoke();
+        }
+
+        public CharacterSnapshot? GetSnapshot(CharacterState character)
+        {
+            return GetSnapshot(character, snapshotTickTime + effectiveLookback);
+        }
+
+        public CharacterSnapshot? GetSnapshot(CharacterState character, float tickTime)
+        {
+            if (character == null)
+            {
+                Debug.LogError("GetSnapshot called with null character!");
+                return null;
+            }
+
+            if (!snapshotControllers.ContainsKey(character))
+            {
+                return null;
+            }
+
+            return snapshotControllers[character].GetSnapshotAtOrBefore(tickTime);
+        }
+
+        public CharacterSnapshot? GetSnapshot(CharacterSnapshotController serverState)
+        {
+            return GetSnapshot(serverState, snapshotTickTime + effectiveLookback);
+        }
+
+        public CharacterSnapshot? GetSnapshot(CharacterSnapshotController serverState, float tickTime)
+        {
+            if (serverState == null)
+            {
+                Debug.LogError("GetSnapshot called with null serverState!");
+                return null;
+            }
+
+            return serverState.GetSnapshotAtOrBefore(tickTime);
         }
 
         [System.Serializable]

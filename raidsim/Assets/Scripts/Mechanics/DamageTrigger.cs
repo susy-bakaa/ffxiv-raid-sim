@@ -285,8 +285,17 @@ namespace dev.susybaka.raidsim.Mechanics
                     if (IsCollisionInsideDonut(other.transform))
                         return;
 
-                    if (other.transform.TryGetComponentInParents(true, out CharacterState playerState))
+                    CharacterState playerState = null;
+                    CharacterSnapshotController snapshots = null;
+
+                    if (other.transform.TryGetComponentInParents(true, out playerState) || other.transform.TryGetComponent(out snapshots))
                     {
+                        if (playerState == null && snapshots != null)
+                            playerState = snapshots.targetCharacterState;
+
+                        if (playerState == null)
+                            return;
+
                         if (!string.IsNullOrEmpty(canHitCharacterName))
                         {
                             if (canHitCharacterNames != null && canHitCharacterNames.Length > 0)
@@ -336,8 +345,17 @@ namespace dev.susybaka.raidsim.Mechanics
                     if (IsCollisionInsideDonut(other.transform))
                         return;
 
-                    if (other.transform.TryGetComponentInParents(true, out CharacterState playerState))
+                    CharacterState playerState = null;
+                    CharacterSnapshotController snapshots = null;
+
+                    if (other.transform.TryGetComponentInParents(true, out playerState) || other.transform.TryGetComponent(out snapshots))
                     {
+                        if (playerState == null && snapshots != null)
+                            playerState = snapshots.targetCharacterState;
+
+                        if (playerState == null)
+                            return;
+
                         if (!string.IsNullOrEmpty(canHitCharacterName))
                         {
                             if (canHitCharacterNames != null && canHitCharacterNames.Length > 0)
@@ -393,8 +411,17 @@ namespace dev.susybaka.raidsim.Mechanics
                         if (IsCollisionInsideDonut(other.transform))
                             return;
 
-                        if (other.transform.TryGetComponentInParents(true, out CharacterState playerState))
+                        CharacterState playerState = null;
+                        CharacterSnapshotController snapshots = null;
+
+                        if (other.transform.TryGetComponentInParents(true, out playerState) || other.transform.TryGetComponent(out snapshots))
                         {
+                            if (playerState == null && snapshots != null)
+                                playerState = snapshots.targetCharacterState;
+
+                            if (playerState == null)
+                                return;
+
                             if (!string.IsNullOrEmpty(canHitCharacterName))
                             {
                                 if (canHitCharacterNames != null && canHitCharacterNames.Length > 0)
@@ -443,8 +470,17 @@ namespace dev.susybaka.raidsim.Mechanics
                             if (IsCollisionInsideDonut(other.transform))
                                 return;
 
-                            if (other.transform.TryGetComponentInParents(true, out CharacterState playerState))
+                            CharacterState playerState = null;
+                            CharacterSnapshotController snapshots = null;
+
+                            if (other.transform.TryGetComponentInParents(true, out playerState) || other.transform.TryGetComponent(out snapshots))
                             {
+                                if (playerState == null && snapshots != null)
+                                    playerState = snapshots.targetCharacterState;
+
+                                if (playerState == null)
+                                    return;
+
                                 if (!string.IsNullOrEmpty(canHitCharacterName))
                                 {
                                     if (canHitCharacterNames != null && canHitCharacterNames.Length > 0)
@@ -509,8 +545,17 @@ namespace dev.susybaka.raidsim.Mechanics
                     if (IsCollisionInsideDonut(other.transform))
                         return;
 
-                    if (other.transform.TryGetComponentInParents(true, out CharacterState playerState))
+                    CharacterState playerState = null;
+                    CharacterSnapshotController snapshots = null;
+
+                    if (other.transform.TryGetComponentInParents(true, out playerState) || other.transform.TryGetComponent(out snapshots))
                     {
+                        if (playerState == null && snapshots != null)
+                            playerState = snapshots.targetCharacterState;
+
+                        if (playerState == null)
+                            return;
+
                         if (!string.IsNullOrEmpty(canHitCharacterName))
                         {
                             if (canHitCharacterNames != null && canHitCharacterNames.Length > 0)
@@ -557,8 +602,17 @@ namespace dev.susybaka.raidsim.Mechanics
                     if (IsCollisionInsideDonut(other.transform))
                         return;
 
-                    if (other.transform.TryGetComponentInParents(true, out CharacterState playerState))
+                    CharacterState playerState = null;
+                    CharacterSnapshotController snapshots = null;
+
+                    if (other.transform.TryGetComponentInParents(true, out playerState) || other.transform.TryGetComponent(out snapshots))
                     {
+                        if (playerState == null && snapshots != null)
+                            playerState = snapshots.targetCharacterState;
+
+                        if (playerState == null)
+                            return;
+
                         if (!string.IsNullOrEmpty(canHitCharacterName))
                         {
                             if (canHitCharacterNames != null && canHitCharacterNames.Length > 0)

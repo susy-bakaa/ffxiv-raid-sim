@@ -2,6 +2,7 @@
 // This file is part of ffxiv-raid-sim. Linking with the Unity runtime
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
 using UnityEngine;
+using dev.susybaka.Shared;
 
 namespace dev.susybaka.raidsim.Mechanics
 {
@@ -11,7 +12,7 @@ namespace dev.susybaka.raidsim.Mechanics
 
         private void Awake()
         {
-            m_parent = GetComponentInParent<DamageTrigger>();
+            m_parent = transform.GetComponentInParents<DamageTrigger>();
         }
 
         private void OnTriggerEnter(Collider other)

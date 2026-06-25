@@ -48,6 +48,7 @@ namespace dev.susybaka.raidsim.UI
         [SerializeField] private TMP_Dropdown botNameTypeDropdown;
         [SerializeField] private Toggle botNameRoleColorsToggle;
         [SerializeField] private TMP_Dropdown rngTypeDropdown;
+        [SerializeField] private SliderInputLinker fakePingSliderSync;
         [Header("Sub Menus")]
         [SerializeField] private Button keybindsButton;
         [NaughtyAttributes.Foldout("Events")] public UnityEvent onChangeKeybinds;
@@ -79,6 +80,8 @@ namespace dev.susybaka.raidsim.UI
         bool newBotNameRoleColors = false;
         int rngType = 0;
         int newRngType = 0;
+        float fakePing = 20f;
+        float newFakePing = 20f;
         [SerializeField] private HudWindow applyPopup;
         public HudWindow ApplyPopup { get { return applyPopup; } }
 
@@ -152,6 +155,7 @@ namespace dev.susybaka.raidsim.UI
                 if (CursorHandler.Instance != null)
                     CursorHandler.Instance.useSoftwareCursor = !hardwareCursor;
 #endif
+                fakePing = fakePingSliderSync.Slider.value;
             }
         }
 
@@ -349,6 +353,25 @@ namespace dev.susybaka.raidsim.UI
             newRngType = value;
         }
 
+        public void ChangeFakePing(string ping)
+        {
+            if (float.TryParse(ping, out float result))
+            {
+                ChangeFakePing(result);
+            }
+        }
+
+        public void ChangeFakePing(int ping)
+        {
+            ChangeFakePing((float)ping);
+        }
+
+        public void ChangeFakePing(float ping)
+        {
+            configSaved = false;
+            newFakePing = ping;
+        }
+
         public void ApplySettings()
         {
             if (Mathf.Approximately(newScale, 50f))
@@ -407,6 +430,7 @@ namespace dev.susybaka.raidsim.UI
             botNameType = newBotNameType;
             botNameRoleColors = newBotNameRoleColors;
             rngType = newRngType;
+            fakePing = newFakePing;
             if (timeline != null)
             {
                 timeline.botNameType = botNameType;
@@ -416,6 +440,7 @@ namespace dev.susybaka.raidsim.UI
                 if (roleSelector != null)
                     roleSelector.Select();
                 timeline.SetGlobalRngMode(rngType);
+                timeline.simulatedPingMs = fakePing;
             }
             configSaved = true;
         }
@@ -485,6 +510,7 @@ namespace dev.susybaka.raidsim.UI
             newBotNameType = 0;
             newBotNameRoleColors = false;
             newRngType = 0;
+            newFakePing = 20f;
             ApplySettings();
         }
 
@@ -525,6 +551,7 @@ namespace dev.susybaka.raidsim.UI
             newBotNameType = botNameType;
             newBotNameRoleColors = botNameRoleColors;
             newRngType = rngType;
+            newFakePing = fakePing;
             ApplySettings();
         }
 

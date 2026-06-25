@@ -16,6 +16,7 @@ namespace dev.susybaka.raidsim.UI
         TargetController targetController;
 
         public Transform target;
+        public string targetName = string.Empty;
         public bool constantFollow = false;
         public bool followCharacterStateTarget = false;
         public bool hideWhenNoTarget = false;
@@ -29,6 +30,12 @@ namespace dev.susybaka.raidsim.UI
             m_camera = Camera.main;
             if (element != null)
                 element.onInitialize.AddListener(Initialize);
+            if (target == null && !string.IsNullOrEmpty(targetName))
+            {
+                GameObject targetObject = GameObject.Find(targetName);
+                if (targetObject != null)
+                    target = targetObject.transform;
+            }
         }
 
         private void Update()
@@ -39,6 +46,12 @@ namespace dev.susybaka.raidsim.UI
                 rect.position = screenPoint;
                 if (!constantFollow)
                     follow = false;
+            }
+            else if (target == null && !string.IsNullOrEmpty(targetName))
+            {
+                GameObject targetObject = GameObject.Find(targetName);
+                if (targetObject != null)
+                    target = targetObject.transform;
             }
         }
 

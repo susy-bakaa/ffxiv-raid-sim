@@ -7,6 +7,7 @@ using System.Linq;
 using UnityEngine;
 using dev.susybaka.raidsim.Actions;
 using dev.susybaka.raidsim.Characters;
+using dev.susybaka.raidsim.StatusEffects;
 
 namespace dev.susybaka.raidsim.Core
 {
@@ -302,6 +303,148 @@ namespace dev.susybaka.raidsim.Core
             {
                 this.values = new List<CharacterState>();
                 this.values.AddRange(values);
+            }
+        }
+
+        [System.Serializable]
+        public struct CharacterSnapshot
+        {
+            public float time;
+            public string characterName;
+            public CharacterState character;
+            public Vector3 position;
+            public Quaternion rotation;
+            public StatusEffectSnapshot[] statusEffects;
+            public long health;
+            public long maxHealth;
+            public long shield;
+            public float speed;
+            public float damageOutputModifier;
+            public float damageReductionModifier;
+            public float magicDamageModifier;
+            public float physicalDamageModifier;
+            public float uniqueDamageModifier;
+            public float unaspectedDamageModifier;
+            public float fireDamageModifier;
+            public float iceDamageModifier;
+            public float lightningDamageModifier;
+            public float waterDamageModifier;
+            public float windDamageModifier;
+            public float earthDamageModifier;
+            public float darkDamageModifier;
+            public float lightDamageModifier;
+            public float slashingDamageModifier;
+            public float piercingDamageModifier;
+            public float bluntDamageModifier;
+            public float poisonDamageModifier;
+            public float enmityModifier;
+            public bool invulnerable;
+            public bool uncontrollable;
+            public bool untargetable;
+            public bool bound;
+            public bool stunned;
+            public bool knockbackResistant;
+            public bool silenced;
+            public bool pacified;
+            public bool amnesia;
+            public bool canDoActions;
+            public bool canDie;
+            public bool canTarget;
+            public bool hidden;
+
+            public CharacterSnapshot(float time, CharacterState character)
+            {
+                this.time = time;
+                this.characterName = character.characterName;
+                this.character = character;
+                this.position = character.transform.position;
+                this.rotation = character.transform.rotation;
+
+                StatusEffect[] effects = character.GetEffects();
+
+                this.statusEffects = new StatusEffectSnapshot[effects.Length];
+
+                if (this.statusEffects.Length > 0)
+                {
+                    for (int i = 0; i < effects.Length; i++)
+                    {
+                        this.statusEffects[i] = new StatusEffectSnapshot(time, effects[i]);
+                    }
+                }
+
+                // Numbers
+                this.health = character.health;
+                this.maxHealth = character.currentMaxHealth;
+                this.shield = character.shield;
+                this.speed = character.currentSpeed;
+                this.damageOutputModifier = character.currentDamageOutputMultiplier;
+                this.damageReductionModifier = character.currentDamageReduction;
+                this.magicDamageModifier = character.magicalTypeDamageModifier;
+                this.physicalDamageModifier = character.physicalTypeDamageModifier;
+                this.uniqueDamageModifier = character.uniqueTypeDamageModifier;
+                this.unaspectedDamageModifier = character.unaspectedElementDamageModifier;
+                this.fireDamageModifier = character.fireElementDamageModifier;
+                this.iceDamageModifier = character.iceElementDamageModifier;
+                this.lightningDamageModifier = character.lightningElementDamageModifier;
+                this.waterDamageModifier = character.waterElementDamageModifier;
+                this.windDamageModifier = character.windElementDamageModifier;
+                this.earthDamageModifier = character.earthElementDamageModifier;
+                this.darkDamageModifier = character.darkElementDamageModifier;
+                this.lightDamageModifier = character.lightElementDamageModifier;
+                this.slashingDamageModifier = character.slashingElementDamageModifier;
+                this.piercingDamageModifier = character.piercingElementDamageModifier;
+                this.bluntDamageModifier = character.bluntElementDamageModifier;
+                this.poisonDamageModifier = character.poisonDamageModifier;
+                this.enmityModifier = character.enmityGenerationModifier;
+
+                // State flags
+                this.invulnerable = character.invulnerable.value;
+                this.uncontrollable = character.uncontrollable.value;
+                this.untargetable = character.untargetable.value;
+                this.bound = character.bound.value;
+                this.stunned = character.stunned.value;
+                this.knockbackResistant = character.knockbackResistant.value;
+                this.silenced = character.silenced.value;
+                this.pacified = character.pacificied.value;
+                this.amnesia = character.amnesia.value;
+                this.canDoActions = character.canDoActions.value;
+                this.canDie = character.canDie.value;
+                this.canTarget = character.canTarget.value;
+                this.hidden = character.hidden.value;
+            }
+        }
+
+        [System.Serializable]
+        public struct StatusEffectSnapshot
+        {
+            public float time;
+            public StatusEffectData data;
+            public CharacterState character;
+            public Damage damage;
+            public float duration;
+            public int stacks;
+            public int tag;
+
+            public StatusEffectSnapshot(float time, StatusEffectData data, Damage damage, CharacterState character, float duration, int stacks, int tag)
+            {
+                this.time = time;
+                this.data = data;
+                this.damage = new Damage(damage);
+                this.character = character;
+                this.duration = duration;
+                this.stacks = stacks;
+                this.tag = tag;
+            }
+
+            public StatusEffectSnapshot(float time, StatusEffect effect)
+            {
+                this.time = time;
+                this.data = effect.data;
+                this.damage = new Damage(effect.damage); // Create a copy of the damage to avoid reference issues, since this is a snapshot in time
+                this.character = effect.Character;
+                this.duration = effect.duration;
+                this.stacks = effect.stacks;
+                this.tag = effect.uniqueTag;
             }
         }
 

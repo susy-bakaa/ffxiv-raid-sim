@@ -2,6 +2,8 @@
 // This file is part of ffxiv-raid-sim. Linking with the Unity runtime
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
 using System.Collections.Generic;
+using dev.susybaka.raidsim.Characters;
+using dev.susybaka.Shared;
 using UnityEngine;
 
 namespace dev.susybaka.raidsim.Targeting
@@ -29,12 +31,24 @@ namespace dev.susybaka.raidsim.Targeting
                         node.AddNodeToController(cachedController.self);
                     }
                 }
-                else if (other.transform.parent.TryGetComponent(out TargetController controller))
+                else
                 {
-                    if (node != null)
+                    TargetController controller = null;
+                    CharacterSnapshotController snapshots = null;
+
+                    if (other.transform.TryGetComponentInParents(true, out controller) || other.transform.TryGetComponent(out snapshots))
                     {
-                        players.TryAdd(other.gameObject, controller);
-                        node.AddNodeToController(controller.self);
+                        if (controller == null && snapshots != null)
+                            controller = snapshots.targetCharacterState.targetController;
+
+                        if (controller == null)
+                            return;
+
+                        if (node != null)
+                        {
+                            players.TryAdd(other.gameObject, controller);
+                            node.AddNodeToController(controller.self);
+                        }
                     }
                 }
             }
@@ -51,12 +65,24 @@ namespace dev.susybaka.raidsim.Targeting
                         node.RemoveNodeFromController(cachedController.self);
                     }
                 }
-                else if (other.transform.parent.TryGetComponent(out TargetController controller))
+                else
                 {
-                    if (node != null)
+                    TargetController controller = null;
+                    CharacterSnapshotController snapshots = null;
+
+                    if (other.transform.TryGetComponentInParents(true, out controller) || other.transform.TryGetComponent(out snapshots))
                     {
-                        players.TryAdd(other.gameObject, controller);
-                        node.RemoveNodeFromController(controller.self);
+                        if (controller == null && snapshots != null)
+                            controller = snapshots.targetCharacterState.targetController;
+
+                        if (controller == null)
+                            return;
+
+                        if (node != null)
+                        {
+                            players.TryAdd(other.gameObject, controller);
+                            node.RemoveNodeFromController(controller.self);
+                        }
                     }
                 }
             }

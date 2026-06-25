@@ -36,6 +36,7 @@ namespace dev.susybaka.raidsim.Characters
         private float speedSmoothVelocity;
         private Vector2 storedInput;
         private Vector2 storedInputR;
+        private Vector3 storedPosition;
 
         public Transform model;
         public BotNode clockSpot;
@@ -202,6 +203,8 @@ namespace dev.susybaka.raidsim.Characters
 
         private void Update()
         {
+            storedPosition = transform.position;
+
             if (preventGravity != wasPreventGravity)
             {
                 wasPreventGravity = preventGravity;
@@ -628,6 +631,8 @@ namespace dev.susybaka.raidsim.Characters
         }
 
         public Animator GetAnimator() { return this.animator; }
+
+        public Vector3 GetPreviousPosition() { return storedPosition; }
 
         public void ResetController()
         {

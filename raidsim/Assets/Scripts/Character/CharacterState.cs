@@ -4283,6 +4283,9 @@ namespace dev.susybaka.raidsim.Characters
 
         public StatusEffect[] GetEffects()
         {
+            if (effectsArray == null)
+                return new StatusEffect[0];
+
             return effectsArray;
         }
 
