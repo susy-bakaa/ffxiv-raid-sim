@@ -211,6 +211,7 @@ GameObject:
   - component: {fileID: 6194713669717674313}
   - component: {fileID: 7287589302449052408}
   - component: {fileID: 7808745378820504911}
+  - component: {fileID: 3246608807438550683}
   m_Layer: 0
   m_Name: AOE_TelePortentPuddleDownShort
   m_TagString: Untagged
@@ -367,7 +368,7 @@ MonoBehaviour:
   resetOnReload: 0
   resetOwner: 0
   visualDelay: 0
-  triggerDelay: 0.1
+  triggerDelay: 0.2
   triggerDelayVariance: 0
   damageApplicationDelay: 0.25
   cooldown: 1
@@ -445,6 +446,31 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: dev.susybaka.raidsim.Mechanics.DamageTrigger, Assembly-CSharp
         m_MethodName: SetState
         m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 3246608807438550683}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Mechanics.CharacterStateMechanic,
+          Assembly-CSharp
+        m_MethodName: AddCharacter
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 3246608807438550683}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Mechanics.FightMechanic, Assembly-CSharp
+        m_MethodName: TriggerMechanic
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -616,8 +642,8 @@ MonoBehaviour:
   lockMovement: 0
   dashToTarget: 1
   overrideDashDirection: 0
-  delay: 0.5
-  duration: 0.75
+  delay: 0.5833
+  duration: 0.3167
   dashHeight: 0
   overrideTargetPosition: {x: 0, y: 0, z: 0}
   overrideTarget: {fileID: 8121627822520900656}
@@ -635,6 +661,68 @@ MonoBehaviour:
     x: 1
     y: 0
     z: 1
+--- !u!114 &3246608807438550683
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4102379858529143949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9d9b4c40d20dbf4ba9f2e114fb86f1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicEnabled: 1
+  mechanicName: 
+  onlyTriggerOnce: 0
+  global: 0
+  log: 0
+  behaviorType: 7
+  characters: []
+  setNameplateVisibility: 0
+  invertNameplate: 0
+  setPartyListVisibility: 0
+  invertPartyList: 0
+  setTargetability: 0
+  invertTargetable: 0
+  setModelVisibility: 0
+  invertModelVisibility: 0
+  fadeModelVisibility: 0
+  modelVisibilityFadeTime: 0.5
+  setGameObjectState: 0
+  gameObjectStateDelay: 0
+  setCharacterState: 0
+  allowDynamicCharacters: 1
+  toggleInstead: 0
+  filterByStatusEffects: 0
+  requireAllStatusEffects: 0
+  ignoreUnfiltered: 0
+  requiredStatusEffects: []
+  changeModel: 0
+  modelIndex: 0
+  spawnLocation: {fileID: 0}
+  executionType: 0
+  useQueuedActions: 1
+  action: {fileID: 0}
+  actionData: {fileID: 0}
+  targetingType: 0
+  filterTargetsInstead: 0
+  setRotationTarget: 0
+  targetList: []
+  mechanic: {fileID: 0}
+  overrideMechanicSource: {fileID: 0}
+  characterEventResultId: 6
+  characterEventResultValue: 1
+  animatorParameterType: 0
+  animatorParameterName: 
+  setAnimatorParameterOnReset: 0
+  animatorParameterFloat: 0
+  animatorParameterInt: 0
+  animatorParameterBool: 0
+  onProcessCharacter:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &4320862278904649190
 GameObject:
   m_ObjectHideFlags: 0

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7968994889274011622}
   - component: {fileID: -8456298620292975327}
+  - component: {fileID: -4887357243233323087}
   m_Layer: 3
   m_Name: OutOfTheAction_umad
   m_TagString: Untagged
@@ -61,7 +62,31 @@ MonoBehaviour:
     source: {fileID: 0}
   onApplication:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: -4887357243233323087}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Core.StateTrigger, Assembly-CSharp
+        m_MethodName: Initialize
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: -4887357243233323087}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Core.StateTrigger, Assembly-CSharp
+        m_MethodName: ToggleTarget
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
   onTick:
     m_PersistentCalls:
       m_Calls: []
@@ -70,10 +95,34 @@ MonoBehaviour:
       m_Calls: []
   onExpire:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: -4887357243233323087}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Core.StateTrigger, Assembly-CSharp
+        m_MethodName: ToggleTarget
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onCleanse:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: -4887357243233323087}
+        m_TargetAssemblyTypeName: dev.susybaka.raidsim.Core.StateTrigger, Assembly-CSharp
+        m_MethodName: ToggleTarget
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onReduce:
     m_PersistentCalls:
       m_Calls: []
@@ -85,7 +134,7 @@ MonoBehaviour:
       m_Calls: []
   stunned: 0
   knockbackResistant: 0
-  bind: 0
+  bind: 1
   invulnerable: 0
   untargetable: 0
   uncontrollable: 0
@@ -94,3 +143,38 @@ MonoBehaviour:
   silence: 1
   pacify: 1
   amnesia: 1
+--- !u!114 &-4887357243233323087
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2952943525002301481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4e614f0643db6c4682d46d7fc562556, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  state: 0
+  party: {fileID: 0}
+  autoFindParty: 1
+  source: {fileID: 0}
+  target: {fileID: 0}
+  targetName: VisualEffects/Bind_Effect
+  targetParent: 
+  targetIndex: 0
+  useStatusEffectTagAsTargetIndex: 0
+  moveToTargetName: 
+  moveToSourceName: 
+  localParent: 0
+  hiddenActions: 0
+  toggleObject: 0
+  toggleCharacterState: 0
+  togglePartyListEntry: 0
+  toggleCharacterEffect: 1
+  characterEffectKey: CharacterEffect_OutofTheAction_umad
+  toggleShaderEffect: 0
+  fadeTime: 0.33
+  toggleScale: 0
+  resetScale: 1
+  log: 0

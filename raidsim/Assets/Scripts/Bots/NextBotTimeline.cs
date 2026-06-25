@@ -38,7 +38,9 @@ namespace dev.susybaka.raidsim.Bots
         [ShowIf(nameof(checkOtherBotsInstead))] public bool useIndexMappingForOtherBots = false;
         [ShowIf(nameof(TypeEnum), choiceType.partyListPriority)] public bool useStatusEffectForPriorityCheck = false;
         [ShowIf(nameof(TypeEnum), choiceType.partyListPriority)] public bool looseStatusCheck = false;
+        [ShowIf(nameof(TypeEnum), choiceType.fightTimelineEventRandomResult)] public bool useCharacterEventForFirstResult = false;
         [ShowIf(nameof(TypeEnum), choiceType.fightTimelineEventRandomResult)] public bool useDoubleEventCheck = false;
+        [ShowIf(nameof(useDoubleEventCheck))] public bool useCharacterEventForSecondResult = false;
         [HideIf(nameof(TypeEnum), choiceType.none)] public bool useIndexMapping = false;
         [ShowIf(nameof(TypeEnum), choiceType.none)] public bool random = false;
         [ShowIf(nameof(checkOtherBotsInstead))] public bool useOtherBotIndexAsIndexMapping = false;
@@ -187,6 +189,30 @@ namespace dev.susybaka.raidsim.Bots
                     case choiceType.fightTimelineEventRandomResult:
                         int r = FightTimeline.Instance.GetRandomEventResult(fightTimelineEventRandomResultId);
                         int r2 = FightTimeline.Instance.GetRandomEventResult(fightTimelineEventRandomResultId2);
+
+                        if (useCharacterEventForFirstResult)
+                        {
+                            r = bot.state.GetCharacterEventResult(fightTimelineEventRandomResultId);
+
+                            if (r < 0)
+                            {
+                                r = 0;
+                                if (log || bot.log)
+                                    Debug.Log($"[{gameObject.name}] --> Bot {bot.state.gameObject.name} does not have a character event result for {fightTimelineEventRandomResultId}. Using clamped result of {r} instead.");
+                            }
+                        }
+
+                        if (useDoubleEventCheck && useCharacterEventForSecondResult)
+                        {
+                            r2 = bot.state.GetCharacterEventResult(fightTimelineEventRandomResultId2);
+
+                            if (r2 < 0)
+                            {
+                                r2 = 0;
+                                if (log || bot.log)
+                                    Debug.Log($"[{gameObject.name}] --> Bot {bot.state.gameObject.name} does not have a character event result for {fightTimelineEventRandomResultId2}. Using clamped result of {r2} instead.");
+                            }
+                        }
 
                         if (useIndexMapping)
                         {

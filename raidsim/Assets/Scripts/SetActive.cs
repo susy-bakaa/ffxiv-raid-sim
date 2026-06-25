@@ -9,12 +9,43 @@ namespace dev.susybaka.raidsim
     public class SetActive : MonoBehaviour
     {
         [SerializeField] private GameObject[] gameObjects;
+        [SerializeField] private bool setOnStart = true;
         [SerializeField] private bool state;
         [SerializeField] private float delay = 0.1f;
 
         private Coroutine ieSetActive;
+        private bool ranStart = false;
 
         private void Start()
+        {
+            if (!setOnStart)
+            {
+                ranStart = true;
+                return;
+            }
+
+            SetStateInternal();
+        }
+
+        public void SetState(bool state)
+        {
+            if (!ranStart)
+                return;
+
+            this.state = state;
+            SetStateInternal();
+        }
+
+        public void ToggleState()
+        {
+            if (!ranStart)
+                return;
+
+            this.state = !this.state;
+            SetStateInternal();
+        }
+
+        private void SetStateInternal()
         {
             if (delay > 0f)
             {
@@ -23,6 +54,7 @@ namespace dev.susybaka.raidsim
             }
             else
             {
+                ranStart = true;
                 SetActiveInternal();
             }
         }
@@ -30,6 +62,7 @@ namespace dev.susybaka.raidsim
         private IEnumerator IE_SetActive(WaitForSeconds wait)
         {
             yield return wait;
+            ranStart = true;
             SetActiveInternal();
             ieSetActive = null;
         }

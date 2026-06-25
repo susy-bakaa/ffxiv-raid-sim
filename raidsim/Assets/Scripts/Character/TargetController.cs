@@ -1189,11 +1189,11 @@ namespace dev.susybaka.raidsim.Targeting
                                 targetCastbarHudElement.ChangeColors(false);
                             }
                         }
-                        if (targetCastbarProgress != null)
+                        if (targetCastbarProgress != null && target_actionController != null)
                         {
                             targetCastbarProgress.text = target_actionController.CastTime.ToString("00.00").Replace(',', '.').Replace(':', '.').Replace(';', '.');
                         }
-                        if (targetCastbarName != null)
+                        if (targetCastbarName != null && target_actionController != null && target_actionController.LastAction != null && target_actionController.LastAction.Data != null)
                         {
                             targetCastbarName.text = target_actionController.LastAction.Data.GetActionName();
                         }
