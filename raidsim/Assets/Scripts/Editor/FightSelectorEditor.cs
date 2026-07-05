@@ -19,11 +19,14 @@ namespace dev.susybaka.raidsim.Editor
         SerializedProperty currentIndexProp;
         ReorderableList scenesList;
 
+        private static int pendingExpandedSceneIndex = -1;
+
         void OnEnable()
         {
             scenesProp = serializedObject.FindProperty(nameof(FightSelector.scenes));
             currentIndexProp = serializedObject.FindProperty(nameof(FightSelector.currentSceneIndex));
             CreateList();
+            RestorePendingListEntry();
         }
 
         void OnDisable() => scenesList = null;
@@ -141,6 +144,7 @@ namespace dev.susybaka.raidsim.Editor
                         {
                             EditorSceneManager.SaveOpenScenes();
                             EditorSceneManager.OpenScene(path);
+                            ScheduleSelectFirstFightSelector(index);
                             GUIUtility.ExitGUI();
                         }
                     }
@@ -169,6 +173,72 @@ namespace dev.susybaka.raidsim.Editor
             EditorGUILayout.Space();
             EditorGUILayout.PropertyField(currentIndexProp, new GUIContent("Current Scene Index"));
             serializedObject.ApplyModifiedProperties();
+        }
+
+        private void RestorePendingListEntry()
+        {
+            if (pendingExpandedSceneIndex < 0 || scenesProp == null)
+                return;
+
+            int index = pendingExpandedSceneIndex;
+            pendingExpandedSceneIndex = -1;
+
+            if (index >= 0 && index < scenesProp.arraySize)
+            {
+                scenesProp.GetArrayElementAtIndex(index).isExpanded = true;
+
+                if (scenesList != null)
+                    scenesList.index = index;
+            }
+        }
+
+        private static void ScheduleSelectFirstFightSelector(int listIndexToExpand)
+        {
+            pendingExpandedSceneIndex = listIndexToExpand;
+
+            EditorApplication.delayCall += () =>
+            {
+                var selector = FindFirstFightSelectorInActiveScene();
+                if (selector == null)
+                {
+                    pendingExpandedSceneIndex = -1;
+                    return;
+                }
+
+                Selection.activeGameObject = selector.gameObject;
+                EditorGUIUtility.PingObject(selector.gameObject);
+                InternalEditorUtility.RepaintAllViews();
+            };
+        }
+
+        private static FightSelector FindFirstFightSelectorInActiveScene()
+        {
+            var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+            var roots = scene.GetRootGameObjects();
+
+            foreach (var root in roots)
+            {
+                var selector = FindFirstFightSelectorInChildren(root.transform);
+                if (selector != null)
+                    return selector;
+            }
+
+            return null;
+        }
+
+        private static FightSelector FindFirstFightSelectorInChildren(Transform root)
+        {
+            if (root.TryGetComponent(out FightSelector selector))
+                return selector;
+
+            for (int i = 0; i < root.childCount; i++)
+            {
+                selector = FindFirstFightSelectorInChildren(root.GetChild(i));
+                if (selector != null)
+                    return selector;
+            }
+
+            return null;
         }
     }
 }
