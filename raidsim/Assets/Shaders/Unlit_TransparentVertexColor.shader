@@ -47,11 +47,12 @@ Shader "Custom/Unlit/TransparentVertexColor"
             fixed4 emissionMix = _EmissionColor.rgba * vertexColor.rgba;
             
             vertexColor = lerp(_VertexColorRange.x, _VertexColorRange.y, vertexColor);
+            fixed4 transVertexColor = saturate(vertexColor);
             vertexColor *= _VertexColorPower;
 
             o.Emission = emissionMix * (vertexColor * _Transparency);
 
-            o.Alpha = _Transparency * _Alpha * vertexColor.rgb;
+            o.Alpha = _Transparency * _Alpha * transVertexColor.rgb;
             
             o.Albedo = _Color.rgb;
         }
