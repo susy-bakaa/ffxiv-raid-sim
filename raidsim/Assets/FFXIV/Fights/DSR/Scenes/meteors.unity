@@ -499,7 +499,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 1
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -812,7 +814,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -960,7 +964,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -1353,11 +1359,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9cedd524c0b18a4cb84d2398c38250d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visible: 0
+  log: 0
+  isVisible:
+    name: isVisible
+    values: []
+    logic: 1
+    thresholdPercentage: 0
   enableOnStart: 0
   toggleObject: 1
   fadeTime: 0
-  log: 0
+  fadeInDelay: 0
+  fadeOutDelay: 0
 --- !u!1 &31695289
 GameObject:
   m_ObjectHideFlags: 0
@@ -1513,6 +1525,7 @@ MonoBehaviour:
   global: 0
   log: 0
   knockbackName: Faith Unmoving
+  useServerSnapshot: 0
   showDamagePopup: 0
   canBeResisted: 1
   originFromSource: 0
@@ -1543,6 +1556,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data: {fileID: 0}
   damageName: Faith Unmoving
+  active: 1
   inverted: 0
   isDonut: 0
   innerRadius: 0
@@ -1603,6 +1617,7 @@ MonoBehaviour:
   updateLive: 1
   shared: 0
   enumeration: 0
+  limitedToPlayersRequired: 0
   requireOwner: 0
   resetOnReload: 1
   resetOwner: 0
@@ -1655,7 +1670,6 @@ MonoBehaviour:
   onVacated:
     m_PersistentCalls:
       m_Calls: []
-  dummy: 0
 --- !u!135 &46696123
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1921,7 +1935,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -2165,7 +2181,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7912640079483900569, guid: 355bc87518964e04cafb4ee31987bfcf, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0008745618
+      value: 0.00089641515
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3476,6 +3492,7 @@ MonoBehaviour:
   mechanicParent: {fileID: 1911854985}
   enemiesParent: {fileID: 1060614156}
   charactersParent: {fileID: 100303250}
+  characterSnapshotControllerParent: {fileID: 0}
   botNodeParent: {fileID: 31695290}
   arenaOffset: {x: 0, y: 0, z: 0}
   arenaBounds: {x: 21, y: 0, z: 0}
@@ -3822,6 +3839,7 @@ MonoBehaviour:
   clearRandomEventResultsOnStart: 0
   noNewSeedOnStart: 0
   disableKnockbacks: 0
+  delayOnReset: 0
   onNoNewSeedOnStartChanged:
     m_PersistentCalls:
       m_Calls:
@@ -3858,9 +3876,19 @@ MonoBehaviour:
   onUpdateBotVisibility:
     m_PersistentCalls:
       m_Calls: []
+  onServerTick:
+    m_PersistentCalls:
+      m_Calls: []
   freezeRng: 0
   rngSeed: 12345
   globalRngMode: 0
+  useServerTickSimulation: 0
+  characterSnapshotControllerPrefab: {fileID: 0}
+  serverTickInterval: 0.3
+  baseLookbackSeconds: 0.1
+  usePingSimulation: 0
+  simulatedPingMs: 20
+  pingInfluence: 1
   disableDuringPlayback:
   - {fileID: 1423926073}
   - {fileID: 0}
@@ -3944,6 +3972,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 2.5, y: 2.5, z: 2.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1 &83245730
@@ -4176,7 +4205,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -4470,6 +4501,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a80c61f171540c5419ce5447e10885db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hasControl:
+    name: hasControl
+    values:
+    - name: base
+      value: 1
+    logic: 1
+    thresholdPercentage: 0
   target: {fileID: 0}
   lookTarget: {fileID: 0}
   includeCollider: 1
@@ -4642,6 +4680,13 @@ MonoBehaviour:
       value: 0
     logic: 0
     thresholdPercentage: 0
+  canTarget:
+    name: canTarget
+    values:
+    - name: base
+      value: 1
+    logic: 0
+    thresholdPercentage: 0
   hidden:
     name: hidden
     values: []
@@ -4667,6 +4712,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_characterEventResults: []
+  onRoleChanged:
+    m_PersistentCalls:
+      m_Calls: []
   mirror: {fileID: 0}
   partyList: {fileID: 2069284728}
   statusEffectParent: {fileID: 1240555897}
@@ -4749,6 +4797,7 @@ MonoBehaviour:
   modelAlpha: 1
   pivot: {fileID: 1416129076}
   model: {fileID: 634542861}
+  cleanseInstead: 0
   inflictedEffect:
     name: 
     data: {fileID: 0}
@@ -5437,6 +5486,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 6.1, y: 6.1, z: 6.1}
   offset: {x: 0, y: 0, z: 0}
 --- !u!114 &111042672
@@ -6098,6 +6148,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 0
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 0.5, y: 0.5, z: 0.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!114 &149729843
@@ -6619,6 +6670,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 6.1, y: 6.1, z: 6.1}
   offset: {x: 0, y: 0, z: 0}
 --- !u!114 &155719123
@@ -6771,7 +6823,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -7037,7 +7091,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -7233,7 +7289,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -7773,7 +7831,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -7885,6 +7945,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 0
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 0.5, y: 0.5, z: 0.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!114 &199442973
@@ -8694,7 +8755,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -8977,7 +9040,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -10298,7 +10363,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -10594,7 +10661,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -10936,7 +11005,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -12030,6 +12101,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a80c61f171540c5419ce5447e10885db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hasControl:
+    name: hasControl
+    values:
+    - name: base
+      value: 1
+    logic: 1
+    thresholdPercentage: 0
   target: {fileID: 0}
   lookTarget: {fileID: 0}
   includeCollider: 1
@@ -12202,6 +12280,13 @@ MonoBehaviour:
       value: 0
     logic: 0
     thresholdPercentage: 0
+  canTarget:
+    name: canTarget
+    values:
+    - name: base
+      value: 1
+    logic: 0
+    thresholdPercentage: 0
   hidden:
     name: hidden
     values: []
@@ -12227,6 +12312,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_characterEventResults: []
+  onRoleChanged:
+    m_PersistentCalls:
+      m_Calls: []
   mirror: {fileID: 0}
   partyList: {fileID: 2069284728}
   statusEffectParent: {fileID: 1332546621}
@@ -12309,6 +12397,7 @@ MonoBehaviour:
   modelAlpha: 1
   pivot: {fileID: 1499846925}
   model: {fileID: 1194574775}
+  cleanseInstead: 0
   inflictedEffect:
     name: 
     data: {fileID: 0}
@@ -12723,7 +12812,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -13004,7 +13095,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -18671,7 +18764,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -19249,6 +19344,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 2.5, y: 2.5, z: 2.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1 &419057887
@@ -19600,7 +19696,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -19662,6 +19760,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 0
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 0.5, y: 0.5, z: 0.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!114 &428785804
@@ -20413,6 +20512,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a80c61f171540c5419ce5447e10885db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hasControl:
+    name: hasControl
+    values:
+    - name: base
+      value: 1
+    logic: 1
+    thresholdPercentage: 0
   target: {fileID: 0}
   lookTarget: {fileID: 0}
   includeCollider: 1
@@ -20585,6 +20691,13 @@ MonoBehaviour:
       value: 0
     logic: 0
     thresholdPercentage: 0
+  canTarget:
+    name: canTarget
+    values:
+    - name: base
+      value: 1
+    logic: 0
+    thresholdPercentage: 0
   hidden:
     name: hidden
     values: []
@@ -20610,6 +20723,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_characterEventResults: []
+  onRoleChanged:
+    m_PersistentCalls:
+      m_Calls: []
   mirror: {fileID: 0}
   partyList: {fileID: 2069284728}
   statusEffectParent: {fileID: 361173632}
@@ -20692,6 +20808,7 @@ MonoBehaviour:
   modelAlpha: 1
   pivot: {fileID: 2088528436}
   model: {fileID: 889552381}
+  cleanseInstead: 0
   inflictedEffect:
     name: 
     data: {fileID: 0}
@@ -21344,7 +21461,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 1
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -21762,7 +21881,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -22083,7 +22204,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -22241,7 +22364,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 1
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -22486,7 +22611,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -22767,6 +22894,12 @@ MonoBehaviour:
   overrideMechanicSource: {fileID: 0}
   characterEventResultId: -1
   characterEventResultValue: 0
+  animatorParameterType: 0
+  animatorParameterName: 
+  setAnimatorParameterOnReset: 0
+  animatorParameterFloat: 0
+  animatorParameterInt: 0
+  animatorParameterBool: 0
   onProcessCharacter:
     m_PersistentCalls:
       m_Calls: []
@@ -23418,7 +23551,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -23492,7 +23627,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -23774,7 +23911,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 1
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -24766,7 +24905,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -24828,6 +24969,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 0
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 0.5, y: 0.5, z: 0.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!114 &518651744
@@ -25121,6 +25263,7 @@ MonoBehaviour:
   damageTriggerPrefab: {fileID: 6443686908775863755, guid: f10e78a26265fb64782244f8e7ab678a, type: 3}
   enableInstead: 0
   spawnLocation: {fileID: 2033386629}
+  useServerSnapshot: 0
   copyRotation: 0
   setRotation: 0
   rotation: {x: 0, y: 0, z: 0}
@@ -25180,6 +25323,7 @@ MonoBehaviour:
   damageTriggerPrefab: {fileID: 8466833382882479322, guid: 7c052bc52b4c34940addfbd069f1fe3c, type: 3}
   enableInstead: 0
   spawnLocation: {fileID: 1181290175}
+  useServerSnapshot: 0
   copyRotation: 0
   setRotation: 0
   rotation: {x: 0, y: 0, z: 0}
@@ -25224,6 +25368,7 @@ MonoBehaviour:
   damageTriggerPrefab: {fileID: 8466833382882479322, guid: 7c052bc52b4c34940addfbd069f1fe3c, type: 3}
   enableInstead: 0
   spawnLocation: {fileID: 1723644311}
+  useServerSnapshot: 0
   copyRotation: 0
   setRotation: 0
   rotation: {x: 0, y: 0, z: 0}
@@ -25268,6 +25413,7 @@ MonoBehaviour:
   damageTriggerPrefab: {fileID: 8466833382882479322, guid: 7c052bc52b4c34940addfbd069f1fe3c, type: 3}
   enableInstead: 0
   spawnLocation: {fileID: 1116453522}
+  useServerSnapshot: 0
   copyRotation: 0
   setRotation: 0
   rotation: {x: 0, y: 0, z: 0}
@@ -25312,6 +25458,7 @@ MonoBehaviour:
   damageTriggerPrefab: {fileID: 8466833382882479322, guid: 7c052bc52b4c34940addfbd069f1fe3c, type: 3}
   enableInstead: 0
   spawnLocation: {fileID: 1103190555}
+  useServerSnapshot: 0
   copyRotation: 0
   setRotation: 0
   rotation: {x: 0, y: 0, z: 0}
@@ -25693,6 +25840,7 @@ MonoBehaviour:
   shape: 3
   wireframe: 0
   whenSelected: 1
+  drawInLocalSpace: 0
   size: {x: 1, y: 1, z: 1}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1 &530903326
@@ -26177,6 +26325,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a80c61f171540c5419ce5447e10885db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hasControl:
+    name: hasControl
+    values:
+    - name: base
+      value: 1
+    logic: 1
+    thresholdPercentage: 0
   target: {fileID: 0}
   lookTarget: {fileID: 0}
   includeCollider: 1
@@ -26349,6 +26504,13 @@ MonoBehaviour:
       value: 0
     logic: 0
     thresholdPercentage: 0
+  canTarget:
+    name: canTarget
+    values:
+    - name: base
+      value: 1
+    logic: 0
+    thresholdPercentage: 0
   hidden:
     name: hidden
     values: []
@@ -26374,6 +26536,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_characterEventResults: []
+  onRoleChanged:
+    m_PersistentCalls:
+      m_Calls: []
   mirror: {fileID: 0}
   partyList: {fileID: 2069284728}
   statusEffectParent: {fileID: 93274666}
@@ -26456,6 +26621,7 @@ MonoBehaviour:
   modelAlpha: 1
   pivot: {fileID: 1295130485}
   model: {fileID: 199638388}
+  cleanseInstead: 0
   inflictedEffect:
     name: 
     data: {fileID: 0}
@@ -27052,7 +27218,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -27579,6 +27747,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 0
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 0.5, y: 0.5, z: 0.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!114 &580606442
@@ -28239,7 +28408,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -28435,6 +28606,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
+  targetName: 
   constantFollow: 1
   followCharacterStateTarget: 0
   hideWhenNoTarget: 0
@@ -28648,7 +28820,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -28999,7 +29173,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -29136,7 +29312,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -29394,7 +29572,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -29556,11 +29736,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9cedd524c0b18a4cb84d2398c38250d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visible: 0
+  log: 0
+  isVisible:
+    name: isVisible
+    values: []
+    logic: 1
+    thresholdPercentage: 0
   enableOnStart: 0
   toggleObject: 1
   fadeTime: 0
-  log: 0
+  fadeInDelay: 0
+  fadeOutDelay: 0
 --- !u!1 &634542860
 GameObject:
   m_ObjectHideFlags: 0
@@ -29819,7 +30005,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -30261,7 +30449,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -30848,11 +31038,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9cedd524c0b18a4cb84d2398c38250d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visible: 0
+  log: 0
+  isVisible:
+    name: isVisible
+    values: []
+    logic: 1
+    thresholdPercentage: 0
   enableOnStart: 0
   toggleObject: 1
   fadeTime: 0
-  log: 0
+  fadeInDelay: 0
+  fadeOutDelay: 0
 --- !u!1 &689054967
 GameObject:
   m_ObjectHideFlags: 0
@@ -31084,6 +31280,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a80c61f171540c5419ce5447e10885db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hasControl:
+    name: hasControl
+    values:
+    - name: base
+      value: 1
+    logic: 1
+    thresholdPercentage: 0
   target: {fileID: 0}
   lookTarget: {fileID: 0}
   includeCollider: 1
@@ -31256,6 +31459,13 @@ MonoBehaviour:
       value: 0
     logic: 0
     thresholdPercentage: 0
+  canTarget:
+    name: canTarget
+    values:
+    - name: base
+      value: 1
+    logic: 0
+    thresholdPercentage: 0
   hidden:
     name: hidden
     values: []
@@ -31281,6 +31491,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_characterEventResults: []
+  onRoleChanged:
+    m_PersistentCalls:
+      m_Calls: []
   mirror: {fileID: 0}
   partyList: {fileID: 2069284728}
   statusEffectParent: {fileID: 1426170476}
@@ -31363,6 +31576,7 @@ MonoBehaviour:
   modelAlpha: 1
   pivot: {fileID: 927413726}
   model: {fileID: 1658998529}
+  cleanseInstead: 0
   inflictedEffect:
     name: 
     data: {fileID: 0}
@@ -31890,7 +32104,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -32346,7 +32562,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -32607,7 +32825,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -32879,7 +33099,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -32938,6 +33160,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 6.1, y: 6.1, z: 6.1}
   offset: {x: 0, y: 0, z: 0}
 --- !u!114 &751291222
@@ -33427,7 +33650,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -38715,6 +38940,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 0
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 0.5, y: 0.5, z: 0.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!114 &792232988
@@ -38804,7 +39030,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -39407,7 +39635,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -40355,7 +40585,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -40517,7 +40749,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -40728,7 +40962,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -41237,6 +41473,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data: {fileID: 0}
   damageName: Arena
+  active: 1
   inverted: 0
   isDonut: 0
   innerRadius: 0
@@ -41297,6 +41534,7 @@ MonoBehaviour:
   updateLive: 0
   shared: 0
   enumeration: 0
+  limitedToPlayersRequired: 0
   requireOwner: 0
   resetOnReload: 1
   resetOwner: 1
@@ -41349,7 +41587,6 @@ MonoBehaviour:
   onVacated:
     m_PersistentCalls:
       m_Calls: []
-  dummy: 0
 --- !u!54 &838079264
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -42020,7 +42257,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -42441,7 +42680,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -47586,6 +47827,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 2.5, y: 2.5, z: 2.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1 &872390298
@@ -47823,7 +48065,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -48022,6 +48266,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 0
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 0.5, y: 0.5, z: 0.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!114 &877032664
@@ -49035,7 +49280,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -50331,6 +50578,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 1
+  drawInLocalSpace: 0
   size: {x: 4, y: 4, z: 4}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1 &935487565
@@ -50532,6 +50780,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data: {fileID: 0}
   damageName: Faith Unmoving
+  active: 1
   inverted: 0
   isDonut: 0
   innerRadius: 0
@@ -50592,6 +50841,7 @@ MonoBehaviour:
   updateLive: 0
   shared: 0
   enumeration: 0
+  limitedToPlayersRequired: 0
   requireOwner: 0
   resetOnReload: 1
   resetOwner: 0
@@ -50644,7 +50894,6 @@ MonoBehaviour:
   onVacated:
     m_PersistentCalls:
       m_Calls: []
-  dummy: 0
 --- !u!65 &945687886
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -50876,7 +51125,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -51652,7 +51903,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -51791,7 +52044,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -52394,7 +52649,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7912640079483900569, guid: 355bc87518964e04cafb4ee31987bfcf, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0008700018
+      value: 0.000898057
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -52613,6 +52868,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 2.5, y: 2.5, z: 2.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1 &1004848271
@@ -57822,7 +58078,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -58357,7 +58615,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -58841,7 +59101,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -59583,7 +59845,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -59662,7 +59926,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -60102,7 +60368,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -60548,7 +60816,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -60607,6 +60877,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 0
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 0.5, y: 0.5, z: 0.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!114 &1053974993
@@ -61108,7 +61379,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -61564,6 +61837,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 0
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 0.5, y: 0.5, z: 0.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!114 &1079877142
@@ -62163,6 +62437,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 6.1, y: 6.1, z: 6.1}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1 &1109970684
@@ -62214,6 +62489,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 0
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 0.5, y: 0.5, z: 0.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!114 &1109970687
@@ -62561,7 +62837,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -62754,7 +63032,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -62834,6 +63114,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 6.1, y: 6.1, z: 6.1}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1 &1116734232
@@ -63181,7 +63462,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -63974,7 +64257,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -64184,11 +64469,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9cedd524c0b18a4cb84d2398c38250d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visible: 0
+  log: 0
+  isVisible:
+    name: isVisible
+    values: []
+    logic: 1
+    thresholdPercentage: 0
   enableOnStart: 0
   toggleObject: 1
   fadeTime: 0
-  log: 0
+  fadeInDelay: 0
+  fadeOutDelay: 0
 --- !u!1 &1150045890
 GameObject:
   m_ObjectHideFlags: 0
@@ -65126,7 +65417,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -65322,7 +65615,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -65483,7 +65778,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -65887,6 +66184,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 6.1, y: 6.1, z: 6.1}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1 &1181290174
@@ -65959,6 +66257,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 6.1, y: 6.1, z: 6.1}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1 &1181945514
@@ -66332,7 +66631,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -67028,6 +67329,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 1
+  drawInLocalSpace: 0
   size: {x: 4, y: 4, z: 4}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1001 &1196789096
@@ -67627,7 +67929,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -67986,7 +68290,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -68341,7 +68647,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -68494,6 +68802,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 0
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 0.5, y: 0.5, z: 0.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!114 &1230743690
@@ -68823,6 +69132,13 @@ MonoBehaviour:
       value: 0
     logic: 0
     thresholdPercentage: 0
+  canTarget:
+    name: canTarget
+    values:
+    - name: base
+      value: 1
+    logic: 0
+    thresholdPercentage: 0
   hidden:
     name: hidden
     values: []
@@ -68848,6 +69164,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_characterEventResults: []
+  onRoleChanged:
+    m_PersistentCalls:
+      m_Calls: []
   mirror: {fileID: 0}
   partyList: {fileID: 2069284728}
   statusEffectParent: {fileID: 1488162030}
@@ -68930,6 +69249,7 @@ MonoBehaviour:
   modelAlpha: 1
   pivot: {fileID: 574981024}
   model: {fileID: 1553358998}
+  cleanseInstead: 0
   inflictedEffect:
     name: 
     data: {fileID: 0}
@@ -68957,6 +69277,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a80c61f171540c5419ce5447e10885db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hasControl:
+    name: hasControl
+    values:
+    - name: base
+      value: 1
+    logic: 1
+    thresholdPercentage: 0
   target: {fileID: 0}
   lookTarget: {fileID: 0}
   includeCollider: 1
@@ -69708,6 +70035,7 @@ MonoBehaviour:
   damageTriggerPrefab: {fileID: 46696119}
   enableInstead: 1
   spawnLocation: {fileID: 46696120}
+  useServerSnapshot: 0
   copyRotation: 0
   setRotation: 0
   rotation: {x: 0, y: 0, z: 0}
@@ -69752,6 +70080,7 @@ MonoBehaviour:
   damageTriggerPrefab: {fileID: 945687882}
   enableInstead: 1
   spawnLocation: {fileID: 46696120}
+  useServerSnapshot: 0
   copyRotation: 0
   setRotation: 0
   rotation: {x: 0, y: 0, z: 0}
@@ -69796,6 +70125,7 @@ MonoBehaviour:
   damageTriggerPrefab: {fileID: 1390500004}
   enableInstead: 1
   spawnLocation: {fileID: 46696120}
+  useServerSnapshot: 0
   copyRotation: 0
   setRotation: 0
   rotation: {x: 0, y: 0, z: 0}
@@ -69840,6 +70170,7 @@ MonoBehaviour:
   damageTriggerPrefab: {fileID: 2029563901}
   enableInstead: 1
   spawnLocation: {fileID: 46696120}
+  useServerSnapshot: 0
   copyRotation: 0
   setRotation: 0
   rotation: {x: 0, y: 0, z: 0}
@@ -69884,6 +70215,7 @@ MonoBehaviour:
   damageTriggerPrefab: {fileID: 1981133606}
   enableInstead: 1
   spawnLocation: {fileID: 46696120}
+  useServerSnapshot: 0
   copyRotation: 0
   setRotation: 0
   rotation: {x: 0, y: 0, z: 0}
@@ -70071,7 +70403,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -70304,7 +70638,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -70377,6 +70713,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 2.5, y: 2.5, z: 2.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1001 &1256373920
@@ -70389,7 +70726,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 255999098843580719, guid: 59546d19f4fc0294093dd8e6fb0b994a, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0008460889
+      value: 0.000883779
       objectReference: {fileID: 0}
     - target: {fileID: 3157922546307045288, guid: 59546d19f4fc0294093dd8e6fb0b994a, type: 3}
       propertyPath: m_Pivot.x
@@ -70497,7 +70834,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5688223924776133315, guid: 59546d19f4fc0294093dd8e6fb0b994a, type: 3}
       propertyPath: currentSceneIndex
-      value: 12
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 5688223924776133315, guid: 59546d19f4fc0294093dd8e6fb0b994a, type: 3}
       propertyPath: currentScene.scene
@@ -70915,7 +71252,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -71079,6 +71418,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data: {fileID: 0}
   damageName: Arena
+  active: 1
   inverted: 1
   isDonut: 0
   innerRadius: 0
@@ -71139,6 +71479,7 @@ MonoBehaviour:
   updateLive: 0
   shared: 0
   enumeration: 0
+  limitedToPlayersRequired: 0
   requireOwner: 0
   resetOnReload: 1
   resetOwner: 1
@@ -71179,7 +71520,6 @@ MonoBehaviour:
   onVacated:
     m_PersistentCalls:
       m_Calls: []
-  dummy: 0
 --- !u!54 &1258883087
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -71357,7 +71697,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -71553,7 +71895,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -71749,7 +72093,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -72709,7 +73055,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7912640079483900569, guid: 355bc87518964e04cafb4ee31987bfcf, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0008719145
+      value: 0.00089729804
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -72768,6 +73114,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 0
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 0.5, y: 0.5, z: 0.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!114 &1303464039
@@ -75040,6 +75387,22 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5099328635298255706, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5099328635298255706, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5099328635298255706, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5099328635298255706, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5116274716875321951, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
@@ -75370,7 +75733,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5773724940359866075, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.00087741046
+      value: 0.0008913949
       objectReference: {fileID: 0}
     - target: {fileID: 5805265089280714766, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMax.y
@@ -76804,6 +77167,22 @@ PrefabInstance:
       propertyPath: m_RebindOverlay
       value: 
       objectReference: {fileID: 232038714}
+    - target: {fileID: 9121202631045316626, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9121202631045316626, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9121202631045316626, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9121202631045316626, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9130065236686671426, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -77373,7 +77752,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -77733,7 +78114,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -78898,7 +79281,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -80091,6 +80476,12 @@ MonoBehaviour:
   overrideMechanicSource: {fileID: 0}
   characterEventResultId: -1
   characterEventResultValue: 0
+  animatorParameterType: 0
+  animatorParameterName: 
+  setAnimatorParameterOnReset: 0
+  animatorParameterFloat: 0
+  animatorParameterInt: 0
+  animatorParameterBool: 0
   onProcessCharacter:
     m_PersistentCalls:
       m_Calls: []
@@ -80332,6 +80723,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data: {fileID: 0}
   damageName: Faith Unmoving
+  active: 1
   inverted: 0
   isDonut: 0
   innerRadius: 0
@@ -80392,6 +80784,7 @@ MonoBehaviour:
   updateLive: 0
   shared: 0
   enumeration: 0
+  limitedToPlayersRequired: 0
   requireOwner: 0
   resetOnReload: 1
   resetOwner: 0
@@ -80444,7 +80837,6 @@ MonoBehaviour:
   onVacated:
     m_PersistentCalls:
       m_Calls: []
-  dummy: 0
 --- !u!65 &1390500008
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -80576,6 +80968,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 1
+  drawInLocalSpace: 0
   size: {x: 4, y: 4, z: 4}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1 &1391691343
@@ -80954,7 +81347,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -82016,7 +82411,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -83067,7 +83464,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -83321,6 +83720,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 0
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 0.5, y: 0.5, z: 0.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!114 &1448318080
@@ -84736,7 +85136,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -84916,7 +85318,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -85191,6 +85595,7 @@ MonoBehaviour:
   damageTriggerPrefab: {fileID: 8304549818765777907, guid: 957e4d9af238d3347a4f20362d33169d, type: 3}
   enableInstead: 0
   spawnLocation: {fileID: 1484209180}
+  useServerSnapshot: 0
   copyRotation: 0
   setRotation: 0
   rotation: {x: 0, y: 0, z: 0}
@@ -85713,7 +86118,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -86373,6 +86780,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 0
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 0.5, y: 0.5, z: 0.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!114 &1514797103
@@ -87338,7 +87746,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -87514,7 +87924,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 1
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -88328,7 +88740,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -88521,7 +88935,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -88729,7 +89145,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -88941,7 +89359,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -89922,7 +90342,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 1
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -89995,6 +90417,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 2.5, y: 2.5, z: 2.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1 &1623018048
@@ -90324,7 +90747,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 1
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -96116,7 +96541,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -101631,7 +102058,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -102123,6 +102552,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 6.1, y: 6.1, z: 6.1}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1 &1735570594
@@ -102338,11 +102768,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9cedd524c0b18a4cb84d2398c38250d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visible: 0
+  log: 0
+  isVisible:
+    name: isVisible
+    values: []
+    logic: 1
+    thresholdPercentage: 0
   enableOnStart: 0
   toggleObject: 1
   fadeTime: 0
-  log: 0
+  fadeInDelay: 0
+  fadeOutDelay: 0
 --- !u!1 &1743389807
 GameObject:
   m_ObjectHideFlags: 0
@@ -103291,6 +103727,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 0
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 0.5, y: 0.5, z: 0.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!114 &1772292895
@@ -104060,7 +104497,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -104357,7 +104796,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -104663,7 +105104,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -105745,11 +106188,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9cedd524c0b18a4cb84d2398c38250d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visible: 0
+  log: 0
+  isVisible:
+    name: isVisible
+    values: []
+    logic: 1
+    thresholdPercentage: 0
   enableOnStart: 0
   toggleObject: 1
   fadeTime: 0
-  log: 0
+  fadeInDelay: 0
+  fadeOutDelay: 0
 --- !u!1 &1860692194
 GameObject:
   m_ObjectHideFlags: 0
@@ -111087,7 +111536,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -111683,7 +112134,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -111965,7 +112418,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 1
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -112161,7 +112616,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -112670,7 +113127,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -113041,6 +113500,7 @@ MonoBehaviour:
   damageTriggerPrefab: {fileID: 8304549818765777907, guid: 957e4d9af238d3347a4f20362d33169d, type: 3}
   enableInstead: 0
   spawnLocation: {fileID: 717373443}
+  useServerSnapshot: 0
   copyRotation: 0
   setRotation: 0
   rotation: {x: 0, y: 0, z: 0}
@@ -113085,6 +113545,7 @@ MonoBehaviour:
   damageTriggerPrefab: {fileID: 8304549818765777907, guid: 957e4d9af238d3347a4f20362d33169d, type: 3}
   enableInstead: 0
   spawnLocation: {fileID: 451538057}
+  useServerSnapshot: 0
   copyRotation: 0
   setRotation: 0
   rotation: {x: 0, y: 0, z: 0}
@@ -113129,6 +113590,7 @@ MonoBehaviour:
   damageTriggerPrefab: {fileID: 8304549818765777907, guid: 957e4d9af238d3347a4f20362d33169d, type: 3}
   enableInstead: 0
   spawnLocation: {fileID: 1440045530}
+  useServerSnapshot: 0
   copyRotation: 0
   setRotation: 0
   rotation: {x: 0, y: 0, z: 0}
@@ -113173,6 +113635,7 @@ MonoBehaviour:
   damageTriggerPrefab: {fileID: 8304549818765777907, guid: 957e4d9af238d3347a4f20362d33169d, type: 3}
   enableInstead: 0
   spawnLocation: {fileID: 2021712489}
+  useServerSnapshot: 0
   copyRotation: 0
   setRotation: 0
   rotation: {x: 0, y: 0, z: 0}
@@ -113217,6 +113680,7 @@ MonoBehaviour:
   damageTriggerPrefab: {fileID: 8304549818765777907, guid: 957e4d9af238d3347a4f20362d33169d, type: 3}
   enableInstead: 0
   spawnLocation: {fileID: 342475354}
+  useServerSnapshot: 0
   copyRotation: 0
   setRotation: 0
   rotation: {x: 0, y: 0, z: 0}
@@ -113261,6 +113725,7 @@ MonoBehaviour:
   damageTriggerPrefab: {fileID: 8304549818765777907, guid: 957e4d9af238d3347a4f20362d33169d, type: 3}
   enableInstead: 0
   spawnLocation: {fileID: 8519659}
+  useServerSnapshot: 0
   copyRotation: 0
   setRotation: 0
   rotation: {x: 0, y: 0, z: 0}
@@ -113305,6 +113770,7 @@ MonoBehaviour:
   damageTriggerPrefab: {fileID: 8304549818765777907, guid: 957e4d9af238d3347a4f20362d33169d, type: 3}
   enableInstead: 0
   spawnLocation: {fileID: 1527246137}
+  useServerSnapshot: 0
   copyRotation: 0
   setRotation: 0
   rotation: {x: 0, y: 0, z: 0}
@@ -113349,6 +113815,7 @@ MonoBehaviour:
   damageTriggerPrefab: {fileID: 8304549818765777907, guid: 957e4d9af238d3347a4f20362d33169d, type: 3}
   enableInstead: 0
   spawnLocation: {fileID: 1166308520}
+  useServerSnapshot: 0
   copyRotation: 0
   setRotation: 0
   rotation: {x: 0, y: 0, z: 0}
@@ -113703,7 +114170,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -113961,7 +114430,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -114096,6 +114567,8 @@ MonoBehaviour:
     tag: 0
     stacks: 0
   lethalGaze: 0
+  useActionDamage: 0
+  inverted: 0
   origin: {fileID: 0}
   threshold: 45
 --- !u!114 &1956790920
@@ -114112,6 +114585,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data: {fileID: 0}
   damageName: Shining Armor
+  active: 1
   inverted: 0
   isDonut: 0
   innerRadius: 0
@@ -114172,6 +114646,7 @@ MonoBehaviour:
   updateLive: 0
   shared: 0
   enumeration: 0
+  limitedToPlayersRequired: 0
   requireOwner: 0
   resetOnReload: 1
   resetOwner: 0
@@ -114224,7 +114699,6 @@ MonoBehaviour:
   onVacated:
     m_PersistentCalls:
       m_Calls: []
-  dummy: 0
 --- !u!135 &1956790921
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -115534,6 +116008,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data: {fileID: 0}
   damageName: Faith Unmoving
+  active: 1
   inverted: 0
   isDonut: 0
   innerRadius: 0
@@ -115594,6 +116069,7 @@ MonoBehaviour:
   updateLive: 0
   shared: 0
   enumeration: 0
+  limitedToPlayersRequired: 0
   requireOwner: 0
   resetOnReload: 1
   resetOwner: 0
@@ -115646,7 +116122,6 @@ MonoBehaviour:
   onVacated:
     m_PersistentCalls:
       m_Calls: []
-  dummy: 0
 --- !u!65 &1981133611
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -117104,7 +117579,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -117316,6 +117793,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 1
+  drawInLocalSpace: 0
   size: {x: 4, y: 4, z: 4}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1 &2017794198
@@ -117530,7 +118008,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -118204,7 +118684,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -118295,6 +118777,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data: {fileID: 0}
   damageName: Faith Unmoving
+  active: 1
   inverted: 0
   isDonut: 0
   innerRadius: 0
@@ -118355,6 +118838,7 @@ MonoBehaviour:
   updateLive: 0
   shared: 0
   enumeration: 0
+  limitedToPlayersRequired: 0
   requireOwner: 0
   resetOnReload: 1
   resetOwner: 0
@@ -118407,7 +118891,6 @@ MonoBehaviour:
   onVacated:
     m_PersistentCalls:
       m_Calls: []
-  dummy: 0
 --- !u!65 &2029563905
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -119114,7 +119597,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -119373,6 +119858,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 2.5, y: 2.5, z: 2.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1 &2088528435
@@ -120144,7 +120630,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -120274,6 +120762,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 0
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 0.5, y: 0.5, z: 0.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!114 &2132911466
@@ -120443,6 +120932,7 @@ MonoBehaviour:
   damageTriggerPrefab: {fileID: 5042625723236455201, guid: b975c335844561f4a8813591e3938f30, type: 3}
   enableInstead: 0
   spawnLocation: {fileID: 0}
+  useServerSnapshot: 0
   copyRotation: 0
   setRotation: 0
   rotation: {x: 0, y: 0, z: 0}
@@ -120884,7 +121374,9 @@ MonoBehaviour:
   useIndexMappingForOtherBots: 0
   useStatusEffectForPriorityCheck: 0
   looseStatusCheck: 0
+  useCharacterEventForFirstResult: 0
   useDoubleEventCheck: 0
+  useCharacterEventForSecondResult: 0
   useIndexMapping: 0
   random: 0
   useOtherBotIndexAsIndexMapping: 0
@@ -121329,6 +121821,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 2.5, y: 2.5, z: 2.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1 &2142682244
@@ -121975,6 +122468,7 @@ MonoBehaviour:
   shape: 3
   wireframe: 0
   whenSelected: 1
+  drawInLocalSpace: 0
   size: {x: 1, y: 1, z: 1}
   offset: {x: 0, y: 0, z: 0}
 --- !u!114 &452793077220870143
@@ -122390,6 +122884,7 @@ MonoBehaviour:
   shape: 3
   wireframe: 0
   whenSelected: 1
+  drawInLocalSpace: 0
   size: {x: 1, y: 1, z: 1}
   offset: {x: 0, y: 0, z: 0}
 --- !u!4 &652576599239638906
@@ -124213,6 +124708,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 2.5, y: 2.5, z: 2.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1 &2728281889040009164
@@ -125316,6 +125812,7 @@ MonoBehaviour:
   shape: 3
   wireframe: 0
   whenSelected: 1
+  drawInLocalSpace: 0
   size: {x: 1, y: 1, z: 1}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1 &3800065064238618460
@@ -125458,6 +125955,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 2.5, y: 2.5, z: 2.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!114 &3929001871640737253
@@ -125878,6 +126376,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 2.5, y: 2.5, z: 2.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1 &4335916143114660280
@@ -126749,6 +127248,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 2.5, y: 2.5, z: 2.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1 &5279223572376340260
@@ -127013,6 +127513,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 2.5, y: 2.5, z: 2.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1 &5595442955267336513
@@ -127303,6 +127804,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 1
+  drawInLocalSpace: 0
   size: {x: 4, y: 4, z: 4}
   offset: {x: 0, y: 0, z: 0}
 --- !u!222 &5952025835191669556
@@ -127779,6 +128281,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 2.5, y: 2.5, z: 2.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!4 &6485569306595141995
@@ -127832,6 +128335,7 @@ MonoBehaviour:
   shape: 3
   wireframe: 0
   whenSelected: 1
+  drawInLocalSpace: 0
   size: {x: 1, y: 1, z: 1}
   offset: {x: 0, y: 0, z: 0}
 --- !u!4 &6550490704199909397
@@ -128232,6 +128736,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 2.5, y: 2.5, z: 2.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1 &7190806939589614262
@@ -128499,6 +129004,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 1
+  drawInLocalSpace: 0
   size: {x: 4, y: 4, z: 4}
   offset: {x: 0, y: 0, z: 0}
 --- !u!114 &7451328704285443176
@@ -129190,6 +129696,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 1
+  drawInLocalSpace: 0
   size: {x: 4, y: 4, z: 4}
   offset: {x: 0, y: 0, z: 0}
 --- !u!114 &8189557452016381623
@@ -129241,6 +129748,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 1
+  drawInLocalSpace: 0
   size: {x: 4, y: 4, z: 4}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1 &8280943973159116487
@@ -129616,6 +130124,7 @@ MonoBehaviour:
   shape: 3
   wireframe: 0
   whenSelected: 1
+  drawInLocalSpace: 0
   size: {x: 1, y: 1, z: 1}
   offset: {x: 0, y: 0, z: 0}
 --- !u!114 &8634848177492353765
@@ -129846,6 +130355,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 0
+  drawInLocalSpace: 0
   size: {x: 2.5, y: 2.5, z: 2.5}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1 &8880737881173396744
@@ -129883,6 +130393,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 1
+  drawInLocalSpace: 0
   size: {x: 4, y: 4, z: 4}
   offset: {x: 0, y: 0, z: 0}
 --- !u!114 &8889911963308670230
@@ -130253,6 +130764,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 1
+  drawInLocalSpace: 0
   size: {x: 4, y: 4, z: 4}
   offset: {x: 0, y: 0, z: 0}
 --- !u!224 &9162210186647099508
@@ -130324,6 +130836,7 @@ MonoBehaviour:
   shape: 0
   wireframe: 1
   whenSelected: 1
+  drawInLocalSpace: 0
   size: {x: 4, y: 4, z: 4}
   offset: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
