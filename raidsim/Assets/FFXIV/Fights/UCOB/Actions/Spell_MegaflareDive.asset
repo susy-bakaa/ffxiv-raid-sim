@@ -10,37 +10,37 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d125dbc2bb1fc754ea156ee20ab7c7da, type: 3}
-  m_Name: Ability_SetHealth
+  m_Name: Spell_MegaflareDive
   m_EditorClassIdentifier: 
-  actionName: SetHealth
-  actionType: 2
+  actionName: MegaflareDive
+  actionType: 0
   icon: {fileID: 21300000, guid: a684c5fe923ba6543bf46dc7cdc48b79, type: 3}
   damage:
-    name: SetHealth
-    value: -1679480
+    name: Megaflare Dive
+    value: -20000
     negative: 1
-    ignoreDamageReductions: 1
-    type: 3
+    ignoreDamageReductions: 0
+    type: 1
     elementalAspect: 1
     physicalAspect: 0
     applicationType: 0
     source: {fileID: 0}
-  causesDirectDamage: 1
+  causesDirectDamage: 0
   isShield: 0
   isHeal: 0
   isTargeted: 0
   isGroundTargeted: 0
   topEnmity: 0
   hasMovement: 0
-  targetGroups: 64000000
-  maxTargets: 1
+  targetGroups: 000000000100000002000000030000000400000005000000060000000700000008000000090000000a000000
+  maxTargets: 8
   range: 0
   radius: 0
   manaCost: 0
   enmity: 0
   damageEnmityMultiplier: 1
-  cast: 0
-  recast: 0
+  cast: 3.7
+  recast: 2.5
   animationLock: 0
   charges: 1
   canBeSlideCast: 1
@@ -56,11 +56,11 @@ MonoBehaviour:
   playCastingAnimationDirectly: 0
   castingAnimationName: 
   castingAnimationCrossFade: 0.2
-  animationName: 
+  animationName: General
   playAnimationDirectly: 0
   animationCrossFade: 0.2
   playAnimationOnFinish: 0
-  onAnimationFinishId: -1
+  onAnimationFinishId: 0
   animationDelay: 0
   speech: 
   speechAudio: {fileID: 0}

@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99b696446f1f2e246b4a8ecc8cc05a7a, type: 3}
+  m_Name: Bleeding_ucob
+  m_EditorClassIdentifier: 
+  statusName: Bleeding@ucob
+  statusDesc: Suffering damage over time.
+  negative: 1
+  unique: 0
+  infinite: 0
+  toggle: 0
+  rollsCooldown: 1
+  hidden: 0
+  lostOnDeath: 1
+  unaffectedByTimeScale: 0
+  instantCasts: 0
+  reducesCastTimes: 0
+  length: 15
+  maxLength: 15
+  appliedStacks: 1
+  maxStacks: 1
+  statusEffect: {fileID: 5722505717532405556, guid: 3ddc9f4fa2d704b43b4040c4f2663972, type: 3}
+  hudElement: {fileID: 4532055126216602401, guid: 1df417d284a5c4544bb829e8d3c4675d, type: 3}
+  icons: []
+  incompatableStatusEffects: []
+  refreshStatusEffects: []
+  assignedRoles: 
+  applySoundFx: status_apply_negative
+  expireSoundFx: status_expire_negative
