@@ -157,6 +157,7 @@ namespace dev.susybaka.raidsim.StatusEffects
             }
             if (hasPartyHudElement)
             {
+                partyHudTimer.fontSize = 16; // Lower the font size for party HUD elements to fit better in the UI
                 if ((!data.infinite && !data.hidden) && duration >= 0.5)
                 {
                     partyHudTimer.text = Utilities.FormatDuration(duration);
