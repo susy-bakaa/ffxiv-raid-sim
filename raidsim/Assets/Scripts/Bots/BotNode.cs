@@ -13,6 +13,9 @@ namespace dev.susybaka.raidsim.Nodes
     {
         public string nodeName;
         [Tag] public string targetTag;
+        [ShowIf(nameof(targetTagUsed))] public bool copyTargetLocation = true;
+        [ShowIf(nameof(targetTagUsed))] public bool copyTargetRotation = false;
+        [ShowIf(nameof(targetTagUsed))] public bool faceTarget = false;
         public bool occupied = false;
         public MechanicNode mechanicNode;
         public bool hasMechanic;
@@ -20,6 +23,8 @@ namespace dev.susybaka.raidsim.Nodes
         public List<SectorPriority> sectorPriorities = new List<SectorPriority>();
         public List<int> groupPriorities = new List<int>();
         public List<Role> allowedRoles = new List<Role>();
+
+        private bool targetTagUsed => !string.IsNullOrEmpty(targetTag);
 
         private void Awake()
         {
@@ -60,7 +65,24 @@ namespace dev.susybaka.raidsim.Nodes
                 Transform target = GameObject.FindGameObjectWithTag(targetTag).transform;
                 if (target != null)
                 {
-                    transform.position = target.position;
+                    if (copyTargetLocation)
+                    {
+                        transform.position = target.position;
+                    }
+                    if (copyTargetRotation)
+                    {
+                        transform.rotation = target.rotation;
+                    }
+                    if (faceTarget)
+                    {
+                        Vector3 directionToTarget = target.position - transform.position;
+                        directionToTarget.y = 0; // Keep the y-axis rotation only
+                        if (directionToTarget != Vector3.zero)
+                        {
+                            Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+                            transform.rotation = targetRotation;
+                        }
+                    }
                 }
             }
         }

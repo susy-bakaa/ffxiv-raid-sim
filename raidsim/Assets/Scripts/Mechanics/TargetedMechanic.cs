@@ -24,6 +24,8 @@ namespace dev.susybaka.raidsim.Mechanics
         [HideIf(nameof(noParty))] public bool autoFindParty = false;
         public bool noParty = false;
         public bool skipSelf = false;
+        [Tooltip("Prevents the same target from being picked multiple times in a row on the same run, if this mechanic is triggered multiple times before reset.")]
+        public bool noDuplicatesOnSubsequentTriggers = false;
         public TargetingType m_type = TargetingType.None;
         [HideIf(nameof(_hideAmountOfTargets))] public int amountOfTargets = 1;
         [ShowIf(nameof(m_type), TargetingType.StatusEffect)] public StatusEffectContext effect;
@@ -46,6 +48,7 @@ namespace dev.susybaka.raidsim.Mechanics
         private List<CharacterState> _sorted = new List<CharacterState>();
         private readonly List<CharacterState> lastCandidates = new List<CharacterState>();
         private readonly List<CharacterState> _finalTargets = new List<CharacterState>();
+        private readonly HashSet<CharacterState> previousPicks = new();
 
         private bool _showFallbackToRandom => (m_type == TargetingType.StatusEffect || m_type == TargetingType.Role);
         private bool _hideAmountOfTargets => (m_type == TargetingType.FullParty || (m_type == TargetingType.PreDefined && targetAllPreDefined) || pickAllWithEffect);
@@ -282,6 +285,7 @@ namespace dev.susybaka.raidsim.Mechanics
             lastCandidates.Clear();
             preDefinedTargets.Clear();
             targetList.Clear();
+            previousPicks.Clear();
             preDefinedTargets = new List<CharacterState>(originalPreDefinedTargets);
             targetList = new List<CharacterState>(originalTargetList);
         }
@@ -345,6 +349,16 @@ namespace dev.susybaka.raidsim.Mechanics
                 if (log)
                     Debug.Log($"[TargetedMechanic ({gameObject.name})] executing resulting mechanic for target: '{target.gameObject.name}' {_finalTargets.IndexOf(target) + 1}/{_finalTargets.Count}");
 #endif
+                if (makeSourceFaceTarget && actionInfo.source != null)
+                {
+                    actionInfo.source.transform.LookAt(target.transform);
+                    actionInfo.source.transform.eulerAngles = new Vector3(0f, actionInfo.source.transform.eulerAngles.y, 0f);
+                }
+                else if (log && makeSourceFaceTarget && actionInfo.source == null)
+                {
+                    Debug.LogWarning($"[TargetedMechanic ({gameObject.name})] makeSourceFaceTarget is true but actionInfo.source is null. Unable to rotate source.");
+                }
+
                 resultingMechanic.TriggerMechanic(new ActionInfo(actionInfo.action, actionInfo.source, target));
 
                 if (baseFightTimelineEventId > -1 && !saveSubListPickInstead && FightTimeline.Instance != null)
@@ -355,15 +369,10 @@ namespace dev.susybaka.raidsim.Mechanics
                     }
                 }
 
-                if (makeSourceFaceTarget && actionInfo.source != null)
-                {
-                    actionInfo.source.transform.LookAt(target.transform);
-                    actionInfo.source.transform.eulerAngles = new Vector3(0f, actionInfo.source.transform.eulerAngles.y, 0f);
-                }
-                else if (log && makeSourceFaceTarget && actionInfo.source == null)
-                {
-                    Debug.LogWarning($"[TargetedMechanic ({gameObject.name})] makeSourceFaceTarget is true but actionInfo.source is null. Unable to rotate source.");
-                }
+                // Save the target to previousPicks if noDuplicatesOnSubsequentTriggers is true 
+                if (noDuplicatesOnSubsequentTriggers && !previousPicks.Contains(target))
+                    previousPicks.Add(target);
+
                 index++;
             }
         }
@@ -385,6 +394,18 @@ namespace dev.susybaka.raidsim.Mechanics
                     }
                 }
             }
+
+            if (noDuplicatesOnSubsequentTriggers)
+            {
+                for (int i = candidates.Count - 1; i >= 0; i--)
+                {
+                    if (previousPicks.Contains(candidates[i]))
+                    {
+                        candidates.RemoveAt(i);
+                    }
+                }
+            }
+
             return candidates;
         }
 

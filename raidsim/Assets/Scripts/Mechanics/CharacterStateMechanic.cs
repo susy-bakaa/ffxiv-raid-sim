@@ -81,6 +81,8 @@ namespace dev.susybaka.raidsim.Mechanics
         [HideIf(nameof(useQueuedActions))] public CharacterAction action;
         [Tooltip("If executing an action and not using queued actions, the action the characters should execute.")]
         [HideIf(nameof(useQueuedActions))] public CharacterActionData actionData;
+        [Tooltip("If executing an action and not using queued actions, the ID of the action the characters should execute.")]
+        [HideIf(nameof(useQueuedActions))] public string actionId = string.Empty;
         [Tooltip("If setting targets, the targeting method to use.")]
         [ShowIf(nameof(behaviorType), Type.SetTarget)] public TargetingType targetingType = TargetingType.Nearest;
         [Tooltip("If setting targets or executing actions, whether to use any defined filtering on the targets instead of the characters that are targeting or performing actions.")]
@@ -523,34 +525,40 @@ namespace dev.susybaka.raidsim.Mechanics
                 }
                 else
                 {
-                    if (action == null && actionData == null)
+                    if (action == null && actionData == null && string.IsNullOrEmpty(actionId))
                     {
                         if (log)
                             Debug.Log($"[CharacterStateMechanic ({gameObject.name})] No action specified for {character.characterName}, skipping.");
                         continue;
                     }
                     if (log)
-                        Debug.Log($"[CharacterStateMechanic ({gameObject.name})] Having {character.characterName} execute action {(action != null ? action.Data.actionName : actionData != null ? actionData.actionName : "Unknown Action")}{(action != null ? $" ({action.gameObject.name})" : "")}.");
+                        Debug.Log($"[CharacterStateMechanic ({gameObject.name})] Having {character.characterName} execute action {(action != null ? action.Data.actionName : actionData != null ? actionData.actionName : !string.IsNullOrEmpty(actionId) ? actionId : "Unknown Action")}{(action != null ? $" ({action.gameObject.name})" : "")}.");
 
                     switch (executionType)
                     {
                         case ActionExecutionType.Standard:
                             if (action != null)
                                 character.actionController.PerformAction(action);
-                            else
+                            else if (actionData != null)
                                 character.actionController.PerformAction(actionData.actionName);
+                            else
+                                character.actionController.PerformAction(actionId);
                             break;
                         case ActionExecutionType.Hidden:
                             if (action != null)
                                 character.actionController.PerformActionHidden(action);
-                            else
+                            else if (actionData != null)
                                 character.actionController.PerformActionHidden(actionData.actionName);
+                            else
+                                character.actionController.PerformActionHidden(actionId);
                             break;
                         case ActionExecutionType.Unrestricted:
                             if (action != null)
                                 character.actionController.PerformActionUnrestricted(action);
-                            else
+                            else if (actionData != null)
                                 character.actionController.PerformActionUnrestricted(actionData.actionName);
+                            else
+                                character.actionController.PerformActionUnrestricted(actionId);
                             break;
                     }
                 }

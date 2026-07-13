@@ -68,6 +68,7 @@ namespace dev.susybaka.raidsim.Mechanics
         [Min(0f)] public float triggerDelay = 0f;
         [Min(0f)] public float triggerDelayVariance = 0f;
         [Min(0f)] public float damageApplicationDelay = 0.25f;
+        [Min(0f)] public float damageApplicationDelayBetweenPlayers = 0f;
         [Min(0f)] public float cooldown = 10f;
         [Min(0)] public int playersRequired = 0;
         [Min(1f)] public float damageMultiplierPerMissingPlayer = 1f;
@@ -673,7 +674,7 @@ namespace dev.susybaka.raidsim.Mechanics
             }
             else
             {
-                TriggerDamage(targets); // currentPlayers.ToArray()
+                StartCoroutine(IE_TriggerDamage(targets)); // currentPlayers.ToArray()
                 if (cooldown > 0f)
                 {
                     inProgress = true;
@@ -704,11 +705,11 @@ namespace dev.susybaka.raidsim.Mechanics
                         candidates.Add(player);
                     }
                 }
-                TriggerDamage(candidates.ToArray());
+                StartCoroutine(IE_TriggerDamage(candidates.ToArray()));
             }
             else
             {
-                TriggerDamage(players);
+                StartCoroutine(IE_TriggerDamage(players));
             }
             if (cooldown > 0f)
             {
@@ -720,10 +721,10 @@ namespace dev.susybaka.raidsim.Mechanics
             }
         }
 
-        public void TriggerDamage(CharacterState[] players)
+        private IEnumerator IE_TriggerDamage(CharacterState[] players)
         {
             if (!initialized || !active)
-                return;
+                yield break;
 
             if (log)
                 Debug.Log($"[DamageTrigger ({gameObject.name})] TriggerDamage (inProgress {inProgress}, players {players.Length})", gameObject);
@@ -869,6 +870,11 @@ namespace dev.susybaka.raidsim.Mechanics
                         {
                             continue;
                         }
+                    }
+
+                    if (damageApplicationDelayBetweenPlayers > 0f && i > 0) // Do not apply delay for the first player
+                    {
+                        yield return new WaitForSeconds(damageApplicationDelayBetweenPlayers);
                     }
 
                     if (cancelsMovement)

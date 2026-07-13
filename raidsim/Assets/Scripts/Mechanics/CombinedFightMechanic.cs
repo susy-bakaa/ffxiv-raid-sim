@@ -10,6 +10,7 @@ namespace dev.susybaka.raidsim.Mechanics
     public class CombinedFightMechanic : FightMechanic
     {
         [Header("Combined Fight Mechanic Settings")]
+        public bool preventTriggerIfInactive = false;
         public UnityEvent<ActionInfo> onTriggerMechanic;
 
         public override void TriggerMechanic(ActionInfo actionInfo)
@@ -17,7 +18,21 @@ namespace dev.susybaka.raidsim.Mechanics
             if (!CanTrigger(actionInfo))
                 return;
 
+            // Check if the GameObject is active before invoking the event
+            if (!gameObject.activeSelf && preventTriggerIfInactive)
+                return;
+
             onTriggerMechanic.Invoke(actionInfo);
+        }
+
+        public void ToggleEnabled()
+        {
+            SetEnabled(!mechanicEnabled);
+        }
+
+        public void SetEnabled(bool enabled)
+        {
+            mechanicEnabled = enabled;
         }
     }
 }

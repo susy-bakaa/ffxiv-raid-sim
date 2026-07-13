@@ -39,6 +39,7 @@ namespace dev.susybaka.raidsim.Mechanics
 
         public override void InterruptMechanic(ActionInfo actionInfo)
         {
+            base.InterruptMechanic(actionInfo);
             StopAllCoroutines();
             ieRepeat = null;
         }
@@ -49,7 +50,7 @@ namespace dev.susybaka.raidsim.Mechanics
             {
                 if (mechanicToTrigger != null)
                 {
-                    mechanicToTrigger.TriggerMechanic();
+                    mechanicToTrigger.TriggerMechanic(actionInfo);
                 }
                 if ((i < repeatCount - 1) || !skipLastWait)
                 {

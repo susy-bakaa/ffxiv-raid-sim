@@ -306,7 +306,7 @@ namespace dev.susybaka.raidsim.Nodes
                 if (IsValidNode(node, role, group, ignoreOccupancy, ignoreMechanics))
                 {
                     if (log)
-                        Debug.Log($"[BotNodeGroup.GetRoleNode ({gameObject.name})] Found node {node.name} for role {role}");
+                        Debug.Log($"[BotNodeGroup.GetRoleNode ({gameObject.name})] Found node {node.name} for role {role} with group {group}");
 
                     if (!ignoreOccupancy)
                         node.occupied = true;
@@ -326,7 +326,12 @@ namespace dev.susybaka.raidsim.Nodes
             if (role != Role.unassigned && !node.allowedRoles.Contains(role))
                 return false;
 
-            if (group >= 1 && !node.groupPriorities.Contains(group))
+            // NOTICE: Group check used to be >= 1, but for some timelines without this method being used, 0 has since been used as "Group 1" and 1 as "Group 2", so we need to allow that now.
+            // Hopefully this change won't break anything, but if it does, we can revert it back to the original check. Adding this as notice for future reference.
+            // ---
+            // TODO: Check if possible to make it allow a node for any group if there is no group priorities set for the that node.
+            // ---
+            if (group >= 0 && !node.groupPriorities.Contains(group))
                 return false;
 
             if (!ignoreOccupancy && !ignoreMechanics)
@@ -592,6 +597,24 @@ namespace dev.susybaka.raidsim.Nodes
                 }
             }
             return null;
+        }
+
+        public void UpdateNodeGroup()
+        {
+            foreach (BotNode node in nodes)
+            {
+                node.UpdateNode();
+            }
+        }
+
+        public void UpdateNodeGroupAndChildren()
+        {
+            UpdateNodeGroup();
+
+            foreach (BotNodeGroup childGroup in childGroups)
+            {
+                childGroup.UpdateNodeGroup();
+            }
         }
     }
 }

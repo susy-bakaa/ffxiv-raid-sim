@@ -12,7 +12,9 @@ namespace dev.susybaka.raidsim.Visuals
     public class SimpleRotation : MonoBehaviour
     {
         public Vector3 rotation;
+        public bool onUpdate = true;
         public bool setRotation = false;
+        public bool addRotation = false;
         public bool oneTime = false;
         public string faceTowardsName;
         public Transform faceTowards;
@@ -23,6 +25,9 @@ namespace dev.susybaka.raidsim.Visuals
 
         private void Start()
         {
+            if (!onUpdate)
+                return;
+
             done = false;
 
             if (faceTowardsNearestCharacter && party == null)
@@ -42,17 +47,34 @@ namespace dev.susybaka.raidsim.Visuals
 
         private void Update()
         {
+            if (!onUpdate)
+                return;
+
             if (oneTime && done)
                 return;
 
+            Rotate();
+
+            if (oneTime)
+            {
+                done = true;
+            }
+        }
+
+        public void Rotate()
+        {
             if (faceTowards == null)
             {
-                if (!setRotation)
+                if (!setRotation && !addRotation)
                 {
                     if (rotation != Vector3.zero)
                     {
                         transform.Rotate(rotation * Time.deltaTime);
                     }
+                }
+                else if (!setRotation && addRotation)
+                {
+                    transform.eulerAngles += rotation;
                 }
                 else
                 {
@@ -63,11 +85,6 @@ namespace dev.susybaka.raidsim.Visuals
             {
                 transform.LookAt(faceTowards);
                 transform.eulerAngles = new Vector3(0f, transform.eulerAngles.y, 0f);
-            }
-
-            if (oneTime)
-            {
-                done = true;
             }
         }
     }
