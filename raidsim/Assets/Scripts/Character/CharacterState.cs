@@ -1495,8 +1495,12 @@ namespace dev.susybaka.raidsim.Characters
             {
                 for (int i = 0; i < effectsArray.Length; i++)
                 {
-                    if (effectsArray[i] == null)
+                    // Check if the effect is null or if the index is out of bounds of the effectsArray.
+                    // This can sometimes very rarely happen if this reset is called while a status effect is being added or removed,
+                    // which can cause the effectsArray to be rebuilt and the index to be out of bounds.
+                    if (effectsArray[i] == null || effectsArray.Length <= i)
                         continue;
+
                     effectsArray[i].onCleanse.Invoke(this);
                     effectsArray[i].onExpire.Invoke(this);
                 }
