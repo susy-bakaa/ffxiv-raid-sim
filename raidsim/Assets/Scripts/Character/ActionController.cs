@@ -13,7 +13,6 @@ using dev.susybaka.raidsim.UI;
 using dev.susybaka.Shared;
 using dev.susybaka.Shared.Audio;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;

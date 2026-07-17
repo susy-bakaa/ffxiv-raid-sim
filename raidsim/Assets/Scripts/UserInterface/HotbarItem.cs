@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using dev.susybaka.raidsim.Actions;
 using dev.susybaka.Shared;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
