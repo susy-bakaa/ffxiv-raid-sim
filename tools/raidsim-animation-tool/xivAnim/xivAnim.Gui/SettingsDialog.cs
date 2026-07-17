@@ -16,6 +16,10 @@ namespace dev.susy_baka.xivAnim.EtoGui
         private readonly TextBox _txtMultiAssistPath;
         private readonly CheckBox _toggleDebugMode;
 
+        private const string DialogGamePath = "game_path";
+        private const string DialogMultiAssistPath = "multiassist_path";
+        private const string DialogBlenderPath = "blender_path";
+
         public SettingsDialog(AppSettings settings)
         {
             _settings = settings;
@@ -129,12 +133,14 @@ namespace dev.susy_baka.xivAnim.EtoGui
             using var dlg = new SelectFolderDialog
             {
                 Title = Strings.DialogTitleSelectGamePath,
+                Directory = Utility.GetRememberedDirectory(_settings, DialogGamePath, AppPaths.UserHomeDirectory)
             };
 
             if (dlg.ShowDialog(this) == DialogResult.Ok && !string.IsNullOrEmpty(dlg.Directory))
             {
                 _txtFfxivPath.Text = dlg.Directory;
                 _isDirty = true;
+                Utility.RememberDirectory(_settings, DialogGamePath, dlg.Directory);
             }
         }
 
@@ -144,6 +150,7 @@ namespace dev.susy_baka.xivAnim.EtoGui
             {
                 Title = Strings.DialogTitleSelectMultiAssistPath,
                 MultiSelect = false,
+                Directory = Utility.DirectoryUri(Utility.GetRememberedDirectory(_settings, DialogMultiAssistPath, AppPaths.UserHomeDirectory)),
                 Filters = { new FileFilter("Executable", ".exe", "") }
             };
 
@@ -151,6 +158,7 @@ namespace dev.susy_baka.xivAnim.EtoGui
             {
                 _txtMultiAssistPath.Text = dlg.FileName;
                 _isDirty = true;
+                Utility.RememberDirectoryFromFile(_settings, DialogMultiAssistPath, dlg.FileName);
             }
         }
 
@@ -160,6 +168,7 @@ namespace dev.susy_baka.xivAnim.EtoGui
             {
                 Title = Strings.DialogTitleSelectBlenderPath,
                 MultiSelect = false,
+                Directory = Utility.DirectoryUri(Utility.GetRememberedDirectory(_settings, DialogBlenderPath, AppPaths.UserHomeDirectory)),
                 Filters = { new FileFilter("Executable", ".exe", "") }
             };
 
@@ -167,6 +176,7 @@ namespace dev.susy_baka.xivAnim.EtoGui
             {
                 _txtBlenderPath.Text = dlg.FileName;
                 _isDirty = true;
+                Utility.RememberDirectoryFromFile(_settings, DialogBlenderPath, dlg.FileName);
             }
         }
 

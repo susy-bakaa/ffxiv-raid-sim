@@ -232,22 +232,34 @@ namespace dev.susy_baka.xivAnim.Core
             };
         }
 
+        public sealed class OutputPathResult
+        {
+            public string FileName { get; set; } = string.Empty;
+            public string SubFolder { get; set; } = string.Empty; // Default to empty
+        }
+
         /// <summary>
-        /// Constructs an output file name based on the original file path, a target file name, and a set of path patterns.
+        /// Constructs an export path result containing an output file name and an optional subfolder based on path patterns.
         /// </summary>
         /// <remarks>
         /// This method sanitizes the provided <paramref name="fileName"/> by removing its extension and replacing invalid characters.
-        /// It then checks if the normalized original file path matches any of the regular expressions in <paramref name="appendNamesForPaths"/>.
-        /// If a match is found, the output file name is constructed by appending the sanitized file name to the original file name (without extension),
-        /// separated by an underscore, and followed by the original extension. If no match is found, only the sanitized file name and extension are used.
+        /// It then checks if the normalized original file path matches any of the regular expressions in <paramref name="appendNamesForPaths"/>.<br/>
+        /// <br/>
+        /// If a match is found:<br/>
+        /// - The output file name is constructed by prefixing the sanitized file name with the original file name (without extension), separated by an underscore.<br/>
+        /// - If the matching regular expression contains a named capture group called <c>subfolder</c> (e.g., <c>(?&lt;subfolder&gt;hide)</c>), 
+        ///   the captured text is extracted to designate a target subdirectory.<br/>
+        /// <br/>
+        /// If no match is found, only the sanitized file name and its original extension are returned, and the subfolder remains empty.
         /// </remarks>
         /// <param name="originalFilePath">The path to the original file. Cannot be <see langword="null"/>.</param>
         /// <param name="fileName">The target file name to use. Cannot be <see langword="null"/>.</param>
-        /// <param name="appendNamesForPaths">A list of regular expression patterns to match against the normalized original file path. Cannot be <see langword="null"/>.</param>
+        /// <param name="appendNamesForPaths">A list of regular expression patterns to match against the normalized original file path. Patterns may optionally include a <c>(?&lt;subfolder&gt;...)</c> named capture group. Cannot be <see langword="null"/>.</param>
         /// <returns>
-        /// A string representing the constructed output file name, formatted according to the matching rules.
+        /// An <see class="OutputPathResult"/> containing the constructed output file name and any optionally extracted subfolder path.
         /// </returns>
-        public static string BuildOutputFileName(string originalFilePath, string fileName, List<string> appendNamesForPaths)
+
+        public static OutputPathResult BuildOutputFileName(string originalFilePath, string fileName, List<string> appendNamesForPaths)
         {
             string originalFileName = Path.GetFileNameWithoutExtension(originalFilePath);
             string extension = Path.GetExtension(fileName);
@@ -264,15 +276,39 @@ namespace dev.susy_baka.xivAnim.Core
 
                 Log.Debug($"[BuildOutputFileName] '{normalizedOriginalPath}' trying to match pattern '{pattern}'...");
 
-                if (Regex.IsMatch(normalizedOriginalPath, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+                var match = Regex.Match(normalizedOriginalPath, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+                if (match.Success)
+                {
+                    var result = new OutputPathResult
+                    {
+                        FileName = $"{originalFileName}_{fileName}{extension}"
+                    };
+
+                    // Check if the regex pattern optionally defined a group named "subfolder"
+                    var subfolderGroup = match.Groups["subfolder"];
+                    if (subfolderGroup.Success)
+                    {
+                        result.SubFolder = subfolderGroup.Value;
+                        Log.Debug($"[BuildOutputFileName] '{normalizedOriginalPath}' matched pattern '{pattern}' with subfolder '{result.SubFolder}'");
+                    }
+                    else
+                    {
+                        Log.Debug($"[BuildOutputFileName] '{normalizedOriginalPath}' matched pattern '{pattern}', using '{originalFileName}_{fileName}{extension}'");
+                    }
+
+                    return result;
+                }
+                /*if (Regex.IsMatch(normalizedOriginalPath, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
                 {
                     Log.Debug($"[BuildOutputFileName] '{normalizedOriginalPath}' matched pattern '{pattern}', using '{originalFileName}_{fileName}{extension}'");
                     return $"{originalFileName}_{fileName}{extension}";
-                }
+                }*/
             }
 
             Log.Debug($"[BuildOutputFileName] '{normalizedOriginalPath}' matched no pattern, using '{fileName}{extension}'");
-            return $"{fileName}{extension}";
+            return new OutputPathResult { FileName = $"{fileName}{extension}" };
+            //return $"{fileName}{extension}";
         }
     }
 }

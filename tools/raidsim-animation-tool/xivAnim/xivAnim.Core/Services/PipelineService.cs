@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Lumina;
+using static dev.susy_baka.xivAnim.Core.Utility;
 
 namespace dev.susy_baka.xivAnim.Core
 {
@@ -211,14 +212,22 @@ namespace dev.susy_baka.xivAnim.Core
                         ? info.Names[index]
                         : $"idx{index:D3}";
 
-                    string fileName = Utility.BuildOutputFileName(papGamePath, $"{animName}.fbx", job.appendFileNamesForPaths);
-                    string fbxPath = Path.Combine(fbxDir, fileName);
+                    OutputPathResult pathResult = Utility.BuildOutputFileName(papGamePath, $"{animName}.fbx", job.appendFileNamesForPaths);
 
+                    // If a subfolder was captured by the regex, combine it into the destination directory
+                    string finalFbxDir = fbxDir;
+                    if (!string.IsNullOrEmpty(pathResult.SubFolder))
+                    {
+                        finalFbxDir = Path.Combine(fbxDir, pathResult.SubFolder);
+                        Directory.CreateDirectory(finalFbxDir); // Ensure the subfolder exists or MultiAssist will fail to write the file
+                    }
+                    
+                    string fbxPath = Path.Combine(finalFbxDir, pathResult.FileName);
                     fbxPath = Path.GetFullPath(fbxPath);
 
                     exportedAnimations.Add(animName);
 
-                    Log.Info($"    [{index}] {animName} -> {fileName}");
+                    Log.Info($"    [{index}] {animName} -> {(string.IsNullOrEmpty(pathResult.SubFolder) ? pathResult.FileName : $"{pathResult.SubFolder}/{pathResult.FileName}")}");
 
                     var args = new List<string>
                     {

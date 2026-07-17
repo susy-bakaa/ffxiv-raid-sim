@@ -8,5 +8,6 @@
 
         public List<string> RecentJobs { get; set; } = new();
         public bool debugMode { get; set; } = false;
+        public Dictionary<string, string> LastDialogDirectories { get; set; } = new();
     }
 }

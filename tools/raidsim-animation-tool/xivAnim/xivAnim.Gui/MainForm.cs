@@ -39,6 +39,11 @@ namespace dev.susy_baka.xivAnim.EtoGui
         private ButtonMenuItem? _openRecentMenu;
         public Action<Form>? RequestAttention { get; set; }
 
+        private const string DialogOpenJob = "open_job";
+        private const string DialogSaveJob = "save_job";
+        private const string DialogWorkingDirectory = "working_directory";
+        private const string DialogExportDirectory = "export_directory";
+
         public MainForm(AppSettings settings, ModelJob job, string jobPath)
         {
             Title = Strings.AppTitle;
@@ -355,7 +360,10 @@ namespace dev.susy_baka.xivAnim.EtoGui
             using var dlg = new SaveFileDialog
             {
                 Title = Strings.DialogTitleSaveAsJob,
-                FileName = "job.json",
+                Directory = Utility.DirectoryUri(Utility.GetRememberedDirectory(_settings, DialogSaveJob, AppPaths.JobsDirectory)),
+                FileName = string.IsNullOrWhiteSpace(_job.name)
+                    ? "job.json"
+                    : $"{_job.name}.json",
                 Filters = { new FileFilter("JSON files", ".json") }
             };
 
@@ -367,6 +375,7 @@ namespace dev.susy_baka.xivAnim.EtoGui
                 _isDirty = false;
                 Log.Info($"Saved job to {_currentJobPath}");
                 AddRecentJob(_currentJobPath);
+                Utility.RememberDirectoryFromFile(_settings, DialogSaveJob, _currentJobPath);
             }
         }
 
@@ -376,6 +385,7 @@ namespace dev.susy_baka.xivAnim.EtoGui
             {
                 Title = Strings.DialogTitleOpenJob,
                 MultiSelect = false,
+                Directory = Utility.DirectoryUri(Utility.GetRememberedDirectory(_settings, DialogOpenJob, AppPaths.JobsDirectory)),
                 Filters = { new FileFilter("JSON files", ".json") }
             };
 
@@ -568,12 +578,14 @@ namespace dev.susy_baka.xivAnim.EtoGui
         {
             using var dlg = new SelectFolderDialog
             {
-                Title = Strings.DialogTitleSelectWorkingDir
+                Title = Strings.DialogTitleSelectWorkingDir,
+                Directory = Utility.GetRememberedDirectory(_settings, $"{DialogWorkingDirectory}_{Path.GetFileNameWithoutExtension(_currentJobPath)}", AppPaths.UserHomeDirectory)
             };
 
             if (dlg.ShowDialog(this) == DialogResult.Ok && !string.IsNullOrEmpty(dlg.Directory))
             {
                 _txtWorkingDir.Text = dlg.Directory;
+                Utility.RememberDirectory(_settings, $"{DialogWorkingDirectory}_{Path.GetFileNameWithoutExtension(_currentJobPath)}", dlg.Directory);
             }
         }
 
@@ -581,12 +593,14 @@ namespace dev.susy_baka.xivAnim.EtoGui
         {
             using var dlg = new SelectFolderDialog
             {
-                Title = Strings.DialogTitleSelectExportDir
+                Title = Strings.DialogTitleSelectExportDir,
+                Directory = Utility.GetRememberedDirectory(_settings, $"{DialogExportDirectory}_{Path.GetFileNameWithoutExtension(_currentJobPath)}", AppPaths.UserHomeDirectory)
             };
 
             if (dlg.ShowDialog(this) == DialogResult.Ok && !string.IsNullOrEmpty(dlg.Directory))
             {
                 _txtExportDir.Text = dlg.Directory;
+                Utility.RememberDirectory(_settings, $"{DialogExportDirectory}_{Path.GetFileNameWithoutExtension(_currentJobPath)}", dlg.Directory);
             }
         }
 
