@@ -17,6 +17,8 @@ Shader "Custom/Lit/DitherTransparent"
         _AmbientOcclusionStrength ("Ambient Occlusion Strength", Range(0,1)) = 1.0
         _AmbientOcclusion ("Ambient Occlusion", 2D) = "white" {}
         _DitherSize ("Dither Size", Integer) = 1
+        [Toggle(_SEPARATE_ALPHA_CUTOFF)] _SeparateAlphaCutoff ("Separate Base Alpha", Float) = 0
+        _Cutoff ("Base Alpha Cutoff", Range(0,1)) = 0.5
         _Alpha ("Alpha", Range(0,1)) = 1.0
     }
     SubShader
@@ -27,6 +29,7 @@ Shader "Custom/Lit/DitherTransparent"
         CGPROGRAM
         // Physically based Standard lighting model, and enable shadows on all light types
         #pragma surface surf Standard fullforwardshadows
+        #pragma shader_feature_local _SEPARATE_ALPHA_CUTOFF
 
         // Use shader model 3.0 target, to get nicer looking lighting
         #pragma target 3.0
@@ -43,6 +46,8 @@ Shader "Custom/Lit/DitherTransparent"
         half _AmbientOcclusionStrength;
         sampler2D _AmbientOcclusion;
         int _DitherSize;
+        half _SeparateAlphaCutoff;
+        half _Cutoff;
         half _Alpha;
 
         struct Input
@@ -87,25 +92,55 @@ Shader "Custom/Lit/DitherTransparent"
             // Normal map
             o.Normal = UnpackNormal(tex2D(_Normal, IN.uv_MainTex));
 
-            // Apply alpha clipping based on dithering
-            float alpha = c.a * _Alpha;
+            // Alpha handling can either use the original combined dither behavior,
+            // or hard-cut the texture/tint alpha first and dither only the global alpha.
+            #if defined(_SEPARATE_ALPHA_CUTOFF)
+                // Standard cutout transparency from texture alpha multiplied by tint alpha.
+                clip(c.a - _Cutoff);
 
-            if (_Alpha > 0.0f)
-            {
-                UNITY_BRANCH
-                if (!(_Alpha >= 0.999h && c.a >= 0.999h))
+                // Global material fade. This does not change the cutout shape; it only
+                // dithers the pixels which survived the base alpha cutoff.
+                if (_Alpha <= 0.0h)
                 {
-                    // Calculate dithering
-                    float2 screenUV = IN.screenPos.xy / IN.screenPos.w * _ScreenParams.xy; // Scale to screen resolution
-                    float ditherThreshold = Bayer4x4(screenUV * _DitherSize);
-
-                    clip(alpha - ditherThreshold);
+                    clip(-1.0f);
                 }
-            }
-            else
-            {
-                clip(-1.0f); // Clip everything, making it completely transparent
-            }
+                else if (_Alpha < 0.999h)
+                {
+                    float2 screenUV = IN.screenPos.xy / IN.screenPos.w * _ScreenParams.xy;
+                    float ditherThreshold = Bayer4x4(screenUV * _DitherSize);
+                    clip(_Alpha - ditherThreshold);
+                }
+            #else
+                // Original behavior: texture/tint alpha and global alpha are multiplied,
+                // then the combined result is dithered.
+                // Apply alpha clipping based on dithering
+                float alpha = c.a * _Alpha;
+
+                if (_Alpha > 0.0f)
+                {
+                    UNITY_BRANCH
+                    if (!(_Alpha >= 0.999h && c.a >= 0.999h))
+                    {
+                        // Calculate dithering
+                        float2 screenUV = IN.screenPos.xy / IN.screenPos.w * _ScreenParams.xy; // Scale to screen resolution
+                        float ditherThreshold = Bayer4x4(screenUV * _DitherSize);
+
+                        // If alpha is completely transparent for this pixel, clip it completely to make it fully invisible. Otherwise, apply dithering.
+                        if (alpha > 0.0f)
+                        {
+                            clip(alpha - ditherThreshold);
+                        }
+                        else
+                        {
+                            clip(-1.0f); // Clip everything, making it completely transparent
+                        }
+                    }
+                }
+                else
+                {
+                    clip(-1.0f); // Clip everything, making it completely transparent
+                }
+            #endif
         }
         ENDCG
 
@@ -122,12 +157,15 @@ Shader "Custom/Lit/DitherTransparent"
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile_shadowcaster
+            #pragma shader_feature_local _SEPARATE_ALPHA_CUTOFF
             #include "UnityCG.cginc"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
             fixed4 _Tint;
             int _DitherSize;
+            half _SeparateAlphaCutoff;
+            half _Cutoff;
             half _Alpha;
 
             float Bayer4x4(float2 position)
@@ -164,22 +202,48 @@ Shader "Custom/Lit/DitherTransparent"
             fixed4 frag(v2f i) : SV_Target
             {
                 fixed4 c = tex2D(_MainTex, i.uv) * _Tint;
-                float alpha = c.a * _Alpha;
 
-                if (_Alpha > 0.0f)
-                {
-                    UNITY_BRANCH
-                    if (!(_Alpha >= 0.999h && c.a >= 0.999h))
+                #if defined(_SEPARATE_ALPHA_CUTOFF)
+                    // Match the visible pass: hard-cut base alpha, then dither only
+                    // the global fade so shadow coverage follows the material.
+                    clip(c.a - _Cutoff);
+
+                    if (_Alpha <= 0.0h)
+                    {
+                        clip(-1.0f);
+                    }
+                    else if (_Alpha < 0.999h)
                     {
                         float2 screenUV = i.screenPos.xy / i.screenPos.w * _ScreenParams.xy;
                         float ditherThreshold = Bayer4x4(screenUV * _DitherSize);
-                        clip(alpha - ditherThreshold);
+                        clip(_Alpha - ditherThreshold);
                     }
-                }
-                else
-                {
-                    clip(-1.0f);
-                }
+                #else
+                    float alpha = c.a * _Alpha;
+
+                    if (_Alpha > 0.0f)
+                    {
+                        UNITY_BRANCH
+                        if (!(_Alpha >= 0.999h && c.a >= 0.999h))
+                        {
+                            float2 screenUV = i.screenPos.xy / i.screenPos.w * _ScreenParams.xy;
+                            float ditherThreshold = Bayer4x4(screenUV * _DitherSize);
+
+                            if (alpha > 0.0f)
+                            {
+                                clip(alpha - ditherThreshold);
+                            }
+                            else
+                            {
+                                clip(-1.0f);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        clip(-1.0f);
+                    }
+                #endif
 
                 SHADOW_CASTER_FRAGMENT(i)
             }
