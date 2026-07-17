@@ -12,7 +12,7 @@ from bpy_extras.io_utils import ExportHelper
 bl_info = {
     "name": "Raidsim Tools",
     "author": "susy_baka",
-    "version": (1, 0, 0),
+    "version": (1, 1, 0),
     "blender": (4, 3, 0),
     "location": "View3D > Sidebar > Raidsim Tools; Dopesheet > Markers; File > Export",
     "description": "Tools for preparing models and animation events for the FFXIV Raidsim Unity project.",
@@ -60,11 +60,19 @@ class RAIDSIM_OT_import_and_link_animations(bpy.types.Operator):
             self.report({'ERROR'}, "Selected object is not an armature.")
             return {'CANCELLED'}
 
-        for file_name in sorted(os.listdir(abs_dir)):
-            if not file_name.lower().endswith(".fbx"):
-                continue
+        # Collect all FBX paths recursively first so they can be cleanly sorted
+        fbx_files = []
+        for root, dirs, files in os.walk(abs_dir):
+            for file_name in files:
+                if file_name.lower().endswith(".fbx"):
+                    # Store the absolute path to the file
+                    full_path = os.path.join(root, file_name)
+                    fbx_files.append((file_name, full_path))
+        
+        # Sort by file name to keep your original sorting behavior consistent
+        fbx_files.sort(key=lambda x: x[0])
 
-            file_path = os.path.join(abs_dir, file_name)
+        for file_name, file_path in fbx_files:
             anim_name = os.path.splitext(file_name)[0]
 
             if anim_name in bpy.data.actions.keys():
