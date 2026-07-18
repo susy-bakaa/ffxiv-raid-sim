@@ -118,7 +118,7 @@ namespace dev.susy_baka.xivAnim.Core
         /// </summary>
         private void ExtractRawFiles(ModelJob job, string skeletonDir, string papDir)
         {
-            var skeletonFile = ExtractRaw(job.skeletonGamePath, skeletonDir);
+            var skeletonFile = ExtractRaw(job, job.skeletonGamePath, skeletonDir);
 
             Log.Info($"  Processing {Path.GetFileNameWithoutExtension(skeletonFile)}...");
             
@@ -129,7 +129,7 @@ namespace dev.susy_baka.xivAnim.Core
 
             for (int i = 0; i < job.papGamePaths.Count; i++)
             {
-                var papFile = ExtractRaw(job.papGamePaths[i], papDir);
+                var papFile = ExtractRaw(job, job.papGamePaths[i], papDir);
 
                 Log.Info($"  Processing {Path.GetFileNameWithoutExtension(papFile)}...");
 
@@ -140,11 +140,22 @@ namespace dev.susy_baka.xivAnim.Core
         /// <summary>
         /// Using Lumina: read a game path and dump it to disk.
         /// </summary>
-        private string ExtractRaw(string gameRawFilePath, string outputDir)
+        private string ExtractRaw(ModelJob job, string gameRawFilePath, string outputDir)
         {
             // Determine output path and name
             string fileName = Path.GetFileName(gameRawFilePath);
             string extractionResult = Path.Combine(outputDir, fileName);
+
+            // Use the job's appendFileNamesForPaths regex list to determine if a subfolder should be created for this raw file.
+            // This ensures that files with the same name but different paths don't overwrite each other
+            OutputPathResult pathResult = Utility.BuildOutputFileName(gameRawFilePath, fileName, job.appendFileNamesForPaths);
+
+            // If a subfolder was captured by the regex, combine it into the destination directory
+            if (!string.IsNullOrEmpty(pathResult.SubFolder))
+            {
+                outputDir = Path.Combine(outputDir, pathResult.SubFolder);
+                extractionResult = Path.Combine(outputDir, fileName); // Only use the subfolder for the output directory, keep the original file name for raw files
+            }
 
             // Ensure output directory exists
             Directory.CreateDirectory(outputDir);
