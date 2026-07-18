@@ -315,6 +315,7 @@ namespace dev.susybaka.raidsim.Characters
 
         [Header("Visuals")]
         public bool useTransparency = false;
+        public bool modelVisibilityUpdatesAnimator = false;
         [Range(0f,1f)] public float modelAlpha = 1f;
         public Transform pivot;
         public Transform model;
@@ -1077,6 +1078,9 @@ namespace dev.susybaka.raidsim.Characters
 
         private void Start()
         {
+            if (modelVisibilityUpdatesAnimator)
+                GetAnimator()?.SetBool("Visible", !hidden.value);
+
             if (ieStartSetupDelayed == null)
             {
                 ieStartSetupDelayed = StartCoroutine(IE_StartSetupDelayed(new WaitForSecondsRealtime(0.1f), new WaitForSecondsRealtime(0.2f)));
@@ -1885,9 +1889,9 @@ namespace dev.susybaka.raidsim.Characters
                 if (modelShaderFade != null)
                 {
                     if (duration < 0f)
-                        modelShaderFade.FadeIn();
+                        modelShaderFade.FadeIn(() => { UpdateAnimatorVisibility(); });
                     else
-                        modelShaderFade.FadeIn(duration);
+                        modelShaderFade.FadeIn(duration, () => { UpdateAnimatorVisibility(); });
                 }
             }
             else
@@ -1895,9 +1899,9 @@ namespace dev.susybaka.raidsim.Characters
                 if (modelShaderFade != null)
                 {
                     if (duration < 0f)
-                        modelShaderFade.FadeOut(() => { hidden.SetFlag("toggleVisibility", true); hide = hidden.value; });
+                        modelShaderFade.FadeOut(() => { hidden.SetFlag("toggleVisibility", true); hide = hidden.value; UpdateAnimatorVisibility(); });
                     else
-                        modelShaderFade.FadeOut(duration, () => { hidden.SetFlag("toggleVisibility", true); hide = hidden.value; });
+                        modelShaderFade.FadeOut(duration, () => { hidden.SetFlag("toggleVisibility", true); hide = hidden.value; UpdateAnimatorVisibility(); });
                 }
                 else
                 {
@@ -1924,6 +1928,15 @@ namespace dev.susybaka.raidsim.Characters
             }
 
             hide = hidden.value;
+            UpdateAnimatorVisibility();
+        }
+
+        public void UpdateAnimatorVisibility()
+        {
+            if (!modelVisibilityUpdatesAnimator)
+                return;
+
+            GetAnimator()?.SetBool("Visible", !hidden.value);
         }
         #endregion
 
