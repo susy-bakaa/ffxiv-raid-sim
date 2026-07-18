@@ -1339,6 +1339,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeName: 
   targetTag: 
+  copyTargetLocation: 1
+  copyTargetRotation: 0
+  faceTarget: 0
   occupied: 0
   mechanicNode: {fileID: 0}
   hasMechanic: 0
@@ -1879,7 +1882,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotation: {x: 0, y: 40, z: 0}
+  onUpdate: 1
   setRotation: 0
+  addRotation: 0
   oneTime: 0
   faceTowardsName: 
   faceTowards: {fileID: 0}
@@ -2728,6 +2733,18 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1669086963}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
         m_CallState: 2
   onPlay:
     m_PersistentCalls:
@@ -4292,7 +4309,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7912640079483900569, guid: 355bc87518964e04cafb4ee31987bfcf, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0009098941
+      value: 0.00089554675
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5369,6 +5386,7 @@ MonoBehaviour:
   playAudio: 1
   audioVolume: 1
   useTransparency: 0
+  modelVisibilityUpdatesAnimator: 0
   modelAlpha: 1
   pivot: {fileID: 591810939}
   model: {fileID: 1669086964}
@@ -5647,6 +5665,7 @@ MonoBehaviour:
   onlyTriggerOnce: 0
   global: 0
   log: 0
+  preventTriggerIfInactive: 0
   onTriggerMechanic:
     m_PersistentCalls:
       m_Calls:
@@ -6941,6 +6960,7 @@ MonoBehaviour:
   triggerDelay: 2.7
   triggerDelayVariance: 0
   damageApplicationDelay: 0.25
+  damageApplicationDelayBetweenPlayers: 0
   cooldown: 10
   playersRequired: 0
   damageMultiplierPerMissingPlayer: 1
@@ -8314,6 +8334,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 293d618e1323e1c4e8d4262efb708d6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  allowEditorDirectModelLoading: 0
   modelName: m0095b0001.prefab
   position: {x: 0, y: 0, z: 0}
   rotation: {x: 0, y: 0, z: 0}
@@ -14602,6 +14623,7 @@ MonoBehaviour:
   onlyTriggerOnce: 0
   global: 0
   log: 0
+  preventTriggerIfInactive: 0
   onTriggerMechanic:
     m_PersistentCalls:
       m_Calls:
@@ -15260,6 +15282,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeName: 
   targetTag: 
+  copyTargetLocation: 1
+  copyTargetRotation: 0
+  faceTarget: 0
   occupied: 0
   mechanicNode: {fileID: 0}
   hasMechanic: 0
@@ -19144,6 +19169,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeName: 
   targetTag: 
+  copyTargetLocation: 1
+  copyTargetRotation: 0
+  faceTarget: 0
   occupied: 0
   mechanicNode: {fileID: 0}
   hasMechanic: 0
@@ -19367,6 +19395,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeName: 
   targetTag: 
+  copyTargetLocation: 1
+  copyTargetRotation: 0
+  faceTarget: 0
   occupied: 0
   mechanicNode: {fileID: 0}
   hasMechanic: 0
@@ -20111,6 +20142,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeName: 
   targetTag: 
+  copyTargetLocation: 1
+  copyTargetRotation: 0
+  faceTarget: 0
   occupied: 0
   mechanicNode: {fileID: 0}
   hasMechanic: 0
@@ -28280,6 +28314,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeName: 
   targetTag: 
+  copyTargetLocation: 1
+  copyTargetRotation: 0
+  faceTarget: 0
   occupied: 0
   mechanicNode: {fileID: 0}
   hasMechanic: 0
@@ -35738,6 +35775,7 @@ MonoBehaviour:
   triggerDelay: 0
   triggerDelayVariance: 0
   damageApplicationDelay: 0.25
+  damageApplicationDelayBetweenPlayers: 0
   cooldown: 0
   playersRequired: 0
   damageMultiplierPerMissingPlayer: 1
@@ -36361,6 +36399,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeName: 
   targetTag: 
+  copyTargetLocation: 1
+  copyTargetRotation: 0
+  faceTarget: 0
   occupied: 0
   mechanicNode: {fileID: 0}
   hasMechanic: 0
@@ -38056,6 +38097,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeName: 
   targetTag: 
+  copyTargetLocation: 1
+  copyTargetRotation: 0
+  faceTarget: 0
   occupied: 0
   mechanicNode: {fileID: 0}
   hasMechanic: 0
@@ -44503,6 +44547,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeName: 
   targetTag: 
+  copyTargetLocation: 1
+  copyTargetRotation: 0
+  faceTarget: 0
   occupied: 0
   mechanicNode: {fileID: 0}
   hasMechanic: 0
@@ -46103,6 +46150,7 @@ MonoBehaviour:
   playAudio: 1
   audioVolume: 1
   useTransparency: 0
+  modelVisibilityUpdatesAnimator: 0
   modelAlpha: 1
   pivot: {fileID: 90308040}
   model: {fileID: 1458931561}
@@ -47406,6 +47454,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeName: 
   targetTag: 
+  copyTargetLocation: 1
+  copyTargetRotation: 0
+  faceTarget: 0
   occupied: 0
   mechanicNode: {fileID: 0}
   hasMechanic: 0
@@ -48518,6 +48569,7 @@ MonoBehaviour:
   triggerDelay: 2.7
   triggerDelayVariance: 0
   damageApplicationDelay: 0.25
+  damageApplicationDelayBetweenPlayers: 0
   cooldown: 10
   playersRequired: 0
   damageMultiplierPerMissingPlayer: 1
@@ -49714,6 +49766,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeName: 
   targetTag: 
+  copyTargetLocation: 1
+  copyTargetRotation: 0
+  faceTarget: 0
   occupied: 0
   mechanicNode: {fileID: 0}
   hasMechanic: 0
@@ -50644,6 +50699,7 @@ MonoBehaviour:
   playAudio: 1
   audioVolume: 1
   useTransparency: 0
+  modelVisibilityUpdatesAnimator: 0
   modelAlpha: 1
   pivot: {fileID: 574981024}
   model: {fileID: 1553358998}
@@ -51127,6 +51183,7 @@ MonoBehaviour:
   onlyTriggerOnce: 0
   global: 0
   log: 0
+  preventTriggerIfInactive: 0
   onTriggerMechanic:
     m_PersistentCalls:
       m_Calls:
@@ -51324,6 +51381,7 @@ MonoBehaviour:
   triggerDelay: 0
   triggerDelayVariance: 0
   damageApplicationDelay: 0.25
+  damageApplicationDelayBetweenPlayers: 0
   cooldown: 0
   playersRequired: 0
   damageMultiplierPerMissingPlayer: 1
@@ -54438,7 +54496,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5773724940359866075, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0009067573
+      value: 0.0008878234
       objectReference: {fileID: 0}
     - target: {fileID: 5805265089280714766, guid: b6cab5e55fca4094eafd70d78156bf2c, type: 3}
       propertyPath: m_AnchorMax.y
@@ -58701,6 +58759,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeName: 
   targetTag: 
+  copyTargetLocation: 1
+  copyTargetRotation: 0
+  faceTarget: 0
   occupied: 0
   mechanicNode: {fileID: 0}
   hasMechanic: 0
@@ -59208,6 +59269,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeName: 
   targetTag: 
+  copyTargetLocation: 1
+  copyTargetRotation: 0
+  faceTarget: 0
   occupied: 0
   mechanicNode: {fileID: 0}
   hasMechanic: 0
@@ -59295,6 +59359,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 293d618e1323e1c4e8d4262efb708d6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  allowEditorDirectModelLoading: 0
   modelName: m0096b0001.prefab
   position: {x: 0, y: 0, z: 0}
   rotation: {x: 0, y: 0, z: 0}
@@ -61094,6 +61159,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 293d618e1323e1c4e8d4262efb708d6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  allowEditorDirectModelLoading: 0
   modelName: m0098b0001_aqua.prefab
   position: {x: 0, y: 0, z: 0}
   rotation: {x: 0, y: 0, z: 0}
@@ -62328,6 +62394,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 293d618e1323e1c4e8d4262efb708d6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  allowEditorDirectModelLoading: 0
   modelName: m0099b0003.prefab
   position: {x: 0, y: 0, z: 0}
   rotation: {x: 0, y: 0, z: 0}
@@ -63576,7 +63643,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotation: {x: 0, y: 40, z: 0}
+  onUpdate: 1
   setRotation: 0
+  addRotation: 0
   oneTime: 0
   faceTowardsName: 
   faceTowards: {fileID: 0}
@@ -64863,7 +64932,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotation: {x: 0, y: 0, z: 0.5}
+  onUpdate: 1
   setRotation: 0
+  addRotation: 0
   oneTime: 0
   faceTowardsName: 
   faceTowards: {fileID: 0}
@@ -64916,6 +64987,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeName: 
   targetTag: 
+  copyTargetLocation: 1
+  copyTargetRotation: 0
+  faceTarget: 0
   occupied: 0
   mechanicNode: {fileID: 0}
   hasMechanic: 0
@@ -66875,7 +66949,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotation: {x: 0, y: 40, z: 0}
+  onUpdate: 1
   setRotation: 0
+  addRotation: 0
   oneTime: 0
   faceTowardsName: 
   faceTowards: {fileID: 0}
@@ -67446,6 +67522,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeName: 
   targetTag: 
+  copyTargetLocation: 1
+  copyTargetRotation: 0
+  faceTarget: 0
   occupied: 0
   mechanicNode: {fileID: 0}
   hasMechanic: 0
@@ -67614,6 +67693,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeName: 
   targetTag: 
+  copyTargetLocation: 1
+  copyTargetRotation: 0
+  faceTarget: 0
   occupied: 0
   mechanicNode: {fileID: 0}
   hasMechanic: 0
@@ -68498,7 +68580,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotation: {x: 0, y: 40, z: 0}
+  onUpdate: 1
   setRotation: 0
+  addRotation: 0
   oneTime: 0
   faceTowardsName: 
   faceTowards: {fileID: 0}
@@ -68551,6 +68635,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeName: 
   targetTag: 
+  copyTargetLocation: 1
+  copyTargetRotation: 0
+  faceTarget: 0
   occupied: 0
   mechanicNode: {fileID: 0}
   hasMechanic: 0
@@ -68749,6 +68836,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeName: 
   targetTag: 
+  copyTargetLocation: 1
+  copyTargetRotation: 0
+  faceTarget: 0
   occupied: 0
   mechanicNode: {fileID: 0}
   hasMechanic: 0
@@ -70168,6 +70258,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeName: 
   targetTag: 
+  copyTargetLocation: 1
+  copyTargetRotation: 0
+  faceTarget: 0
   occupied: 0
   mechanicNode: {fileID: 0}
   hasMechanic: 0
@@ -70980,6 +71073,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   log: 0
+  allowEditorDirectModelLoading: 0
   disableFogForWebGL: 1
   disableFogForWindows: 0
   disableFogForLinux: 0
@@ -71954,6 +72048,7 @@ MonoBehaviour:
   onlyTriggerOnce: 0
   global: 0
   log: 0
+  preventTriggerIfInactive: 0
   onTriggerMechanic:
     m_PersistentCalls:
       m_Calls:
@@ -72636,6 +72731,7 @@ MonoBehaviour:
   playAudio: 1
   audioVolume: 1
   useTransparency: 0
+  modelVisibilityUpdatesAnimator: 0
   modelAlpha: 1
   pivot: {fileID: 48858428}
   model: {fileID: 347232598}
