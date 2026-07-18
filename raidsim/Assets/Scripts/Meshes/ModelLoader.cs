@@ -12,6 +12,9 @@ namespace dev.susybaka.raidsim.Animations
 {
     public class ModelLoader : MonoBehaviour
     {
+        [Tooltip("Allow loading models directly from the Assets folder in the editor. This is useful for testing and development purposes, but should be disabled in production builds.")]
+        [SerializeField] private bool allowEditorDirectModelLoading = false;
+
         // Legacy variables that are not used anymore but kept for compatibility
         // to avoid breaking existing scenes in other people's forks,
         // these can be migrated by using the MigrateOldModelData function (button) in the editor
@@ -66,14 +69,17 @@ namespace dev.susybaka.raidsim.Animations
             //fightSelector = FindObjectOfType<FightSelector>();
             modelHandler = GetComponent<ModelHandler>();
             tempModel = transform.GetChild(0).gameObject;
+#if !UNITY_EDITOR
+            allowEditorDirectModelLoading = false;
+#endif
         }
 
         //private void Start()
         //{
-            //if (fightSelector != null)
-            //{
-            //    currentFightBundleNames = fightSelector.CurrentScene.assetBundles;
-            //}
+        //if (fightSelector != null)
+        //{
+        //    currentFightBundleNames = fightSelector.CurrentScene.assetBundles;
+        //}
         //}
 
         private void Update()
@@ -81,16 +87,38 @@ namespace dev.susybaka.raidsim.Animations
             if (string.IsNullOrEmpty(modelData.name) || string.IsNullOrEmpty(modelData.bundle))
                 return;
 
+#if UNITY_EDITOR
+            if (((AssetHandler.Instance != null) || (AssetHandler.Instance == null && allowEditorDirectModelLoading && GlobalVariables.isEditor)) && !modelLoaded)
+            {
+                if ((AssetHandler.Instance != null && AssetHandler.Instance.HasBundleLoaded(modelData.bundle)) || (allowEditorDirectModelLoading && GlobalVariables.isEditor))
+                {
+#else
             if (AssetHandler.Instance != null && !modelLoaded)
             {
                 if (AssetHandler.Instance.HasBundleLoaded(modelData.bundle))
                 {
-                    onModelLoaded.Invoke();
+#endif
+                    //onModelLoaded.Invoke();
                     modelLoaded = true;
 
                     Destroy(tempModel);
 
+#if UNITY_EDITOR
+                    //Debug.Log($"Assets/FFXIV/Fights/{FightTimeline.Instance.timelineAbbreviation}/Prefabs/{modelData.name}");
+                    // Load the model directly from the Assets folder in the editor
+                    GameObject model = null;
+                    if (AssetHandler.Instance != null && AssetHandler.Instance.HasBundleLoaded(modelData.bundle) && !allowEditorDirectModelLoading)
+                    {
+                        model = AssetHandler.Instance.GetAsset(modelData.bundle, modelData.name);
+                    }
+                    else if (allowEditorDirectModelLoading && GlobalVariables.isEditor)
+                    {
+                        model = GameObject.Instantiate(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/FFXIV/Fights/{FightTimeline.Instance.timelineAbbreviation}/Prefabs/{modelData.name}"));
+                    }
+#else
                     GameObject model = AssetHandler.Instance.GetAsset(modelData.bundle, modelData.name);
+#endif
+
                     model.transform.SetParent(transform);
                     model.transform.localPosition = modelData.position;
                     model.transform.localEulerAngles = modelData.rotation;
@@ -103,6 +131,9 @@ namespace dev.susybaka.raidsim.Animations
                         if (ieUpdateModels == null)
                             ieUpdateModels = StartCoroutine(IE_UpdateModels(new WaitForSeconds(1f)));
                     }
+                    // Moved the onModelLoaded.Invoke() call here to ensure it is called after the model is loaded and set up
+                    // Hopefully this doesn't break anything from before
+                    onModelLoaded.Invoke();
                 }
                 else
                 {

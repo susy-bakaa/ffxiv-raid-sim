@@ -13,6 +13,8 @@ namespace dev.susybaka.raidsim.Core
     public class EnvironmentHandler : MonoBehaviour
     {
         public bool log = false;
+        [Tooltip("Allow loading models directly from the Assets folder in the editor. This is useful for testing and development purposes, but should be disabled in production builds.")]
+        [SerializeField] private bool allowEditorDirectModelLoading = false;
 
         public bool disableFogForWebGL = true;
         public bool disableFogForWindows = false;
@@ -97,6 +99,9 @@ namespace dev.susybaka.raidsim.Core
                 RenderSettings.fog = false;
             }
 #endif
+#if !UNITY_EDITOR
+            allowEditorDirectModelLoading = false;
+#endif
             originalArenaIndex = currentArenaIndex;
             ChangeArenaModel(originalArenaIndex);
         }
@@ -114,7 +119,9 @@ namespace dev.susybaka.raidsim.Core
             if (arenaModelData == null || arenaModelData.Length <= 0 || allArenaModelsLoaded)
                 return;
 
-            if (AssetHandler.Instance == null)
+            if (AssetHandler.Instance == null && !allowEditorDirectModelLoading)
+                return;
+            else if (AssetHandler.Instance == null && allowEditorDirectModelLoading && !GlobalVariables.isEditor)
                 return;
 
             bool allLoaded = true;
@@ -134,7 +141,7 @@ namespace dev.susybaka.raidsim.Core
                         continue;
                     }
 
-                    if (!AssetHandler.Instance.HasBundleLoaded(arenaModelData[i].bundle))
+                    if (AssetHandler.Instance != null && !AssetHandler.Instance.HasBundleLoaded(arenaModelData[i].bundle))
                     {
                         allLoaded = false;
                         continue;
@@ -155,7 +162,19 @@ namespace dev.susybaka.raidsim.Core
                         Destroy(arenaModelData[i].model);
                     }
 
+#if UNITY_EDITOR
+                    GameObject arena = null;
+                    if (AssetHandler.Instance != null && !allowEditorDirectModelLoading)
+                    {
+                        arena = AssetHandler.Instance.GetAsset(arenaModelData[i].bundle, arenaModelData[i].name);
+                    }
+                    else if (allowEditorDirectModelLoading && GlobalVariables.isEditor)
+                    {
+                        arena = GameObject.Instantiate(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/FFXIV/Fights/{FightTimeline.Instance.timelineAbbreviation}/Prefabs/{arenaModelData[i].name}.prefab"));
+                    }
+#else
                     GameObject arena = AssetHandler.Instance.GetAsset(arenaModelData[i].bundle, arenaModelData[i].name);
+#endif
 
                     if (arena == null)
                     {
