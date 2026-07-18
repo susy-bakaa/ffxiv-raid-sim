@@ -53,6 +53,12 @@ Fights listed here are finished and available in the simulator.
 - Dragonsong's Reprise (Ultimate) (DSR)
 	- Phase 2
 		- Meteors (Second half of Sanctity of the Ward) ([LPDU](https://ff14.toolboxgaming.space/?id=454690614288171&preview=1#20))
+- The Unending Coil of Bahamut (Ultimate) (UCOB)
+	- Phase 3 (Bahamut Prime)
+		- Heavensfall ([LPDU](https://ff14.toolboxgaming.space/?id=141496754100071&preview=1))
+		- Heavensfall ([NAUR](https://raidplan.io/plan/NGpZ9S-3kiLsDzAY))
+		- Heavensfall ([JP Elemental](https://ffxiv.tuufless.com/elemental/ucob/03_bahamut/))
+		- Heavensfall ([Materia Raiding](https://ff14.toolboxgaming.space/?id=740246169786361&preview=1))
 - The Weapon's Refrain (Ultimate) (UWU)
 	- Phase 3 (Titan)
 		- Gaols ([LPDU](https://www.youtube.com/watch?v=PwEVH50b-rg))
@@ -99,9 +105,6 @@ Fights listed here are not being worked on yet and are not in anyway guranteed t
 		- The Final Word
 		- Fate Calibration α
 		- Fate Calibration β
-- The Unending Coil of Bahamut (Ultimate) (UCOB)
-	- Phase 3 (Bahamut Prime)
-		- Heavensfall
 - The Weapon's Refrain (Ultimate) (UWU)
 	- Phase 5 (The Ultima Weapon)
 		- Ultimate Annihilation
@@ -131,8 +134,8 @@ Fights listed here are not being worked on yet and are not in anyway guranteed t
 
 Latest Builds: 
 
-[![Static Badge](https://img.shields.io/badge/windows_x64-download-green)](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.7.6/raidsim_v.0.7.6_win64.zip)
-[![Static Badge](https://img.shields.io/badge/linux_x64-download-blue?logo=linux&logoColor=white)](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.7.6/raidsim_v.0.7.6_linux64.zip)
+[![Static Badge](https://img.shields.io/badge/windows_x64-download-green)](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.7.7/raidsim_v.0.7.7_win64.zip)
+[![Static Badge](https://img.shields.io/badge/linux_x64-download-blue?logo=linux&logoColor=white)](https://github.com/susy-bakaa/ffxiv-raid-sim/releases/download/v.0.7.7/raidsim_v.0.7.7_linux64.zip)
 [![Static Badge](https://img.shields.io/badge/browser-open-yellow?logo=webgl&logoColor=white)](https://susybaka.dev/unityweb/raidsim/index.html)
 [![Static Badge](https://img.shields.io/badge/itch.io-open-red?logo=itchdotio&logoColor=white)](https://susybakaaa.itch.io/raidsim)
 
