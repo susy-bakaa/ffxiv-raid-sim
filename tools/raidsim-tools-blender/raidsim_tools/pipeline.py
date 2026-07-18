@@ -312,6 +312,8 @@ def export_final_fbx(fbx_path: str):
         use_selection=False,
         apply_unit_scale=True,
         bake_anim=True,
+        bake_anim_use_nla_strips=True,   # Force Blender to use NLA clips
+        bake_anim_use_all_actions=False, # STOP exporting raw/active actions (fixes possible duplicates on some models, as we have all actions as NLA clips anyway with this addon)
         add_leaf_bones=False,            # Armature > Add Leaf Bones off
         bake_anim_simplify_factor=0.0,   # Animation > Simplify = 0
         path_mode='AUTO',

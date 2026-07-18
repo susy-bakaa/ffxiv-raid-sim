@@ -12,7 +12,7 @@ from bpy_extras.io_utils import ExportHelper
 bl_info = {
     "name": "Raidsim Tools",
     "author": "susy_baka",
-    "version": (1, 1, 0),
+    "version": (1, 2, 0),
     "blender": (4, 3, 0),
     "location": "View3D > Sidebar > Raidsim Tools; Dopesheet > Markers; File > Export",
     "description": "Tools for preparing models and animation events for the FFXIV Raidsim Unity project.",
@@ -129,7 +129,19 @@ class RAIDSIM_OT_import_and_link_animations(bpy.types.Operator):
 
             added_count += 1
 
-        self.report({'INFO'}, f"Animations processed: {added_count} added, {skipped_count} skipped.")
+        # ------------------------------------------------------------------------
+        #  Cleanup residual/duplicate Havok actions
+        # ------------------------------------------------------------------------
+        actions_to_remove = []
+        for action in bpy.data.actions:
+            if "|HavokAnimation|Base Layer" in action.name:
+                actions_to_remove.append(action)
+
+        # Explicitly remove them from Blender's database
+        for action in actions_to_remove:
+            bpy.data.actions.remove(action, do_unlink=True)
+
+        self.report({'INFO'}, f"Animations processed: {added_count} added, {skipped_count} skipped. Purged {len(actions_to_remove)} extra left over raw Havok actions.")
         return {'FINISHED'}
 
 
