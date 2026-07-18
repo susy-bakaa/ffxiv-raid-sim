@@ -11,7 +11,7 @@ namespace dev.susybaka.raidsim.Core
     {
         // This value is incremented when the game gets an update.
         // It is used by WebGL to determine if the game assets need to be redownloaded and by the auto updater for version checks for updates.
-        public static int versionNumber = 18;
+        public static int versionNumber = 19;
         // Increment this when the scripts are changed in a way that will require a rebuild of all scenes inside bundles.
         // (This is not in use yet but added for future reference)
         public static int scriptingVersion = 1;
@@ -35,6 +35,11 @@ namespace dev.susybaka.raidsim.Core
         public static bool muteBgm = true;
 #else
         public static bool muteBgm = false;
+#endif
+#if UNITY_EDITOR
+        public static bool isEditor = true;
+#else
+        public static bool isEditor = false;
 #endif
         public static Vector3 worldBounds = new Vector3(501, 501, 501);
         public static Resolution currentGameResolution; // Cached resolution for comparison
