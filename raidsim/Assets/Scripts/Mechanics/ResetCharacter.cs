@@ -76,7 +76,7 @@ namespace dev.susybaka.raidsim.Mechanics
             yield return new WaitForSeconds(1.5f);
             if (target.TryGetComponentInChildren(true, out Rigidbody rb))
             {
-                rb.velocity = Vector3.zero;
+                rb.linearVelocity = Vector3.zero;
             }
             target.transform.position = location;
         }
@@ -88,7 +88,7 @@ namespace dev.susybaka.raidsim.Mechanics
             yield return new WaitForSeconds(1f);
             if (target.TryGetComponentInChildren(true, out Rigidbody rb))
             {
-                rb.velocity = Vector3.zero;
+                rb.linearVelocity = Vector3.zero;
             }
             target.transform.position = location;
             yield return new WaitForSeconds(0.5f);

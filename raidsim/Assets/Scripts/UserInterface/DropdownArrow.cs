@@ -23,7 +23,7 @@ namespace dev.susybaka.raidsim.UI
         {
             dropdown = GetComponent<TMP_Dropdown>();
             if (userInput == null)
-                userInput = FindObjectOfType<UserInput>();
+                userInput = FindFirstObjectByType<UserInput>(FindObjectsInactive.Include);
         }
 
         private void Update()

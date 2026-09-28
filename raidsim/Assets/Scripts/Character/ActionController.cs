@@ -5,6 +5,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
+using TMPro;
 using dev.susybaka.raidsim.Characters;
 using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.StatusEffects;
@@ -12,11 +16,6 @@ using dev.susybaka.raidsim.Targeting;
 using dev.susybaka.raidsim.UI;
 using dev.susybaka.Shared;
 using dev.susybaka.Shared.Audio;
-using TMPro;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
-using static System.Collections.Specialized.BitVector32;
 using static dev.susybaka.raidsim.Actions.CharacterAction;
 using static dev.susybaka.raidsim.Core.GlobalData;
 
@@ -138,7 +137,7 @@ namespace dev.susybaka.raidsim.Actions
             // This section handles setting up specific refences by utilizing our custom TaggedObject component to identify them,
             // which allows for more flexibility in the hierarchy setup and let's us avoid cluttering the Unity tag system.
             // This is a bit janky, but it works and saves us from having to set up a lot of references manually in the inspector.
-            TaggedObject[] allTagged = FindObjectsOfType<TaggedObject>(true);
+            TaggedObject[] allTagged = FindObjectsByType<TaggedObject>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 
             foreach (TaggedObject tagged in allTagged)
             {
@@ -708,7 +707,7 @@ namespace dev.susybaka.raidsim.Actions
                     HandleActionAudio(autoAction, false);
                     HandleActionAudio(autoAction, true);
 
-                    if (animator != null && !string.IsNullOrEmpty(autoAction.Data.animationName) && !autoAction.Data.playAnimationDirectly)
+                    if (animator != null && !string.IsNullOrEmpty(autoAction.Data.animationName) && !string.IsNullOrWhiteSpace(autoAction.Data.animationName) && !autoAction.Data.playAnimationDirectly)
                     {
                         if (autoAction.Data.animationDelay > 0f)
                         {
@@ -719,7 +718,7 @@ namespace dev.susybaka.raidsim.Actions
                             animator.SetTrigger(autoAction.Data.animationName);
                         }
                     }
-                    else if (animator != null && !string.IsNullOrEmpty(autoAction.Data.animationName) && autoAction.Data.playAnimationDirectly)
+                    else if (animator != null && !string.IsNullOrEmpty(autoAction.Data.animationName) && !string.IsNullOrWhiteSpace(autoAction.Data.animationName) && autoAction.Data.playAnimationDirectly)
                     {
                         if (autoAction.Data.animationDelay > 0f)
                         {

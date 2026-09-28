@@ -22,15 +22,13 @@ namespace dev.susybaka.Shared.Editor
         [MenuItem("Tools/Scene Loader")]
         public static void ShowWindow()
         {
-            SceneLoaderWindow window = GetWindow<SceneLoaderWindow>("Scene Loader");
-
-            // Set the icon for the window using Unity's default scene icon
-            GUIContent titleContent = new GUIContent("Scene Loader", EditorGUIUtility.IconContent("SceneAsset Icon").image);
-            window.titleContent = titleContent;
+            GetWindow<SceneLoaderWindow>("Scene Loader");
         }
 
         private void OnEnable()
         {
+            titleContent = new GUIContent("Scene Loader", EditorGUIUtility.IconContent("SceneAsset Icon").image);
+
             // Load the checkbox state from EditorPrefs
             filterScenes = EditorPrefs.GetBool(FilterScenesKey, false);
 

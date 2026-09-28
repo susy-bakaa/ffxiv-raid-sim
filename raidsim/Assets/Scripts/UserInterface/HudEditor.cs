@@ -51,9 +51,9 @@ namespace dev.susybaka.raidsim.UI
         {
             base.Awake();
 
-            userInput = FindObjectOfType<UserInput>();
+            userInput = FindFirstObjectByType<UserInput>(FindObjectsInactive.Include);
             if (pauseMenu == null)
-                pauseMenu = FindObjectOfType<PauseMenu>();
+                pauseMenu = FindFirstObjectByType<PauseMenu>(FindObjectsInactive.Include);
         }
 
         private void Update()

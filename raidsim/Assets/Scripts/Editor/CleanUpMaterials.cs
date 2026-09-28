@@ -3,8 +3,8 @@
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace dev.susybaka.Shared.Editor
 {
@@ -34,12 +34,12 @@ namespace dev.susybaka.Shared.Editor
 
             var shader = mat.shader;
             var activeTextureNames =
-                Enumerable.Range(0, ShaderUtil.GetPropertyCount(shader))
+                Enumerable.Range(0, shader.GetPropertyCount())
                 .Where(
                     index =>
-                    ShaderUtil.GetPropertyType(shader, index)
-                    == ShaderUtil.ShaderPropertyType.TexEnv)
-                .Select(index => ShaderUtil.GetPropertyName(shader, index));
+                    shader.GetPropertyType(index)
+                    == UnityEngine.Rendering.ShaderPropertyType.Texture)
+                .Select(index => shader.GetPropertyName(index));
 
             var activeTextureNameSet = new HashSet<string>(activeTextureNames);
 

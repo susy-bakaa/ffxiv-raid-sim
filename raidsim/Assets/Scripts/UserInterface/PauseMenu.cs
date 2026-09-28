@@ -34,7 +34,7 @@ namespace dev.susybaka.raidsim.UI
             if (playerActions == null)
                 playerActions = GameObject.Find("Player")?.GetComponent<ActionController>();
             if (hudEditor == null)
-                hudEditor = FindObjectOfType<HudEditor>();
+                hudEditor = FindFirstObjectByType<HudEditor>(FindObjectsInactive.Include);
             if (playerTargeting != null)
                 playerTargeting.SetPauseMenu(this);
             if (chatWindow == null)

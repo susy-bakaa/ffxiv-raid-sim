@@ -178,7 +178,7 @@ namespace dev.susybaka.raidsim.Core
             player = GameObject.Find("Player").GetComponent<CharacterState>();
             if (player != null)
             {
-                PartyList[] partyLists = FindObjectsOfType<PartyList>();
+                PartyList[] partyLists = FindObjectsByType<PartyList>(FindObjectsInactive.Include, FindObjectsSortMode.None);
                 foreach (PartyList pl in partyLists)
                 {
                     if (pl.members.ContainsCharacterState(player))

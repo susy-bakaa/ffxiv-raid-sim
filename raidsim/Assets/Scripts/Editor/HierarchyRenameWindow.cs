@@ -35,6 +35,11 @@ namespace dev.susybaka.Shared.Editor
             GetWindow<HierarchyRenameWindow>("Hierarchy Rename");
         }
 
+        private void OnEnable()
+        {
+            titleContent = new GUIContent("Hierarchy Rename");
+        }
+
         private void OnSelectionChange()
         {
             RebuildPreview();

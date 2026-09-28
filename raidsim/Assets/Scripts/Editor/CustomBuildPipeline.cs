@@ -2,12 +2,15 @@
 // This file is part of ffxiv-raid-sim. Linking with the Unity runtime
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Security.Cryptography;
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.Build;
+using UnityEditor.Build.Reporting;
 using dev.susybaka.raidsim.Core;
 
 namespace dev.susybaka.raidsim.Editor
@@ -66,6 +69,10 @@ namespace dev.susybaka.raidsim.Editor
             "hotbars"
         };
 
+        public static bool BuildWindows = true;
+        public static bool BuildLinux = true;
+        public static bool BuildWebGL = true;
+        public static bool ShouldPackageBuilds = true;
         public static bool ShouldRebuildProgram = true;
         public static bool ShouldRebuildAssetBundles = true;
         public static bool useCustomExtension = true;
@@ -81,35 +88,85 @@ namespace dev.susybaka.raidsim.Editor
 
         public static void RunFullBuildPipeline()
         {
-            // Ensure we begin from windows build target
-            EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64);
+            var selectedConfigs = BuildConfigs.Where(config =>
+                (config.target == BuildTarget.StandaloneWindows64 && BuildWindows) ||
+                (config.target == BuildTarget.StandaloneLinux64 && BuildLinux) ||
+                (config.target == BuildTarget.WebGL && BuildWebGL)).ToArray();
 
-            // Set the version and bundle version
-            PlayerSettings.bundleVersion = ManualUnityVersion;
-            GlobalVariables.versionNumber = ManualVersionNumber;
-
-            // Execute each build configuration
-            foreach (var (target, folder, zip) in BuildConfigs)
+            if (selectedConfigs.Length == 0)
             {
-                try
-                {
-                    RunBuildForTarget(target, folder, zip);
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogError($"Build failed for {target.ToString()}: {ex.Message}");
-                }
+                if (ShouldPackageBuilds)
+                    PackageBuilds();
+                else
+                    Debug.Log("No platforms selected and packaging is disabled. Nothing to do.");
+                return;
             }
 
-            // Reset things we changed for some builds
-            QualitySettings.globalTextureMipmapLimit = 0; // 4096
-            PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Standalone, $"dev.susybaka.{ExecutableName}.windows");
-            EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64);
+            string logFolder = Path.Combine(BuildRoot, "logs", DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss-fff") + "_" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(logFolder);
+            Debug.Log($"Build logs will be saved to '{logFolder}'.");
 
-            PackageBuilds();
+            try
+            {
+                // Ensure we begin from windows build target
+                if (!EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64))
+                    throw new BuildFailedException("Could not switch to the Windows build target.");
+
+                // Set the version and bundle version
+                PlayerSettings.bundleVersion = ManualUnityVersion;
+                GlobalVariables.versionNumber = ManualVersionNumber;
+
+                // Execute each build configuration
+                foreach (var (target, folder, zip) in selectedConfigs)
+                {
+                    string logPath = Path.Combine(logFolder, $"{target}.log");
+                    using TextWriter buildLog = TextWriter.Synchronized(new StreamWriter(logPath) { AutoFlush = true });
+                    object logLock = new object();
+                    bool captureLogs = true;
+                    Application.LogCallback logCallback = (message, stackTrace, type) =>
+                    {
+                        lock (logLock)
+                        {
+                            if (captureLogs)
+                                buildLog.WriteLine($"[{DateTime.Now:O}] [{type}] {message}\n{stackTrace}");
+                        }
+                    };
+
+                    Application.logMessageReceivedThreaded += logCallback;
+                    try
+                    {
+                        Debug.Log($"Starting build for {target}. Rebuild program: {ShouldRebuildProgram}, rebuild bundles: {ShouldRebuildAssetBundles}.");
+                        RunBuildForTarget(target, folder, zip, buildLog);
+                        Debug.Log($"Build completed for {target}.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError($"Build failed for {target}: {ex}. Pipeline stopped; packaging skipped. Log: '{logPath}'.");
+                        throw;
+                    }
+                    finally
+                    {
+                        Application.logMessageReceivedThreaded -= logCallback;
+                        lock (logLock)
+                        {
+                            captureLogs = false;
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                // Reset things we changed for some builds, even when a build fails
+                QualitySettings.globalTextureMipmapLimit = 0; // 4096
+                PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Standalone, $"dev.susybaka.{ExecutableName}.windows");
+                EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64);
+            }
+
+            if (ShouldPackageBuilds)
+                PackageBuilds();
         }
 
-        private static void RunBuildForTarget(BuildTarget target, string folderName, string zipName)
+        private static void RunBuildForTarget(BuildTarget target, string folderName, string zipName, TextWriter buildLog)
         {
             string outputDir = Path.Combine(BuildRoot, folderName);
 
@@ -133,22 +190,21 @@ namespace dev.susybaka.raidsim.Editor
             switch (target)
             {
                 case BuildTarget.StandaloneWindows64:
-                    PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Standalone, $"dev.susybaka.{ExecutableName}.windows");
+                    PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Standalone, $"dev.susybaka.{ExecutableName}.windows");
                     locationPathName = Path.Combine(outputDir, $"{ExecutableName}.exe");
                     break;
                 case BuildTarget.StandaloneLinux64:
-                    PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Standalone, $"dev.susybaka.{ExecutableName}.linux");
+                    PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Standalone, $"dev.susybaka.{ExecutableName}.linux");
                     locationPathName = Path.Combine(outputDir, $"{ExecutableName}.x86_64");
                     break;
                 case BuildTarget.WebGL:
-                    PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.WebGL, $"dev.susybaka.{ExecutableName}.webgl");
+                    PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.WebGL, $"dev.susybaka.{ExecutableName}.webgl");
                     locationPathName = Path.Combine(outputDir, "_temp"); // WebGL builds require a whole folder for output, so we build to a temp folder and then move the contents up to the final output directory after the build completes
                     break;
                 default:
-                    PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Standalone, $"dev.susybaka.{ExecutableName}");
+                    PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Standalone, $"dev.susybaka.{ExecutableName}");
                     locationPathName = Path.Combine(outputDir, ExecutableName);
-                    Debug.LogError($"Unsupported build target: {target}");
-                    return;
+                    throw new BuildFailedException($"Unsupported build target: {target}");
             }
 
             BuildPlayerOptions buildOptions = new()
@@ -168,7 +224,22 @@ namespace dev.susybaka.raidsim.Editor
                     Directory.CreateDirectory(locationPathName);
                 }
 
-                BuildPipeline.BuildPlayer(buildOptions);
+                BuildReport report = BuildPipeline.BuildPlayer(buildOptions);
+                if (report == null)
+                    throw new BuildFailedException($"Player build returned no BuildReport for {target}.");
+
+                buildLog.WriteLine($"Player build result: {report.summary.result}, errors: {report.summary.totalErrors}, warnings: {report.summary.totalWarnings}, duration: {report.summary.totalTime}");
+                foreach (BuildStep step in report.steps)
+                {
+                    buildLog.WriteLine($"Build step: {step.name} ({step.duration})");
+                    foreach (BuildStepMessage message in step.messages)
+                    {
+                        buildLog.WriteLine($"[{message.type}] {message.content}");
+                    }
+                }
+
+                if (report.summary.result != BuildResult.Succeeded)
+                    throw new BuildFailedException($"Player build did not succeed for {target}: {report.summary.result} ({report.summary.totalErrors} errors).");
 
                 // On Linux, rename the executable to remove the .x86_64 suffix for consistency with usual Linux conventions
                 if (target == BuildTarget.StandaloneLinux64)
@@ -183,6 +254,7 @@ namespace dev.susybaka.raidsim.Editor
                         catch (Exception ex)
                         {
                             Debug.LogError($"Failed to rename Linux executable: {ex.Message}");
+                            throw;
                         }
                     }
                 }
@@ -214,6 +286,9 @@ namespace dev.susybaka.raidsim.Editor
                 }
             }
 
+            if (useCustomExtension)
+                ApplyBundleExtension(bundleTargetFolder);
+
             if (target != BuildTarget.WebGL)
             {
                 string destBundleFolder = Path.Combine(outputDir, $"{ExecutableName}_Data", "StreamingAssets");
@@ -223,7 +298,7 @@ namespace dev.susybaka.raidsim.Editor
 
                 Directory.CreateDirectory(destBundleFolder);
 
-                // Restore ALL extra StreamingAssets from the project
+                // Restore extra StreamingAssets from the project without its test bundles
                 CopyProjectStreamingAssetsInto(destBundleFolder);
 
                 Debug.Log($"Copying {Directory.GetFiles(bundleTargetFolder).Length} AssetBundles from '{bundleTargetFolder}' to '{destBundleFolder}'");
@@ -260,7 +335,7 @@ namespace dev.susybaka.raidsim.Editor
                 {
                     Directory.CreateDirectory(destBundleFolder);
 
-                    // Restore ALL extra StreamingAssets from the project
+                    // Restore extra StreamingAssets from the project without its test bundles
                     CopyProjectStreamingAssetsInto(destBundleFolder);
 
                     foreach (string file in Directory.GetFiles(bundleTargetFolder))
@@ -331,47 +406,71 @@ namespace dev.susybaka.raidsim.Editor
                 else
                     Debug.Log($"Building for target: {target.ToString()} with the following {options} AssetBundle extension: none");
 
-                BuildPipeline.BuildAssetBundles(outputPath, options, target);
+                AssetBundleManifest manifest = BuildPipeline.BuildAssetBundles(outputPath, options, target);
+                if (manifest == null)
+                    throw new BuildFailedException($"Asset bundle build returned no manifest for {target}.");
 
                 if (useCustomExtension)
-                {
-                    string extension = GlobalVariables.assetBundleExtension;
-                    string[] files = Directory.GetFiles(outputPath);
-
-                    foreach (string filePath in files)
-                    {
-                        if (filePath.EndsWith(extension) || filePath.EndsWith($"{extension}.manifest") || filePath.EndsWith($"{extension}.meta"))
-                        {
-                            File.Delete(filePath);
-                            continue;
-                        }
-
-                        if (filePath.EndsWith(".manifest") || filePath.EndsWith(".meta"))
-                            continue;
-
-                        string newPath = filePath + extension;
-
-                        if (!File.Exists(newPath))
-                        {
-                            File.Move(filePath, newPath);
-                            if (File.Exists(filePath + ".manifest"))
-                                File.Move(filePath + ".manifest", newPath + ".manifest");
-                            if (File.Exists(filePath + ".meta"))
-                                File.Move(filePath + ".meta", newPath + ".meta");
-                        }
-                    }
-                }
+                    ApplyBundleExtension(outputPath);
 
                 Debug.Log($"Asset bundle build completed for {target.ToString()}");
             }
             catch (System.Exception e)
             {
                 Debug.LogError("Asset bundle build failed: " + e);
+                throw;
             }
+        }
+
+        private static void ApplyBundleExtension(string outputPath)
+        {
+            string extension = GlobalVariables.assetBundleExtension;
+            foreach (string filePath in Directory.GetFiles(outputPath, "*", SearchOption.AllDirectories))
+            {
+                if (filePath.EndsWith(extension, StringComparison.OrdinalIgnoreCase) ||
+                    filePath.EndsWith(".manifest", StringComparison.OrdinalIgnoreCase) ||
+                    filePath.EndsWith(".meta", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                string newPath = filePath + extension;
+                // Replace the previous build before moving the new bundle, regardless of directory enumeration order.
+                if (File.Exists(newPath))
+                    File.Delete(newPath);
+                File.Move(filePath, newPath);
+
+                foreach (string suffix in new[] { ".manifest", ".meta" })
+                {
+                    if (File.Exists(newPath + suffix))
+                        File.Delete(newPath + suffix);
+                    if (File.Exists(filePath + suffix))
+                        File.Move(filePath + suffix, newPath + suffix);
+                }
+            }
+        }
+
+        private static bool HasBuildOutput(BuildTarget target, string folder)
+        {
+            string outputDir = Path.Combine(BuildRoot, folder);
+            if (target == BuildTarget.WebGL)
+            {
+                string buildDir = Path.Combine(outputDir, "Build");
+                return File.Exists(Path.Combine(outputDir, "index.html")) &&
+                    Directory.Exists(buildDir) && Directory.GetFiles(buildDir).Length > 0;
+            }
+
+            string executable = target == BuildTarget.StandaloneWindows64 ? ExecutableName + ".exe" : ExecutableName;
+            return File.Exists(Path.Combine(outputDir, executable)) &&
+                Directory.Exists(Path.Combine(outputDir, $"{ExecutableName}_Data"));
         }
 
         private static void PackageBuilds()
         {
+            // Validate every platform before touching any existing archives or checksums.
+            var missingBuilds = BuildConfigs.Where(config => !HasBuildOutput(config.target, config.outputFolder))
+                .Select(config => config.target.ToString()).ToArray();
+            if (missingBuilds.Length > 0)
+                throw new BuildFailedException($"Packaging requires existing builds for all platforms. Missing or incomplete: {string.Join(", ", missingBuilds)}.");
+
             if (File.Exists(ChecksumFile))
                 File.Delete(ChecksumFile);
 
@@ -455,15 +554,34 @@ namespace dev.susybaka.raidsim.Editor
             }
         }
 
+        private static bool IsAssetBundleFile(string filePath)
+        {
+            if (!File.Exists(filePath))
+                return false;
+
+            using FileStream stream = File.OpenRead(filePath);
+            byte[] header = new byte[8];
+            int count = stream.Read(header, 0, header.Length);
+            string signature = System.Text.Encoding.ASCII.GetString(header, 0, count);
+            return signature.StartsWith("UnityFS\0", StringComparison.Ordinal) ||
+                signature.StartsWith("UnityRaw", StringComparison.Ordinal) ||
+                signature.StartsWith("UnityWeb", StringComparison.Ordinal);
+        }
+
         private static void CopyProjectStreamingAssetsInto(string destStreamingAssetsDir)
         {
             string src = Path.Combine(Application.dataPath, "StreamingAssets");
             if (!Directory.Exists(src))
                 return;
 
+            HashSet<string> bundleNames = new HashSet<string>(AssetDatabase.GetAllAssetBundleNames(), StringComparer.OrdinalIgnoreCase);
+            bundleNames.Add("StreamingAssets");
+            foreach (var (target, _, _) in BuildConfigs)
+                bundleNames.Add(target.ToString());
+
             CopyDirectoryRecursive(src, destStreamingAssetsDir);
 
-            static void CopyDirectoryRecursive(string srcDir, string dstDir)
+            void CopyDirectoryRecursive(string srcDir, string dstDir)
             {
                 Directory.CreateDirectory(dstDir);
 
@@ -471,6 +589,18 @@ namespace dev.susybaka.raidsim.Editor
                 {
                     // Don't ship Unity meta files
                     if (file.EndsWith(".meta", StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    string relativePath = Path.GetRelativePath(src, file).Replace("\\", "/");
+                    string bundlePath = file;
+                    if (relativePath.EndsWith(".manifest", StringComparison.OrdinalIgnoreCase))
+                    {
+                        relativePath = relativePath.Substring(0, relativePath.Length - ".manifest".Length);
+                        bundlePath = file.Substring(0, file.Length - ".manifest".Length);
+                    }
+
+                    if (relativePath.EndsWith(GlobalVariables.assetBundleExtension, StringComparison.OrdinalIgnoreCase) ||
+                        bundleNames.Contains(relativePath) || IsAssetBundleFile(bundlePath))
                         continue;
 
                     var dst = Path.Combine(dstDir, Path.GetFileName(file));
@@ -482,54 +612,6 @@ namespace dev.susybaka.raidsim.Editor
                     var dstSub = Path.Combine(dstDir, Path.GetFileName(dir));
                     CopyDirectoryRecursive(dir, dstSub);
                 }
-            }
-        }
-    }
-    
-    public class CustomBuildPipelineWindow : EditorWindow
-    {
-        private bool rebuildProgram = true;
-        private bool rebuildBundles = true;
-        private bool useCustomExtension = true;
-        private string unityVersion = "1.0.0";
-        private int versionNumber = 0;
-
-        [MenuItem("Tools/Custom Build Pipeline Window")]
-        public static void ShowWindow()
-        {
-            var window = GetWindow<CustomBuildPipelineWindow>("Build Pipeline", true);
-            window.titleContent = new GUIContent("Build Pipeline", EditorGUIUtility.IconContent("BuildSettings.Editor").image);
-        }
-
-        private void OnEnable()
-        {
-            unityVersion = PlayerSettings.bundleVersion;
-            versionNumber = GlobalVariables.versionNumber;
-        }
-
-        private void OnGUI()
-        {
-            GUILayout.Label("Build Pipeline Settings", EditorStyles.boldLabel);
-
-            rebuildProgram = EditorGUILayout.Toggle("Rebuild Program", rebuildProgram);
-            unityVersion = EditorGUILayout.TextField("Unity Version", unityVersion);
-            versionNumber = EditorGUILayout.IntField("Global Version Number", versionNumber);
-            rebuildBundles = EditorGUILayout.Toggle("Rebuild Asset Bundles", rebuildBundles);
-            useCustomExtension = EditorGUILayout.Toggle("Use Bundle File Extension", useCustomExtension);
-
-            if (useCustomExtension)
-                GUILayout.Label($"Current Extension: {GlobalVariables.assetBundleExtension}", EditorStyles.label);
-            else
-                GUILayout.Space(17); // Just to keep the layout consistent
-
-            if (GUILayout.Button("Run Full Build Pipeline"))
-            {
-                CustomBuildPipeline.ShouldRebuildProgram = rebuildProgram;
-                CustomBuildPipeline.ShouldRebuildAssetBundles = rebuildBundles;
-                CustomBuildPipeline.useCustomExtension = useCustomExtension;
-                CustomBuildPipeline.ManualUnityVersion = unityVersion;
-                CustomBuildPipeline.ManualVersionNumber = versionNumber;
-                CustomBuildPipeline.RunFullBuildPipeline();
             }
         }
     }

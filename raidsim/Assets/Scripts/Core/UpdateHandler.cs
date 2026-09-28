@@ -13,14 +13,13 @@ using System.Net;
 using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
-using NaughtyAttributes;
 using LogicUI.FancyTextRendering;
+using NaughtyAttributes;
+using TMPro;
 using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.UI;
 using dev.susybaka.Shared;
 using Debug = UnityEngine.Debug;
-
 
 namespace dev.susybaka.raidsim.Updater
 {

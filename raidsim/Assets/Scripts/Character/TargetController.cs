@@ -5,6 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
+using TMPro;
 using dev.susybaka.raidsim.Actions;
 using dev.susybaka.raidsim.Characters;
 using dev.susybaka.raidsim.Core;
@@ -14,10 +18,6 @@ using dev.susybaka.Shared;
 using dev.susybaka.Shared.Attributes;
 using dev.susybaka.Shared.Audio;
 using dev.susybaka.Shared.UserInterface;
-using TMPro;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
 
 namespace dev.susybaka.raidsim.Targeting
 {
@@ -141,7 +141,7 @@ namespace dev.susybaka.raidsim.Targeting
             // This section handles setting up specific refences by utilizing our custom TaggedObject component to identify them,
             // which allows for more flexibility in the hierarchy setup and let's us avoid cluttering the Unity tag system.
             // This is a bit janky, but it works and saves us from having to set up a lot of references manually in the inspector.
-            TaggedObject[] allTagged = FindObjectsOfType<TaggedObject>(true);
+            TaggedObject[] allTagged = FindObjectsByType<TaggedObject>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 
             foreach (TaggedObject tagged in allTagged)
             {
@@ -789,7 +789,7 @@ namespace dev.susybaka.raidsim.Targeting
             // Cache references on the main thread
             var selfPos = transform.position;
             var triggerNodesSet = new HashSet<TargetNode>(targetTriggerNodes ?? new List<TargetNode>());
-            var allNodes = FindObjectsOfType<TargetNode>();
+            var allNodes = FindObjectsByType<TargetNode>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             var selfChar = self != null && self.TryGetCharacterState(out var state) ? state : null;
             var enmityList = sortByEnmity && targetList != null && selfChar != null
                 ? targetList.GetEnmityList(selfChar)

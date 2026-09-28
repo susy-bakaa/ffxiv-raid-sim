@@ -4,8 +4,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.Characters;
+using dev.susybaka.raidsim.Core;
 
 namespace dev.susybaka.raidsim.UI 
 {
@@ -34,7 +34,7 @@ namespace dev.susybaka.raidsim.UI
 
             if (configMenu == null)
             {
-                configMenu = FindObjectOfType<ConfigMenu>();
+                configMenu = FindFirstObjectByType<ConfigMenu>(FindObjectsInactive.Include);
                 if (configMenu != null)
                     configMenu.onChangeKeybinds.AddListener(RefreshSlots);
                 awoken = true;

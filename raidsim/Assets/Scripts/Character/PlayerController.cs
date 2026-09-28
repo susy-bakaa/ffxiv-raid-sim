@@ -2,12 +2,12 @@
 // This file is part of ffxiv-raid-sim. Linking with the Unity runtime
 // is permitted under the Unity Runtime Linking Exception (see LICENSE).
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.InputSystem;
 using dev.susybaka.raidsim.Core;
 using dev.susybaka.raidsim.Inputs;
 using dev.susybaka.raidsim.Nodes;
 using dev.susybaka.Shared;
-using UnityEngine;
-using UnityEngine.InputSystem;
 using static dev.susybaka.raidsim.Core.GlobalData;
 using static dev.susybaka.raidsim.Core.GlobalData.Flag;
 
@@ -112,7 +112,7 @@ namespace dev.susybaka.raidsim.Characters
             }
             if (userInput == null)
             {
-                userInput = FindObjectOfType<UserInput>();
+                userInput = FindFirstObjectByType<UserInput>(FindObjectsInactive.Include);
                 if (userInput == null)
                 {
                     Debug.LogError($"UserInput script not found for PlayerController ({gameObject.name})!");
@@ -132,7 +132,7 @@ namespace dev.susybaka.raidsim.Characters
 
             if (userInput == null)
             {
-                userInput = FindObjectOfType<UserInput>();
+                userInput = FindFirstObjectByType<UserInput>(FindObjectsInactive.Include);
                 if (userInput == null)
                 {
                     Debug.LogError($"UserInput script not found for PlayerController ({gameObject.name})!");
@@ -211,7 +211,7 @@ namespace dev.susybaka.raidsim.Characters
                 if (rb != null)
                 {
                     rb.useGravity = !preventGravity;
-                    rb.velocity = Vector3.zero;
+                    rb.linearVelocity = Vector3.zero;
                 }
             }
 

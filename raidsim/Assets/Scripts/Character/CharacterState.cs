@@ -677,7 +677,7 @@ namespace dev.susybaka.raidsim.Characters
             // This section handles setting up specific refences by utilizing our custom TaggedObject component to identify them,
             // which allows for more flexibility in the hierarchy setup and let's us avoid cluttering the Unity tag system.
             // This is a bit janky, but it works and saves us from having to set up a lot of references manually in the inspector.
-            TaggedObject[] allTagged = FindObjectsOfType<TaggedObject>(true);
+            TaggedObject[] allTagged = FindObjectsByType<TaggedObject>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 
             foreach (TaggedObject tagged in allTagged)
             {
@@ -1142,11 +1142,11 @@ namespace dev.susybaka.raidsim.Characters
                 ModifyHealth(new Damage(100, true, true, DamageType.unique, ElementalAspect.unaspected, PhysicalAspect.none, DamageApplicationType.percentageFromMax, "Out of bounds"));
                 if (playerController != null)
                 {
-                    playerController.Rigidbody.velocity = Vector3.zero;
+                    playerController.Rigidbody.linearVelocity = Vector3.zero;
                 }
                 else if (aiController != null)
                 {
-                    aiController.Rigidbody.velocity = Vector3.zero;
+                    aiController.Rigidbody.linearVelocity = Vector3.zero;
                 }
                 transform.position = new Vector3(0f, 1f, 0f);
             }

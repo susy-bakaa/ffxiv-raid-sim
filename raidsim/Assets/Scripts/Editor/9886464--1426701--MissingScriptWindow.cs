@@ -4,8 +4,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace dev.susybaka.Shared.Editor
 {
@@ -20,6 +20,11 @@ namespace dev.susybaka.Shared.Editor
         public static void ShowWindow()
         {
             GetWindow(typeof(MissingScriptWindow));
+        }
+
+        private void OnEnable()
+        {
+            titleContent = new GUIContent("Missing Scripts");
         }
 
         private void OnGUI()
@@ -88,7 +93,7 @@ namespace dev.susybaka.Shared.Editor
         private void FindMissingScriptsInCurrentScene()
         {
             _objectsWithMissingScriptsInCurrentScene.Clear();
-            var allObjects = FindObjectsOfType<GameObject>();
+            var allObjects = FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             foreach (var go in allObjects)
             {
                 if (go.transform.parent == null) // Only start with root objects

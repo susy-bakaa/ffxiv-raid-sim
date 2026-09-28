@@ -11,8 +11,8 @@ namespace dev.susybaka.Shared.Audio
 
         private void Awake()
         {
-            if (FindObjectOfType<AudioManager>() != null)
-                manager = FindObjectOfType<AudioManager>();
+            if (FindFirstObjectByType<AudioManager>(FindObjectsInactive.Include) != null)
+                manager = FindFirstObjectByType<AudioManager>(FindObjectsInactive.Include);
         }
 
         public void Play(string sound)

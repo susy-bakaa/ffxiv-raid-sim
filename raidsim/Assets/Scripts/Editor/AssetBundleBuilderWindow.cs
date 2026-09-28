@@ -33,11 +33,12 @@ namespace dev.susybaka.Shared.Editor
         [MenuItem("Tools/AssetBundle Builder")]
         public static void ShowWindow()
         {
-            AssetBundleBuilderWindow window = GetWindow<AssetBundleBuilderWindow>("AssetBundle Builder");
+            GetWindow<AssetBundleBuilderWindow>("AssetBundle Builder");
+        }
 
-            // Set the icon for the window using Unity's default scene icon
-            GUIContent titleContent = new GUIContent("AssetBundle Builder", EditorGUIUtility.IconContent("ModelImporter Icon").image);
-            window.titleContent = titleContent;
+        private void OnEnable()
+        {
+            titleContent = new GUIContent("AssetBundle Builder", EditorGUIUtility.IconContent("ModelImporter Icon").image);
         }
 
         private void OnGUI()

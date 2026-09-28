@@ -33,7 +33,7 @@ namespace dev.susybaka.raidsim.Mechanics
         private void Awake()
         {
             m_camera = Camera.main;
-            userInput = FindObjectOfType<UserInput>();
+            userInput = FindFirstObjectByType<UserInput>(FindObjectsInactive.Include);
             originalGroundTargetPivot = groundTargetPivot;
             lastSource = null;
         }

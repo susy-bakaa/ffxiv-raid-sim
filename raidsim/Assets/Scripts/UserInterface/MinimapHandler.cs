@@ -100,7 +100,7 @@ namespace dev.susybaka.raidsim.UI
                 worldMin = new Vector2(worldSize.x / 2, worldSize.y / 2) * -1;
 
             canvasGroup = GetComponent<CanvasGroup>();
-            userInput = FindObjectOfType<UserInput>();
+            userInput = FindFirstObjectByType<UserInput>(FindObjectsInactive.Include);
             if (userInput?.keys != null)
             {
                 foreach (var binding in userInput.keys)

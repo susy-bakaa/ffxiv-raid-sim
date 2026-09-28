@@ -20,7 +20,7 @@ namespace dev.susybaka.raidsim.StatusEffects
 
         private void Awake()
         {
-            sortHotbar = FindObjectOfType<SortHotbar>();
+            sortHotbar = FindFirstObjectByType<SortHotbar>(FindObjectsInactive.Include);
         }
 
         public override void OnApplication(CharacterState state)

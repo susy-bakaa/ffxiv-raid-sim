@@ -19,11 +19,12 @@ namespace dev.susybaka.Shared.Editor
         [MenuItem("Tools/Time to Float Converter")]
         public static void ShowWindow()
         {
-            TimeConversionToolWindow window = GetWindow<TimeConversionToolWindow>("Time Converter");
+            GetWindow<TimeConversionToolWindow>("Time Converter");
+        }
 
-            // Set the icon for the window using Unity's default scene icon
-            GUIContent titleContent = new GUIContent("Time Converter", EditorGUIUtility.IconContent("d_UnityEditor.AnimationWindow").image);
-            window.titleContent = titleContent;
+        private void OnEnable()
+        {
+            titleContent = new GUIContent("Time Converter", EditorGUIUtility.IconContent("d_UnityEditor.AnimationWindow").image);
         }
 
         private void OnGUI()

@@ -8,8 +8,8 @@
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using TMPro;
 using NaughtyAttributes;
+using TMPro;
 using dev.susybaka.raidsim.Inputs;
 using dev.susybaka.Shared;
 using static dev.susybaka.raidsim.Inputs.UserInput;
@@ -41,7 +41,7 @@ namespace dev.susybaka.raidsim.UI
 
             if (input == null)
             {
-                input = FindObjectOfType<UserInput>();
+                input = FindFirstObjectByType<UserInput>(FindObjectsInactive.Include);
             }
 
             if (button != null)

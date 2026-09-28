@@ -149,9 +149,8 @@ namespace Bayat.Games.Animation.Utilities
             }
 
             parameters = new HashSet<int>();
-            for (int i = 0; i < animator.parameterCount; i++)
+            foreach (AnimatorControllerParameter parameter in animator.parameters)
             {
-                AnimatorControllerParameter parameter = animator.GetParameter(i);
                 parameters.Add(parameter.nameHash);
             }
 

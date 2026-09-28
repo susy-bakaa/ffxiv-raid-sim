@@ -31,7 +31,7 @@ namespace dev.susybaka.raidsim.UI
             base.Awake();
 
             chat = ChatHandler.Instance;
-            userInput = FindObjectOfType<UserInput>();
+            userInput = FindFirstObjectByType<UserInput>(FindObjectsInactive.Include);
 
             if (allowExport)
             {
@@ -42,7 +42,7 @@ namespace dev.susybaka.raidsim.UI
 
                 if (busyOverlay == null)
                 {
-                    TaggedObject[] tagged = FindObjectsOfType<TaggedObject>();
+                    TaggedObject[] tagged = FindObjectsByType<TaggedObject>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 
                     foreach (TaggedObject taggedObject in tagged)
                     {

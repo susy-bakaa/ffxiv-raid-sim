@@ -97,13 +97,13 @@ namespace dev.susybaka.raidsim.UI
         {
             base.Awake();
 
-            userInput = FindObjectOfType<UserInput>();
+            userInput = FindFirstObjectByType<UserInput>(FindObjectsInactive.Include);
             group = GetComponent<CanvasGroup>();
-            playerController = FindObjectOfType<PlayerController>();
-            thirdPersonCamera = FindObjectOfType<ThirdPersonCamera>();
+            playerController = FindFirstObjectByType<PlayerController>(FindObjectsInactive.Include);
+            thirdPersonCamera = FindFirstObjectByType<ThirdPersonCamera>(FindObjectsInactive.Include);
             timeline = FightTimeline.Instance;
-            spotSelector = FindObjectOfType<SpotSelector>();
-            roleSelector = FindObjectOfType<RoleSelector>();
+            spotSelector = FindFirstObjectByType<SpotSelector>(FindObjectsInactive.Include);
+            roleSelector = FindFirstObjectByType<RoleSelector>(FindObjectsInactive.Include);
             if (playerController != null && playerTargeting == null)
                 playerTargeting = playerController.gameObject.GetComponent<TargetController>();
 

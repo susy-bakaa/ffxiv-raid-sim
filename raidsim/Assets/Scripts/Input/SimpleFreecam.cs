@@ -32,7 +32,7 @@ namespace dev.susybaka.raidsim.Inputs
 
         private void Awake()
         {
-            userInput = FindObjectOfType<UserInput>();
+            userInput = FindFirstObjectByType<UserInput>(FindObjectsInactive.Include);
             if (userInput == null)
             {
                 Debug.LogError("SimpleFreecam: No UserInput script found in the scene!");
